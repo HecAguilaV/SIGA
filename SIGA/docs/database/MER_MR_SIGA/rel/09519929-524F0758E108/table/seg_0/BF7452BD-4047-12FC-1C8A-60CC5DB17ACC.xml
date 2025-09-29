@@ -1,0 +1,135 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="BF7452BD-4047-12FC-1C8A-60CC5DB17ACC" name="USUARIOS">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>1B5C991F-5E52-2CD6-A801-325B83CCDF23</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id" id="9A08D1DD-3554-4BD7-D8A4-2E9B35435F1D">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>2033DAA5-BF19-E336-AE65-D35BF7D05531</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="nombre" id="A85461A8-4315-59E2-1335-89CA75C81BE1">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>7CC23CF6-AC54-CC7F-02F5-3F9A8C42C94F</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>BE29F3D7-B24E-2D5E-ABCF-208883C8E898</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="email" id="3DB60998-FE02-7C23-0EED-0003AFDB80A6">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>0E21A345-2776-480F-45DC-A942C0F80743</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>BE29F3D7-B24E-2D5E-ABCF-208883C8E898</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="rol" id="8D19B61F-935C-6F19-63F5-2AEF2828957A">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>1C13D2EE-C146-A836-B871-E5703595B22D</importedID>
+<useDomainConstraints>false</useDomainConstraints>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>7CDD6BFE-3F42-E944-6CF2-C3646552A95D</domain>
+<listOfValues>
+<valueDef value="ADMINISTRADOR" description=""/>
+<valueDef value="VENDEDOR" description=""/>
+</listOfValues>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="local_id" id="285811F3-07EA-526A-9E2C-034D64E28191">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>EF52875E-2A2D-42BD-DACF-FF7FE9844FE5</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="0552924D-997A-71B0-32FB-2E0DC73BC7A6" referredColumn="A1F587D9-55D4-2EC7-C0C2-D9E404D7F489"/>
+</associations>
+</Column>
+<Column name="creado_en" id="949EA551-461C-56D5-C8E9-9B195B4EA48F">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>82708A96-2E94-D789-CFB4-EF9CA0EC95C4</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT015</logicalDatatype>
+<domain>F6F32B37-A29D-CD9E-73A7-72698EE493DD</domain>
+<defaultValue>CURRENT_TIMESTAMP</defaultValue>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="DF2112A1-3401-BD4B-5F3F-0B58044CB14F" name="USUARIOS_PK">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>36F85691-E779-7B95-3957-0FDEFC0E0756</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="9A08D1DD-3554-4BD7-D8A4-2E9B35435F1D"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="F8C893F1-3E54-159D-3994-0E15AF94F699" name="INDEX_1v2">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>87EC4892-38DA-173F-CA30-CB25C6C28A33</importedID>
+<indexState>Unique Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="3DB60998-FE02-7C23-0EED-0003AFDB80A6"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="C0A55FEE-3167-D33D-C949-91848E33E008" name="fk_usuarios_local">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="285811F3-07EA-526A-9E2C-034D64E28191"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

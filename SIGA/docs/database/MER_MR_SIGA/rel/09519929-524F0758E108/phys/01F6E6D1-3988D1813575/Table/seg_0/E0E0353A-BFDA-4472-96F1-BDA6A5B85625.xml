@@ -1,0 +1,73 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<TableProxyOraclev20c class="oracle.dbtools.crest.model.design.storage.oracle.v20c.TableProxyOraclev20c" name="VENTAS" directorySegmentName="seg_0" id="E0E0353A-BFDA-4472-96F1-BDA6A5B85625">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<logging>YES</logging>
+<partitionedRowMovement>DISABLE</partitionedRowMovement>
+<temporaryChanged>false</temporaryChanged>
+<accessDriverType>oracle_loader</accessDriverType>
+<rejectLimit></rejectLimit>
+<columnProxies itemClass="oracle.dbtools.crest.model.design.storage.oracle.v12c.ColumnProxyOraclev12c">
+<ColumnProxy name="local_id" id="0C4CA35F-8C55-1DD9-68EF-F037FE647B1F">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="usuario_id" id="130901B8-96B5-6EB2-76E0-4E83E88F4E40">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="metodo_pago" id="287333DB-1AEC-5C47-DE6B-D29659F13D42">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="fecha_hora" id="3A159E6E-38A0-484A-985E-DA50A7613476">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<defaultValue>CURRENT_TIMESTAMP</defaultValue>
+</ColumnProxy>
+<ColumnProxy name="total" id="4AA069BB-E763-5A12-D959-4623CEB52806">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="id" id="B882C1B4-C2CF-CCB9-5724-634D082E43CF">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<autoIncrementDDL>IDENTITY_CLAUSE</autoIncrementDDL>
+</ColumnProxy>
+</columnProxies>
+<indexProxies>
+<IndexProxy class="oracle.dbtools.crest.model.design.storage.oracle.v10g.IndexProxyOraclev10g" name="idx_ventas_fecha" id="FED22C6B-33C0-8DDE-39EA-45663AC16F50">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<logging></logging>
+</IndexProxy>
+</indexProxies>
+<foreignKeys>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.FKProxyOraclev10g" name="fk_ventas_local" id="29987A03-205A-DC2A-D6CB-6256489E0F98">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ForeignKey>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.FKProxyOraclev10g" name="fk_ventas_usuario" id="F84BCEE1-73F2-2E33-850F-A4E3839AA9B3">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ForeignKey>
+</foreignKeys>
+<primaryKeys>
+<PrimaryKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.PKProxyOraclev10g" name="VENTAS_PK" id="7F731669-8A3A-3B32-E093-7F432E955B45">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<indexSort>SORTED</indexSort>
+</PrimaryKey>
+</primaryKeys>
+</TableProxyOraclev20c>

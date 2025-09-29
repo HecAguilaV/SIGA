@@ -1,0 +1,81 @@
+@startuml clases
+skinparam backgroundColor #ffffff
+skinparam classBackgroundColor #34495e
+skinparam classBorderColor #2c3e50
+skinparam classFontColor #ffffff
+skinparam classAttributeFontColor #ecf0f1
+skinparam classAttributeBackgroundColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+class Usuario {
+  +id: int
+  +nombre: string
+  +email: string
+  +consultarInventario()
+  +generarReporte()
+}
+
+class Producto {
+  +id: int
+  +nombre: string
+  +descripcion: string
+  +precio: float
+  +categoria: string
+}
+
+class Inventario {
+  +id: int
+  +productoId: int
+  +cantidadActual: int
+  +cantidadMinima: int
+  +ubicacion: string
+  +actualizarStock(cantidad: int)
+  +verificarDesabastecimiento()
+}
+
+class Pedido {
+  +id: int
+  +usuarioId: int
+  +proveedorId: int
+  +productos: List<Producto>
+  +fecha: Date
+  +estado: string
+  +generarListaCompras()
+}
+
+class Proveedor {
+  +id: int
+  +nombre: string
+  +contacto: string
+  +procesarPedido()
+}
+
+class Reporte {
+  +id: int
+  +usuarioId: int
+  +tipo: string
+  +datos: JSON
+  +generar()
+}
+
+class Chatbot {
+  +procesarMensaje(mensaje: string): string
+  +actualizarInventario()
+  +consultarStock()
+}
+
+class ModeloIA {
+  +predecirDesabastecimiento(): List<Producto>
+  +analizarTendencias(): Reporte
+}
+
+Usuario --> Inventario : gestiona
+Usuario --> Pedido : crea
+Usuario --> Reporte : solicita
+Inventario --> Producto : contiene
+Pedido --> Producto : incluye
+Pedido --> Proveedor : hacia
+Chatbot --> Inventario : actualiza
+Chatbot --> ModeloIA : consulta
+ModeloIA --> Reporte : genera
+@enduml

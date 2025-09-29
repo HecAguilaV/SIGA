@@ -1,0 +1,61 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<TableProxyOraclev20c class="oracle.dbtools.crest.model.design.storage.oracle.v20c.TableProxyOraclev20c" name="ALERTAS" directorySegmentName="seg_0" id="5BB75200-8538-D50C-81E0-B97C4335FDE2">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<logging>YES</logging>
+<partitionedRowMovement>DISABLE</partitionedRowMovement>
+<temporaryChanged>false</temporaryChanged>
+<accessDriverType>oracle_loader</accessDriverType>
+<rejectLimit></rejectLimit>
+<columnProxies itemClass="oracle.dbtools.crest.model.design.storage.oracle.v12c.ColumnProxyOraclev12c">
+<ColumnProxy name="atendida" id="77EC7589-DC64-1410-C2A1-9D71E5552876">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<defaultValue>&apos;N&apos;</defaultValue>
+</ColumnProxy>
+<ColumnProxy name="mensaje" id="80C4E700-3369-2D6A-EE2F-5BA86E40F171">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="stock_id" id="BCC40FD7-3E80-3FBB-45DC-6DF6C773F899">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="tipo" id="D6F637C4-1838-C2B8-A016-83EE5EA5E96A">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="fecha_hora" id="DE1504F4-9CEB-64B3-31F5-4B81F01C1BC8">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<defaultValue>CURRENT_TIMESTAMP</defaultValue>
+</ColumnProxy>
+<ColumnProxy name="id" id="EA63ABD7-F7E7-2C49-D16E-5B5739579C27">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<autoIncrementDDL>IDENTITY_CLAUSE</autoIncrementDDL>
+</ColumnProxy>
+</columnProxies>
+<foreignKeys>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.FKProxyOraclev10g" name="fk_alertas_stock" id="7382D672-E15E-2C23-5F52-FCFD79246769">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+</ForeignKey>
+</foreignKeys>
+<primaryKeys>
+<PrimaryKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.PKProxyOraclev10g" name="ALERTAS_PK" id="5ADF6F83-7176-97DD-F114-91AB6A8FBB1B">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<indexSort>SORTED</indexSort>
+</PrimaryKey>
+</primaryKeys>
+</TableProxyOraclev20c>

@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="fk_movimientos_producto" directorySegmentName="seg_0" id="1C83D0C0-FFED-1250-8C13-946F8835AC2C">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>386BA586-4ACE-B9C1-F779-BFD35442D10D</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<sourcePk>B8D22C25-C424-E71E-9EDF-1461D33DD5D8</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>6A8923F3-5538-5797-7BA2-E059475023A3</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>41323813-8B6F-A81B-F37C-A3792BC62B95</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

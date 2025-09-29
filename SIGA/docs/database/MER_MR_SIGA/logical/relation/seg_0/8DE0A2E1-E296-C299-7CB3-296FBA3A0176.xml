@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="fk_alertas_stock" directorySegmentName="seg_0" id="8DE0A2E1-E296-C299-7CB3-296FBA3A0176">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>A7C5AD70-A123-48B9-926D-7084DF68D9D9</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<sourcePk>53F0C92A-1F3F-6E4B-EE9A-4CFF5B7B086B</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>F862C29A-CC8F-535B-B515-B532F22C945F</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>D1378D29-5523-3509-02F0-1F145D2207AC</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

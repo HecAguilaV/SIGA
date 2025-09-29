@@ -1,0 +1,43 @@
+@startuml components
+skinparam backgroundColor #ffffff
+skinparam componentBackgroundColor #34495e
+skinparam componentBorderColor #2c3e50
+skinparam componentFontColor #ffffff
+skinparam interfaceBackgroundColor #3498db
+skinparam interfaceBorderColor #2980b9
+skinparam interfaceFontColor #ffffff
+skinparam databaseBackgroundColor #e74c3c
+skinparam databaseBorderColor #c0392b
+skinparam databaseFontColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+interface "IInterfazUsuario" as IUI
+interface "IServicioChatbot" as ICS
+interface "ILogicaNegocio" as IBL
+interface "IServicioIA" as IAIS
+interface "IAccesoDatos" as IDA
+
+[Interfaz de Usuario\nWeb/Móvil] as UI
+[Módulo de Chatbot] as CM
+[Lógica de Negocio\nGestorInventario, GeneradorReportes] as BL
+[Servicios de IA\nIAChatbot (LLMs Externos), ServicioPrediccion (ML Propio)] as AIS
+[Acceso a Datos\nRepositorioProducto, RepositorioInventario] as DA
+[Modelos de IA/ML\nPredictorStock, AnalizadorDemanda] as AIM
+database "Base de Datos PostgreSQL" as DB
+
+UI ..> IUI
+CM ..> ICS
+BL ..> IBL
+AIS ..> IAIS
+DA ..> IDA
+
+IUI --> CM
+UI --> BL
+CM --> BL
+CM --> AIS
+BL --> DA
+BL --> AIS
+AIS --> AIM
+DA --> DB
+AIM --> DB
+@enduml

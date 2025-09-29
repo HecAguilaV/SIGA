@@ -1,0 +1,188 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="77A70C6F-43C1-E3EB-4FD9-459AC7B44CBC" name="MOVIMIENTOS">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>17D176B7-CEFD-01C6-3233-B4E1CA36C151</importedID>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="id" id="D4F01CEE-C447-E5C3-6F2A-D51852E7132E">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>AC1DF030-AC74-F68E-BE57-2D16E53DD042</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementColumn>true</autoIncrementColumn>
+<identityColumn>true</identityColumn>
+<autoIncrementCycle>false</autoIncrementCycle>
+<autoIncrementOrder>false</autoIncrementOrder>
+</Column>
+<Column name="producto_id" id="8D5F3A5B-8166-E701-B8F0-2DFDECBCDD07">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>E6BE7029-BFD7-D820-3CC4-B9D96E63B6BC</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="386BA586-4ACE-B9C1-F779-BFD35442D10D" referredColumn="C4194959-81CB-5054-CFF4-61563B64D15B"/>
+</associations>
+</Column>
+<Column name="local_id" id="5A502EE8-7C75-CD30-A24B-B4F05E76D0F3">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>F011CE9C-031B-A534-F743-B40AD86846C1</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="4CCCC0E6-ACEE-FE49-A4E4-21C27C567BBA" referredColumn="A1F587D9-55D4-2EC7-C0C2-D9E404D7F489"/>
+</associations>
+</Column>
+<Column name="usuario_id" id="FCAFE305-0FF9-C2A1-4384-1848054F4E6D">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>4E4FB89B-A08F-116A-541E-AD091C58C0D9</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<associations>
+<colAssociation fkAssociation="22106ECA-6263-1B35-2990-A0AAE452C1D4" referredColumn="9A08D1DD-3554-4BD7-D8A4-2E9B35435F1D"/>
+</associations>
+</Column>
+<Column name="tipo" id="F59B60CA-E303-7C0D-1140-DF4A343437B7">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>B671F94D-3DFD-75B4-6819-9A2284341A22</importedID>
+<useDomainConstraints>false</useDomainConstraints>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>7CDD6BFE-3F42-E944-6CF2-C3646552A95D</domain>
+<listOfValues>
+<valueDef value="AJUSTE_INICIAL" description=""/>
+<valueDef value="AJUSTE_MANUAL" description=""/>
+<valueDef value="COMPRA" description=""/>
+<valueDef value="MERMA" description=""/>
+<valueDef value="VENTA" description=""/>
+</listOfValues>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="cantidad" id="F65A74EC-442B-4101-24A1-1AD2F20AF12E">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>0EB9EBFC-8331-1132-8068-EF7671030D7D</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="fecha_hora" id="7B5AA456-2A92-0F2F-D2D5-F69770ABB78D">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>B4F55165-17C0-5B50-8ABB-6A56F0EF7FD0</importedID>
+<use>0</use>
+<logicalDatatype>LOGDT015</logicalDatatype>
+<domain>F6F32B37-A29D-CD9E-73A7-72698EE493DD</domain>
+<defaultValue>CURRENT_TIMESTAMP</defaultValue>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="nota" id="639613C6-7AC3-99CB-AD7B-12DE061F80BD">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>CDC9F661-C165-93D9-2E1A-CA9962ECB558</importedID>
+<nullsAllowed>true</nullsAllowed>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>C3AF5E3C-2CAF-FDB4-496F-3A5CB7D6B1F3</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="34620420-EC57-EA11-74B3-8456CD32BA34" name="MOVIMIENTOS_PK">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>A6C4D2E0-F6AF-BD25-5E4C-E6C56CE7BD88</importedID>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="D4F01CEE-C447-E5C3-6F2A-D51852E7132E"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="5613C6EA-DCC2-E6BE-AAB0-1176AD929992" name="idx_movimientos_fecha">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>E1CD101D-9120-E14C-6F59-2CB9F4D8A399</importedID>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="7B5AA456-2A92-0F2F-D2D5-F69770ABB78D"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="F8516D84-C463-DAD3-BB53-AA02407E8A5A" name="fk_movimientos_local">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="5A502EE8-7C75-CD30-A24B-B4F05E76D0F3"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="F54986E2-888D-39AD-5F6C-CC7B4E0586C2" name="fk_movimientos_producto">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="8D5F3A5B-8166-E701-B8F0-2DFDECBCDD07"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="3B44D195-3FE2-AE9D-76E1-8FB589CBFDF0" name="fk_movimientos_usuario">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<indexState>Foreign Key</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="FCAFE305-0FF9-C2A1-4384-1848054F4E6D"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

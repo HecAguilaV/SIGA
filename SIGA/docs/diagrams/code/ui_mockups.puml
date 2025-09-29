@@ -1,0 +1,79 @@
+@startuml component
+skinparam backgroundColor #ffffff
+skinparam componentBackgroundColor #34495e
+skinparam componentBorderColor #2c3e50
+skinparam componentFontColor #ffffff
+skinparam noteBackgroundColor #ecf0f1
+skinparam noteBorderColor #bdc3c7
+skinparam noteFontColor #2c3e50
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+
+title Mockups de UI/UX - SIGA
+
+component "Dashboard Principal" as MD
+note right of MD
+Dashboard Principal
+===================
+Encabezado: Logo, Usuario, Notificaciones
+--
+Tarjeta Resumen Mensual
+- Ventas: $15,000
+- Productos bajos: 3
+--
+Tarjeta Alertas
+- Producto X bajo stock
+- Pedido pendiente
+--
+Navegación: Inventario, Pedidos, Reportes
+end note
+
+component "Interfaz del Chatbot" as CI
+note right of CI
+Interfaz del Chatbot
+====================
+Encabezado: Chatbot SIGA
+--
+Mensajes:
+🤖 Hola, ¿qué necesitas?
+👤 Actualizar stock de manzanas
+🤖 ¿Cuántas unidades?
+👤 50 unidades
+🤖 ¡Actualizado! Stock: 150
+--
+Entrada: [Mensaje...] [Enviar] [Comandos]
+end note
+
+component "Pantalla de Inventario" as IS
+note right of IS
+Pantalla de Inventario
+======================
+Buscar: [_________] [🔍]
+--
+Tabla: Producto | Cantidad | Estado
+- Manzanas | 150 | OK
+- Plátanos | 5 | BAJO
+- Naranjas | 200 | OK
+--
+Acciones: [Agregar] [Editar] [Eliminar]
+end note
+
+component "Pantalla de Reportes" as RS
+note right of RS
+Pantalla de Reportes
+====================
+Filtros: Tipo [Ventas] [Inventario], Período [Mes] [Año]
+--
+Marcador de Gráfico: [Gráfico de barras]
+--
+Resumen:
+- Total vendido: $15,000
+- Productos más vendidos: ...
+--
+Acciones: [Exportar PDF] [Imprimir]
+end note
+
+MD --> CI : Navegar a Chatbot
+MD --> IS : Navegar a Inventario
+MD --> RS : Navegar a Reportes
+@enduml

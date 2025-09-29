@@ -1,0 +1,36 @@
+@startuml sequence
+skinparam backgroundColor #ffffff
+skinparam actorBackgroundColor #34495e
+skinparam actorBorderColor #2c3e50
+skinparam actorFontColor #000000
+skinparam participantBackgroundColor #34495e
+skinparam participantBorderColor #2c3e50
+skinparam participantFontColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+skinparam noteBackgroundColor #ecf0f1
+skinparam noteBorderColor #bdc3c7
+skinparam noteFontColor #2c3e50
+
+actor Usuario
+participant "Frontend\n(Svelte)" as FE
+participant "Backend Kotlin\n(Ktor)" as BK
+participant "APIs de IA\n(Python Flask/FastAPI)" as AI
+participant "Base de Datos\n(PostgreSQL)" as DB
+participant "Modelos ML\n(TensorFlow/PyTorch)" as ML
+
+Usuario -> FE: Envía consulta (ej. "¿Cuánto stock de X?")
+FE -> BK: Petición API REST
+BK -> AI: Consulta a LLM externo (ChatGPT/Gemini)
+AI -> BK: Respuesta procesada
+BK -> DB: Consulta stock actual
+DB -> BK: Datos de inventario
+BK -> ML: Solicita predicción (si aplica)
+ML -> BK: Predicción de demanda
+BK -> FE: Respuesta completa (stock + predicción)
+FE -> Usuario: Muestra resultado
+
+note right of BK
+  Lógica de negocio: Valida permisos, Procesa respuesta
+end note
+@enduml</content>

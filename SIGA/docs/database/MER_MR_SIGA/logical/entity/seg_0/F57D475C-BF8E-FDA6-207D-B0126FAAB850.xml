@@ -1,0 +1,122 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="F57D475C-BF8E-FDA6-207D-B0126FAAB850" name="VENTAS">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>E0E0353A-BFDA-4472-96F1-BDA6A5B85625</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="id" id="1EB0D621-1452-175A-2641-6BCF2BCD6A5B">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>B882C1B4-C2CF-CCB9-5724-634D082E43CF</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="local id" id="E7365A8C-952E-52B8-5E46-893BF01561F0">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>89BC74B7-2533-6DF1-26FD-A63FA3CE7DFD</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<referedAttribute>2BE3827B-976C-6060-08B6-1717F2C64C04</referedAttribute>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="usuario id" id="718C10AE-C331-A956-D29D-5F7236631BA7">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>3E0ABE2D-B8EB-D979-13CC-D5D710B4CB92</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<referedAttribute>2212B798-24D8-5A57-C597-2E1B9F1328DB</referedAttribute>
+<use>0</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<domain>CF862FA6-B8CB-9174-6F01-F5845F060420</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="fecha hora" id="3CB803B5-E58D-BDD9-5A33-F627C6F81DBF">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>3A159E6E-38A0-484A-985E-DA50A7613476</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT015</logicalDatatype>
+<domain>F6F32B37-A29D-CD9E-73A7-72698EE493DD</domain>
+<defaultValue>CURRENT_TIMESTAMP</defaultValue>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="metodo pago" id="7DA4F29A-610D-E45C-BCA1-EED56F8B6CAB">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>287333DB-1AEC-5C47-DE6B-D29659F13D42</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>0</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<domain>D0B52328-A997-B035-2EF3-78943A05FED6</domain>
+<listOfValues>
+<valueDef value="EFECTIVO" description=""/>
+<valueDef value="TARJETA" description=""/>
+<valueDef value="TRANSFERENCIA" description=""/>
+</listOfValues>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="total" id="BEA6637A-162F-06EC-348B-084C329CE42C">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>4AA069BB-E763-5A12-D959-4623CEB52806</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<use>0</use>
+<logicalDatatype>LOGDT026</logicalDatatype>
+<domain>644E154F-7977-B5C9-4EAF-BF2A73840BBE</domain>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="ECE55F4B-5B10-9B04-C659-E747C8BA8DA2" name="VENTAS PK">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>7F731669-8A3A-3B32-E093-7F432E955B45</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>1EB0D621-1452-175A-2641-6BCF2BCD6A5B</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

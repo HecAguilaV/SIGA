@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="B7320974-334C-CB90-B544-C0A65121A322" containerWithKeyObject="2B2BD639-6DE2-1A3A-20EE-D4841F0719BC" localFKIndex="8BB751E1-D86E-4F3A-CBC6-84BD9CE91198" name="fk_stock_producto">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>D081828C-0B60-BC22-AE9E-989B5BCB5080</importedID>
+<referredTableLongName>PRODUCTOS</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>6C92921D-F3A9-6054-40DE-8F3A217BCEB2</referredTableID>
+<keyObject>766D5584-7AF0-B877-DA33-E492824CD19A</keyObject>
+<referredKeyID>766D5584-7AF0-B877-DA33-E492824CD19A</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>id</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="MER_MR_SIGA" id="D0755F5F-01E1-31D1-4485-F91494B4A04D" version="3.5">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:54:30 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<capitalNames>false</capitalNames>
+<designId>D0755F5F-01E1-31D1-4485-F91494B4A04D</designId>
+<usedDesignStorageDescriptors>
+<designDescr class="oracle.dbtools.crest.model.design.Design$DesignStorageDesc" id="134E7F19-B01C-2932-31F6-3BD57BC75F0D">
+<designStoragePath>/scriptDB</designStoragePath>
+</designDescr>
+</usedDesignStorageDescriptors>
+</OSDM_Design>

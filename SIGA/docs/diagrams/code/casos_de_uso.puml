@@ -1,0 +1,34 @@
+@startuml use_cases
+skinparam backgroundColor #ffffff
+skinparam actorBackgroundColor #34495e
+skinparam actorBorderColor #2c3e50
+skinparam actorFontColor #000000
+skinparam usecaseBackgroundColor #34495e
+skinparam usecaseBorderColor #2c3e50
+skinparam usecaseFontColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+actor "Emprendedor / Operario" as User
+actor "Administrador del Sistema" as Admin
+
+usecase "Gestionar Inventario\n(Productos y Stock)" as UC1
+usecase "Interactuar con Asistente\n(Chatbot)" as UC2
+usecase "Recibir Alertas Predictivas" as UC3
+usecase "Generar Reportes Inteligentes" as UC4
+usecase "Gestionar Bodegas/Tiendas" as UC5
+usecase "Configurar Ajustes del Sistema" as UC6
+usecase "Manejar Errores del Sistema" as UC7
+
+User --> UC2
+User --> UC5
+User --> UC4
+UC3 --> User
+
+Admin --> UC6
+Admin --> UC7
+
+UC2 ..> UC1 : incluye
+UC2 ..> UC4 : incluye
+UC7 ..> UC1 : extiende <<manejo de errores>>
+UC7 ..> UC2 : extiende <<manejo de errores>>
+@enduml

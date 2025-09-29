@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="fk_ventas_local" directorySegmentName="seg_0" id="89BC74B7-2533-6DF1-26FD-A63FA3CE7DFD">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>59D353D6-AFF0-D7FB-E2BC-BD2C9E52316E</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<sourcePk>5C99DAE4-9339-DCBC-B377-AA49C56DBC67</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>A1C36C54-F8AB-722B-4F64-4EBC008661D0</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>F57D475C-BF8E-FDA6-207D-B0126FAAB850</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

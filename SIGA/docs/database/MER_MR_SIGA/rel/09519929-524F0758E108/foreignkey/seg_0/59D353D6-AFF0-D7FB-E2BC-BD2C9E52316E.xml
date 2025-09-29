@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="59D353D6-AFF0-D7FB-E2BC-BD2C9E52316E" containerWithKeyObject="E0E0353A-BFDA-4472-96F1-BDA6A5B85625" localFKIndex="29987A03-205A-DC2A-D6CB-6256489E0F98" name="fk_ventas_local">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>3910BC12-43F4-FE62-900E-838C3D83714F</importedID>
+<referredTableLongName>LOCALES</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>79576648-146C-721E-3961-428CB6A0E41C</referredTableID>
+<keyObject>9F03B328-15B7-C229-6607-8FBE15275F31</keyObject>
+<referredKeyID>9F03B328-15B7-C229-6607-8FBE15275F31</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>id</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

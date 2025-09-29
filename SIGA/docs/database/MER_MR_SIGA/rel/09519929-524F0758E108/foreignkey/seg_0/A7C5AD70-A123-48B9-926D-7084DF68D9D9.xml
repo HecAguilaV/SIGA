@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="A7C5AD70-A123-48B9-926D-7084DF68D9D9" containerWithKeyObject="5BB75200-8538-D50C-81E0-B97C4335FDE2" localFKIndex="7382D672-E15E-2C23-5F52-FCFD79246769" name="fk_alertas_stock">
+<sourceDDLFile>scriptDB.sql</sourceDDLFile>
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:55:23 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<importedID>0E817D64-7A43-FEFB-6D2F-94B327B63A1D</importedID>
+<referredTableLongName>STOCK</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>2B2BD639-6DE2-1A3A-20EE-D4841F0719BC</referredTableID>
+<keyObject>304901D1-20FB-A116-8BDD-C0863A7E4002</keyObject>
+<referredKeyID>304901D1-20FB-A116-8BDD-C0863A7E4002</referredKeyID>
+<mandatory>true</mandatory>
+<refColNames>id</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>

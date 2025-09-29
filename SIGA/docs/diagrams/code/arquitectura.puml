@@ -1,0 +1,41 @@
+@startuml architecture
+skinparam backgroundColor #ffffff
+skinparam actorBackgroundColor #34495e
+skinparam actorBorderColor #2c3e50
+skinparam actorFontColor #000000
+skinparam nodeBackgroundColor #34495e
+skinparam nodeBorderColor #2c3e50
+skinparam nodeFontColor #ffffff
+skinparam databaseBackgroundColor #e74c3c
+skinparam databaseBorderColor #c0392b
+skinparam databaseFontColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+actor Usuario
+node "Frontend Web\nSvelte + Bulma\nAlojado en Vercel/Netlify" as WF
+node "Frontend Móvil\nSvelte Native\nApp iOS/Android" as MF
+node "Puerta de Enlace API\nNginx/Ktor" as AG
+node "Servicios Backend\nKotlin/Ktor\nAPIs REST/GraphQL\nContenedor Docker" as BS
+node "Servicio de Autenticación\nJWT/OAuth" as Auth
+node "Lógica de Negocio\nGestión de Inventario" as BL
+node "Capa de Acceso a Datos\nJDBC/Hibernate" as DAL
+database "Base de Datos\nPostgreSQL\nContenedor Docker" as DB
+node "APIs de IA\nLLMs Externos (ChatGPT/Gemini)\nPython Flask/FastAPI\nContenedor Docker" as AI
+node "Modelos de ML\nTensorFlow/PyTorch\nEntrenamiento por Cliente" as ML
+node "Sistema de IA/ML\nPredicciones y Análisis\nProcesamiento Batch/Tiempo Real" as AIML
+
+Usuario --> WF
+Usuario --> MF
+WF --> AG
+MF --> AG
+AG --> BS
+BS --> Auth
+BS --> BL
+BL --> DAL
+DAL --> DB
+BS --> AI
+AI --> ML
+ML --> AIML
+DB --> DAL
+AIML --> BS
+@enduml

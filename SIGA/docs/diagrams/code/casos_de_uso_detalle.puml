@@ -1,0 +1,49 @@
+@startuml use_case_detailed
+skinparam backgroundColor #ffffff
+skinparam actorBackgroundColor #34495e
+skinparam actorBorderColor #2c3e50
+skinparam actorFontColor #000000
+skinparam usecaseBackgroundColor #34495e
+skinparam usecaseBorderColor #2c3e50
+skinparam usecaseFontColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+actor "Emprendedor/Usuario" as Entrepreneur
+actor "Chatbot IA" as Chatbot
+actor "Sistema IA/ML" as IA
+actor "Proveedor/Mayorista" as Supplier
+actor "Gerente de Bodega" as WM
+
+usecase "Actualizar Stock" as UC1
+usecase "Consultar Inventario" as UC2
+usecase "Generar Lista de Compras" as UC3
+usecase "Obtener Reportes" as UC4
+usecase "Predecir Desabastecimientos" as UC5
+usecase "Interactuar con Proveedores" as UC6
+usecase "Iniciar Sesión en el Sistema" as UC7
+usecase "Gestionar Ubicaciones de Bodega" as UC8
+usecase "Respaldar Datos" as UC9
+
+Entrepreneur --> UC1
+Entrepreneur --> UC2
+Entrepreneur --> UC3
+Entrepreneur --> UC4
+Entrepreneur --> UC5
+Entrepreneur --> UC6
+Entrepreneur --> UC7
+WM --> UC8
+WM --> UC9
+
+Chatbot --> UC1
+Chatbot --> UC2
+Chatbot --> UC3
+Chatbot --> UC4
+
+IA --> UC3
+IA --> UC5
+
+Supplier --> UC6
+
+UC7 ..> UC1 : incluye
+UC7 ..> UC2 : includes
+@enduml

@@ -1,0 +1,15 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<relationalModel class="oracle.dbtools.crest.model.design.relational.RelationalDesign" name="Relational_1" id="09519929-DEFB-5C8C-2DC3-524F0758E108" mainViewID="09632B6A-1ED8-5041-7B0B-6D0F14005F70">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:54:32 UTC</createdTime>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+<selectedRDBMSSite>01F6E6D1-21D0-CFBD-ABDD-3988D1813575</selectedRDBMSSite>
+<importDDLFileStamps>
+<importDDLFileStamp class="oracle.dbtools.crest.imports.DDLFileStamp">
+<fileName>scriptDB.sql</fileName>
+<pathName>/Users/hector/Desktop/SIGA/SIGA/docs/database</pathName>
+<dbType>17</dbType>
+</importDDLFileStamp>
+</importDDLFileStamps>
+</relationalModel>

@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="fk_movimientos_usuario" directorySegmentName="seg_0" id="AA896E08-C9BD-C574-8DEE-515644D4CFB8">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>22106ECA-6263-1B35-2990-A0AAE452C1D4</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<sourcePk>288A59C3-60C3-24D2-0067-5CABBF64362B</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>true</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>D0147115-F48F-E9B6-C1A5-4BF74E8A69F8</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>41323813-8B6F-A81B-F37C-A3792BC62B95</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

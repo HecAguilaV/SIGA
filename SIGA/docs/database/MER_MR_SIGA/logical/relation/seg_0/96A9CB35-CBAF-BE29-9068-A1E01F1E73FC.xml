@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Relation class="oracle.dbtools.crest.model.design.logical.Relation" name="fk_productos_categoria" directorySegmentName="seg_0" id="96A9CB35-CBAF-BE29-9068-A1E01F1E73FC">
+<createdBy>hector</createdBy>
+<createdTime>2025-09-29 04:56:48 UTC</createdTime>
+<generatorID>7B769C53-705C-E01A-350F-B8770C4AB6F3</generatorID>
+<ownerDesignName>MER_MR_SIGA</ownerDesignName>
+<engineerTo>
+<item key="09519929-DEFB-5C8C-2DC3-524F0758E108" value="true"/>
+</engineerTo>
+<sourcePk>CD271BDF-3FFB-F825-18B5-EEB47E34BCC2</sourcePk>
+<identifying>false</identifying>
+<optionalSource>true</optionalSource>
+<optionalTarget>false</optionalTarget>
+<sourceCardinality>1</sourceCardinality>
+<sourceEntity>D10AA0DC-B6B5-2034-CEDE-BD7990529553</sourceEntity>
+<targetCardinalityString>*</targetCardinalityString>
+<targetEntity>6A8923F3-5538-5797-7BA2-E059475023A3</targetEntity>
+<transferable>true</transferable>
+<deleteRule>NO ACTION</deleteRule>
+</Relation>

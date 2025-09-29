@@ -1,0 +1,80 @@
+@startuml er
+skinparam backgroundColor #ffffff
+skinparam entityBackgroundColor #34495e
+skinparam entityBorderColor #2c3e50
+skinparam entityFontColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+entity USUARIO {
+  * id : int
+  --
+  nombre : string
+  email : string
+  telefono : string
+  fecha_creacion : datetime
+  fecha_actualizacion : datetime
+}
+
+entity PRODUCTO {
+  * id : int
+  --
+  nombre : string
+  descripcion : string
+  precio : float
+  categoria : string
+}
+
+entity INVENTARIO {
+  * id : int
+  --
+  usuario_id : int
+  producto_id : int
+  cantidad_actual : int
+  cantidad_minima : int
+  ubicacion : string
+}
+
+entity PEDIDO {
+  * id : int
+  --
+  usuario_id : int
+  proveedor_id : int
+  fecha : date
+  estado : string
+}
+
+entity DETALLE_PEDIDO {
+  * id : int
+  --
+  pedido_id : int
+  producto_id : int
+  cantidad : int
+}
+
+entity PROVEEDOR {
+  * id : int
+  --
+  nombre : string
+  contacto : string
+}
+
+entity REPORTE {
+  * id : int
+  --
+  usuario_id : int
+  tipo : string
+  datos : json
+  fecha : date
+}
+
+USUARIO ||--o{ INVENTARIO : tiene
+USUARIO ||--o{ PEDIDO : crea
+USUARIO ||--o{ REPORTE : solicita
+
+PRODUCTO ||--o{ INVENTARIO : contiene
+PRODUCTO ||--o{ DETALLE_PEDIDO : incluye
+
+PROVEEDOR ||--o{ PEDIDO : suministra
+
+PEDIDO ||--o{ DETALLE_PEDIDO : detalla
+@enduml

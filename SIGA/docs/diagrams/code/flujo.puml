@@ -1,0 +1,37 @@
+@startuml activity
+skinparam backgroundColor #ffffff
+skinparam activityBackgroundColor #34495e
+skinparam activityBorderColor #2c3e50
+skinparam activityFontColor #ffffff
+skinparam arrowColor #7f8c8d
+skinparam arrowFontColor #2c3e50
+skinparam noteBackgroundColor #ffdd57
+skinparam noteBorderColor #ffdd57
+skinparam noteFontColor #363636
+start
+:Usuario envía mensaje al Chatbot;
+:Registrar interacción del usuario;
+if (¿Es un comando de actualización?) then (Sí)
+  :Chatbot procesa mensaje;
+  :Analizar detalles del producto del mensaje;
+  :Validar datos del producto;
+  if (¿Datos válidos?) then (Sí)
+    :Verificar permisos del usuario;
+    :Actualizar inventario en BD;
+    :Registrar cambio de inventario;
+    :Generar confirmación;
+  else (No)
+    :Registrar error de validación;
+    :Chatbot pide corrección;
+    note right
+      Volver al inicio
+    end note
+  endif
+else (No)
+  :Chatbot responde con ayuda;
+  :Registrar solicitud de ayuda;
+endif
+:Enviar respuesta al usuario;
+:Registrar respuesta enviada;
+stop
+@enduml
