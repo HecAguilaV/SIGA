@@ -1,5 +1,5 @@
 <p align="center">
-<img src="docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="260" />
+<img src="SIGA/docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="260" />
 </p>
 
 # SIGA (Sistema Inteligente de Gestión de Activos)
@@ -125,12 +125,17 @@ Unifica el backend (Ktor) y la lógica móvil compartida (KMM), reduciendo la du
 ---
 
 ## Modelo de datos inicial (v1)
-Tablas mínimas para el primer *slice* funcional:
-- `productos`: `id`, `sku` (único), `nombre`, `stock_actual`, `created_at`, `updated_at`.
-- `movimientos`: `id`, `producto_id` (FK), `usuario_id` (FK), `tipo` (ENTRADA|SALIDA), `cantidad`, `nota`, `created_at`.
-- `usuarios`: `id`, `nombre`, `rol` (DUEÑO|ENCARGADO), `email`, `created_at`.
+El diseño de la base de datos está pensado para ser robusto y escalable, con convenciones claras (español, mayúsculas). Las entidades principales son:
 
-**Reglas:** `cantidad` > 0; `stock_actual` ≥ 0. El descuento de stock se aplica en la API.
+- **Entidades de Catálogo:** `USUARIOS`, `PRODUCTOS`, `CATEGORIAS`, `LOCALES`.
+- **Entidades Operacionales:** `STOCK`, `VENTAS`, `DETALLES_VENTA`, `MOVIMIENTOS`, `ALERTAS`.
+
+**Principios Clave:**
+- **Stock por Local:** El stock no es un atributo del producto, sino una entidad separada (`STOCK`) que relaciona un `PRODUCTO` con un `LOCAL` y una `cantidad`.
+- **Trazabilidad Total:** La tabla `MOVIMIENTOS` registra cada entrada, venta, merma o ajuste, creando un historial completo para cada producto.
+- **Roles:** El sistema diferencia entre roles (`ADMINISTRADOR`, `VENDEDOR`) para una gestión de permisos segura.
+
+Para ver el diseño detallado, el Modelo Entidad-Relación y el script DDL completo, consulta la documentación en la carpeta `/docs`.
 
 ---
 
@@ -149,7 +154,6 @@ Tablas mínimas para el primer *slice* funcional:
 - **Commits:** `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `build`.
 
 ---
-
 
 ## Plan de Desarrollo (Gatear → Caminar → Correr)
 A continuación se presenta el plan de desarrollo visualizado del proyecto.
