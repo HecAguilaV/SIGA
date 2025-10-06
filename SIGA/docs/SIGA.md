@@ -78,17 +78,3 @@ Nuestra solución nace de la aplicación directa de nuestra formación:
 <p align="center">
   <img src="brand/Mockup_Web.png" alt="Vista previa de colores de SIGA" width="520" />
 </p>
-
-
-
-<hr />
-<p align="center">
-  <img src="https://img.shields.io/badge/Primario-03045E-03045E?style=flat-square" />
-  <img src="https://img.shields.io/badge/Acento-00B4D8-00B4D8?style=flat-square" />
-  <img src="https://img.shields.io/badge/Acento_Sec-80FFDB-80FFDB?style=flat-square" />
-  <img src="https://img.shields.io/badge/Neutro-FFFFFF-FFFFFF?style=flat-square" />
-</p>
-<p align="center">
-  <img src="brand/Mockup_Web.png" alt="Vista previa de colores de SIGA" width="520" />
-</p>
-

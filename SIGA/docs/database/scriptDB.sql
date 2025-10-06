@@ -1,6 +1,5 @@
 -- =============================================================================
 -- Script de Creación de Tablas para el Proyecto SIGA
--- Convención: Nombres de tablas en español y mayúsculas
 -- =============================================================================
 
 -- ========= TABLAS DE CATÁLOGO Y CONFIGURACIÓN =========
