@@ -158,7 +158,7 @@ Para ver el diseño detallado, el Modelo Entidad-Relación y el script DDL compl
 ## Plan de Desarrollo (Gatear → Caminar → Correr)
 A continuación se presenta el plan de desarrollo visualizado del proyecto.
 
-![Roadmap SIGA](/SIGA/docs/brand/SIGA_Roadmap.png)
+![Roadmap SIGA](docs/SIGA_Roadmap_Visual.svg)
 
 ---
 
