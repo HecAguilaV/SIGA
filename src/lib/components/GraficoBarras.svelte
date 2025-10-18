@@ -7,13 +7,57 @@
   export let etiquetas = [];
   /** @type {number[]} */
   export let valores = [];
-  export let colorFondo = 'rgba(52, 152, 219, 0.6)';
-  export let colorBorde = 'rgba(41, 128, 185, 1)';
+  /** @type {string | null} */
+  export let colorFondo = null;
+  /** @type {string | null} */
+  export let colorBorde = null;
 
   /** @type {HTMLCanvasElement | null} */
   let lienzo;
   /** @type {import('chart.js').Chart | null} */
   let instanciaGrafico;
+
+  /**
+   * Convierte un color hexadecimal a formato rgba.
+   * Propósito: reutilizar los colores de la paleta corporativa con diferentes opacidades.
+   * @param {string} hex
+   * @param {number} alpha
+   */
+  const hexToRgba = (hex, alpha = 1) => {
+    const limpio = hex.replace('#', '').trim();
+    const esCorto = limpio.length === 3;
+    const expandido = esCorto ? limpio.split('').map((c) => `${c}${c}`).join('') : limpio;
+    const valor = expandido.padEnd(6, '0');
+    const r = parseInt(valor.slice(0, 2), 16);
+    const g = parseInt(valor.slice(2, 4), 16);
+    const b = parseInt(valor.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
+  /**
+   * Obtiene el valor de una variable CSS o regresa un respaldo.
+   * Propósito: respetar la paleta corporativa aún cuando no exista el documento.
+   * @param {string} nombre
+   * @param {string} respaldo
+   */
+  const obtenerVariable = (nombre, respaldo) => {
+    if (typeof document === 'undefined') {
+      return respaldo;
+    }
+    const valor = getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+    return valor || respaldo;
+  };
+
+  /** @returns {{ relleno: string; borde: string }} */
+  const calcularColores = () => {
+    const secundario = obtenerVariable('--color-secundario', '#3498db');
+    return {
+      relleno: colorFondo ?? hexToRgba(secundario, 0.65),
+      borde: colorBorde ?? hexToRgba(secundario, 1)
+    };
+  };
+
+  let coloresDataset = calcularColores();
 
   // onMount crea la instancia del gráfico una vez que el componente está en el DOM
   // Propósito: inicializar Chart.js únicamente en el cliente y garantizar que el gráfico se dibuje correctamente
@@ -22,13 +66,14 @@
       return;
     }
 
+    coloresDataset = calcularColores();
     const colorTexto = typeof document !== 'undefined'
       ? getComputedStyle(document.documentElement).getPropertyValue('--color-texto') || '#2c3e50'
       : '#2c3e50';
 
-  const canvas = /** @type {HTMLCanvasElement} */ (lienzo);
+    const canvas = /** @type {HTMLCanvasElement} */ (lienzo);
 
-  instanciaGrafico = new Chart(canvas, {
+    instanciaGrafico = new Chart(canvas, {
       type: 'bar',
       data: {
         labels: etiquetas,
@@ -36,8 +81,8 @@
           {
             label: titulo,
             data: valores,
-            backgroundColor: colorFondo,
-            borderColor: colorBorde,
+            backgroundColor: coloresDataset.relleno,
+            borderColor: coloresDataset.borde,
             borderWidth: 1,
             borderRadius: 6
           }
@@ -82,10 +127,14 @@
     instanciaGrafico?.destroy();
   });
 
+  $: coloresDataset = calcularColores();
+
   // Reaccionamos ante cambios en las props para mantener el gráfico sincronizado
   $: if (instanciaGrafico) {
     instanciaGrafico.data.labels = [...etiquetas];
     instanciaGrafico.data.datasets[0].data = [...valores];
+    instanciaGrafico.data.datasets[0].backgroundColor = coloresDataset.relleno;
+    instanciaGrafico.data.datasets[0].borderColor = coloresDataset.borde;
     instanciaGrafico.update();
   }
 </script>

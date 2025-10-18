@@ -11,4 +11,109 @@
 /* Importar Bulma CSS */
 @import 'bulma/css/bulma.min.css';
 
-/* Estilos globales adicionales si es necesario */
+/* Estilos globales adicionales */
+html,
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--color-secundario);
+}
+
+a:hover {
+  color: var(--color-primario);
+}
+
+.section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.box {
+  background-color: #ffffff;
+  border: 1px solid var(--color-borde);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px -24px rgba(44, 62, 80, 0.45);
+}
+
+.title,
+.subtitle {
+  color: var(--color-primario);
+}
+
+.button.is-link {
+  background-color: var(--color-secundario);
+  border-color: var(--color-secundario);
+  color: #ffffff;
+}
+
+.button.is-link:hover {
+  background-color: #2587c7;
+  border-color: #2587c7;
+}
+
+.button.is-link.is-light {
+  background-color: rgba(52, 152, 219, 0.12);
+  border-color: rgba(52, 152, 219, 0.3);
+  color: var(--color-secundario);
+}
+
+.button.is-link.is-light:hover {
+  background-color: rgba(52, 152, 219, 0.2);
+}
+
+.table thead {
+  background-color: var(--color-primario);
+}
+
+.table thead th {
+  color: #ffffff;
+  border: none;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(52, 152, 219, 0.08);
+}
+
+.message.is-info .message-header {
+  background-color: var(--color-primario);
+  color: #ffffff;
+}
+
+.message.is-info .message-body {
+  border-color: rgba(44, 62, 80, 0.2);
+  color: var(--color-primario);
+}
+
+.select select,
+.input {
+  border-color: var(--color-borde);
+  color: var(--color-texto);
+}
+
+.select select:focus,
+.input:focus {
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 0.125em rgba(52, 152, 219, 0.25);
+}
+
+.navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.navbar-item.has-text-weight-semibold {
+  color: var(--color-primario);
+}
+
+.navbar-item.has-text-weight-semibold:hover {
+  color: var(--color-secundario);
+}

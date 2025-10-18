@@ -7,13 +7,53 @@
   export let etiquetas = [];
   /** @type {number[]} */
   export let valores = [];
-  /** @type {string[]} */
-  export let colores = ['#2c3e50', '#3498db', '#e74c3c', '#9b59b6'];
+  /** @type {string[] | null} */
+  export let colores = null;
 
   /** @type {HTMLCanvasElement | null} */
   let lienzo;
   /** @type {import('chart.js').Chart | null} */
   let instanciaGrafico;
+
+  /**
+   * Obtiene el valor de una variable CSS o devuelve un respaldo definido.
+   * Propósito: mantener la paleta corporativa incluso en SSR.
+   * @param {string} nombre
+   * @param {string} respaldo
+   */
+  const obtenerVariable = (nombre, respaldo) => {
+    if (typeof document === 'undefined') {
+      return respaldo;
+    }
+    const valor = getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+    return valor || respaldo;
+  };
+
+  /** @returns {string[]} */
+  const generarPaletaBase = () => {
+    if (Array.isArray(colores) && colores.length) {
+      return [...colores];
+    }
+    const primario = obtenerVariable('--color-primario', '#2c3e50');
+    const secundario = obtenerVariable('--color-secundario', '#3498db');
+    const acento = obtenerVariable('--color-acento', '#e74c3c');
+    const apoyo = obtenerVariable('--color-fondo', '#ecf0f1');
+    return [primario, secundario, acento, apoyo];
+  };
+
+  let paletaBase = generarPaletaBase();
+
+  /**
+   * Genera una lista de colores para cubrir todos los segmentos del gráfico.
+   * Propósito: reutilizar tonos de la marca sin importar la cantidad de categorías.
+   * @param {number} cantidad
+   */
+  const generarColoresGrafico = (cantidad) => {
+    const base = paletaBase.length ? paletaBase : ['#2c3e50', '#3498db', '#e74c3c', '#9b59b6'];
+    return Array.from({ length: cantidad }, (_, indice) => base[indice % base.length]);
+  };
+
+  let coloresGrafico = generarColoresGrafico(valores.length);
 
   // Esta función encapsula la creación del gráfico para mantener el código organizado
   // Propósito: centralizar la lógica de inicialización y reutilizarla cuando cambien los datos
@@ -21,6 +61,9 @@
     if (!lienzo) {
       return;
     }
+
+    paletaBase = generarPaletaBase();
+    coloresGrafico = generarColoresGrafico(valores.length);
 
     const colorTexto = typeof document !== 'undefined'
       ? getComputedStyle(document.documentElement).getPropertyValue('--color-texto') || '#2c3e50'
@@ -35,7 +78,7 @@
         datasets: [
           {
             data: valores,
-            backgroundColor: colores,
+            backgroundColor: coloresGrafico,
             borderColor: '#ffffff',
             borderWidth: 2
           }
@@ -71,9 +114,13 @@
     instanciaGrafico?.destroy();
   });
 
+  $: paletaBase = generarPaletaBase();
+  $: coloresGrafico = generarColoresGrafico(valores.length);
+
   $: if (instanciaGrafico) {
     instanciaGrafico.data.labels = [...etiquetas];
     instanciaGrafico.data.datasets[0].data = [...valores];
+    instanciaGrafico.data.datasets[0].backgroundColor = [...coloresGrafico];
     instanciaGrafico.update();
   }
 </script>
