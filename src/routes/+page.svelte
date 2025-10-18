@@ -44,17 +44,8 @@
           <a class="button is-link is-light is-medium" href="/asistente">Habla con el asistente</a>
         </div>
       </div>
-      <div class="column is-one-third">
-        <div class="paleta">
-          <p class="has-text-weight-semibold mb-3">Paleta SIGA</p>
-          <div class="chips">
-            <div class="chip" style="--chip-color: #03045e;">#03045E</div>
-            <div class="chip" style="--chip-color: #00b4d8;">#00B4D8</div>
-            <div class="chip" style="--chip-color: #80ffdb;">#80FFDB</div>
-            <div class="chip" style="--chip-color: #ffffff; color: #1b233f; border: 1px solid var(--color-borde);">#FFFFFF</div>
-          </div>
-          <p class="nota-paleta">Una identidad fresca y profesional lista para sorprender a tus clientes.</p>
-        </div>
+      <div class="column is-narrow has-text-centered">
+        <img src="/brand/Logo_SIGA.png" alt="Logo de SIGA" class="hero-logo" />
       </div>
     </div>
   </div>
@@ -114,45 +105,10 @@
     text-transform: uppercase;
   }
 
-  .paleta {
-    background-color: #ffffff;
-    border-radius: 20px;
-    padding: 1.75rem;
-    box-shadow: 0 15px 45px -32px rgba(3, 4, 94, 0.7);
-  }
-
-  .chips {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-
-  .chip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 14px;
-    background-color: var(--chip-color);
-    color: #ffffff;
-    font-weight: 600;
-    padding: 0.75rem 1rem;
-    box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.12);
-  }
-
-  .nota-paleta {
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: var(--color-primario);
-  }
-
-  @media screen and (max-width: 1023px) {
-    .hero-gradient {
-      padding: 2.25rem;
-    }
-
-    .chips {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .hero-logo {
+    max-width: 150px;
+    height: auto;
+    filter: drop-shadow(0 8px 16px rgba(3, 4, 94, 0.15));
   }
 
   @media screen and (max-width: 768px) {
@@ -160,8 +116,8 @@
       padding: 2rem;
     }
 
-    .chip {
-      font-size: 0.85rem;
+    .hero-logo {
+      max-width: 120px;
     }
   }
 </style>

@@ -12,7 +12,7 @@
 <nav class="navbar is-spaced" aria-label="Navegación principal">
   <div class="navbar-brand">
     <a class="navbar-item marca" href="/">
-      <span class="marca-icono">S</span>
+      <img src="/brand/Logo_SIGA.png" alt="Logo de SIGA" class="marca-logo" />
       <span class="marca-texto">SIGA</span>
     </a>
 
@@ -68,18 +68,10 @@
     letter-spacing: 0.12em;
   }
 
-  .marca-icono {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 0.85rem;
-    background: linear-gradient(135deg, var(--color-secundario), var(--color-acento));
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 1.15rem;
-    letter-spacing: 0.05em;
+  .marca-logo {
+    height: 2.5rem;
+    max-height: 2.5rem;
+    width: auto;
   }
 
   .marca-texto {
