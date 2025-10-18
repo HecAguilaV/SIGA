@@ -7,9 +7,9 @@
   export let etiquetas = [];
   /** @type {number[]} */
   export let valores = [];
-  /** @type {string | null} */
+  /** @type {string | string[] | null} */
   export let colorFondo = null;
-  /** @type {string | null} */
+  /** @type {string | string[] | null} */
   export let colorBorde = null;
 
   /** @type {HTMLCanvasElement | null} */
@@ -48,16 +48,53 @@
     return valor || respaldo;
   };
 
-  /** @returns {{ relleno: string; borde: string }} */
-  const calcularColores = () => {
+  /**
+   * Normaliza una entrada de color para devolver un arreglo homogéneo.
+   * @param {string | string[] | null} entrada
+   * @param {number} cantidad
+   */
+  const normalizarColores = (entrada, cantidad) => {
+    if (Array.isArray(entrada) && entrada.length) {
+      return Array.from({ length: cantidad }, (_, indice) => entrada[indice % entrada.length]);
+    }
+    if (typeof entrada === 'string' && entrada.trim()) {
+      return Array(cantidad).fill(entrada);
+    }
+    return null;
+  };
+
+  /**
+   * Calcula los colores del dataset con base en la paleta corporativa.
+   * Propósito: ofrecer barras contrastantes reutilizando colores de la marca.
+   * @param {number} cantidad
+   * @returns {{ relleno: string[]; borde: string[] }}
+   */
+  const calcularColores = (cantidad) => {
+    const rellenoPersonalizado = normalizarColores(colorFondo, cantidad);
+    const bordePersonalizado = normalizarColores(colorBorde, cantidad);
+
+    const primario = obtenerVariable('--color-primario', '#2c3e50');
     const secundario = obtenerVariable('--color-secundario', '#3498db');
+    const acento = obtenerVariable('--color-acento', '#e74c3c');
+    const apoyo = obtenerVariable('--color-borde', '#bdc3c7');
+
+    const paletaBase = [secundario, acento, primario, apoyo];
+
+    const rellenoAutomatico = Array.from({ length: cantidad }, (_, indice) =>
+      hexToRgba(paletaBase[indice % paletaBase.length], 0.72)
+    );
+
+    const bordeAutomatico = Array.from({ length: cantidad }, (_, indice) =>
+      hexToRgba(paletaBase[indice % paletaBase.length], 1)
+    );
+
     return {
-      relleno: colorFondo ?? hexToRgba(secundario, 0.65),
-      borde: colorBorde ?? hexToRgba(secundario, 1)
+      relleno: rellenoPersonalizado ?? rellenoAutomatico,
+      borde: bordePersonalizado ?? (rellenoPersonalizado ? rellenoPersonalizado : bordeAutomatico)
     };
   };
 
-  let coloresDataset = calcularColores();
+  let coloresDataset = calcularColores(etiquetas.length);
 
   // onMount crea la instancia del gráfico una vez que el componente está en el DOM
   // Propósito: inicializar Chart.js únicamente en el cliente y garantizar que el gráfico se dibuje correctamente
@@ -66,7 +103,7 @@
       return;
     }
 
-    coloresDataset = calcularColores();
+  coloresDataset = calcularColores(etiquetas.length);
     const colorTexto = typeof document !== 'undefined'
       ? getComputedStyle(document.documentElement).getPropertyValue('--color-texto') || '#2c3e50'
       : '#2c3e50';
@@ -81,8 +118,8 @@
           {
             label: titulo,
             data: valores,
-            backgroundColor: coloresDataset.relleno,
-            borderColor: coloresDataset.borde,
+            backgroundColor: [...coloresDataset.relleno],
+            borderColor: [...coloresDataset.borde],
             borderWidth: 1,
             borderRadius: 6
           }
@@ -127,14 +164,14 @@
     instanciaGrafico?.destroy();
   });
 
-  $: coloresDataset = calcularColores();
+  $: coloresDataset = calcularColores(etiquetas.length);
 
   // Reaccionamos ante cambios en las props para mantener el gráfico sincronizado
   $: if (instanciaGrafico) {
     instanciaGrafico.data.labels = [...etiquetas];
     instanciaGrafico.data.datasets[0].data = [...valores];
-    instanciaGrafico.data.datasets[0].backgroundColor = coloresDataset.relleno;
-    instanciaGrafico.data.datasets[0].borderColor = coloresDataset.borde;
+  instanciaGrafico.data.datasets[0].backgroundColor = [...coloresDataset.relleno];
+  instanciaGrafico.data.datasets[0].borderColor = [...coloresDataset.borde];
     instanciaGrafico.update();
   }
 </script>

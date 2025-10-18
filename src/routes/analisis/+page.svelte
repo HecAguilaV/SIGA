@@ -5,6 +5,8 @@
   let localSeleccionado = 0;
   let mostrarExplicacion = false;
 
+  /** @typedef {{ localId: number; productoId: number; cantidad: number; producto: { id: number; nombre: string; sku: string; categoria: string; stock: Record<number, number> } }} VentaEnriquecida */
+
   $: localesDisponibles = $datosNegocio.locales ?? [];
   $: {
     if (!localSeleccionado && localesDisponibles.length) {
@@ -12,27 +14,44 @@
     }
   }
 
-  $: productosLocal = ($datosNegocio.productos ?? []).filter((producto) => {
-    const stockPorLocal = /** @type {Record<string, number>} */ (producto.stock ?? {});
-    return (stockPorLocal[String(localSeleccionado)] ?? 0) > 0;
-  });
+  $: productosPorId = new Map(($datosNegocio.productos ?? []).map((producto) => [producto.id, producto]));
 
-  $: ventasFiltradas = ($datosNegocio.ventasSemana ?? []).filter((venta) =>
-    productosLocal.some((producto) => producto.id === venta.productoId)
+  $: ventasFiltradas = /** @type {VentaEnriquecida[]} */ (
+    ($datosNegocio.ventasSemana ?? [])
+      .filter((venta) => venta.localId === localSeleccionado)
+      .map((venta) => {
+        const producto = productosPorId.get(venta.productoId);
+        if (!producto) {
+          return null;
+        }
+        return { ...venta, producto };
+      })
+      .filter((venta) => venta !== null)
+      .map((venta) => /** @type {VentaEnriquecida} */ (venta))
   );
 
-  $: etiquetas = ventasFiltradas.map((venta) => {
-    const producto = productosLocal.find((prod) => prod.id === venta.productoId);
-    return producto ? producto.nombre : `Producto ${venta.productoId}`;
-  });
+  $: ventasOrdenadas = [...ventasFiltradas].sort((a, b) => b.cantidad - a.cantidad);
 
-  $: valores = ventasFiltradas.map((venta) => venta.cantidad);
+  $: etiquetas = ventasOrdenadas.map((venta) => venta.producto.nombre);
+
+  $: valores = ventasOrdenadas.map((venta) => venta.cantidad);
 
   $: nombreLocal = (localesDisponibles.find((local) => local.id === localSeleccionado) ?? {}).nombre ?? `Local ${localSeleccionado}`;
 
-  $: textoExplicacion = `Durante la última semana, los productos con mayor rotación fueron Bebida Fantasía y Papas Fritas.
-  Esto indica que ${nombreLocal} necesita reposiciones frecuentes en bebidas y snacks para evitar quiebres.
-  Recomendamos programar abastecimientos cada dos días y revisar promociones activas.`;
+  $: totalSemanal = ventasOrdenadas.reduce((acumulado, venta) => acumulado + venta.cantidad, 0);
+  $: promedioVenta = ventasOrdenadas.length ? Math.round(totalSemanal / ventasOrdenadas.length) : 0;
+  $: topUno = ventasOrdenadas[0];
+  $: topDos = ventasOrdenadas[1];
+
+  $: textoExplicacion = ventasOrdenadas.length
+    ? (() => {
+        const fraseTopDos = topDos
+          ? `Le siguió ${topDos.producto.nombre} con ${topDos.cantidad} unidades, confirmando la demanda en ${topDos.producto.categoria.toLowerCase()}.`
+          : 'Refuerza el surtido de los productos líderes para sostener el ritmo de venta.';
+        return `En ${nombreLocal}, el producto con mayor rotación fue ${topUno.producto.nombre} con ${topUno.cantidad} unidades. ${fraseTopDos}
+        El total semanal alcanzó ${totalSemanal} unidades y el promedio por referencia fue de ${promedioVenta}. Programa reposiciones priorizando estas categorías para evitar quiebres locales.`;
+      })()
+    : `Aún no registramos ventas para ${nombreLocal} en la última semana. Revisa la configuración del local o programa acciones comerciales para activar la demanda.`;
 
   /**
    * Convierte el valor del select en número para mantener la coherencia del estado.
