@@ -1,15 +1,6 @@
 <p align="center">
   <img src="brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
 </p>
-<p align="center">
-  <img src="https://img.shields.io/badge/Coraz%C3%B3n_de-SIGA-00B4D8?style=for-the-badge&labelColor=03045E" />
-  <img src="https://img.shields.io/badge/Visi%C3%B3n-El_tiempo_es_la_moneda-80FFDB?style=for-the-badge&labelColor=03045E" />
-</p>
-<hr />
-
-<p align="center">
-  <img src="brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
-</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Coraz%C3%B3n_de-SIGA-00B4D8?style=for-the-badge&labelColor=03045E" />
