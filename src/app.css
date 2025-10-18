@@ -1,11 +1,11 @@
 /* Variables de color de la marca SIGA - Estética limpia, profesional, sobria y vanguardista */
 :root {
-  --color-primario: #2c3e50; /* Azul oscuro para elementos principales */
-  --color-secundario: #3498db; /* Azul claro para acentos */
-  --color-acento: #e74c3c; /* Rojo para alertas o botones importantes */
-  --color-fondo: #ecf0f1; /* Gris claro para fondos */
-  --color-texto: #2c3e50; /* Texto en azul oscuro */
-  --color-borde: #bdc3c7; /* Bordes suaves */
+  --color-primario: #03045e; /* Azul profundo corporativo */
+  --color-secundario: #00b4d8; /* Turquesa para énfasis */
+  --color-acento: #80ffdb; /* Verde aqua para detalles */
+  --color-fondo: #f6f9fc; /* Blanco cálido de fondo */
+  --color-texto: #1b233f; /* Texto en azul grisáceo */
+  --color-borde: #dbe4f0; /* Bordes suaves claros */
 }
 
 /* Importar Bulma CSS */
@@ -40,8 +40,8 @@ a:hover {
 .box {
   background-color: #ffffff;
   border: 1px solid var(--color-borde);
-  border-radius: 16px;
-  box-shadow: 0 20px 40px -24px rgba(44, 62, 80, 0.45);
+  border-radius: 18px;
+  box-shadow: 0 24px 50px -30px rgba(3, 4, 94, 0.45);
 }
 
 .title,
@@ -50,28 +50,29 @@ a:hover {
 }
 
 .button.is-link {
-  background-color: var(--color-secundario);
-  border-color: var(--color-secundario);
+  background: linear-gradient(135deg, var(--color-secundario), #38d9ff);
+  border-color: transparent;
   color: #ffffff;
+  box-shadow: 0 10px 20px -12px rgba(0, 180, 216, 0.8);
 }
 
 .button.is-link:hover {
-  background-color: #2587c7;
-  border-color: #2587c7;
+  background: linear-gradient(135deg, #0295c2, #23c6ff);
+  border-color: transparent;
 }
 
 .button.is-link.is-light {
-  background-color: rgba(52, 152, 219, 0.12);
-  border-color: rgba(52, 152, 219, 0.3);
+  background-color: rgba(0, 180, 216, 0.12);
+  border-color: rgba(0, 180, 216, 0.3);
   color: var(--color-secundario);
 }
 
 .button.is-link.is-light:hover {
-  background-color: rgba(52, 152, 219, 0.2);
+  background-color: rgba(0, 180, 216, 0.18);
 }
 
 .table thead {
-  background-color: var(--color-primario);
+  background: linear-gradient(135deg, var(--color-primario), #142482);
 }
 
 .table thead th {
@@ -84,7 +85,7 @@ a:hover {
 }
 
 .message.is-info .message-header {
-  background-color: var(--color-primario);
+  background: linear-gradient(135deg, var(--color-primario), #06166c);
   color: #ffffff;
 }
 
@@ -108,6 +109,7 @@ a:hover {
 .navbar {
   background-color: #ffffff;
   border-bottom: 1px solid var(--color-borde);
+  box-shadow: 0 12px 30px -24px rgba(3, 4, 94, 0.6);
 }
 
 .navbar-item.has-text-weight-semibold {
@@ -116,4 +118,19 @@ a:hover {
 
 .navbar-item.has-text-weight-semibold:hover {
   color: var(--color-secundario);
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, rgba(0, 180, 216, 0.16), rgba(128, 255, 219, 0.14));
+  border-radius: 28px;
+  padding: 3rem;
+  box-shadow: 0 30px 70px -45px rgba(3, 4, 94, 0.6);
+}
+
+.heading-gradient {
+  background: linear-gradient(135deg, var(--color-secundario), var(--color-acento));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }

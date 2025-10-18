@@ -11,8 +11,9 @@
 
 <nav class="navbar is-spaced" aria-label="Navegación principal">
   <div class="navbar-brand">
-    <a class="navbar-item has-text-weight-semibold" href="/">
-      SIGA Prototype
+    <a class="navbar-item marca" href="/">
+      <span class="marca-icono">S</span>
+      <span class="marca-texto">SIGA</span>
     </a>
 
     <button
@@ -39,13 +40,13 @@
 
   <div id="navbar-menu" class="navbar-menu">
     <div class="navbar-start">
-      <a class={`navbar-item ${esActivo('/', $rutaActual) ? 'is-active has-text-weight-semibold' : ''}`} href="/">
+      <a class={`navbar-item enlace ${esActivo('/', $rutaActual) ? 'is-active' : ''}`} href="/">
         Inventario
       </a>
-      <a class={`navbar-item ${esActivo('/analisis', $rutaActual) ? 'is-active has-text-weight-semibold' : ''}`} href="/analisis">
+      <a class={`navbar-item enlace ${esActivo('/analisis', $rutaActual) ? 'is-active' : ''}`} href="/analisis">
         Análisis
       </a>
-      <a class={`navbar-item ${esActivo('/asistente', $rutaActual) ? 'is-active has-text-weight-semibold' : ''}`} href="/asistente">
+      <a class={`navbar-item enlace ${esActivo('/asistente', $rutaActual) ? 'is-active' : ''}`} href="/asistente">
         Asistente
       </a>
     </div>
@@ -54,12 +55,70 @@
 
 <style>
   nav {
-    background-color: var(--color-fondo);
-    border-bottom: 1px solid var(--color-borde);
+    background-color: #ffffff;
   }
 
-  .navbar-item.is-active {
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 700;
+    color: var(--color-primario);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .marca-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.85rem;
+    background: linear-gradient(135deg, var(--color-secundario), var(--color-acento));
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.05em;
+  }
+
+  .marca-texto {
+    font-size: 1.2rem;
+    color: var(--color-primario);
+  }
+
+  .enlace {
+    position: relative;
+    font-weight: 600;
+    color: var(--color-primario);
+    transition: color 0.2s ease;
+  }
+
+  .enlace::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0.35rem;
+    width: 0;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--color-secundario), var(--color-acento));
+    transition: width 0.2s ease;
+  }
+
+  .enlace:hover {
     color: var(--color-secundario);
-    border-bottom: 2px solid var(--color-secundario);
+  }
+
+  .enlace:hover::after {
+    width: 100%;
+  }
+
+  .enlace.is-active {
+    color: var(--color-secundario);
+  }
+
+  .enlace.is-active::after {
+    width: 100%;
   }
 </style>
