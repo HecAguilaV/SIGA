@@ -1,0 +1,12 @@
+# Dependencias y build locales
+node_modules/
+.svelte-kit/
+build/
+
+# Entornos
+.env
+.env.*
+
+# Sistema
+.DS_Store
+Thumbs.db

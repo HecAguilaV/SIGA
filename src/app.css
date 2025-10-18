@@ -1,0 +1,14 @@
+/* Variables de color de la marca SIGA - Estética limpia, profesional, sobria y vanguardista */
+:root {
+  --color-primario: #2c3e50; /* Azul oscuro para elementos principales */
+  --color-secundario: #3498db; /* Azul claro para acentos */
+  --color-acento: #e74c3c; /* Rojo para alertas o botones importantes */
+  --color-fondo: #ecf0f1; /* Gris claro para fondos */
+  --color-texto: #2c3e50; /* Texto en azul oscuro */
+  --color-borde: #bdc3c7; /* Bordes suaves */
+}
+
+/* Importar Bulma CSS */
+@import 'bulma/css/bulma.min.css';
+
+/* Estilos globales adicionales si es necesario */
