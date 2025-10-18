@@ -87,8 +87,8 @@
 
 <section class="section">
   <div class="box">
-    <h1 class="title has-text-weight-semibold">Asistente Inteligente</h1>
-    <p class="subtitle">Conversa con SIGA y recibe recomendaciones accionables en segundos.</p>
+    <h1 class="title has-text-weight-semibold">Asistente con IA</h1>
+    <p class="subtitle">Pregunta lo que necesites. SIGA usa IA real para recomendaciones sin esperas.</p>
 
     <div class="chat-container">
       <div class="mensajes">

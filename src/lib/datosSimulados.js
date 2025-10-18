@@ -10,9 +10,9 @@ export const datosNegocio = writable({
   // Lista de locales disponibles en el negocio
   // Cada local tiene un id único y un nombre descriptivo
   locales: [
-    { id: 1, nombre: 'Kiosko Central' },
-    { id: 2, nombre: 'Kiosko Ingeniería' },
-    { id: 3, nombre: 'Bodega Principal' }
+    { id: 1, nombre: 'ITR' },
+    { id: 2, nombre: 'Presidente Ibañez' },
+    { id: 3, nombre: 'Serena' }
   ],
 
   // Lista de productos disponibles
@@ -31,18 +31,30 @@ export const datosNegocio = writable({
   // Datos de ventas semanales por local
   // Cada registro indica cuánto vendió un local de un producto específico
   ventasSemana: [
-    { localId: 1, productoId: 102, cantidad: 42 },
-    { localId: 1, productoId: 107, cantidad: 38 },
-    { localId: 1, productoId: 103, cantidad: 24 },
-    { localId: 1, productoId: 105, cantidad: 19 },
-    { localId: 2, productoId: 101, cantidad: 28 },
-    { localId: 2, productoId: 102, cantidad: 33 },
-    { localId: 2, productoId: 106, cantidad: 25 },
-    { localId: 2, productoId: 104, cantidad: 20 },
-    { localId: 3, productoId: 102, cantidad: 52 },
-    { localId: 3, productoId: 107, cantidad: 47 },
-    { localId: 3, productoId: 103, cantidad: 36 },
-    { localId: 3, productoId: 106, cantidad: 32 }
+    // ITR - Vende mucho café y bebidas
+    { localId: 1, productoId: 107, cantidad: 58 },
+    { localId: 1, productoId: 102, cantidad: 52 },
+    { localId: 1, productoId: 103, cantidad: 38 },
+    { localId: 1, productoId: 105, cantidad: 28 },
+    { localId: 1, productoId: 104, cantidad: 22 },
+    { localId: 1, productoId: 101, cantidad: 15 },
+    { localId: 1, productoId: 106, cantidad: 18 },
+    // Presidente Ibañez - Vende mucho sándwich e integralidad
+    { localId: 2, productoId: 105, cantidad: 52 },
+    { localId: 2, productoId: 104, cantidad: 48 },
+    { localId: 2, productoId: 101, cantidad: 42 },
+    { localId: 2, productoId: 102, cantidad: 35 },
+    { localId: 2, productoId: 107, cantidad: 28 },
+    { localId: 2, productoId: 106, cantidad: 32 },
+    { localId: 2, productoId: 103, cantidad: 22 },
+    // Serena - Vende de todo mucho volumen
+    { localId: 3, productoId: 102, cantidad: 68 },
+    { localId: 3, productoId: 107, cantidad: 62 },
+    { localId: 3, productoId: 103, cantidad: 52 },
+    { localId: 3, productoId: 106, cantidad: 48 },
+    { localId: 3, productoId: 104, cantidad: 42 },
+    { localId: 3, productoId: 105, cantidad: 38 },
+    { localId: 3, productoId: 101, cantidad: 32 }
   ],
 
   // Datos de mermas mensuales por categoria
@@ -52,5 +64,50 @@ export const datosNegocio = writable({
     { categoria: 'Bebidas', cantidad: 5 },
     { categoria: 'Snacks', cantidad: 4 },
     { categoria: 'Sándwiches', cantidad: 3 }
+  ],
+
+  // Datos de ventas diarias para los últimos 7 días
+  // Permite visualizar tendencias de venta por día
+  ventasPorDia: [
+    { dia: 'Lunes', totalVentas: 145 },
+    { dia: 'Martes', totalVentas: 174 },
+    { dia: 'Miércoles', totalVentas: 134 },
+    { dia: 'Jueves', totalVentas: 188 },
+    { dia: 'Viernes', totalVentas: 205 },
+    { dia: 'Sábado', totalVentas: 177 },
+    { dia: 'Domingo', totalVentas: 150 }
+  ],
+
+  // Datos de ventas diarias por local (últimos 7 días)
+  // Permite comparar desempeño entre kioskos
+  ventasPorDiaYLocal: [
+    // Lunes - todos trabajan bien
+    { dia: 'Lunes', local: 1, ventas: 52 },
+    { dia: 'Lunes', local: 2, ventas: 35 },
+    { dia: 'Lunes', local: 3, ventas: 58 },
+    // Martes - Presidente Ibañez tiene su mejor día
+    { dia: 'Martes', local: 1, ventas: 48 },
+    { dia: 'Martes', local: 2, ventas: 72 },
+    { dia: 'Martes', local: 3, ventas: 54 },
+    // Miércoles - normalito
+    { dia: 'Miércoles', local: 1, ventas: 44 },
+    { dia: 'Miércoles', local: 2, ventas: 38 },
+    { dia: 'Miércoles', local: 3, ventas: 52 },
+    // Jueves - Presidente Ibañez vuelve a pegar fuerte
+    { dia: 'Jueves', local: 1, ventas: 56 },
+    { dia: 'Jueves', local: 2, ventas: 68 },
+    { dia: 'Jueves', local: 3, ventas: 64 },
+    // Viernes - buen día para todos
+    { dia: 'Viernes', local: 1, ventas: 68 },
+    { dia: 'Viernes', local: 2, ventas: 62 },
+    { dia: 'Viernes', local: 3, ventas: 75 },
+    // Sábado - ITR y Serena trabajan, Presidente Ibañez CERRADO
+    { dia: 'Sábado', local: 1, ventas: 85 },
+    { dia: 'Sábado', local: 2, ventas: 0 },
+    { dia: 'Sábado', local: 3, ventas: 92 },
+    // Domingo - ITR y Serena trabajan menos, Presidente Ibañez CERRADO
+    { dia: 'Domingo', local: 1, ventas: 72 },
+    { dia: 'Domingo', local: 2, ventas: 0 },
+    { dia: 'Domingo', local: 3, ventas: 78 }
   ]
 });

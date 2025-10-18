@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { get } from 'svelte/store';
-import { datosNegocio } from '$lib/datosSimulados.js';
+import { datosGlobales } from '$lib/estado-compartido.js';
 import { env } from '$env/dynamic/private';
 
 /**
@@ -10,14 +9,40 @@ import { env } from '$env/dynamic/private';
  * @returns {string}
  */
 const construirPrompt = (preguntaUsuario) => {
-  const datos = get(datosNegocio);
-  const contextoSerializado = JSON.stringify(datos, null, 2);
+  const datos = datosGlobales;
+  
+  // Resumen muy conciso de los datos (evitar JSON gigante)
+  const locales = datos.locales?.map((l) => `${l.nombre} (ID: ${l.id})`).join(', ') || 'N/A';
+  const productos = datos.productos?.map((p) => `${p.nombre} (${p.categoria})`).slice(0, 10).join(', ') || 'N/A';
+  const ventasPromedio = datos.ventasSemana?.map((v) => v.cantidad).reduce((a, b) => a + b, 0) || 0;
 
-  return `Persona: Eres SIGA, un asistente de IA experto en gestión de inventario para PYMES. Eres amable, directo y tu único objetivo es ayudar al usuario a ahorrar tiempo.
-Contexto (Datos): Basa tu respuesta únicamente en los siguientes datos de inventario y ventas: ${contextoSerializado}.
-Instrucción Especial: Si el usuario te pide un "gráfico de mermas", tu única respuesta debe ser la palabra [GRAFICO_MERMAS].
-Instrucción de Seguridad: Si el usuario pregunta algo que no tiene que ver con la gestión del negocio (inventario, ventas, productos), recuérdale amablemente que estás aquí para ayudarle a que su negocio "siga avanzando" y no puedes responder a eso.
-Pregunta del Usuario: ${preguntaUsuario}`;
+  return `Eres SIGA, asistente inteligente de gestión de inventario. Sé conciso y amigable. NUNCA muestres JSON al usuario.
+
+📊 CONTEXTO:
+- Locales: ${locales}
+- Productos existentes: ${productos}
+- Total ventas semanal: ${ventasPromedio} unidades
+- Todos los datos: ${JSON.stringify(datos)}
+
+🎯 REGLAS IMPORTANTES:
+1. Si piden agregar stock a un producto INEXISTENTE:
+   - PRIMERO crea el producto (guesa la categoría si no la menciona - ej: "Panadería", "Bebidas")
+   - LUEGO agrega el stock en 2 operaciones CRUD separadas
+   
+2. Responde SIEMPRE en máximo 2 líneas, amigable y natural
+   - ✅ "Listo, agregué 15 rollos de canela a ITR"
+   - ❌ No muestres JSON ni tecnicismos
+
+3. CRUD: Si necesitas ejecutar operaciones, responde entre [CRUD_START] y [CRUD_END]
+   - Para múltiples operaciones, usa MÚLTIPLES bloques [CRUD_START]...[CRUD_END]
+   
+🔄 FORMATOS CRUD:
+- Crear: {"accion": "crear_producto", "nombre": "Canela", "categoria": "Panadería"}
+- Agregar stock: {"accion": "agregar_stock", "producto": "Canela", "local": "ITR", "cantidad": 15}
+- Reducir stock: {"accion": "reducir_stock", "producto": "Pan", "local": "Serena", "cantidad": 5}
+- Gráficos: [GRAFICO_TORTA], [GRAFICO_BARRAS], [GRAFICO_LINEAS]
+
+Pregunta del usuario: ${preguntaUsuario}`;
 };
 
 /**
@@ -29,7 +54,7 @@ Pregunta del Usuario: ${preguntaUsuario}`;
  */
 const invocarGemini = async (prompt, apiKey, fetchFn) => {
   const respuesta = await fetchFn(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: {
@@ -61,7 +86,7 @@ export const POST = async ({ request, fetch }) => {
     const apiKey = env.GEMINI_API_KEY;
     if (!apiKey) {
       console.warn('GEMINI_API_KEY no está configurada en las variables de entorno.');
-      return json({ respuesta: 'La configuración del asistente no está completa. Agrega la variable GEMINI_API_KEY en Vercel.' }, { status: 500 });
+      return json({ respuesta: 'La configuración del asistente no está completa. Agrega la variable GEMINI_API_KEY en tu .env.local' }, { status: 500 });
     }
 
     const body = await request.json();
