@@ -22,5 +22,8 @@
   "dependencies": {
     "bulma": "^1.0.2",
     "chart.js": "^4.4.6"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
