@@ -10,3 +10,6 @@ build/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Archivos Locales
+/CHALLA
