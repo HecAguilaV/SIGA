@@ -1,16 +1,16 @@
 <script>
-  import { page } from '$app/stores';
-  import { derived } from 'svelte/store';
-  import { onMount } from 'svelte';
-  import { datosNegocio } from '$lib/datosSimulados.js';
-  import GraficoTorta from './GraficoTorta.svelte';
-  import GraficoBarras from './GraficoBarras.svelte';
-  import GraficoLineas from './GraficoLineas.svelte';
+  import { page } from "$app/stores";
+  import { derived } from "svelte/store";
+  import { onMount } from "svelte";
+  import { datosNegocio } from "$lib/datosSimulados.js";
+  import GraficoTorta from "./GraficoTorta.svelte";
+  import GraficoBarras from "./GraficoBarras.svelte";
+  import GraficoLineas from "./GraficoLineas.svelte";
 
   let estaAbierto = false;
-  let mensajeUsuario = '';
+  let mensajeUsuario = "";
   let estaPensando = false;
-  let mensajeError = '';
+  let mensajeError = "";
   let posX = 0;
   let posY = 0;
   let estaArrastrando = false;
@@ -36,10 +36,11 @@
 
   $: contextoActual = (() => {
     const ruta = $rutaActual;
-    if (ruta === '/') return 'El usuario está viendo el inventario. ';
-    if (ruta === '/analisis') return 'El usuario está viendo análisis de ventas. ';
-    if (ruta === '/acerca') return 'El usuario está leyendo sobre SIGA. ';
-    return '';
+    if (ruta === "/") return "El usuario está viendo el inventario. ";
+    if (ruta === "/analisis")
+      return "El usuario está viendo análisis de ventas. ";
+    if (ruta === "/acerca") return "El usuario está leyendo sobre SIGA. ";
+    return "";
   })();
 
   /**
@@ -47,22 +48,22 @@
    */
   const posicionarPanelAlLado = () => {
     if (!botonToggle) return;
-    
+
     const rect = botonToggle.getBoundingClientRect();
     const anchoPanel = 380;
     const altoPanel = 500;
-    
+
     let x = rect.left - anchoPanel - 20;
     let y = rect.top;
-    
+
     if (x < 0) {
       x = rect.right + 20;
     }
-    
-    if (y + altoPanel > window.innerHeight) {
+
+    if (typeof window !== "undefined" && y + altoPanel > window.innerHeight) {
       y = window.innerHeight - altoPanel - 20;
     }
-    
+
     posX = Math.max(0, x);
     posY = Math.max(0, y);
   };
@@ -80,42 +81,45 @@
    */
   const procesarCRUD = async (crud) => {
     try {
-      if (crud.accion === 'crear_producto') {
-        const res = await fetch('/api/productos/crear', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+      if (crud.accion === "crear_producto") {
+        const res = await fetch("/api/productos/crear", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             nombre: crud.nombre,
             categoria: crud.categoria,
-            sku: crud.sku
-          })
+            sku: crud.sku,
+          }),
         });
         const datos = await res.json();
         if (datos.success && datos.datos) {
-          console.log('✅ Producto creado:', datos.producto);
+          console.log("✅ Producto creado:", datos.producto);
           // Actualizar la store con los datos nuevos
           datosNegocio.set(datos.datos);
         }
-      } else if (crud.accion === 'agregar_stock' || crud.accion === 'reducir_stock') {
-        const res = await fetch('/api/inventario/actualizar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+      } else if (
+        crud.accion === "agregar_stock" ||
+        crud.accion === "reducir_stock"
+      ) {
+        const res = await fetch("/api/inventario/actualizar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             producto: crud.producto,
             local: crud.local,
             cantidad: crud.cantidad,
-            accion: crud.accion === 'agregar_stock' ? 'agregar' : 'reducir'
-          })
+            accion: crud.accion === "agregar_stock" ? "agregar" : "reducir",
+          }),
         });
         const datos = await res.json();
         if (datos.success && datos.datos) {
-          console.log('✅ Stock actualizado:', datos.mensaje);
+          console.log("✅ Stock actualizado:", datos.mensaje);
           // Actualizar la store con los datos nuevos
           datosNegocio.set(datos.datos);
         }
       }
     } catch (error) {
-      console.error('Error procesando CRUD:', error);
+      console.error("Error procesando CRUD:", error);
     }
   };
 
@@ -125,94 +129,103 @@
 
     mensajes = [
       ...mensajes,
-      { id: crypto.randomUUID(), emisor: 'usuario', tipo: 'texto', contenido }
+      { id: crypto.randomUUID(), emisor: "usuario", tipo: "texto", contenido },
     ];
-    mensajeUsuario = '';
+    mensajeUsuario = "";
     estaPensando = true;
-    mensajeError = '';
+    mensajeError = "";
 
     try {
-      const respuesta = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const respuesta = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mensaje: contextoActual + contenido
-        })
+          mensaje: contextoActual + contenido,
+        }),
       });
 
       if (!respuesta.ok) {
-        throw new Error('No fue posible conectar con SIGA.');
+        throw new Error("No fue posible conectar con SIGA.");
       }
 
       const datos = await respuesta.json();
-      const textoIA = datos.respuesta ?? 'Estoy aquí para ayudarte.';
+      const textoIA = datos.respuesta ?? "Estoy aquí para ayudarte.";
 
       // Detectar si pide un gráfico
-      if (textoIA.includes('[GRAFICO_TORTA]')) {
+      if (textoIA.includes("[GRAFICO_TORTA]")) {
         mensajes = [
           ...mensajes,
           {
             id: crypto.randomUUID(),
-            emisor: 'siga',
-            tipo: 'grafico',
+            emisor: "siga",
+            tipo: "grafico",
             grafico: {
-              tipo: 'torta',
-              titulo: 'Distribución de mermas por categoría',
-              etiquetas: ['Lácteos', 'Bebidas', 'Snacks', 'Sándwiches'],
-              valores: [12, 5, 4, 3]
-            }
-          }
+              tipo: "torta",
+              titulo: "Distribución de mermas por categoría",
+              etiquetas: ["Lácteos", "Bebidas", "Snacks", "Sándwiches"],
+              valores: [12, 5, 4, 3],
+            },
+          },
         ];
-      } else if (textoIA.includes('[GRAFICO_BARRAS]')) {
+      } else if (textoIA.includes("[GRAFICO_BARRAS]")) {
         mensajes = [
           ...mensajes,
           {
             id: crypto.randomUUID(),
-            emisor: 'siga',
-            tipo: 'grafico',
+            emisor: "siga",
+            tipo: "grafico",
             grafico: {
-              tipo: 'barras',
-              titulo: 'Ventas por categoría',
-              etiquetas: ['Lácteos', 'Bebidas', 'Snacks', 'Sándwiches'],
-              valores: [45, 62, 38, 24]
-            }
-          }
+              tipo: "barras",
+              titulo: "Ventas por categoría",
+              etiquetas: ["Lácteos", "Bebidas", "Snacks", "Sándwiches"],
+              valores: [45, 62, 38, 24],
+            },
+          },
         ];
-      } else if (textoIA.includes('[GRAFICO_LINEAS]')) {
+      } else if (textoIA.includes("[GRAFICO_LINEAS]")) {
         mensajes = [
           ...mensajes,
           {
             id: crypto.randomUUID(),
-            emisor: 'siga',
-            tipo: 'grafico',
+            emisor: "siga",
+            tipo: "grafico",
             grafico: {
-              tipo: 'lineas',
-              titulo: 'Tendencia de ventas por día',
-              etiquetas: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-              valores: [124, 132, 118, 156, 189, 241, 203]
-            }
-          }
+              tipo: "lineas",
+              titulo: "Tendencia de ventas por día",
+              etiquetas: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+              valores: [124, 132, 118, 156, 189, 241, 203],
+            },
+          },
         ];
       }
 
       const textoLimpio = textoIA
-        .replace(/\[CRUD_START\][\s\S]*?\[CRUD_END\]/g, '')
-        .replace('[GRAFICO_TORTA]', '')
-        .replace('[GRAFICO_BARRAS]', '')
-        .replace('[GRAFICO_LINEAS]', '')
+        .replace(/\[CRUD_START\][\s\S]*?\[CRUD_END\]/g, "")
+        .replace("[GRAFICO_TORTA]", "")
+        .replace("[GRAFICO_BARRAS]", "")
+        .replace("[GRAFICO_LINEAS]", "")
         .trim();
 
       // Detectar y procesar MÚLTIPLES CRUD
-      const crudMatches = textoIA.match(/\[CRUD_START\]([\s\S]*?)\[CRUD_END\]/g);
+      const crudMatches = textoIA.match(
+        /\[CRUD_START\]([\s\S]*?)\[CRUD_END\]/g,
+      );
       if (crudMatches && crudMatches.length > 0) {
         for (const match of crudMatches) {
-          const crudContent = match.replace(/\[CRUD_START\]|\[CRUD_END\]/g, '').trim();
+          const crudContent = match
+            .replace(/\[CRUD_START\]|\[CRUD_END\]/g, "")
+            .trim();
           try {
             const crudJSON = JSON.parse(crudContent);
             await procesarCRUD(crudJSON);
-            console.log('✅ CRUD procesado:', crudJSON.accion);
+            console.log("✅ CRUD procesado:", crudJSON.accion);
           } catch (error) {
-            console.error('Error parsando CRUD:', error, 'Contenido:', crudContent);
+            console.error(
+              "Error parsando CRUD:",
+              error,
+              "Contenido:",
+              crudContent,
+            );
           }
         }
       }
@@ -220,12 +233,17 @@
       if (textoLimpio) {
         mensajes = [
           ...mensajes,
-          { id: crypto.randomUUID(), emisor: 'siga', tipo: 'texto', contenido: textoLimpio }
+          {
+            id: crypto.randomUUID(),
+            emisor: "siga",
+            tipo: "texto",
+            contenido: textoLimpio,
+          },
         ];
       }
     } catch (error) {
       console.error(error);
-      mensajeError = 'No pudimos obtener la respuesta. Intenta nuevamente.';
+      mensajeError = "No pudimos obtener la respuesta. Intenta nuevamente.";
     } finally {
       estaPensando = false;
       // Devolver el focus al input después de enviar
@@ -252,11 +270,11 @@
     if (evento.button !== 0) return; // Solo click izquierdo
     estaArrastrando = true;
     if (!panelElement) return;
-    
+
     const rect = panelElement.getBoundingClientRect();
     offsetX = evento.clientX - rect.left;
     offsetY = evento.clientY - rect.top;
-    console.log('✋ Arrastrando iniciado en:', offsetX, offsetY);
+    console.log("✋ Arrastrando iniciado en:", offsetX, offsetY);
   };
 
   /**
@@ -268,8 +286,12 @@
     const nuevaX = evento.clientX - offsetX;
     const nuevaY = evento.clientY - offsetY;
 
-    const maxX = window.innerWidth - panelElement.offsetWidth;
-    const maxY = window.innerHeight - panelElement.offsetHeight;
+    const maxX =
+      (typeof window !== "undefined" ? window.innerWidth : 1000) -
+      panelElement.offsetWidth;
+    const maxY =
+      (typeof window !== "undefined" ? window.innerHeight : 1000) -
+      panelElement.offsetHeight;
 
     posX = Math.max(0, Math.min(nuevaX, maxX));
     posY = Math.max(0, Math.min(nuevaY, maxY));
@@ -284,26 +306,29 @@
    */
   const inicializarVoz = () => {
     // @ts-ignore
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    const SpeechRecognition =
+      typeof window !== "undefined" &&
+      (window.webkitSpeechRecognition || window.SpeechRecognition);
     if (!SpeechRecognition) {
-      mensajeError = '❌ Tu navegador no soporta entrada de voz. Usa Chrome, Edge o Safari.';
+      mensajeError =
+        "❌ Tu navegador no soporta entrada de voz. Usa Chrome, Edge o Safari.";
       return;
     }
 
     try {
       reconocimiento = new SpeechRecognition();
-      reconocimiento.lang = 'es-ES';
+      reconocimiento.lang = "es-ES";
       reconocimiento.continuous = false;
       reconocimiento.interimResults = false;
 
       reconocimiento.onstart = () => {
         estamosUsandoVoz = true;
-        mensajeError = '';
+        mensajeError = "";
       };
 
       // @ts-ignore
       reconocimiento.onresult = (evento) => {
-        let textoTranscrito = '';
+        let textoTranscrito = "";
         for (let i = evento.resultIndex; i < evento.results.length; i++) {
           if (evento.results[i].isFinal) {
             textoTranscrito += evento.results[i][0].transcript;
@@ -323,17 +348,23 @@
 
       // @ts-ignore
       reconocimiento.onerror = (evento) => {
-        console.error('Error de voz:', evento.error);
+        console.error("Error de voz:", evento.error);
         estamosUsandoVoz = false;
-        
-        let msgError = '❌ Error desconocido. Intenta de nuevo.';
-        if (evento.error === 'network') msgError = '🌐 Error de conexión. Verifica tu internet.';
-        else if (evento.error === 'audio') msgError = '🎤 No se detectó audio. Verifica tu micrófono.';
-        else if (evento.error === 'not-allowed') msgError = '🔒 Permiso negado. Autoriza el micrófono.';
-        else if (evento.error === 'no-speech') msgError = '🤐 No se detectó voz. Intenta de nuevo.';
-        else if (evento.error === 'bad-grammar') msgError = '📝 Error en el reconocimiento. Intenta de nuevo.';
-        else if (evento.error === 'service-not-allowed') msgError = '⛔ El servicio de voz no está disponible.';
-        
+
+        let msgError = "❌ Error desconocido. Intenta de nuevo.";
+        if (evento.error === "network")
+          msgError = "🌐 Error de conexión. Verifica tu internet.";
+        else if (evento.error === "audio")
+          msgError = "🎤 No se detectó audio. Verifica tu micrófono.";
+        else if (evento.error === "not-allowed")
+          msgError = "🔒 Permiso negado. Autoriza el micrófono.";
+        else if (evento.error === "no-speech")
+          msgError = "🤐 No se detectó voz. Intenta de nuevo.";
+        else if (evento.error === "bad-grammar")
+          msgError = "📝 Error en el reconocimiento. Intenta de nuevo.";
+        else if (evento.error === "service-not-allowed")
+          msgError = "⛔ El servicio de voz no está disponible.";
+
         mensajeError = msgError;
       };
 
@@ -341,8 +372,8 @@
         estamosUsandoVoz = false;
       };
     } catch (err) {
-      console.error('Error al inicializar voz:', err);
-      mensajeError = '❌ Error al inicializar el micrófono.';
+      console.error("Error al inicializar voz:", err);
+      mensajeError = "❌ Error al inicializar el micrófono.";
     }
   };
 
@@ -350,19 +381,19 @@
    * Inicia grabación de voz
    */
   const iniciarGrabacion = () => {
-    mensajeError = '';
-    
+    mensajeError = "";
+
     if (!reconocimiento) {
       inicializarVoz();
     }
-    
+
     if (reconocimiento) {
       try {
-        mensajeError = '🎤 Escuchando... habla ahora';
+        mensajeError = "🎤 Escuchando... habla ahora";
         reconocimiento.start();
       } catch (err) {
-        console.error('Error al iniciar grabación:', err);
-        mensajeError = '❌ No se pudo iniciar la grabación. Intenta de nuevo.';
+        console.error("Error al iniciar grabación:", err);
+        mensajeError = "❌ No se pudo iniciar la grabación. Intenta de nuevo.";
       }
     }
   };
@@ -382,7 +413,10 @@
   }
 </script>
 
-<svelte:window on:mousemove={manejarMovimiento} on:mouseup={finalizarArrastre} />
+<svelte:window
+  on:mousemove={manejarMovimiento}
+  on:mouseup={finalizarArrastre}
+/>
 
 <div class="asistente-contextual {estaAbierto ? 'is-open' : ''}">
   <button
@@ -390,7 +424,7 @@
     class="toggle-asistente"
     class:abierto={estaAbierto}
     on:click={abrirAsistente}
-    aria-label={estaAbierto ? 'Cerrar asistente' : 'Abrir asistente'}
+    aria-label={estaAbierto ? "Cerrar asistente" : "Abrir asistente"}
     title="Asistente contextual de SIGA"
   >
     <img src="/S.png" alt="SIGA" class="siga-logo" />
@@ -400,9 +434,15 @@
     <div
       class="panel-asistente"
       bind:this={panelElement}
-      style="left: {posX}px; top: {posY}px; cursor: {estaArrastrando ? 'grabbing' : 'default'}"
+      style="left: {posX}px; top: {posY}px; cursor: {estaArrastrando
+        ? 'grabbing'
+        : 'default'}"
     >
-      <div class="panel-header" on:mousedown={iniciarArrastre} role="application">
+      <div
+        class="panel-header"
+        on:mousedown={iniciarArrastre}
+        role="application"
+      >
         <h3>🤖 SIGA Asistente</h3>
         <button
           type="button"
@@ -432,13 +472,13 @@
         {/if}
 
         {#each mensajes as mensaje (mensaje.id)}
-          {#if mensaje.tipo === 'texto'}
+          {#if mensaje.tipo === "texto"}
             <div class={`mensaje ${mensaje.emisor}`}>
               <p>{mensaje.contenido}</p>
             </div>
-          {:else if mensaje.tipo === 'grafico' && mensaje.grafico}
+          {:else if mensaje.tipo === "grafico" && mensaje.grafico}
             <div class="mensaje siga grafico-mensaje">
-              {#if mensaje.grafico.tipo === 'torta'}
+              {#if mensaje.grafico.tipo === "torta"}
                 <div class="grafico-contenedor">
                   <GraficoTorta
                     titulo={mensaje.grafico.titulo}
@@ -446,7 +486,7 @@
                     valores={mensaje.grafico.valores}
                   />
                 </div>
-              {:else if mensaje.grafico.tipo === 'barras'}
+              {:else if mensaje.grafico.tipo === "barras"}
                 <div class="grafico-contenedor">
                   <GraficoBarras
                     titulo={mensaje.grafico.titulo}
@@ -454,7 +494,7 @@
                     valores={mensaje.grafico.valores}
                   />
                 </div>
-              {:else if mensaje.grafico.tipo === 'lineas'}
+              {:else if mensaje.grafico.tipo === "lineas"}
                 <div class="grafico-contenedor">
                   <GraficoLineas
                     titulo={mensaje.grafico.titulo}
@@ -494,7 +534,7 @@
             disabled={estaPensando}
             class="mensaje-input"
             on:keydown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 manejarEnvio(e);
               }
@@ -520,14 +560,18 @@
     bottom: 2rem;
     right: 2rem;
     z-index: 999;
-    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    font-family: "Inter", "Segoe UI", Roboto, sans-serif;
   }
 
   .toggle-asistente {
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(100, 100, 100, 0.6), rgba(140, 140, 140, 0.5));
+    background: linear-gradient(
+      135deg,
+      rgba(100, 100, 100, 0.6),
+      rgba(140, 140, 140, 0.5)
+    );
     border: none;
     cursor: pointer;
     display: flex;
@@ -575,7 +619,11 @@
   }
 
   .toggle-asistente.abierto {
-    background: linear-gradient(135deg, rgba(0, 180, 216, 0.7), rgba(128, 255, 219, 0.6));
+    background: linear-gradient(
+      135deg,
+      rgba(0, 180, 216, 0.7),
+      rgba(128, 255, 219, 0.6)
+    );
     color: #ffffff;
   }
 
@@ -606,7 +654,11 @@
   }
 
   .panel-header {
-    background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    background: linear-gradient(
+      135deg,
+      var(--color-primario),
+      var(--color-secundario)
+    );
     color: #ffffff;
     padding: 1rem;
     display: flex;
@@ -809,7 +861,9 @@
   }
 
   @keyframes pulse {
-    0%, 60%, 100% {
+    0%,
+    60%,
+    100% {
       opacity: 0.3;
       transform: scale(0.8);
     }
