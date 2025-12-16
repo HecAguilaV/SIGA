@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import Chart from 'chart.js/auto';
+
 
   /** @type {string} */
   export let titulo = '';
@@ -56,8 +56,10 @@
     return valor || respaldo;
   };
 
-  const crearGrafico = () => {
+  const crearGrafico = async () => {
     if (!lienzo) return;
+
+    const { default: Chart } = await import('chart.js/auto');
 
     const colorTexto = typeof document !== 'undefined'
       ? getComputedStyle(document.documentElement).getPropertyValue('--color-texto') || '#2c3e50'

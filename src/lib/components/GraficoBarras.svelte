@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import Chart from 'chart.js/auto';
+
 
   export let titulo = '';
   /** @type {string[]} */
@@ -100,12 +100,14 @@
 
   // onMount crea la instancia del gráfico una vez que el componente está en el DOM
   // Propósito: inicializar Chart.js únicamente en el cliente y garantizar que el gráfico se dibuje correctamente
-  onMount(() => {
+  onMount(async () => {
     if (!lienzo) {
       return;
     }
 
-  coloresDataset = calcularColores(etiquetas.length);
+    const { default: Chart } = await import('chart.js/auto');
+
+    coloresDataset = calcularColores(etiquetas.length);
     const colorTexto = typeof document !== 'undefined'
       ? getComputedStyle(document.documentElement).getPropertyValue('--color-texto') || '#2c3e50'
       : '#2c3e50';

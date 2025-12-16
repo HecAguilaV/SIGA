@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import Chart from 'chart.js/auto';
+
 
   export let titulo = '';
   /** @type {string[]} */
@@ -57,10 +57,12 @@
 
   // Esta función encapsula la creación del gráfico para mantener el código organizado
   // Propósito: centralizar la lógica de inicialización y reutilizarla cuando cambien los datos
-  const crearGrafico = () => {
+  const crearGrafico = async () => {
     if (!lienzo) {
       return;
     }
+
+    const { default: Chart } = await import('chart.js/auto');
 
     paletaBase = generarPaletaBase();
     coloresGrafico = generarColoresGrafico(valores.length);
