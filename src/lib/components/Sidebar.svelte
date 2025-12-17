@@ -143,7 +143,7 @@
         position: fixed;
         left: 0;
         top: 0;
-        z-index: 1000;
+        z-index: 3000;
         box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
