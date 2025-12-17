@@ -2,27 +2,31 @@
 
 MVP interactivo y profesional para SIGA, construido con **SvelteKit 5**, **Gemini 2.5 Pro**, **Bulma CSS** y **Chart.js**. Incluye gestión de inventario en tiempo real, IA conversacional con voz, y operaciones CRUD automáticas.
 
-## ✨ Características principales
+## Características principales
 
-### 🎙️ Asistente Inteligente con Voz
+### Asistente Inteligente con Voz
 - **Entrada multimodal**: Voz (español-ES) + texto + teclado
 - **Procesamiento natural**: Entiende frases incompletas y contexto
 - **Operaciones CRUD automáticas**: Crear productos, agregar/reducir stock
-- **Panel flotante draggable**: 320x450px con soporte Enter key
-- **Auto-focus**: Cursor permanece en input después de enviar
+- **Panel flotante**: Diseño Glassmorphism integrado
+- **Sincronización UI**: Estilo visual unificado con WebComercial (Deep Blue)
 
-### 📊 Gestión de Inventario
+### Gestión de Inventario
 - Tabla reactiva con actualización en tiempo real
 - Filtrado por local, producto, categoría y stock
 - Ordenamiento multicampo
 - Estado compartido entre todos los endpoints
 
-### 🧠 Backend inteligente
+### Backend inteligente
 - **Gemini 2.5 Pro API** con contexto completo de inventario
 - **Endpoints CRUD** con fuzzy matching
 - **Estado centralizado** sincroniza todos los servicios
 
-## 🧰 Tecnologías
+### Integración SSO
+- Rutas protegidas y redirección fluida desde WebComercial
+- Detección de sesión activa
+
+## Tecnologías
 
 | Capa | Tecnología |
 |------|-----------|
@@ -34,7 +38,7 @@ MVP interactivo y profesional para SIGA, construido con **SvelteKit 5**, **Gemin
 | **Estado** | Svelte stores + shared state |
 | **Despliegue** | Vercel Serverless Functions |
 
-## 🚀 Puesta en marcha local
+## Puesta en marcha local
 
 ```bash
 # Instalar dependencias
@@ -50,7 +54,7 @@ npm run dev
 
 Acceder en: `http://localhost:5173`
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 SIGA_PROTOTIPO/
@@ -71,7 +75,7 @@ SIGA_PROTOTIPO/
 └── README.md
 ```
 
-## 🤖 Cómo funciona la IA
+## Cómo funciona la IA
 
 ### Flujo de entrada
 ```
@@ -93,7 +97,7 @@ IA: Interpreta "3 en Ibáñez y 3 en Serena"
 6. Actualiza `datosGlobales` (shared state)
 7. Devuelve respuesta limpia sin JSON técnico
 
-## 📊 Endpoints API
+## Endpoints API
 
 ### `POST /api/chat` - Procesamiento inteligente
 Entrada: `{ "mensaje": "string" }`
@@ -107,7 +111,7 @@ Salida: `{ "success": true, "producto": {...}, "datos": {...} }`
 Entrada: `{ "producto": "...", "local": "...", "cantidad": 5, "operacion": "agregar"|"reducir" }`
 Salida: `{ "success": true, "stockAnterior": 10, "stockNuevo": 15, "datos": {...} }`
 
-## ☁️ Despliegue en Vercel
+## Despliegue en Vercel
 
 ### 1. Preparar repo
 ```bash
@@ -127,7 +131,7 @@ git push origin main
 - Probar: escribir "crear producto test" en el asistente
 - Verificar que tabla se actualiza
 
-## 🎯 Roadmap futuro
+## Roadmap futuro
 
 - [ ] Historial de conversación (memoria contexto)
 - [ ] localStorage para persistencia entre sesiones
@@ -138,10 +142,17 @@ git push origin main
 - [ ] Imágenes de productos
 - [ ] Multi-idioma
 
-## 📝 Licencia
+## Licencia
 
 MIT - Libre para uso comercial y modificación
 
 ---
 
-**Desarrollado con ❤️ para SIGA** | MVP v1.0 | Octubre 2025
+**Desarrollado para SIGA** | MVP v1.0 | Diciembre 2025
+
+---
+
+## Autor
+
+> **Héctor Aguila**  
+>> Un Soñador con Poca RAM

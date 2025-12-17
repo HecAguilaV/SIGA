@@ -1,12 +1,26 @@
 <script>
-  import { datosNegocio } from '$lib/datosSimulados.js';
+  import { datosNegocio } from "$lib/stores/datosNegocio.js";
+  import { onMount } from "svelte";
+  import {
+    Package,
+    Storefront,
+    CheckCircle,
+    ArrowUp,
+    ArrowDown,
+    MagnifyingGlass,
+    Funnel,
+  } from "phosphor-svelte";
+
+  onMount(() => {
+    datosNegocio.cargarDatos();
+  });
 
   let localSeleccionado = 0;
-  let ordenarPor = 'nombre';
+  let ordenarPor = "stock"; // Default sort by stock to see critical items first
   let ordenAscendente = true;
+  let busqueda = "";
 
   // Esta reacción asegura que siempre tengamos un local activo cuando el store cargue datos
-  // Propósito: evitar que la tabla se renderice vacía y guiar al usuario con una selección por defecto
   $: {
     const localesDisponibles = $datosNegocio.locales ?? [];
     if (!localSeleccionado && localesDisponibles.length) {
@@ -14,29 +28,53 @@
     }
   }
 
-  // Computamos los productos con el stock filtrado según el local seleccionado
-  // Propósito: mostrar información relevante de inventario de manera rápida
-  $: productosFiltrados = ($datosNegocio.productos ?? []).map((producto) => {
-    const stockPorLocal = /** @type {Record<string, number>} */ (producto.stock ?? {});
-    const stockActual = stockPorLocal[String(localSeleccionado)] ?? 0;
-    return { ...producto, stockActual };
-  });
+  // Filtrado y búsqueda
+  $: productosFiltrados = ($datosNegocio.productos ?? [])
+    .filter((p) => {
+      if (!busqueda) return true;
+      const term = busqueda.toLowerCase();
+      return (
+        p.nombre.toLowerCase().includes(term) ||
+        p.sku.toLowerCase().includes(term) ||
+        p.categoriaId.toString().includes(term)
+      );
+    })
+    .map((producto) => {
+      // Búsqueda real en el array de stock plano del store
+      const stockEntry = ($datosNegocio.stock ?? []).find(
+        (s) =>
+          s.producto_id === producto.id && s.local_id === localSeleccionado,
+      );
 
-  // Aplicar ordenamiento a los productos
+      const stockActual = stockEntry ? stockEntry.cantidad : 0;
+
+      return {
+        ...producto,
+        stockActual,
+        // Mapeo de nombre de categoría si es necesario, o usar categoriaId temporalmente
+        categoria: producto.categoriaId || "Sin categoría",
+      };
+    });
+
+  // Ordenamiento
   $: productosOrdenados = [...productosFiltrados].sort((a, b) => {
     let valorA = 0;
     let valorB = 0;
 
-    if (ordenarPor === 'nombre') {
+    if (ordenarPor === "nombre") {
       valorA = a.nombre.toLowerCase() > b.nombre.toLowerCase() ? 1 : -1;
       valorB = 0;
-    } else if (ordenarPor === 'sku') {
-      valorA = a.sku.toLowerCase() > b.sku.toLowerCase() ? 1 : -1;
+    } else if (ordenarPor === "sku") {
+      const skuA = (a.sku || "").toString();
+      const skuB = (b.sku || "").toString();
+      valorA = skuA.toLowerCase() > skuB.toLowerCase() ? 1 : -1;
       valorB = 0;
-    } else if (ordenarPor === 'categoria') {
-      valorA = a.categoria.toLowerCase() > b.categoria.toLowerCase() ? 1 : -1;
+    } else if (ordenarPor === "categoria") {
+      const catA = (a.categoria || "").toString();
+      const catB = (b.categoria || "").toString();
+      valorA = catA.toLowerCase() > catB.toLowerCase() ? 1 : -1;
       valorB = 0;
-    } else if (ordenarPor === 'stock') {
+    } else if (ordenarPor === "stock") {
       valorA = a.stockActual;
       valorB = b.stockActual;
     }
@@ -45,276 +83,410 @@
     return ordenAscendente ? resultado : -resultado;
   });
 
-  /**
-   * Cambia el criterio de ordenamiento
-   * @param {string} columna
-   */
   const cambiarOrdenamiento = (columna) => {
     if (ordenarPor === columna) {
-      // Si ya estamos ordenando por esta columna, invertir el orden
       ordenAscendente = !ordenAscendente;
     } else {
-      // Si cambiamos de columna, empezar con orden ascendente
       ordenarPor = columna;
       ordenAscendente = true;
     }
   };
-
-  /**
-   * Retorna el indicador visual del ordenamiento
-   * @param {string} columna
-   */
-  const obtenerIndicador = (columna) => {
-    if (ordenarPor !== columna) return '';
-    return ordenAscendente ? ' ↑' : ' ↓';
-  };
-
-  /**
-   * Actualiza el local seleccionado cuando el usuario cambia la opción del dropdown.
-   * Propósito: mantener sincronizado el filtro del inventario con la preferencia del usuario.
-   * @param {Event} evento
-   */
-  const cambiarLocal = (evento) => {
-    // Propósito: actualizar el filtro de local de forma controlada
-    const elemento = /** @type {HTMLSelectElement} */ (evento.currentTarget);
-    localSeleccionado = Number(elemento.value);
-  };
 </script>
 
-<section class="section">
-  <div class="hero-gradient mb-6">
-    <div class="columns is-vcentered">
-      <div class="column">
-        <span class="etiqueta">Sistema Inteligente de Gestión de Activos</span>
-        <h1 class="title heading-gradient">Gestiona tu tiempo, no tu inventario</h1>
-        <p class="subtitle mt-3">SIGA es tu ERP simplificado. Automatiza el control de stock en tiempo real para que te enfoques en lo que realmente importa: crecer sin interrupciones.</p>
-        <div class="buttons mt-5">
-          <a class="button is-link is-medium" href="/analisis">Descubre las insights</a>
+<div class="dashboard-view">
+  <!-- Header -->
+  <header class="page-header mb-5">
+    <div>
+      <h1 class="title is-4 mb-2">Dashboard</h1>
+      <p class="subtitle is-6 has-text-grey">Vista general del inventario</p>
+    </div>
+    <div class="header-actions">
+      <div class="fecha-actual">
+        {new Date().toLocaleDateString("es-ES", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </div>
+    </div>
+  </header>
+
+  <!-- Widgets -->
+  <div class="columns is-multiline mb-5">
+    <div class="column is-4-desktop">
+      <div class="widget-card">
+        <div class="widget-icon primary">
+          <Package size={32} />
+        </div>
+        <div class="widget-info">
+          <p class="widget-label">Total SKUs</p>
+          <p class="widget-value">{$datosNegocio.productos?.length || 0}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-4-desktop">
+      <div class="widget-card">
+        <div class="widget-icon secondary">
+          <Storefront size={32} />
+        </div>
+        <div class="widget-info">
+          <p class="widget-label">Locales Activos</p>
+          <p class="widget-value">{$datosNegocio.locales?.length || 0}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-4-desktop">
+      <div class="widget-card">
+        <div class="widget-icon success">
+          <CheckCircle size={32} />
+        </div>
+        <div class="widget-info">
+          <p class="widget-label">Disponibilidad</p>
+          <p class="widget-value">98.5%</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- KPI Cards para inversores -->
-  <div class="columns is-multiline mb-6">
-    <div class="column is-half-tablet is-one-third-desktop">
-      <div class="kpi-card">
-        <p class="heading is-6" style="color: var(--color-primario);">Productos en Stock</p>
-        <p class="title is-4" style="color: var(--color-secundario);">{$datosNegocio.productos?.length || 0}</p>
-        <p class="is-size-7">SKU activos en el sistema</p>
+  <!-- DataGrid Area -->
+  <div class="box datagrid-panel">
+    <div class="datagrid-header mb-4">
+      <div class="tabs-locales">
+        {#each $datosNegocio.locales as local}
+          <button
+            class={`tab-local ${localSeleccionado === local.id ? "active" : ""}`}
+            on:click={() => (localSeleccionado = local.id)}
+          >
+            {local.nombre}
+          </button>
+        {/each}
+      </div>
+
+      <div class="search-box">
+        <MagnifyingGlass size={18} class="search-icon" />
+        <input
+          type="text"
+          placeholder="Buscar producto..."
+          bind:value={busqueda}
+          class="search-input"
+        />
       </div>
     </div>
-    <div class="column is-half-tablet is-one-third-desktop">
-      <div class="kpi-card">
-        <p class="heading is-6" style="color: var(--color-primario);">Locales Conectados</p>
-        <p class="title is-4" style="color: var(--color-secundario);">{$datosNegocio.locales?.length || 0}</p>
-        <p class="is-size-7">Kioscos monitoreados</p>
-      </div>
-    </div>
-    <div class="column is-half-tablet is-one-third-desktop">
-      <div class="kpi-card">
-        <p class="heading is-6" style="color: var(--color-primario);">Precisión de Datos</p>
-        <p class="title is-4" style="color: #388e3c;">99.2%</p>
-        <p class="is-size-7">Confiabilidad en tiempo real</p>
-      </div>
-    </div>
-  </div>
 
-  <div class="box">
-    <h2 class="title is-3 has-text-weight-semibold">Stock por sucursal</h2>
-    <p class="subtitle is-5">Visualiza el inventario en tiempo real. Ordena por lo que necesites y actúa al instante.</p>
-
-    <!-- Botones de selección de locales (horizontales con espaciado simétrico) -->
-    <div class="local-selector mt-5 mb-5">
-      {#each $datosNegocio.locales as local}
-        <button
-          class={`local-btn ${localSeleccionado === local.id ? 'is-active' : ''}`}
-          on:click={() => (localSeleccionado = local.id)}
-          aria-pressed={localSeleccionado === local.id}
-        >
-          {local.nombre}
-        </button>
-      {/each}
-    </div>
-
-    <div class="table-wrapper">
-      <div class="table-container">
-        <table class="table is-fullwidth is-striped is-hoverable">
-          <thead>
-            <tr>
-              <th class="sortable-header" on:click={() => cambiarOrdenamiento('nombre')}>
-                Nombre{obtenerIndicador('nombre')}
-              </th>
-              <th class="sortable-header" on:click={() => cambiarOrdenamiento('sku')}>
-                SKU{obtenerIndicador('sku')}
-              </th>
-              <th class="sortable-header" on:click={() => cambiarOrdenamiento('categoria')}>
-                Categoría{obtenerIndicador('categoria')}
-              </th>
-              <th class="sortable-header has-text-right" on:click={() => cambiarOrdenamiento('stock')}>
-                Stock actual{obtenerIndicador('stock')}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each productosOrdenados as producto}
-              {#if producto.stockActual === 0}
-                <tr style="background-color: rgba(211, 47, 47, 0.08);">
-                  <td><strong>{producto.nombre}</strong></td>
-                  <td>{producto.sku}</td>
-                  <td>{producto.categoria}</td>
-                  <td class="has-text-right"><span class="status-critico">SIN STOCK</span></td>
-                </tr>
-              {:else if producto.stockActual < 5}
-                <tr style="background-color: rgba(245, 124, 0, 0.08);">
-                  <td><strong>{producto.nombre}</strong></td>
-                  <td>{producto.sku}</td>
-                  <td>{producto.categoria}</td>
-                  <td class="has-text-right"><span class="status-advertencia">{producto.stockActual}</span></td>
-                </tr>
-              {:else}
-                <tr>
-                  <td>{producto.nombre}</td>
-                  <td>{producto.sku}</td>
-                  <td>{producto.categoria}</td>
-                  <td class="has-text-right"><span class="status-normal">{producto.stockActual}</span></td>
-                </tr>
+    <div class="table-container">
+      <table class="table is-fullwidth is-hoverable modern-table">
+        <thead>
+          <tr>
+            <th
+              class="clickable"
+              on:click={() => cambiarOrdenamiento("nombre")}
+            >
+              Producto
+              {#if ordenarPor === "nombre"}
+                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
               {/if}
-            {/each}
-          </tbody>
-        </table>
-      </div>
+            </th>
+            <th class="clickable" on:click={() => cambiarOrdenamiento("sku")}>
+              SKU
+              {#if ordenarPor === "sku"}
+                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
+              {/if}
+            </th>
+            <th
+              class="clickable"
+              on:click={() => cambiarOrdenamiento("categoria")}
+            >
+              Categoría
+              {#if ordenarPor === "categoria"}
+                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
+              {/if}
+            </th>
+            <th class="has-text-right">Precio</th>
+            <th
+              class="has-text-right clickable"
+              on:click={() => cambiarOrdenamiento("stock")}
+            >
+              Stock
+              {#if ordenarPor === "stock"}
+                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
+              {/if}
+            </th>
+            <th class="has-text-right">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each productosOrdenados as producto}
+            <tr>
+              <td
+                class="has-text-weight-medium text-primary"
+                data-label="Producto">{producto.nombre}</td
+              >
+              <td class="is-family-monospace has-text-grey" data-label="SKU"
+                >{producto.sku || "S/N"}</td
+              >
+              <td data-label="Categoría"
+                ><span class="tag is-light">{producto.categoria}</span></td
+              >
+              <td class="has-text-right is-family-monospace" data-label="Precio"
+                >${producto.precioUnitario || 0}</td
+              >
+              <td
+                class="has-text-right has-text-weight-semibold"
+                data-label="Stock">{producto.stockActual}</td
+              >
+              <td class="has-text-right" data-label="Estado">
+                {#if producto.stockActual === 0}
+                  <span class="status-badge critical">Sin Stock</span>
+                {:else if producto.stockActual < 5}
+                  <span class="status-badge warning">Bajo</span>
+                {:else}
+                  <span class="status-badge success">Normal</span>
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
   </div>
-</section>
+</div>
 
 <style>
-  .etiqueta {
-    display: inline-block;
-    padding: 0.4rem 0.9rem;
-    border-radius: 999px;
-    background-color: rgba(3, 4, 94, 0.1);
-    color: var(--color-primario);
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .hero-logo {
-    max-width: 150px;
-    height: auto;
-    filter: drop-shadow(0 8px 16px rgba(3, 4, 94, 0.15));
-  }
-
-  /* Botones horizontales para seleccionar locales */
-  .local-selector {
+  .page-header {
     display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    background-color: rgba(0, 180, 216, 0.08);
-    padding: 1.5rem;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--color-borde);
+    padding-bottom: 1rem;
+  }
+
+  .fecha-actual {
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: capitalize;
+  }
+
+  /* Widgets */
+  .widget-card {
+    background: #fff;
     border-radius: 12px;
-  }
-
-  .local-btn {
-    padding: 0.75rem 1.75rem;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    background-color: transparent;
-    color: var(--color-primario);
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .local-btn:hover {
-    background-color: rgba(0, 180, 216, 0.15);
-    border-color: var(--color-primario);
-    transform: translateY(-2px);
-  }
-
-  .local-btn.is-active {
-    background-color: var(--color-primario);
-    border-color: var(--color-primario);
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(3, 4, 94, 0.2);
-  }
-
-  .local-btn.is-active:hover {
-    background-color: #051a8f;
-    border-color: #051a8f;
-    box-shadow: 0 6px 16px rgba(3, 4, 94, 0.3);
-  }
-
-  /* Estilos para la tabla */
-  .table-wrapper {
+    padding: 1.5rem;
     display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--color-borde);
+  }
+
+  .widget-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    width: 100%;
-    margin-top: 1.5rem;
   }
 
-  .table-container {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    padding: 0 1rem;
+  .widget-icon.primary {
+    background: rgba(3, 4, 94, 0.1);
+    color: var(--color-primario);
   }
-
-  /* Encabezados sortables */
-  :global(.sortable-header) {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    padding: 1.25rem !important;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  :global(.sortable-header:hover) {
-    background-color: rgba(0, 180, 216, 0.1) !important;
+  .widget-icon.secondary {
+    background: rgba(0, 180, 216, 0.1);
     color: var(--color-secundario);
   }
+  .widget-icon.success {
+    background: rgba(56, 142, 60, 0.1);
+    color: #388e3c;
+  }
 
-  /* Mejorar espaciado de celdas */
-  :global(.table td),
-  :global(.table th) {
-    padding: 1.25rem !important;
+  .widget-label {
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .widget-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-texto);
+    line-height: 1.2;
+  }
+
+  /* DataGrid Panel */
+  .datagrid-panel {
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  }
+
+  .datagrid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .tabs-locales {
+    display: flex;
+    gap: 0.5rem;
+    background: #f1f3f5;
+    padding: 0.25rem;
+    border-radius: 8px;
+  }
+
+  .tab-local {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-local.active {
+    background: #fff;
+    color: var(--color-primario);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .search-box {
+    position: relative;
+    width: 300px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: var(--color-secundario);
+  }
+
+  /* Table modernization */
+  .modern-table thead th {
+    border-bottom: 2px solid #f1f3f5;
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding-bottom: 1rem;
+  }
+
+  .clickable {
+    cursor: pointer;
+    user-select: none;
+  }
+  .clickable:hover {
+    color: var(--color-primario);
+  }
+
+  .modern-table tbody td {
+    border-bottom: 1px solid #f8f9fa;
+    padding: 1rem 0.75rem;
     vertical-align: middle;
   }
 
-  :global(.table tbody td) {
-    font-size: 0.95rem;
+  .text-primary {
+    color: var(--color-primario);
   }
 
-  @media screen and (max-width: 768px) {
-    .hero-logo {
-      max-width: 120px;
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-weight: 700;
+  }
+
+  .status-badge.critical {
+    background: rgba(211, 47, 47, 0.1);
+    color: #d32f2f;
+  }
+  .status-badge.warning {
+    background: rgba(245, 124, 0, 0.1);
+    color: #f57c00;
+  }
+  .status-badge.success {
+    background: rgba(56, 142, 60, 0.1);
+    color: #388e3c;
+  }
+
+  @media (max-width: 768px) {
+    .datagrid-header {
+      flex-direction: column;
+      align-items: stretch;
     }
 
-    :global(.table td),
-    :global(.table th) {
-      padding: 0.9rem !important;
+    .tabs-locales {
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
     }
 
-    :global(.sortable-header) {
-      padding: 0.9rem !important;
-      font-size: 0.9rem;
+    .search-box {
+      width: 100%;
     }
 
-    .local-selector {
+    /* Table Mobile Card View */
+    .table-container {
+      overflow-x: visible; /* Permitir que las cards usen el espacio */
+    }
+
+    .modern-table thead {
+      display: none; /* Ocultar encabezados en móvil */
+    }
+
+    .modern-table tbody tr {
+      display: block;
+      background: #fff;
+      border: 1px solid var(--color-borde);
+      border-radius: 12px;
+      margin-bottom: 1rem;
       padding: 1rem;
-      gap: 0.75rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
-    .local-btn {
-      padding: 0.6rem 1rem;
-      font-size: 13px;
+    .modern-table tbody td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f8f9fa;
+      padding: 0.75rem 0;
+      text-align: right;
+    }
+
+    .modern-table tbody td:last-child {
+      border-bottom: none;
+    }
+
+    .modern-table tbody td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #888;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      text-align: left;
+      margin-right: 1rem;
     }
   }
 </style>

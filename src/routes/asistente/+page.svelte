@@ -1,13 +1,14 @@
 <script>
-  import GraficoTorta from '$lib/components/GraficoTorta.svelte';
-  import { datosNegocio } from '$lib/datosSimulados.js';
+  import GraficoTorta from "$lib/components/GraficoTorta.svelte";
+  import { datosNegocio } from "$lib/stores/datosNegocio.js";
+  import { api } from "$lib/services/api.js";
 
-  let mensajeUsuario = '';
+  let mensajeUsuario = "";
   /** @typedef {{ id: string; emisor: 'usuario' | 'siga'; tipo: 'texto' | 'grafico-mermas'; contenido?: string }} MensajeConversacion */
   /** @type {MensajeConversacion[]} */
   let mensajes = [];
   let estaPensando = false;
-  let mensajeError = '';
+  let mensajeError = "";
 
   $: mermas = $datosNegocio.mermasMes ?? [];
 
@@ -33,42 +34,45 @@
 
     mensajes = [
       ...mensajes,
-      { id: crypto.randomUUID(), emisor: 'usuario', tipo: 'texto', contenido }
+      { id: crypto.randomUUID(), emisor: "usuario", tipo: "texto", contenido },
     ];
-    mensajeUsuario = '';
+    mensajeUsuario = "";
     estaPensando = true;
-    mensajeError = '';
+    mensajeError = "";
 
     try {
-      const respuesta = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ mensaje: contenido })
+      const data = await api.post("/api/saas/chat", {
+        message: contenido,
       });
 
-      if (!respuesta.ok) {
-        throw new Error('No fue posible conectar con SIGA. Intenta nuevamente.');
+      const textoIA = data.response ?? "";
+
+      // Si hubo acción ejecutada, recargar datos (aunque en esta página no se muestran datos vivos como producto/stock, es buena práctica)
+      if (data.action && data.action.executed) {
+        console.log("✅ Acción ejecutada, recargando datos...");
+        datosNegocio.cargarDatos();
       }
 
-      const datos = await respuesta.json();
-      const textoIA = datos.respuesta ?? '';
-
-      if (typeof textoIA === 'string' && textoIA.includes('[GRAFICO_MERMAS]')) {
+      if (typeof textoIA === "string" && textoIA.includes("[GRAFICO_MERMAS]")) {
         mensajes = [
           ...mensajes,
-          { id: crypto.randomUUID(), emisor: 'siga', tipo: 'grafico-mermas' }
+          { id: crypto.randomUUID(), emisor: "siga", tipo: "grafico-mermas" },
         ];
       } else {
         mensajes = [
           ...mensajes,
-          { id: crypto.randomUUID(), emisor: 'siga', tipo: 'texto', contenido: textoIA || 'Estoy aquí para ayudarte.' }
+          {
+            id: crypto.randomUUID(),
+            emisor: "siga",
+            tipo: "texto",
+            contenido: textoIA || "Estoy aquí para ayudarte.",
+          },
         ];
       }
     } catch (error) {
       console.error(error);
-      mensajeError = 'No pudimos obtener la respuesta. Por favor, revisa tu conexión o inténtalo más tarde.';
+      mensajeError =
+        "No pudimos obtener la respuesta. Por favor, revisa tu conexión o inténtalo más tarde.";
     } finally {
       estaPensando = false;
     }
@@ -88,18 +92,25 @@
 <section class="section">
   <div class="box">
     <h1 class="title has-text-weight-semibold">Asistente con IA</h1>
-    <p class="subtitle">Pregunta lo que necesites. SIGA usa IA real para recomendaciones sin esperas.</p>
+    <p class="subtitle">
+      Pregunta lo que necesites. SIGA usa IA real para recomendaciones sin
+      esperas.
+    </p>
 
     <div class="chat-container">
       <div class="mensajes">
         {#each mensajes as mensaje (mensaje.id)}
-          {#if mensaje.tipo === 'texto'}
-            <div class={`mensaje ${mensaje.emisor === 'usuario' ? 'es-usuario' : 'es-siga'}`}>
+          {#if mensaje.tipo === "texto"}
+            <div
+              class={`mensaje ${mensaje.emisor === "usuario" ? "es-usuario" : "es-siga"}`}
+            >
               <p>{mensaje.contenido}</p>
             </div>
-          {:else if mensaje.tipo === 'grafico-mermas'}
+          {:else if mensaje.tipo === "grafico-mermas"}
             <div class="mensaje es-siga">
-              <p class="mb-3">Aquí tienes el panorama de mermas por categoría:</p>
+              <p class="mb-3">
+                Aquí tienes el panorama de mermas por categoría:
+              </p>
               <GraficoTorta
                 titulo="Mermas mensuales por categoría"
                 etiquetas={obtenerDatosMermas().etiquetas}
@@ -132,7 +143,7 @@
               placeholder="Escribe tu consulta..."
               bind:value={mensajeUsuario}
               on:keydown={(evento) => {
-                if (evento.key === 'Enter' && !evento.shiftKey) {
+                if (evento.key === "Enter" && !evento.shiftKey) {
                   evento.preventDefault();
                   enviarMensaje();
                 }
@@ -140,7 +151,11 @@
             />
           </div>
           <div class="control">
-            <button class="button is-link is-medium" type="submit" disabled={estaPensando}>
+            <button
+              class="button is-link is-medium"
+              type="submit"
+              disabled={estaPensando}
+            >
               Enviar
             </button>
           </div>
