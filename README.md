@@ -2,6 +2,9 @@
 
 MVP interactivo y profesional para SIGA, construido con **SvelteKit 5**, **Gemini 2.5 Pro**, **Bulma CSS** y **Chart.js**. Incluye gestión de inventario en tiempo real, IA conversacional con voz, y operaciones CRUD automáticas.
 
+## 🚀 Live Demo
+Accede a la versión productiva aquí: **[https://siga-webapp.vercel.app](https://siga-webapp.vercel.app)**
+
 ## Características principales
 
 ### Asistente Inteligente con Voz
