@@ -55,9 +55,12 @@
         {
             key: "precioUnitario",
             label: "Precio",
-            // Formateador: Convierte a CLP (ej: $ 1.500)
-            formatter: (val) =>
-                val ? `$ ${parseInt(val).toLocaleString("es-CL")}` : "-",
+            // Formateador: Convierte a CLP sin decimales (ej: $ 1.500)
+            formatter: (val) => {
+                if (!val) return "-";
+                const num = Number(val);
+                return `$ ${num.toLocaleString("es-CL", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+            },
         },
         {
             key: "activo",
