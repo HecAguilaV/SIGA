@@ -28,15 +28,24 @@
     }
   }
 
+  // Mapa de Categorías para acceso rápido (ID -> Nombre)
+  $: categoriasMap = new Map(
+    ($datosNegocio.categorias ?? []).map((c) => [c.id, c.nombre]),
+  );
+
   // Filtrado y búsqueda
   $: productosFiltrados = ($datosNegocio.productos ?? [])
     .filter((p) => {
       if (!busqueda) return true;
       const term = busqueda.toLowerCase();
+      // Resolver nombre de categoría para búsqueda
+      const nombreCategoria =
+        categoriasMap.get(p.categoriaId)?.toLowerCase() || "";
+
       return (
         p.nombre.toLowerCase().includes(term) ||
-        p.sku.toLowerCase().includes(term) ||
-        p.categoriaId.toString().includes(term)
+        p.codigoBarras?.toLowerCase().includes(term) ||
+        nombreCategoria.includes(term)
       );
     })
     .map((producto) => {
@@ -47,12 +56,14 @@
       );
 
       const stockActual = stockEntry ? stockEntry.cantidad : 0;
+      const nombreCategoria =
+        categoriasMap.get(producto.categoriaId) || "Sin categoría";
 
       return {
         ...producto,
         stockActual,
-        // Mapeo de nombre de categoría si es necesario, o usar categoriaId temporalmente
-        categoria: producto.categoriaId || "Sin categoría",
+        // Mapeo de nombre de categoría real
+        categoria: nombreCategoria,
       };
     });
 

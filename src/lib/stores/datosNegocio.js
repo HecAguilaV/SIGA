@@ -9,6 +9,7 @@ const initialState = {
     locales: [], // Real
     productos: [], // Real
     stock: [], // Real
+    categorias: [], // Real
 
     // --- DATOS SIMULADOS (Analytics) ---
     ventasSemana: [
@@ -58,11 +59,12 @@ function createDatosNegocioStore() {
                     throw new Error('No autenticado');
                 }
 
-                // Cargar Locales, Productos y Stock de forma resiliente
-                const [localesRes, productosRes, stockRes] = await Promise.allSettled([
+                // Cargar Locales, Productos, Stock y Categorías de forma resiliente
+                const [localesRes, productosRes, stockRes, categoriasRes] = await Promise.allSettled([
                     api.get('/api/saas/locales'),
                     api.get('/api/saas/productos'),
-                    api.get('/api/saas/stock')
+                    api.get('/api/saas/stock'),
+                    api.get('/api/saas/categorias')
                 ]);
 
                 // Helper para extraer datos seguros
@@ -73,7 +75,8 @@ function createDatosNegocioStore() {
                     loading: false,
                     locales: getData(localesRes, 'locales'),
                     productos: getData(productosRes, 'productos'),
-                    stock: getData(stockRes, 'stock')
+                    stock: getData(stockRes, 'stock'),
+                    categorias: getData(categoriasRes, 'categorias')
                 }));
 
             } catch (error) {
