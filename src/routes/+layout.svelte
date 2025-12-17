@@ -92,17 +92,23 @@
     position: fixed;
     top: 1rem;
     left: 1rem;
-    z-index: 900;
+    z-index: 2000;
+    min-width: 44px;
+    min-height: 44px;
     background: white;
     border: none;
     border-radius: 8px;
     padding: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     color: var(--color-primario);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .toggle-btn:active {
+    transform: scale(0.95);
   }
 
   .main-content.public {
