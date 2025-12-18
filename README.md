@@ -1,157 +1,84 @@
-# SIGA - Sistema Inteligente de Gestión de Almacenes
+# SIGA WebApp (Sistema Operativo)
 
-MVP interactivo y profesional para SIGA, construido con **SvelteKit 5**, **Gemini 2.5 Pro**, **Bulma CSS** y **Chart.js**. Incluye gestión de inventario en tiempo real, IA conversacional con voz, y operaciones CRUD automáticas.
+**El corazón operativo del ecosistema SIGA.**  
+Gestión de inventario, ventas y toma de decisiones potenciada por IA.
 
-## 🚀 Live Demo
-Accede a la versión productiva aquí: **[https://siga-webapp.vercel.app](https://siga-webapp.vercel.app)**
-
-## Características principales
-
-### Asistente Inteligente con Voz
-- **Entrada multimodal**: Voz (español-ES) + texto + teclado
-- **Procesamiento natural**: Entiende frases incompletas y contexto
-- **Operaciones CRUD automáticas**: Crear productos, agregar/reducir stock
-- **Panel flotante**: Diseño Glassmorphism integrado
-- **Sincronización UI**: Estilo visual unificado con WebComercial (Deep Blue)
-
-### Gestión de Inventario
-- Tabla reactiva con actualización en tiempo real
-- Filtrado por local, producto, categoría y stock
-- Ordenamiento multicampo
-- Estado compartido entre todos los endpoints
-
-### Backend inteligente
-- **Gemini 2.5 Pro API** con contexto completo de inventario
-- **Endpoints CRUD** con fuzzy matching
-- **Estado centralizado** sincroniza todos los servicios
-
-### Integración SSO
-- Rutas protegidas y redirección fluida desde WebComercial
-- Detección de sesión activa
-
-## Tecnologías
-
-| Capa | Tecnología |
-|------|-----------|
-| **Frontend** | SvelteKit 5 + Vite + Bulma CSS |
-| **Backend** | Node.js + SvelteKit endpoints |
-| **IA** | Gemini 2.5 Pro API |
-| **Voz** | Web Speech API (reconocimiento español) |
-| **Visualizaciones** | Chart.js |
-| **Estado** | Svelte stores + shared state |
-| **Despliegue** | Vercel Serverless Functions |
-
-## Puesta en marcha local
-
-```bash
-# Instalar dependencias
-npm install
-
-# Crear archivo .env.local en la raíz
-echo "VITE_GEMINI_API_KEY=AIzaSyAcxjnWp0d3yy7ev-Iup1RQogCqOLu4qzY" > .env.local
-echo "GEMINI_API_KEY=AIzaSyAcxjnWp0d3yy7ev-Iup1RQogCqOLu4qzY" >> .env.local
-
-# Iniciar servidor de desarrollo
-npm run dev
-```
-
-Acceder en: `http://localhost:5173`
-
-## Estructura del proyecto
-
-```
-SIGA_PROTOTIPO/
-├── src/
-│   ├── routes/
-│   │   ├── +page.svelte              # Inventario (tabla reactiva)
-│   │   ├── analisis/+page.svelte     # Análisis con gráficos
-│   │   └── api/
-│   │       ├── chat/+server.js       # IA con RAG context
-│   │       ├── productos/crear/+server.js
-│   │       └── inventario/actualizar/+server.js
-│   ├── lib/
-│   │   ├── components/AsistenteContextual.svelte
-│   │   ├── estado-compartido.js      # Estado centralizado
-│   │   └── datosSimulados.js
-│   └── app.css
-├── .env.local
-└── README.md
-```
-
-## Cómo funciona la IA
-
-### Flujo de entrada
-```
-Usuario: "¿En qué locales no hay rollos de canela?"
-IA: "No hay rollos de canela en Ibáñez y Serena"
-
-Usuario: "Agrega 3 y 3"
-IA: Interpreta "3 en Ibáñez y 3 en Serena"
-    → Crea CRUD automático
-    → Actualiza tabla en tiempo real
-```
-
-### Procesamiento backend
-1. Recibe mensaje en `/api/chat`
-2. Construye contexto RAG con inventario actual
-3. Consulta Gemini 2.5 Pro
-4. Parsea respuesta buscando `[CRUD_START]...[CRUD_END]`
-5. Ejecuta operaciones en endpoints dedicados
-6. Actualiza `datosGlobales` (shared state)
-7. Devuelve respuesta limpia sin JSON técnico
-
-## Endpoints API
-
-### `POST /api/chat` - Procesamiento inteligente
-Entrada: `{ "mensaje": "string" }`
-Salida: `{ "respuesta": "string", "datos": {...} }`
-
-### `POST /api/productos/crear` - Crear producto
-Entrada: `{ "nombre": "...", "categoria": "...", "sku": "..." }`
-Salida: `{ "success": true, "producto": {...}, "datos": {...} }`
-
-### `POST /api/inventario/actualizar` - Actualizar stock
-Entrada: `{ "producto": "...", "local": "...", "cantidad": 5, "operacion": "agregar"|"reducir" }`
-Salida: `{ "success": true, "stockAnterior": 10, "stockNuevo": 15, "datos": {...} }`
-
-## Despliegue en Vercel
-
-### 1. Preparar repo
-```bash
-git add .
-git commit -m "MVP: Full CRUD + Voice + Real-time updates"
-git push origin main
-```
-
-### 2. Conectar Vercel
-- Ir a https://vercel.com/new
-- Importar repo desde GitHub
-- Agregar variable de entorno: `GEMINI_API_KEY=AIzaSyAcxjnWp0d3yy7ev-Iup1RQogCqOLu4qzY`
-- Deploy
-
-### 3. Validar
-- Abrir URL del deploy
-- Probar: escribir "crear producto test" en el asistente
-- Verificar que tabla se actualiza
-
-## Roadmap futuro
-
-- [ ] Historial de conversación (memoria contexto)
-- [ ] localStorage para persistencia entre sesiones
-- [ ] Confirmación de operaciones destructivas
-- [ ] Undo/redo CRUD
-- [ ] Auditoría de cambios con timestamps
-- [ ] Exportar inventario a CSV/PDF
-- [ ] Imágenes de productos
-- [ ] Multi-idioma
-
-## Licencia
-
-MIT - Libre para uso comercial y modificación
+[Live Demo](https://siga-webapp.vercel.app)
 
 ---
 
-**Desarrollado para SIGA** | MVP v1.0 | Diciembre 2025
+## Descripción
+SIGA WebApp no es un simple CRUD. Es un **Sistema de Planificación de Recursos (ERP) simplificado** diseñado para la operación diaria de locales comerciales.
+Se integra nativamente con **SIGA WebComercial** (para gestión de suscripciones) y **SIGA App Móvil** (para operaciones en terreno), compartiendo el mismo Backend y Base de Datos.
+
+## Características Clave
+*   **Gestión de Inventario Real-Time**: Sincronización inmediata con app móvil y backend.
+*   **Asistente IA Multimodal**:
+    *   **Voz y Texto**: Interactúa naturalmente ("¿Cuánto stock queda de X?", "Agrega 5 unidades").
+    *   **Contexto de Negocio**: La IA conoce tu inventario y reglas de negocio.
+*   **Roles y Permisos**:
+    *   **Administrador**: Visión total, gestión de usuarios operativos y locales.
+    *   **Operador**: Acceso limitado a inventario y movimientos diarios.
+*   **Single Sign-On (SSO)**: Acceso fluido desde el portal comercial mediante Tokens JWT.
+*   **Dashboard Analítico**: Métricas clave de rendimiento y alertas de stock bajo.
+
+## Stack Tecnológico
+*   **Frontend**: SvelteKit 5 (Vite)
+*   **Estilos**: Bulma CSS + Phosphor Icons
+*   **Backend**: Spring Boot (API REST)
+*   **Base de Datos**: PostgreSQL (AlwaysData)
+*   **IA**: Google Gemini 1.5 Pro (Integrado vía Backend)
+
+## Instalación y Despliegue
+
+### Requisitos
+*   Node.js 20+
+*   Acceso a Internet (para conectar con Backend Railway)
+
+### Pasos
+1.  **Clonar repositorio**:
+    ```bash
+    git clone https://github.com/HecAguilaV/SIGA_WEBAPP.git
+    cd SIGA_WEBAPP
+    ```
+
+2.  **Instalar dependencias**:
+    ```bash
+    npm install
+    ```
+
+3.  **Ejecutar en desarrollo**:
+    ```bash
+    npm run dev
+    ```
+    > El sistema se iniciará en **http://localhost:5174** (Puerto configurado para no chocar con WebComercial en 5173).
+
+### Configuración de Proxy
+El proyecto incluye un proxy en `vite.config.js` para redirigir las peticiones `/api` automáticamente al backend de producción en Railway, facilitando el desarrollo local sin CORS.
+
+## Credenciales de Prueba
+El sistema utiliza el mismo login que el resto del ecosistema:
+
+| Rol | Email | Password |
+|-----|-------|----------|
+| **Administrador** | `admin@test.cl` | `test123` |
+| **Operador** | `oper@test.cl` | `test123` |
+
+## Estructura del Proyecto
+```
+src/
+├── lib/
+│   ├── components/    # UI Reutilizable (Tablas, Modales, Asistente)
+│   ├── services/      # Lógica de negocio y llamadas API
+│   └── stores/        # Gestión de estado (Svelte Stores)
+├── routes/
+│   ├── +layout.svelte # Layout principal (Sidebar, Navbar)
+│   ├── dashboard/     # Vista principal de métricas
+│   ├── inventario/    # Gestión de productos y stock
+│   ├── locales/       # CRUD de sucursales
+│   └── sso/           # Landing page para autenticación desde WebComercial
+└── app.html           # Punto de entrada HTML
+```
 
 ---
 

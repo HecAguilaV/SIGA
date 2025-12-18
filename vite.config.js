@@ -4,8 +4,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [sveltekit()],
   server: {
-    port: 1574,
-    strictPort: true, // Force 1574 to avoid confusion
+    port: 5174,
+    strictPort: true, // Force 5174 to avoid confusion
     proxy: {
       '/api': {
         target: 'https://siga-backend-production.up.railway.app',
