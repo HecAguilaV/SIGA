@@ -5,6 +5,7 @@
     import { api } from "$lib/services/api";
     import { datosNegocio } from "$lib/stores/datosNegocio";
     import { ArrowLeft, FloppyDisk, Storefront } from "phosphor-svelte";
+    import { toast } from "$lib/stores/toast";
 
     let loading = false;
     let error = "";
@@ -123,19 +124,20 @@
             if (response.success) {
                 // Si es nuevo, redirigimos. Si es edición, nos quedamos para editar stock.
                 if (!isEditing) {
+                    toast.add("Producto creado exitosamente", "success");
                     goto("/productos");
                 } else {
                     // Feedback visual
-                    alert(
-                        "Producto actualizado. Ahora puedes gestionar el stock.",
-                    );
+                    toast.add("Producto actualizado correctamente", "success");
                 }
             } else {
                 error = response.message || "Error al guardar";
+                toast.add(error, "error");
             }
         } catch (err) {
             console.error(err);
             error = err.message || "Error de conexión";
+            toast.add(error, "error");
         } finally {
             loading = false;
         }
@@ -157,13 +159,16 @@
                 // Actualizar localmente el store o recargar
                 await datosNegocio.cargarDatos(); // Recargar todo para sincronizar
                 mapearStock();
-                alert(`Stock actualizado para ${item.nombreLocal}`);
+                toast.add(
+                    `Stock actualizado para ${item.nombreLocal}`,
+                    "success",
+                );
             } else {
-                alert(`Error: ${response.message}`);
+                toast.add(`Error: ${response.message}`, "error");
             }
         } catch (e) {
             console.error(e);
-            alert("Error al actualizar stock");
+            toast.add("Error al actualizar stock", "error");
         } finally {
             updatingStock = false;
         }

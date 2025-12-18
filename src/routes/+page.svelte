@@ -102,6 +102,16 @@
       ordenAscendente = true;
     }
   };
+  // Cálculo de Valor Inventario Total (Sumatoria de Stock * Precio)
+  $: valorInventario = ($datosNegocio.stock ?? []).reduce((acc, stockItem) => {
+    const prod = ($datosNegocio.productos ?? []).find(
+      (p) => p.id === stockItem.producto_id,
+    );
+    const precio = prod?.precioUnitario || 0;
+    return acc + stockItem.cantidad * precio;
+  }, 0);
+
+  import { CurrencyDollar } from "phosphor-svelte";
 </script>
 
 <div class="dashboard-view">
@@ -131,7 +141,7 @@
           <Package size={32} />
         </div>
         <div class="widget-info">
-          <p class="widget-label">Total SKUs</p>
+          <p class="widget-label">Productos</p>
           <p class="widget-value">{$datosNegocio.productos?.length || 0}</p>
         </div>
       </div>
@@ -152,11 +162,13 @@
     <div class="column is-4-desktop">
       <div class="widget-card">
         <div class="widget-icon success">
-          <CheckCircle size={32} />
+          <CurrencyDollar size={32} />
         </div>
         <div class="widget-info">
-          <p class="widget-label">Disponibilidad</p>
-          <p class="widget-value">98.5%</p>
+          <p class="widget-label">Valor Inventario</p>
+          <p class="widget-value">
+            ${new Intl.NumberFormat("es-CL").format(valorInventario)}
+          </p>
         </div>
       </div>
     </div>
@@ -242,7 +254,9 @@
                 ><span class="tag is-light">{producto.categoria}</span></td
               >
               <td class="has-text-right is-family-monospace" data-label="Precio"
-                >${producto.precioUnitario || 0}</td
+                >${new Intl.NumberFormat("es-CL").format(
+                  producto.precioUnitario || 0,
+                )}</td
               >
               <td
                 class="has-text-right has-text-weight-semibold"
