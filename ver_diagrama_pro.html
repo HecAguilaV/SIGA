@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama ERD - SIGA (Visualizador Pro)</title>
+    <!-- Mermaid JS Core -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        import svgPanZoom from 'https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js';
+
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e3f2fd',
+                primaryBorderColor: '#1565c0',
+                primaryTextColor: '#0d47a1',
+                lineColor: '#546e7a',
+                fontFamily: 'Segoe UI, Arial, sans-serif'
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            const element = document.querySelector('.mermaid');
+            const { svg } = await mermaid.render('graphDiv', element.textContent);
+
+            const container = document.getElementById('diagram-container');
+            container.innerHTML = svg;
+
+            const svgElement = container.querySelector('svg');
+            svgElement.style.width = '100%';
+            svgElement.style.height = '100%';
+
+            // Habilitar Pan y Zoom
+            svgPanZoom(svgElement, {
+                zoomEnabled: true,
+                controlIconsEnabled: true,
+                fit: true,
+                center: true,
+                minZoom: 0.1,
+                maxZoom: 10
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+        }
+
+        #diagram-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ocultar el texto fuente de mermaid */
+        .mermaid {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <h1>SIGA - Diagrama Entidad Relación (Use rueda del mouse para zoom, click para arrastrar)</h1>
+    </div>
+
+    <!-- Contenedor donde se renderizará el SVG -->
+    <div id="diagram-container"></div>
+
+    <!-- Definición del diagrama -->
+    <div class="mermaid">
+        erDiagram
+        %% ETIQUETAS Y ESTILOS
+        %% ---------------------------------------------------
+
+        %% --- AREA COMERCIAL (ROJO) ---
+        USUARIOS_COM ||--o{ SUSCRIPCIONES : "solicita"
+        USUARIOS_COM ||--o{ CARRITOS : "tiene"
+        PLANES ||--o{ SUSCRIPCIONES : "define tier"
+        SUSCRIPCIONES ||--o{ PAGOS : "factura en"
+        SUSCRIPCIONES ||--o{ FACTURAS : "genera"
+        PAGOS ||--o{ FACTURAS : "cubre"
+
+        USUARIOS_COM["COMERCIAL.USUARIOS"] {
+        int id PK "Dueño de Negocio"
+        string email
+        string empresa
+        }
+        PLANES["COMERCIAL.PLANES"] {
+        int id PK
+        string nombre "Basic/Pro"
+        decimal precio
+        }
+        SUSCRIPCIONES["COMERCIAL.SUSCRIPCIONES"] {
+        int id PK
+        date inicio
+        string estado "Activa/Vencida"
+        }
+
+        %% --- PUENTE MULTITENANT ---
+        USUARIOS_COM ||..|| USUARIOS_SAAS : "PROPIETARIO (Lógico)"
+
+        %% --- AREA OPERATIVA (AZUL) ---
+        USUARIOS_SAAS ||--o{ USUARIOS_LOCALES : "asignado a"
+        LOCALES ||--o{ USUARIOS_LOCALES : "tiene personal"
+
+        %% La relacion de propiedad via usuario_comercial_id
+        USUARIOS_COM ||--o{ PRODUCTOS : "PROPIEDAD DE"
+        USUARIOS_COM ||--o{ VENTAS : "PROPIEDAD DE"
+
+        USUARIOS_SAAS["SAAS.USUARIOS"] {
+        int id PK "Cajero/Vendedor"
+        string email
+        string rol
+        }
+        LOCALES["SAAS.LOCALES"] {
+        int id PK "Sucursal Física"
+        string nombre
+        }
+        PRODUCTOS["SAAS.PRODUCTOS"] {
+        int id PK
+        string nombre
+        decimal precio
+        }
+        STOCK["SAAS.STOCK"] {
+        int producto_id PK, FK
+        int local_id PK, FK
+        int cantidad
+        }
+        VENTAS["SAAS.VENTAS"] {
+        int id PK
+        decimal total
+        timestamp fecha
+        }
+
+        %% Relaciones Operativas
+        CATEGORIAS ||--o{ PRODUCTOS : agrupa
+        PRODUCTOS ||--o{ STOCK : "inventario en"
+        LOCALES ||--o{ STOCK : "bodega"
+
+        VENTAS ||--o{ DETALLES : "items"
+        PRODUCTOS ||--o{ DETALLES : "vendido"
+        LOCALES ||--o{ VENTAS : "origen venta"
+        USUARIOS_SAAS ||--o{ VENTAS : "vendedor"
+
+    </div>
+</body>
+
+</html>
