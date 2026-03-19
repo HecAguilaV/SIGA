@@ -1,0 +1,359 @@
+/* ========== HERO SECTION - SIGA MODERN SAAS ========== */
+
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: #03045e;
+    /* Fallback */
+    color: white;
+    padding-top: 80px;
+    /* Compensación Navbar */
+}
+
+/* Fondo animado con degradado moderno */
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    /* Gradiente complejo Deep Blue -> Cyan */
+    background:
+        radial-gradient(circle at 10% 20%, rgba(0, 119, 182, 0.4) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 180, 216, 0.2) 0%, transparent 40%),
+        linear-gradient(135deg, #03045e 0%, #023e8a 100%);
+}
+
+/* Malla/Grid tecnológica de fondo (Overlay) */
+.hero-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Orbes de luz animados */
+.hero-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.6;
+    animation: floatingOrb 10s infinite alternate ease-in-out;
+}
+
+.hero-glow-1 {
+    top: -10%;
+    right: -5%;
+    width: 600px;
+    height: 600px;
+    background: rgba(0, 180, 216, 0.25);
+    animation-delay: 0s;
+}
+
+.hero-glow-2 {
+    bottom: -10%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: rgba(3, 4, 94, 0.4);
+    animation-delay: -5s;
+}
+
+@keyframes floatingOrb {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(30px, 50px) scale(1.1);
+    }
+}
+
+/* Contenido del Hero */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+/* Texto del Hero */
+.hero-text {
+    animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    background: rgba(0, 180, 216, 0.15);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    color: #90e0ef;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(5px);
+}
+
+.hero-title {
+    font-size: 4.5rem;
+    /* Título masivo */
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(to right, #ffffff, #90e0ef);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+/* Botones Hero */
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.hero-btn-primary {
+    padding: 1rem 2rem;
+    background: var(--color-secundario);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hero-btn-primary:hover {
+    transform: translateY(-2px);
+    background: #0096c7;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 180, 216, 0.5);
+}
+
+.hero-btn-secondary {
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+
+/* Tarjetas Glassmorphism (Derecha) */
+.hero-visuals {
+    position: relative;
+    height: 600px;
+    perspective: 1000px;
+}
+
+/* Contenedor principal de la imagen/dash ficticio */
+.glass-dashboard {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotateY(-10deg) rotateX(5deg);
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.05);
+    /* Muy transparente */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    animation: floatDashboard 6s ease-in-out infinite;
+}
+
+/* Elementos flotantes sobre el dashboard */
+.floating-card {
+    position: absolute;
+    background: rgba(3, 4, 94, 0.8);
+    /* Dark Glass */
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 5;
+}
+
+.card-sales {
+    top: -20px;
+    right: -40px;
+    animation: floatCard 5s ease-in-out infinite 0.5s;
+}
+
+.card-users {
+    bottom: -30px;
+    left: -40px;
+    animation: floatCard 5s ease-in-out infinite 1s;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #90e0ef;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@keyframes floatDashboard {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) rotateY(-10deg) rotateX(5deg) translateY(0);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) rotateY(-10deg) rotateX(5deg) translateY(-20px);
+    }
+}
+
+@keyframes floatCard {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Secciones de Características (Fondo Claro) */
+.features-section {
+    padding: 6rem 0;
+    background: #ffffff;
+    position: relative;
+    z-index: 1;
+}
+
+.modern-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 30px rgba(3, 4, 94, 0.05);
+    transition: all 0.3s ease;
+}
+
+.modern-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 180, 216, 0.15);
+    border-color: rgba(0, 180, 216, 0.3);
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 180, 216, 0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: var(--color-secundario);
+}
+
+.modern-card:hover .icon-box {
+    background: var(--color-secundario);
+    color: white;
+}
+
+
+/* Responsive */
+@media (max-width: 992px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .hero-visuals {
+        height: 400px;
+        margin-top: 2rem;
+        perspective: none;
+    }
+
+    .glass-dashboard {
+        transform: translate(-50%, 0) rotate(0) !important;
+        position: relative;
+        left: 50%;
+        top: 0;
+    }
+
+    .card-sales {
+        right: 0;
+    }
+
+    .card-users {
+        left: 0;
+    }
+}
