@@ -21,5 +21,11 @@ Cada funcionalidad importante (ej. Migración de Microservicios) seguirá este f
   **What / Why / Where / Learned**.
 - Esto asegura que si la sesión se reinicia, yo pueda volver a leer la "Memoria" y saber exactamente en qué punto quedamos.
 
+## 🛠️ Skills Oficiales Activas
+He cargado en mi sistema los protocolos oficiales de los fabricantes para:
+1.  **Google Gemini**: Revisión de código profesional (`code-reviewer`).
+2.  **Kotlin**: Mapeo de entidades JPA y mejores prácticas de backend.
+3.  **Supabase**: Optimización de Postgres y diseño de esquema escalable.
+
 ---
-*Estado: Inicializado - Marzo 2026*
+*Estado: Evolucionado (Powered by Official Skills) - Marzo 2026*
