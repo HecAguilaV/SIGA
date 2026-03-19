@@ -3,41 +3,63 @@
 El siguiente diagrama refleja la arquitectura real y refinada de SIGA, basandose en las tablas de la base de datos divididas por contexto (`siga_comercial` y `siga_saas`) y el diseño de contingencia para la Inteligencia Artificial.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'clusterBkg': '#1E293B', 'clusterBorder': '#334155', 'edgeLabelBackground': '#0F172A', 'mainBkg': '#0F172A'}}}%%
-graph TD
-    %% Estilos Profesionales Soberbios (Dark Slate Theme)
-    classDef client fill:#1E293B,stroke:#475569,stroke-width:2px,color:#F8FAFC;
-    classDef gateway fill:#0F172A,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC;
-    classDef service fill:#0F172A,stroke:#10B981,stroke-width:2px,color:#F8FAFC;
-    classDef database fill:#0F172A,stroke:#64748B,stroke-width:2px,color:#F8FAFC;
-    classDef ai fill:#0F172A,stroke:#8B5CF6,stroke-width:2px,color:#F8FAFC;
-    classDef fallback fill:#0F172A,stroke:#F59E0B,stroke-width:2px,color:#F8FAFC;
+graph LR
+    %% Elementos
+    User([Usuario / Emprendedor])
+    API[API Gateway]
+    BFF[BFF / Creador de Contexto]
 
-
-    User([Usuario / Emprendedor]):::client
-
-    %% Gateway & Orquestación
-    User ===|Petición HTTPS| API[API Gateway]:::gateway
-    API === BFF[BFF / Creador de Contexto]:::gateway
-
-    %% Módulos Independientes
-    BFF --->|Manejo SaaS B2B| MC[Microservicio Comercial]:::service
-    BFF --->|JWT + UsuarioPermiso| MI[Microservicio Core SAAS]:::service
-    BFF --->|Prompt Contextualizado| IA[Microservicio Asistente IA]:::ai
+    %% Microservicios Principales
+    MC[Microservicio Comercial]
+    MI[Microservicio Core SAAS]
+    IA[Microservicio Asistente IA]
 
     %% Almacenamiento
-    subgraph Almacenamiento Segregado
-        MC -.- |JPA| BD_C[(DB: siga_comercial)]:::database
-        MI -.- |JPA| BD_S[(DB: siga_saas)]:::database
+    subgraph AS [Almacenamiento Segregado]
+        BD_C[(DB: siga_comercial)]
+        BD_S[(DB: siga_saas)]
     end
 
     %% IA y Contingencia
-    subgraph Inteligencia Artificial Resiliente
-        IA === |1. Consulta Core| LLM[LLM Externo API]:::ai
-        LLM -.->|Fallo de Conexión / Timeout| FB{Motor Fallback Local NL2SQL}:::fallback
-        FB --->|2. Extracción Regex a PL/SQL| MI
-        FB --->|3. Respuesta Básica Adaptada| BFF
+    subgraph IAR [Inteligencia Artificial Resiliente]
+        LLM[LLM Externo API]
+        FB{Motor Fallback NL2SQL}
     end
+
+    %% Conexiones espaciadas (Flechas largas para evitar colisiones)
+    User ====>|Petición HTTPS| API
+    API  ====> BFF
+
+    BFF  --->|SaaS B2B| MC
+    BFF  --->|JWT + Rol| MI
+    BFF  --->|Prompt| IA
+
+    MC   -.- |JPA| BD_C
+    MI   -.- |JPA| BD_S
+
+    IA   ===>|1. Consulta| LLM
+    LLM  -.->|Fallo de API| FB
+    FB   --->|2. Extracción Cruda a PL/SQL| MI
+    FB   --->|3. Respuesta Adaptada| BFF
+
+    %% ESTILOS ULTRA MINIMALISTAS (SOBRIEDAD CORPORATIVA)
+    %% Nodos principales: Blanco y Negro
+    style User fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style API fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style BFF fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style MC fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style MI fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style IA fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style BD_C fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style BD_S fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+    style LLM fill:#ffffff,stroke:#333333,stroke-width:1px,color:#000000
+
+    %% Fallback: Ámbar extremadamente suave y texto oscuro para legibilidad total
+    style FB fill:#fffbeb,stroke:#d97706,stroke-width:1px,color:#000000
+
+    %% Subgrafos: Sin fondo, solo un borde sutil punteado
+    style AS fill:none,stroke:#9ca3af,stroke-width:1px,stroke-dasharray: 5 5,color:#000000
+    style IAR fill:none,stroke:#9ca3af,stroke-width:1px,stroke-dasharray: 5 5,color:#000000
 ```
 
 ### Razonamiento Arquitectonico:
