@@ -1,0 +1,12 @@
+[phases.setup]
+nixPkgs = ["gradle", "jdk21"]
+
+[phases.install]
+cmds = ["./gradlew build -x test --no-daemon"]
+
+[phases.build]
+cmds = ["echo 'Build completed'"]
+
+[start]
+cmd = "./gradlew run --no-daemon"
+
