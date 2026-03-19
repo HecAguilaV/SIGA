@@ -88,5 +88,4 @@ src/
 
 ## Autor
 
-> **Héctor Aguila**  
->> Un Soñador con Poca RAM
+> Un Soñador con Poca RAM 👨🏻💻 & Misael

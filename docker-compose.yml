@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Base de Datos Local (Emulación de Supabase)
+  siga-db:
+    image: postgres:15-alpine
+    container_name: siga-postgres
+    environment:
+      POSTGRES_DB: siga_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - siga-db-data:/var/lib/postgresql/data
+
+  # Admin de Base de Datos (Web GUI)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: siga-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@siga.cl
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - siga-db
+
+  # Placeholder para Eureka Server (Próximo Requisito)
+  # eureka-server:
+  #   image: openjdk:17-slim
+  #   ports:
+  #     - "8761:8761"
+
+volumes:
+  siga-db-data:

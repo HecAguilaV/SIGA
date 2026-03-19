@@ -1,36 +1,40 @@
 {
 	"folders": [
 		{
-			"name": "SIGA",
+			"name": "💎 SIGA (Gentle Nexus)",
 			"path": "."
 		},
 		{
-			"name": "📦 Backend",
+			"name": "⚙️ Microservices (Backend)",
 			"path": "services/backend"
 		},
 		{
-			"name": "🌐 WebApp",
+			"name": "🖥️ Web Portal (Next.js)",
 			"path": "services/webapp"
 		},
 		{
-			"name": "📱 Mobile",
+			"name": "📱 Mobile App (Android)",
 			"path": "services/mobile"
 		},
 		{
-			"name": "🛒 Comercial",
+			"name": "🏬 Comercial Hub",
 			"path": "services/comercial"
 		},
 		{
-			"name": "🧠 Arquitectura Agéntica",
+			"name": "🧠 Gentle Orchestrator (Engram/SDD)",
 			"path": "arquitectura-agentica"
 		},
 		{
-			"name": "🛠️ Skills",
+			"name": "🛡️ Agentic Arsenal (Skills)",
 			"path": "skills"
 		},
 		{
-			"name": "📚 Documentación Origen",
+			"name": "📜 Legacy Docs",
 			"path": "docs"
+		},
+		{
+			"name": "🏛️ EXAMEN (EFT Documents)",
+			"path": "EXAMEN"
 		}
 	],
 	"settings": {
