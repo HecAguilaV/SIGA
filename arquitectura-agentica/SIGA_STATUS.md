@@ -2,16 +2,16 @@
 
 Este documento resume el estado de los componentes del Proyecto SIGA al **17 de marzo de 2026**.
 
-## 📊 Resumen de Componentes
+##  Resumen de Componentes
 
 | Servicio | Estado Git | Tecnología | Propósito |
 | :--- | :--- | :--- | :--- |
-| **SIGA-BACKEND** | ✅ Sincronizado | Kotlin / Spring Boot | API Central, Gestión de IA y DB. |
-| **SIGA-WEBCOMERCIAL** | ✅ Sincronizado | React + Vite | Landing page, registro y mantenimiento. |
-| **SIGA-WEBAPP** | ✅ Sincronizado | SvelteKit | Panel administrativo para dueños. |
-| **SIGA-APP** | ✅ Sincronizado | Android (Compose) | Operación en terreno y stock. |
+| **SIGA-BACKEND** |  Sincronizado | Kotlin / Spring Boot | API Central, Gestión de IA y DB. |
+| **SIGA-WEBCOMERCIAL** |  Sincronizado | React + Vite | Landing page, registro y mantenimiento. |
+| **SIGA-WEBAPP** |  Sincronizado | SvelteKit | Panel administrativo para dueños. |
+| **SIGA-APP** |  Sincronizado | Android (Compose) | Operación en terreno y stock. |
 
-## 🛠️ Detalles Técnicos y Logros Recientes
+## ️ Detalles Técnicos y Logros Recientes
 
 ### SIGA-BACKEND (Repositorio Remoto Actualizado)
 - **Migraciones**: Se ha añadido y pusheado el script `015_ai_fallback_functions.sql` que garantiza la continuidad del negocio mediante **SafeMode** (funciones SQL) si la IA falla.
@@ -26,7 +26,7 @@ Este documento resume el estado de los componentes del Proyecto SIGA al **17 de 
 - **Multi-tenancy**: Estructura sólida basada en `usuario_comercial_id`.
 - **Base de Datos**: Esquemas separados (`siga_comercial` y `siga_saas`) en PostgreSQL 16.
 
-## 🧭 Recomendación: Arquitectura Agéntica
+##  Recomendación: Arquitectura Agéntica
 
 Respecto a la **Arquitectura Agéntica**, mi recomendación es integrarla de la siguiente manera:
 
