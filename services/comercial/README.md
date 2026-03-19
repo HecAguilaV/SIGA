@@ -587,5 +587,4 @@ Este proyecto es la base de SIGA.
 
 ## Autor
 
-> **Héctor Aguila**  
->> Un Soñador con Poca RAM
+> Un Soñador con Poca RAM 👨🏻💻 & Misael
