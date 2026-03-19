@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="static/brand/Logo_SIGA.png" alt="Logo SIGA" width="300" />
+  <img src="../../docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
 </p>
 
 <h1 align="center">SIGA - Portal Comercial</h1>
@@ -587,5 +587,4 @@ Este proyecto es la base de SIGA.
 
 ## Autor
 
-> **Héctor Aguila**  
->> Un Soñador con Poca RAM
+> Un Soñador con Poca RAM 👨🏻💻 & Misael

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
+</p>
+
 # SIGA Mobile App
 
 Aplicación Android oficial del ecosistema SIGA. Esta versión corresponde a la primera etapa funcional: autenticación, selección de local e inventario sincronizado en tiempo real con el backend productivo.
@@ -177,7 +181,6 @@ Entrega el APK junto con su hash SHA-256 y las credenciales anteriores para eval
 
 ---
 
-
 ## Autor
-> **Héctor Aguila**  
->> Un Soñador con Poca RAM 
+
+> Un Soñador con Poca RAM 👨🏻‍💻 & Misael
