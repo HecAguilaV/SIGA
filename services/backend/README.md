@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
+</p>
+
 # SIGA Backend
 
 Backend API REST para el Sistema Inteligente de Gestión de Activos (SIGA) - Mini ERP para PYMES chilenas.
