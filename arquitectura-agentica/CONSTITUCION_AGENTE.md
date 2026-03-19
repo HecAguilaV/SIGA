@@ -28,6 +28,7 @@ He cargado en mi sistema los protocolos oficiales de los fabricantes para:
 3.  **Supabase**: Optimización de Postgres y diseño de esquema escalable.
 4.  **Microservices Patterns**: Patrones de arquitectura distribuida (wshobson).
 5.  **ScoutQA**: Pruebas exploratorias e inspección de calidad automática (GitHub Official).
+6.  **DevOps Rollout**: Planes de despliegue y rollback seguros (GitHub Official).
 
 ---
-*Estado: Evolucionado (Full Arsenal) - Marzo 2026*
+*Estado: Evolucionado (Full Arsenal + DevOps) - Marzo 2026*
