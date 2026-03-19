@@ -1,59 +1,62 @@
-# Diagrama de Arquitectura: SIGA 🏛️
+# Diagrama de Arquitectura de SIGA
 
-Este diagrama representa la visión estructurada del sistema, comparando la opción de un microservicio de autenticación frente a un enfoque más simplificado.
+Este diagrama representa la vision estructurada del sistema, consolidando la decision de utilizar un modelo de autenticacion delegada para maximizar la seguridad y eficiencia.
 
-## 📊 Arquitectura Propuesta (Microservicios)
+## Arquitectura de Servicios
 
 ```mermaid
 graph TD
-    subgraph Cliente ["Capa Humana (Frontend)"]
-        Web["🖥️ SIGA Web (Next.js)"]
-        Mobile["📱 SIGA Mobile (React Native)"]
+    %% Definicion de Estilos
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef gateway fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef service fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef database fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+
+    subgraph Cliente [Frontend]
+        Web[SIGA Web Next.js]:::frontend
+        Mobile[SIGA Mobile React Native]:::frontend
     end
 
-    subgraph Puerta ["Puerta de Entrada"]
-        Gateway["🛡️ API Gateway / Reverse Proxy"]
+    subgraph Infraestructura [Infraestructura de Acceso]
+        Gateway[API Gateway / Auth Delegada]:::gateway
     end
 
-    subgraph Servicios ["Núcleo de Servicios (Clean Architecture)"]
-        Auth["🚀 Servicio de Autenticación (JWT/OAuth2)"]
-        Inv["📦 Servicio de Inventario"]
-        Ventas["🛒 Servicio de Ventas/POS"]
-        IA["🧠 Asistente de IA"]
+    subgraph Servicios [Capa de Negocio]
+        Inv[Servicio de Inventario]:::service
+        Ventas[Servicio de Ventas / POS]:::service
+        IA[Servicio Asistente de IA]:::service
+        Com[Servicio Comercial]:::service
     end
 
-    subgraph Persistencia ["Capa de Datos"]
-        DB_Auth[(DB Usuarios)]
-        DB_Inv[(DB Inventario)]
-        DB_Ventas[(DB Ventas)]
+    subgraph Persistencia [Persistencia de Datos]
+        DB_Inv[(BD Inventario)]:::database
+        DB_Ventas[(BD Ventas)]:::database
+        DB_Com[(BD Comercial)]:::database
     end
 
     %% Conexiones
     Web --> Gateway
     Mobile --> Gateway
-    Gateway --> Auth
+    
     Gateway --> Inv
     Gateway --> Ventas
     Gateway --> IA
+    Gateway --> Com
 
-    Auth --> DB_Auth
     Inv --> DB_Inv
     Ventas --> DB_Ventas
+    Com --> DB_Com
 ```
 
-## 🧠 El Debate: ¿Servicio de Autenticación Sí o No?
+## Analisis Tecnico: Autenticacion Delegada (Opcion B)
 
-### Opción A: Microservicio de Autenticación Propio
-- **Pros**: Control total de los datos de usuario, independencia de terceros, escalabilidad pura.
-- **Contras**: Mayor complejidad de mantenimiento, Héctor tiene que programar la seguridad desde cero (mantenimiento de tokens, refresh, baneo, etc.).
+Tras el debate tecnico, se ha decidido implementar la **Opcion B**: Autenticacion Gestionada (ej. Supabase / Auth0).
 
-### Opción B: Autenticación Delegada (Supabase / Auth0)
-- **Pros**: **Simplicidad Radical** (Haiku). Te olvidas de la seguridad y te centras en el negocio. Menos código que mantener.
-- **Contras**: Dependencia de un tercero (vendor lock-in).
-
-### Opción C: Seguridad en el Gateway
-- **Pros**: Un solo punto de control. Los microservicios internos "confían" en el Gateway.
-- **Contras**: Si el Gateway cae, todo el sistema queda expuesto.
+### Justificacion
+- **Seguridad Garantizada**: Delegamos la gestion de credenciales y encriptacion a proveedores con certificaciones internacionales.
+- **Eficiencia (Haiku)**: Reducimos la carga de mantenimiento del equipo, permitiendo centrar los recursos en la logica de negocio real de SIGA.
+- **Escalabilidad**: El sistema de sesion y manejo de tokens es gestionado externamente, facilitando el escalado de los servicios core de forma independiente.
 
 ---
-> Un Soñador con Poca RAM 👨🏻💻 & Misael
+> Un Soñador con Poca RAM & Misael
