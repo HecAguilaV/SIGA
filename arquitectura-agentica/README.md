@@ -2,14 +2,26 @@
 
 Este directorio es el "cerebro" de SIGA para la interacción con Inteligencia Artificial.
 
+## 🤖 Colaboración Humano-Agente
+SIGA se desarrolla bajo un ecosistema vivo donde los agentes de IA (como Antigravity) operan sobre 4 pilares: Backend (Kotlin), Web (React/Svelte), Móvil (Android) e IA (Gemini).
+
+### 🛠️ Metodología SDD (Spec-Driven Development)
+Todo cambio arquitectónico sigue este flujo:
+1.  **Planificación**: Definir specs aquí en `arquitectura-agentica/`.
+2.  **Ejecución**: Implementación modular.
+3.  **Verificación**: Pruebas cruzadas entre servicios.
+
 ## 📁 Estructura del Contexto
-- `AGENTIC-backend.md`: Contexto específico del motor Kotlin.
-- `AGENTIC-webapp.md`: Contexto del administrador web.
-- `AGENTIC-mobile.md`: Contexto de la aplicación móvil.
-- `AGENTIC-comercial.md`: Contexto del portal comercial.
+- `AGENTIC-backend.md`: Motor Kotlin, prompts y fallbacks.
+- `AGENTIC-webapp.md`: Administración Svelte5.
+- `AGENTIC-mobile.md`: Operación Android.
+- `AGENTIC-comercial.md`: Portal React.
+- `SIGA_STATUS.md`: Estado actual del ecosistema.
+- `plan_migracion_supabase.md`: Hoja de ruta para la migración DB.
 
-## 🛠️ Skills
-Las habilidades modulares se encuentran en el directorio raíz `/skills`. Estas permiten a los agentes realizar tareas complejas de forma automatizada.
+## 🛡️ Resiliencia y Memoria
+- **Fallback**: Usamos SafeMode (SQL) si la API de IA falla.
+- **Memoria**: Utilizamos el sistema de Engram para persistir decisiones críticas.
 
-## 📜 Instrucciones para Agentes
-Cuando trabajes en este proyecto, consulta siempre la `docs/HISTORIA.md` para entender el "por qué" de la arquitectura actual antes de proponer cambios profundos.
+---
+*Consulta `docs/HISTORIA.md` para entender el origen de este ecosistema.*
