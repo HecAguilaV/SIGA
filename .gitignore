@@ -1,0 +1,44 @@
+# General
+.vscode/
+.idea/
+.DS_Store
+*.log
+Thumbs.db
+desktop.ini
+
+# Monorepo specific (Original redundant folders during transition)
+SIGA-APP/
+SIGA-BACKEND/
+SIGA-WEBAPP/
+SIGA-WEBCOMERCIAL/
+
+# Node (WebApp, Comercial)
+**/node_modules/
+**/dist/
+**/build/
+.npm/
+
+# Java/Kotlin (Backend, Mobile)
+**/build/
+**/out/
+*.class
+*.jar
+*.war
+*.ear
+.gradle/
+**/gradle-app.setting
+**/gradle-wrapper.jar
+!**/gradle-wrapper.jar
+
+# Android specific
+*.apk
+*.ap_
+*.dex
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Secrets
+.env
+*.pem
+*.key
