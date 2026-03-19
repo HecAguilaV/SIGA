@@ -1,4 +1,8 @@
-# SIGA: Sistema Inteligente de Gestión de Activos 🌍💎
+<p align="center">
+  <img src="docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
+</p>
+
+# SIGA: Sistema Inteligente de Gestión de Activos
 
 Bienvenido al monorepo de **SIGA**, un ecosistema de software profesional diseñado para la gestión integral, la movilidad y la integración de IA.
 
