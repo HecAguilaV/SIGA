@@ -36,10 +36,10 @@ SIGA Backend es una API REST desarrollada con Spring Boot y Kotlin que proporcio
 
 - **[API Endpoints](./docs/API_ENDPOINTS.md)** – Especificación exhaustiva de rutas y payloads.
 - **[Endpoints Operativos Verificados](./docs/ENDPOINTS_OPERATIVOS.md)** – Matriz de consumo real por cliente oficial.
-- **[Análisis Endpoints & Sincronización](./docs/ANALISIS_ENDPOINTS_Y_SINCRONIZACION.md)** – Flujos compartidos WebApp ↔ App Móvil.
+- **[Análisis Endpoints & Sincronización](./docs/ANALISIS_ENDPOINTS_Y_SINCRONIZACION.md)** – Flujos compartidos WebApp  App Móvil.
 - **[Arquitectura Backend](./docs/ARQUITECTURA_BACKEND.md)** – Fuente de verdad de módulos y decisiones.
 - **[Esquemas de Base de Datos](./docs/ESQUEMAS_DATABASE.md)** – Estructura completa de `siga_saas` y `siga_comercial`.
-- **[Sincronización App Móvil ↔ WebApp](./docs/SINCRONIZACION_APPMOVIL_WEBAPP.md)** – Guía práctica de consumo simultáneo.
+- **[Sincronización App Móvil  WebApp](./docs/SINCRONIZACION_APPMOVIL_WEBAPP.md)** – Guía práctica de consumo simultáneo.
 - **[Visión Asistente IA](./docs/VISION_SIGA_ASISTENTE_IA.md)** – Rol y roadmap del asistente inteligente.
 - **[Ecosistema Frontend & App](./docs/ECOSISTEMA/README.md)** – Acceso directo a especificaciones de WebApp, Portal Comercial y App Móvil.
 - **[Índice de Documentación](./docs/README_DOCS.md)** – Referencia rápida para mantener documentación alineada.
@@ -306,4 +306,4 @@ Este software es propiedad privada. No se permite su uso comercial sin autorizac
 
 ## Autor
 
-> Un Soñador con Poca RAM 👨🏻💻 & Misael
+> Un Soñador con Poca RAM  & Misael

@@ -82,7 +82,7 @@ Railway asignará una URL automáticamente, por ejemplo:
 - Verificar que `PORT` esté configurado o dejar que Railway lo asigne
 
 ### Error: "Build failed"
-- Revisar logs en Railway (sección "Deployments" → "View Logs")
+- Revisar logs en Railway (sección "Deployments"  "View Logs")
 - Verificar que `build.gradle.kts` esté correcto
 - Verificar que todas las dependencias estén disponibles
 - Verificar que el Dockerfile esté en la raíz del proyecto

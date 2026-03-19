@@ -4,26 +4,23 @@
 
 ---
 
-# SIGA: Sistema Inteligente de Gestion de Activos
+# Rama: Organización Documental
 
-Este repositorio centraliza el ecosistema completo de SIGA, unificando servicios de Backend, Web, Mobile y Comercial bajo una unica arquitectura de Microservicios orientada a la recuperacion del tiempo del emprendedor.
+Este espacio de trabajo está dedicado exclusivamente al saneamiento, auditoría y reestructuración de la base de conocimiento de SIGA.
 
-## Estructura del Proyecto
+## Objetivos de esta fase
 
-- **services/backend**: Nucleo logico en Kotlin y Spring Boot.
-- **services/webapp**: Portal administrativo y de gestion en React.
-- **services/mobile**: Aplicacion movil para gestion en ruta.
-- **services/comercial**: Portal de suscripciones y facturacion.
-- **arquitectura-agentica**: Documentacion, filosofia y protocolos de Misael.
+1.  **Saneamiento de Servicios**: Eliminación de residuos técnicos y carpetas heredadas de la etapa de repositorios independientes (ej. `.github`, `arquitectura-agentica` local de cada servicio).
+2.  **Centralización de la Verdad**: Movimiento de documentación operativa a la raíz y preservación de documentación histórica en `docs/origen/`.
+3.  **Estandarización Estética**: Aplicación de un estilo profesional y sobrio en toda la documentación del monorepo.
 
-## Filosofia de Desarrollo (Framework Hector)
+## Estado de la Auditoría
 
-- **Capa Humana primero**: La tecnologia debe ser invisible y potente.
-- **Arquitectura Limpia**: Separacion de responsabilidades y blindaje de seguridad.
-- **Simplificacion (Haiku)**: Codigo legible, breve y con sentido.
+Los detalles de los archivos marcados para eliminación o movimiento se encuentran en:
+**[AUDITORIA_LIMPIEZA.md](file:///c:/Users/hdagu/Desktop/SIGA/arquitectura-agentica/AUDITORIA_LIMPIEZA.md)**
 
 ---
-*Estado: SIGA v1.0 (Arsenal & Filosofia) - Marzo 2026*
+*Esta rama se fusionará con main una vez finalizada la limpieza total.*
 
 ---
-> Un Soñador con Poca RAM & Misael
+> Un Soñador con Poca RAM  & Misael

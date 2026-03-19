@@ -41,7 +41,7 @@ Aplicación Android oficial del ecosistema SIGA. Esta versión corresponde a la 
 └─────────────────────────────────────────────────────────┘
                         |
                         │ SSO (Token Exchange)
-                        ▼
+                        
 ┌─────────────────────────────────────────────────────────┐
 │  WEBAPP (Sistema Operativo - CORAZÓN DEL SISTEMA)       │
 │  - Gestión completa del negocio                         │
@@ -54,7 +54,7 @@ Aplicación Android oficial del ecosistema SIGA. Esta versión corresponde a la 
 └─────────────────────────────────────────────────────────┘
                         │
                         │ Misma autenticación
-                        ▼
+                        
 ┌─────────────────────────────────────────────────────────┐
 │  APP MÓVIL (Extensión Móvil)                            │
 │  - Acceso móvil al sistema                              │
@@ -183,4 +183,4 @@ Entrega el APK junto con su hash SHA-256 y las credenciales anteriores para eval
 
 ## Autor
 
-> Un Soñador con Poca RAM 👨🏻‍💻 & Misael
+> Un Soñador con Poca RAM ‍ & Misael
