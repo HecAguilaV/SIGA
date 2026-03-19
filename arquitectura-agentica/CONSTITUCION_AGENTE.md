@@ -23,15 +23,8 @@ Cada funcionalidad importante (ej. Migración de Microservicios) seguirá este f
 
 ## 🛠️ Skills Oficiales Activas
 He cargado en mi sistema los protocolos oficiales de los fabricantes para:
-1.  **Google Gemini**: Revisión de código profesional (`code-reviewer`).
-2.  **Kotlin & Spring Boot**: Mapeo JPA, inmovilidad y arquitectura reactiva (GitHub Official).
-3.  **Supabase**: Optimización de Postgres y diseño de esquema escalable.
-4.  **Microservices Patterns**: Patrones de arquitectura distribuida (wshobson).
-5.  **ScoutQA**: Pruebas exploratorias e inspección de calidad automática (GitHub Official).
-6.  **DevOps Rollout**: Planes de despliegue y rollback seguros (GitHub Official).
-7.  **Systematic Debugging**: Protocolo de investigación de causa raíz (Superpower).
-8.  **Docker Orchestration**: Gestión de contenedores para portabilidad total.
-9.  **Service Discovery**: Orquestación distribuida con Netflix Eureka.
+... [Contenido previo se mantiene en memoria] ...
+10. **Gentle Design System**: Fusión de Vercel (Rigor) y Anthropic (Estética) para interfaces premium.
 
 ---
-*Estado: Evolucionado (Full Arsenal + Infra) - Marzo 2026*
+*Estado: Evolucionado (Full Arsenal + Design) - Marzo 2026*
