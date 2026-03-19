@@ -1,7 +1,7 @@
 {
 	"folders": [
 		{
-			"name": "💎 SIGA (Gentle Nexus)",
+			"name": "💎 SIGA",
 			"path": "."
 		},
 		{
@@ -21,7 +21,7 @@
 			"path": "services/comercial"
 		},
 		{
-			"name": "🧠 Gentle Orchestrator (Engram/SDD)",
+			"name": "🧠 COLEGA Orchestrator (Engram/SDD)",
 			"path": "arquitectura-agentica"
 		},
 		{
