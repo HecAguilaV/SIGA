@@ -162,7 +162,7 @@
    -  Método: `PUT` (no POST)
 
 3. **Reset de contraseña**
-   - Flujo: Solicitar reset → Mostrar token → Cambiar contraseña
+   - Flujo: Solicitar reset  Mostrar token  Cambiar contraseña
    - Endpoints: `POST /api/comercial/auth/reset-password` y `POST /api/comercial/auth/change-password`
    -  En MVP, el token se retorna en la respuesta (no se envía por email)
 

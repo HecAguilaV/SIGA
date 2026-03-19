@@ -20,16 +20,16 @@
 
 ---
 
-### 🚦 Estado del Proyecto: Diseño Finalizado. Listo para Desarrollar.
+###  Estado del Proyecto: Diseño Finalizado. Listo para Desarrollar.
 
 Este documento es la fuente central de verdad. Si te sumas (colaborador, docente o inversor), aquí está el corazón, la visión y el plan de acción.
 
 ---
 
-### 📖 Tabla de Contenidos
+###  Tabla de Contenidos
 - [SIGA (Sistema Inteligente de Gestión de Activos)](#siga-sistema-inteligente-de-gestión-de-activos)
-    - [🚦 Estado del Proyecto: Diseño Finalizado. Listo para Desarrollar.](#-estado-del-proyecto-diseño-finalizado-listo-para-desarrollar)
-    - [📖 Tabla de Contenidos](#-tabla-de-contenidos)
+    - [ Estado del Proyecto: Diseño Finalizado. Listo para Desarrollar.](#-estado-del-proyecto-diseño-finalizado-listo-para-desarrollar)
+    - [ Tabla de Contenidos](#-tabla-de-contenidos)
   - [Carta del Fundador (1 min)](#carta-del-fundador-1-min)
   - [La Problemática](#la-problemática)
   - [La Solución](#la-solución)
@@ -45,7 +45,7 @@ Este documento es la fuente central de verdad. Si te sumas (colaborador, docente
   - [Modelo de datos inicial (v1)](#modelo-de-datos-inicial-v1)
   - [Guía rápida para devs (TL;DR)](#guía-rápida-para-devs-tldr)
   - [Flujo de trabajo con GitHub (equipo)](#flujo-de-trabajo-con-github-equipo)
-  - [Plan de Desarrollo (Gatear → Caminar → Correr)](#plan-de-desarrollo-gatear--caminar--correr)
+  - [Plan de Desarrollo (Gatear  Caminar  Correr)](#plan-de-desarrollo-gatear--caminar--correr)
   - [Documentación Detallada](#documentación-detallada)
   - [Únete a la Visión](#únete-a-la-visión)
 
@@ -97,7 +97,7 @@ Inter: Headings en Bold, cuerpo en Regular.
 ## Visión de la Arquitectura
 - `siga.com`: Marketing y conversión.
 - `app.siga.com`: Aplicación SaaS (lógica de negocio).
-- **Flujo:** Interfaz (móvil/PC) → API (Ktor) → PostgreSQL → Respuesta.
+- **Flujo:** Interfaz (móvil/PC)  API (Ktor)  PostgreSQL  Respuesta.
 - **Offline-first:** Las acciones se guardan localmente y se sincronizan al recuperar la conexión.
 - Documentos técnicos (modelo 4+1 y ER) en `/docs`.
 
@@ -150,12 +150,12 @@ Para ver el diseño detallado, el Modelo Entidad-Relación y el script DDL compl
 
 ## Flujo de trabajo con GitHub (equipo)
 - **Ramas:** `main` (protegida), `dev` (integración), `feature/<tarea>`.
-- **Flujo:** Crear `feature` → PR a `dev` → Revisión → Merge.
+- **Flujo:** Crear `feature`  PR a `dev`  Revisión  Merge.
 - **Commits:** `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `build`.
 
 ---
 
-## Plan de Desarrollo (Gatear → Caminar → Correr)
+## Plan de Desarrollo (Gatear  Caminar  Correr)
 A continuación se presenta el plan de desarrollo visualizado del proyecto.
 
 ![Roadmap SIGA](docs/SIGA_Roadmap_Visual.svg)

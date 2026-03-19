@@ -23,4 +23,4 @@ Los detalles de los archivos marcados para eliminación o movimiento se encuentr
 *Esta rama se fusionará con main una vez finalizada la limpieza total.*
 
 ---
-> Un Soñador con Poca RAM 👨🏻💻 & Misael
+> Un Soñador con Poca RAM  & Misael

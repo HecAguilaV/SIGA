@@ -71,8 +71,8 @@ Relación entre usuarios y locales asignados (OPERADOR solo ve sus locales)
 
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
-| `usuario_id` | INTEGER | PK, FK → usuarios.id | ID del usuario |
-| `local_id` | INTEGER | PK, FK → locales.id | ID del local |
+| `usuario_id` | INTEGER | PK, FK  usuarios.id | ID del usuario |
+| `local_id` | INTEGER | PK, FK  locales.id | ID del local |
 
 **Foreign Keys**:
 - `usuarios_locales_usuario_id_fkey`: ON DELETE CASCADE
@@ -106,7 +106,7 @@ Catálogo de productos
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
 | `nombre` | VARCHAR(200) | NOT NULL | Nombre del producto |
 | `descripcion` | TEXT | NULL | Descripción del producto |
-| `categoria_id` | INTEGER | FK → categorias.id | ID de la categoría |
+| `categoria_id` | INTEGER | FK  categorias.id | ID de la categoría |
 | `codigo_barras` | VARCHAR(50) | UNIQUE | Código de barras |
 | `precio_unitario` | NUMERIC(10,2) | NULL | Precio unitario |
 | `activo` | BOOLEAN | DEFAULT true | Estado del producto |
@@ -128,8 +128,8 @@ Stock por producto y local
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `producto_id` | INTEGER | NOT NULL, FK → productos.id | ID del producto |
-| `local_id` | INTEGER | NOT NULL, FK → locales.id | ID del local |
+| `producto_id` | INTEGER | NOT NULL, FK  productos.id | ID del producto |
+| `local_id` | INTEGER | NOT NULL, FK  locales.id | ID del local |
 | `cantidad` | INTEGER | NOT NULL, DEFAULT 0, >= 0 | Cantidad en stock |
 | `cantidad_minima` | INTEGER | NOT NULL, DEFAULT 0, >= 0 | Cantidad mínima de alerta |
 | `fecha_actualizacion` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de última actualización |
@@ -156,14 +156,14 @@ Historial de movimientos de stock
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `producto_id` | INTEGER | FK → productos.id | ID del producto |
-| `local_id` | INTEGER | FK → locales.id | ID del local |
+| `producto_id` | INTEGER | FK  productos.id | ID del producto |
+| `local_id` | INTEGER | FK  locales.id | ID del local |
 | `tipo` | VARCHAR(20) | NOT NULL | Tipo: ENTRADA, SALIDA, VENTA, AJUSTE, TRASLADO |
 | `cantidad` | INTEGER | NOT NULL | Cantidad del movimiento |
 | `cantidad_anterior` | INTEGER | NULL | Cantidad antes del movimiento |
 | `cantidad_nueva` | INTEGER | NULL | Cantidad después del movimiento |
-| `usuario_id` | INTEGER | FK → usuarios.id | ID del usuario que realizó el movimiento |
-| `venta_id` | INTEGER | FK → ventas.id | ID de la venta (si aplica) |
+| `usuario_id` | INTEGER | FK  usuarios.id | ID del usuario que realizó el movimiento |
+| `venta_id` | INTEGER | FK  ventas.id | ID de la venta (si aplica) |
 | `observaciones` | TEXT | NULL | Observaciones del movimiento |
 | `fecha` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha del movimiento |
 
@@ -190,8 +190,8 @@ Registro de ventas (desde POS y manuales)
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `local_id` | INTEGER | FK → locales.id | ID del local |
-| `usuario_id` | INTEGER | FK → usuarios.id | ID del usuario que realizó la venta |
+| `local_id` | INTEGER | FK  locales.id | ID del local |
+| `usuario_id` | INTEGER | FK  usuarios.id | ID del usuario que realizó la venta |
 | `fecha` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de la venta |
 | `total` | NUMERIC(10,2) | NOT NULL, >= 0 | Total de la venta |
 | `estado` | VARCHAR(20) | NOT NULL, DEFAULT 'COMPLETADA' | Estado: COMPLETADA, CANCELADA, PENDIENTE |
@@ -219,8 +219,8 @@ Detalles de cada venta (productos vendidos)
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `venta_id` | INTEGER | NOT NULL, FK → ventas.id | ID de la venta |
-| `producto_id` | INTEGER | NOT NULL, FK → productos.id | ID del producto |
+| `venta_id` | INTEGER | NOT NULL, FK  ventas.id | ID de la venta |
+| `producto_id` | INTEGER | NOT NULL, FK  productos.id | ID del producto |
 | `cantidad` | INTEGER | NOT NULL, > 0 | Cantidad vendida |
 | `precio_unitario` | NUMERIC(10,2) | NOT NULL, >= 0 | Precio unitario al momento de la venta |
 | `subtotal` | NUMERIC(10,2) | NOT NULL, >= 0 | Subtotal (cantidad * precio_unitario) |
@@ -247,8 +247,8 @@ Turnos de caja por local y usuario
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `local_id` | INTEGER | FK → locales.id | ID del local |
-| `usuario_id` | INTEGER | FK → usuarios.id | ID del usuario |
+| `local_id` | INTEGER | FK  locales.id | ID del local |
+| `usuario_id` | INTEGER | FK  usuarios.id | ID del usuario |
 | `fecha_apertura` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de apertura |
 | `fecha_cierre` | TIMESTAMP | NULL | Fecha de cierre |
 | `monto_inicial` | NUMERIC(10,2) | NOT NULL, DEFAULT 0, >= 0 | Monto inicial en caja |
@@ -278,9 +278,9 @@ Transacciones del punto de venta
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `venta_id` | INTEGER | FK → ventas.id | ID de la venta |
-| `turno_caja_id` | INTEGER | FK → turnos_caja.id | ID del turno de caja |
-| `metodo_pago_id` | INTEGER | FK → metodos_pago.id | ID del método de pago |
+| `venta_id` | INTEGER | FK  ventas.id | ID de la venta |
+| `turno_caja_id` | INTEGER | FK  turnos_caja.id | ID del turno de caja |
+| `metodo_pago_id` | INTEGER | FK  metodos_pago.id | ID del método de pago |
 | `monto` | NUMERIC(10,2) | NOT NULL, >= 0 | Monto de la transacción |
 | `cambio` | NUMERIC(10,2) | DEFAULT 0, >= 0 | Cambio entregado |
 | `fecha` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de la transacción |
@@ -325,9 +325,9 @@ Carrito temporal del POS (puede limpiarse periódicamente)
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `usuario_id` | INTEGER | FK → usuarios.id | ID del usuario |
-| `local_id` | INTEGER | FK → locales.id | ID del local |
-| `producto_id` | INTEGER | FK → productos.id | ID del producto |
+| `usuario_id` | INTEGER | FK  usuarios.id | ID del usuario |
+| `local_id` | INTEGER | FK  locales.id | ID del local |
+| `producto_id` | INTEGER | FK  productos.id | ID del producto |
 | `cantidad` | INTEGER | NOT NULL, > 0 | Cantidad en el carrito |
 | `precio_unitario` | NUMERIC(10,2) | NOT NULL, >= 0 | Precio unitario |
 | `fecha_creacion` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de creación |
@@ -355,8 +355,8 @@ Alertas y notificaciones del sistema
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
 | `tipo` | VARCHAR(50) | NOT NULL | Tipo: STOCK_BAJO, STOCK_AGOTADO, VENTA_ALTA, MOVIMIENTO_SOSPECHOSO |
-| `producto_id` | INTEGER | FK → productos.id | ID del producto (si aplica) |
-| `local_id` | INTEGER | FK → locales.id | ID del local (si aplica) |
+| `producto_id` | INTEGER | FK  productos.id | ID del producto (si aplica) |
+| `local_id` | INTEGER | FK  locales.id | ID del local (si aplica) |
 | `mensaje` | TEXT | NOT NULL | Mensaje de la alerta |
 | `leida` | BOOLEAN | DEFAULT false | Si la alerta fue leída |
 | `fecha_creacion` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de creación |
@@ -438,8 +438,8 @@ Suscripciones activas de clientes
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `usuario_id` | INTEGER | NOT NULL, FK → usuarios.id | ID del cliente |
-| `plan_id` | INTEGER | NOT NULL, FK → planes.id | ID del plan |
+| `usuario_id` | INTEGER | NOT NULL, FK  usuarios.id | ID del cliente |
+| `plan_id` | INTEGER | NOT NULL, FK  planes.id | ID del plan |
 | `fecha_inicio` | DATE | NOT NULL | Fecha de inicio |
 | `fecha_fin` | DATE | NULL | Fecha de fin |
 | `estado` | VARCHAR(20) | NOT NULL, DEFAULT 'ACTIVA' | Estado: ACTIVA, SUSPENDIDA, CANCELADA, VENCIDA |
@@ -469,7 +469,7 @@ Registro de pagos de suscripciones
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `suscripcion_id` | INTEGER | FK → suscripciones.id | ID de la suscripción |
+| `suscripcion_id` | INTEGER | FK  suscripciones.id | ID de la suscripción |
 | `monto` | NUMERIC(10,2) | NOT NULL, >= 0 | Monto del pago |
 | `moneda` | VARCHAR(10) | DEFAULT 'CLP' | Moneda del pago |
 | `metodo_pago` | VARCHAR(50) | NULL | Método de pago |
@@ -499,8 +499,8 @@ Facturas generadas para suscripciones
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `suscripcion_id` | INTEGER | FK → suscripciones.id | ID de la suscripción |
-| `pago_id` | INTEGER | FK → pagos.id | ID del pago |
+| `suscripcion_id` | INTEGER | FK  suscripciones.id | ID de la suscripción |
+| `pago_id` | INTEGER | FK  pagos.id | ID del pago |
 | `numero_factura` | VARCHAR(50) | UNIQUE | Número de factura |
 | `monto` | NUMERIC(10,2) | NOT NULL, >= 0 | Monto base |
 | `iva` | NUMERIC(10,2) | DEFAULT 0, >= 0 | IVA |
@@ -536,8 +536,8 @@ Carritos de compra de planes
 | Campo | Tipo | Restricciones | Descripción |
 |-------|------|---------------|-------------|
 | `id` | INTEGER | PK, AUTO_INCREMENT | Identificador único |
-| `usuario_id` | INTEGER | FK → usuarios.id | ID del cliente |
-| `plan_id` | INTEGER | FK → planes.id | ID del plan |
+| `usuario_id` | INTEGER | FK  usuarios.id | ID del cliente |
+| `plan_id` | INTEGER | FK  planes.id | ID del plan |
 | `periodo` | VARCHAR(20) | NOT NULL, DEFAULT 'MENSUAL' | Periodo: MENSUAL, ANUAL |
 | `fecha_creacion` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de creación |
 | `fecha_actualizacion` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Fecha de última actualización |
