@@ -1,4 +1,4 @@
-# Reglas de Oro de Colaboración (SIGA) 📜⚖️
+# Reglas de Oro de Colaboración (SIGA) ️
 
 Este documento establece las normas innegociables para cualquier agente de IA o colaborador que trabaje en este ecosistema.
 

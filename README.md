@@ -61,4 +61,4 @@ Este repositorio centraliza el ecosistema completo de SIGA, unificando servicios
 *Estado: SIGA v1.0 (Arsenal & Filosofia) - Marzo 2026*
 
 ---
-> Un Soñador con Poca RAM & Misael
+> Un Soñador con Poca RAM  & Misael
