@@ -1,0 +1,40 @@
+# Android/IntelliJ/Gradle
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+/CHALLA
+
+# Kotlin/Java
+*.iml
+*.class
+*.jar
+*.war
+*.ear
+
+# Android Studio
+/.gradle
+/.idea/
+*.hprof
+
+# Generated files
+**/build/
+**/tmp/
+**/out/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Node
+node_modules/
+
+# Misc
+*.log
+
+# Keep gradle wrapper
+!gradle/wrapper/gradle-wrapper.jar

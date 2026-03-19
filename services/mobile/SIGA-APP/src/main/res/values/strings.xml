@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">SIGA</string>
+    <string name="app_subtitle">Sistema Inteligente de Gestión de Activos</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="username_hint">Usuario</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="login_button">INGRESAR</string>
+    <string name="invalid_credentials">Credenciales inválidas</string>
+    <string name="dashboard_title">SIGA</string>
+    <string name="store_name">Tienda Principal</string>
+    <string name="ai_assistant">Asistente IA</string>
+</resources>

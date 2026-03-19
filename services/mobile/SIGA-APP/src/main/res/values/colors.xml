@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores oficiales de SIGA -->
+    <color name="siga_primary_dark">#03045E</color>
+    <color name="siga_accent_cyan">#00B4D8</color>
+    <color name="siga_accent_turquoise">#80FFDB</color>
+    <color name="siga_white">#FFFFFF</color>
+    
+    <!-- Colores funcionales -->
+    <color name="siga_alert_red">#D32F2F</color>
+    <color name="siga_disabled_gray">#B0BEC5</color>
+    <color name="siga_background">#F5F7FA</color>
+    <color name="siga_surface_light">#FFFFFF</color>
+    <color name="siga_text_primary">#1A1A1A</color>
+    <color name="siga_text_secondary">#666666</color>
+    
+    <!-- Colores legacy (mantener para compatibilidad) -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
