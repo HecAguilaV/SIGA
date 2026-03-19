@@ -21,7 +21,7 @@
 **Sistema Inteligente de Gestión de Activos**  
 *Más que un software, una declaración de intenciones.*
 
-> 🚀 **Live Demo:** [https://siga-webcomercial.vercel.app](https://siga-webcomercial.vercel.app)
+>  **Live Demo:** [https://siga-webcomercial.vercel.app](https://siga-webcomercial.vercel.app)
 
 ---
 
@@ -422,7 +422,7 @@ El proyecto requiere variables de entorno para funcionalidades avanzadas:
 **Variables de Entorno Requeridas:**
 
 1. Ve a tu proyecto en **Vercel Dashboard**
-2. Abre **Settings** → **Environment Variables**
+2. Abre **Settings**  **Environment Variables**
 3. Agrega las siguientes variables:
 
    **Variable 1: URL del Backend (CRÍTICA)**
@@ -521,11 +521,11 @@ localStorage.clear()
 
 Visualiza la documentación completa de la API de forma interactiva directamente en la aplicación:
 
-**📖 Documentación en la aplicación:**
+** Documentación en la aplicación:**
  [http://localhost:5173/docs](http://localhost:5173/docs) (desarrollo local)
  `https://tu-dominio.com/docs` (producción)
 
-**📖 Swagger Editor (Online) - Alternativa:**
+** Swagger Editor (Online) - Alternativa:**
  [Ver Documentación Swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/HecAguilaV/SIGA-WEBCOMERCIAL/main/docs/api/openapi.yaml)
 
 O copia y pega esta URL:
@@ -587,4 +587,4 @@ Este proyecto es la base de SIGA.
 
 ## Autor
 
-> Un Soñador con Poca RAM 👨🏻💻 & Misael
+> Un Soñador con Poca RAM  & Misael

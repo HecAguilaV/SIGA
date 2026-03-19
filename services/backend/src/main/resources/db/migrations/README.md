@@ -1,8 +1,8 @@
-# 📦 Scripts de Migración de Base de Datos
+#  Scripts de Migración de Base de Datos
 
 Este directorio contiene los scripts SQL esenciales para crear y configurar la base de datos de SIGA desde cero.
 
-## 📋 Orden de Ejecución
+##  Orden de Ejecución
 
 Los scripts deben ejecutarse en el siguiente orden numérico:
 
@@ -13,13 +13,13 @@ Los scripts deben ejecutarse en el siguiente orden numérico:
 5. **005_update_planes_especificacion.sql** - Actualiza especificaciones de planes
 6. **006_add_campos_usuarios_comerciales.sql** - Agrega campos de trial a usuarios comerciales
 7. **007_redisenar_tabla_facturas.sql** - Rediseña tabla de facturas
-8. **008_create_sistema_permisos.sql** - ⚠️ **CRÍTICO** - Crea sistema de permisos (PERMISOS, ROLES_PERMISOS, USUARIOS_PERMISOS)
+8. **008_create_sistema_permisos.sql** - ️ **CRÍTICO** - Crea sistema de permisos (PERMISOS, ROLES_PERMISOS, USUARIOS_PERMISOS)
 9. **010_fix_facturas_schema.sql** - Corrige esquema de facturas
 10. **012_add_nombre_empresa.sql** - Agrega campo nombre_empresa a usuarios comerciales
 11. **013_add_usuario_comercial_id.sql** - Agrega campo usuario_comercial_id para separación por empresa
 12. **014_separacion_completa_por_empresa.sql** - Implementa separación completa por empresa
 
-### ⚠️ MIGRACIÓN CRÍTICA: 008_create_sistema_permisos.sql
+### ️ MIGRACIÓN CRÍTICA: 008_create_sistema_permisos.sql
 
 **Esta migración es OBLIGATORIA** - Sin ella, el backend fallará con errores como:
 - "Tabla siga_saas.permisos no existe"
@@ -30,12 +30,12 @@ Los scripts deben ejecutarse en el siguiente orden numérico:
 - `ROLES_PERMISOS` - Permisos por defecto de cada rol
 - `USUARIOS_PERMISOS` - Permisos adicionales por usuario
 
-## 🚀 Cómo Ejecutar los Scripts
+##  Cómo Ejecutar los Scripts
 
 ### Opción 1: Desde Always Data (Recomendado)
 
 1. Accede a tu panel de Always Data: https://admin.alwaysdata.com
-2. Ve a **Bases de datos → PostgreSQL**
+2. Ve a **Bases de datos  PostgreSQL**
 3. Selecciona tu base de datos `hector_siga_db`
 4. Abre el **phpPgAdmin** o **pgAdmin** (si está disponible)
 5. Ejecuta cada script en orden numérico (001, 002, 003, ...)
@@ -63,11 +63,11 @@ psql -h postgresql-hector.alwaysdata.net -U hector -d hector_siga_db
 
 ### Opción 3: Desde IntelliJ IDEA
 
-1. Abre **View → Tool Windows → Database**
+1. Abre **View  Tool Windows  Database**
 2. Conecta a tu base de datos PostgreSQL
 3. Abre cada archivo `.sql` y ejecuta con `Ctrl+Enter` (o `Cmd+Enter` en Mac)
 
-## ✅ Verificación
+##  Verificación
 
 Después de ejecutar los scripts, verifica que todo esté correcto:
 
@@ -92,7 +92,7 @@ SELECT * FROM siga_saas.CATEGORIAS;
 SELECT COUNT(*) FROM siga_saas.PERMISOS; -- Debe ser 25
 ```
 
-## 📊 Estructura Creada
+##  Estructura Creada
 
 ### Esquema `siga_saas` (Sistema Operativo)
 - USUARIOS
@@ -119,7 +119,7 @@ SELECT COUNT(*) FROM siga_saas.PERMISOS; -- Debe ser 25
 - FACTURAS
 - CARRITOS
 
-## ⚠️ Notas Importantes
+## ️ Notas Importantes
 
 - Los scripts usan `CREATE TABLE IF NOT EXISTS`, por lo que son idempotentes (puedes ejecutarlos múltiples veces)
 - Los datos iniciales usan `ON CONFLICT DO NOTHING` para evitar duplicados
@@ -127,7 +127,7 @@ SELECT COUNT(*) FROM siga_saas.PERMISOS; -- Debe ser 25
 - Los scripts crean índices para mejorar el rendimiento de consultas frecuentes
 - **Separación por empresa**: Todos los datos operativos están asociados a un `usuario_comercial_id` para multi-tenancy
 
-## 🔄 Próximos Pasos
+##  Próximos Pasos
 
 Una vez ejecutados los scripts:
 1. Verifica la conexión desde el backend
