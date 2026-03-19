@@ -1,39 +1,39 @@
 {
 	"folders": [
 		{
-			"name": " SIGA",
+			"name": "💎 SIGA",
 			"path": "."
 		},
 		{
-			"name": "️ Microservices (Backend)",
+			"name": "⚙️ Microservices (Backend)",
 			"path": "services/backend"
 		},
 		{
-			"name": "️ Web Portal (Next.js)",
+			"name": "🖥️ Web Portal (Next.js)",
 			"path": "services/webapp"
 		},
 		{
-			"name": " Mobile App (Android)",
+			"name": "📱 Mobile App (Android)",
 			"path": "services/mobile"
 		},
 		{
-			"name": " Comercial Hub",
+			"name": "🏬 Comercial Hub",
 			"path": "services/comercial"
 		},
 		{
-			"name": " COLEGA Orchestrator (Engram/SDD)",
+			"name": "🧠 COLEGA Orchestrator (Engram/SDD)",
 			"path": "arquitectura-agentica"
 		},
 		{
-			"name": "️ Agentic Arsenal (Skills)",
+			"name": "🛡️ Agentic Arsenal (Skills)",
 			"path": "skills"
 		},
 		{
-			"name": " Legacy Docs",
+			"name": "📜 Legacy Docs",
 			"path": "docs"
 		},
 		{
-			"name": "️ EXAMEN (EFT Documents)",
+			"name": "🏛️ EXAMEN (EFT Documents)",
 			"path": "EXAMEN"
 		}
 	],
