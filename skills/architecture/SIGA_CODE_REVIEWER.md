@@ -12,9 +12,10 @@ Prevenir que las bases estructurales de SIGA colapsen por mala arquitectura. Cad
 2. **Autorización Contextual Dinámica (RBAC/ABAC)**:
    - ¿Las funciones del Agente o del Backend heredan y verifican el JWT / `UsuarioPermiso`?
    - Si es un Chofer, el API Gateway / BFF debe cortarle el paso a permisos CRUD de stock antes de que llegue a la lógica pesada.
-3. **Resiliencia Extrema (Mecanismo Fallback IA)**:
-   - Si se desarrolla el Agente, es **OBLIGATORIO** que las llamadas al LLM (gemini u o1) estén envueltas en control de errores.
-   - En caso de caída de la API, el bloque de rescate (Fallback) debe disparar una consulta nativa SQL/PL-SQL predefinida o devolver un mensaje de sistema transparente: "Servicio Inteligente degradado temporalmente. Retornando consulta directa." ¡El usuario nunca queda tirado!
+3. **Resiliencia Extrema (Mecanismo Fallback NL2SQL)**:
+   - Si se desarrolla el Agente, es **OBLIGATORIO** que las llamadas al LLM (Gemini u otros) estén envueltas en control de errores.
+   - En caso de caída de la API externa, el bloque de rescate (Fallback) debe actuar como un "Motor Heurístico Local". Debe leer el prompt directo del usuario mediante reconocimiento de palabras clave o Regex (ej: extraer la intención de "cuántas", "bebidas", "Serena").
+   - Con estos parámetros extraídos localmente, el sistema construirá la consulta SQL/PL-SQL pre-compilada para `siga_saas` y entregará una respuesta nativa: *"Debido a intermitencias de red externa, le entrego un cálculo rápido: [X] bebidas en [Local]"*. ¡El usuario jamás debe recibir un error de código!
 4. **Cero Ruido**:
    - Sin emojis genéricos en la documentación formal ni dependencias experimentales innecesarias.
 
