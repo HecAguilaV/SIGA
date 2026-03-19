@@ -1,4 +1,4 @@
-# El Corazón de SIGA (Gentle Nexus Vision)
+# El Corazón de SIGA (Visión Original)
 
 Este documento define la razón de ser de SIGA, alejándose de descripciones técnicas para centrarse en el impacto humano.
 
@@ -13,11 +13,11 @@ SIGA no es un gestor de base de datos; es un **Recuperador de Vida**.
 - **Máxima**: "Que el emprendedor nunca se detenga".
 - **Enfoque**: Si una tarea toma más de 10 segundos o exige navegar 3 menús, SIGA ha fallado.
 
-## 🧠 Los 3 Pilares del "Nexus"
+## 🧠 Los 3 Pilares de SIGA
 1.  **Conversación sobre Navegación**: Si puedes dictarlo, no deberías tener que escribirlo.
 2.  **Proactividad sobre Consulta**: El sistema te dice lo que necesitas saber antes de que preguntes (ej. "Compra X antes del lunes").
 3.  **Simplicidad como Ética**: Limpieza total. Solo la información accionable.
 
-## 🛡️ Mandato para Antigravity
-Cualquier propuesta técnica que añada fricción o complejidad innecesaria al usuario final será rechazada, sin importar cuán "moderna" sea la tecnología. 
+## 🛡️ Mandato para Misael
+Cualquier propuesta técnica que añada fricción o complejidad innecesaria al usuario final será rechazada por Misael, sin importar cuán "moderna" sea la tecnología. 
 **SIGA debe ser invisible y potente.**
