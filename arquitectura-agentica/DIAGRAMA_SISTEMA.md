@@ -1,62 +1,31 @@
-# Diagrama de Arquitectura de SIGA
+# Diagrama de Arquitectura de Microservicios SIGA
 
-Este diagrama representa la vision estructurada del sistema, consolidando la decision de utilizar un modelo de autenticacion delegada para maximizar la seguridad y eficiencia.
-
-## Arquitectura de Servicios
+El siguiente diagrama refleja la arquitectura real y refinada de SIGA, basandose en las tablas de la base de datos divididas por contexto (`siga_comercial` y `siga_saas`) y el diseño de contingencia para la Inteligencia Artificial.
 
 ```mermaid
 graph TD
-    %% Definicion de Estilos
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef gateway fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef service fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
-    classDef database fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
-
-    subgraph Cliente [Frontend]
-        Web[SIGA Web Next.js]:::frontend
-        Mobile[SIGA Mobile React Native]:::frontend
-    end
-
-    subgraph Infraestructura [Infraestructura de Acceso]
-        Gateway[API Gateway / Auth Delegada]:::gateway
-    end
-
-    subgraph Servicios [Capa de Negocio]
-        Inv[Servicio de Inventario]:::service
-        Ventas[Servicio de Ventas / POS]:::service
-        IA[Servicio Asistente de IA]:::service
-        Com[Servicio Comercial]:::service
-    end
-
-    subgraph Persistencia [Persistencia de Datos]
-        DB_Inv[(BD Inventario)]:::database
-        DB_Ventas[(BD Ventas)]:::database
-        DB_Com[(BD Comercial)]:::database
-    end
-
-    %% Conexiones
-    Web --> Gateway
-    Mobile --> Gateway
+    User([Usuario / Emprendedor]) -->|Petición HTTPS| API[API Gateway]
     
-    Gateway --> Inv
-    Gateway --> Ventas
-    Gateway --> IA
-    Gateway --> Com
-
-    Inv --> DB_Inv
-    Ventas --> DB_Ventas
-    Com --> DB_Com
+    API --> BFF[BFF / Creador de Contexto]
+    
+    BFF -->|Manejo SaaS B2B| MC[Microservicio Comercial]
+    BFF -->|JWT + UsuarioPermiso| MI[Microservicio Core SAAS]
+    BFF -->|Prompt Contextualizado| IA[Microservicio Asistente IA]
+    
+    subgraph Almacenamiento Segregado
+        MC -->|JPA| BD_C[(DB: siga_comercial\nUsuarios, Planes, Facturas)]
+        MI -->|JPA| BD_S[(DB: siga_saas\nInventario, Ventas, Locales, Roles)]
+    end
+    
+    subgraph Inteligencia Artificial Resiliente
+        IA -->|1. Consulta LLM| LLM[Google Gemini / LLM Externo]
+        LLM -.->|Caída de Servicio / Timeout| FB{Mecanismo Fallback}
+        FB -->|2. Rescate: Consulta SQL/PL-SQL| MI
+        FB -->|3. Respuesta Transparente| BFF
+    end
 ```
 
-## Analisis Tecnico: Autenticacion Delegada (Opcion B)
-
-Tras el debate tecnico, se ha decidido implementar la **Opcion B**: Autenticacion Gestionada (ej. Supabase / Auth0).
-
-### Justificacion
-- **Seguridad Garantizada**: Delegamos la gestion de credenciales y encriptacion a proveedores con certificaciones internacionales.
-- **Eficiencia (Haiku)**: Reducimos la carga de mantenimiento del equipo, permitiendo centrar los recursos en la logica de negocio real de SIGA.
-- **Escalabilidad**: El sistema de sesion y manejo de tokens es gestionado externamente, facilitando el escalado de los servicios core de forma independiente.
-
----
-> Un Soñador con Poca RAM & Misael
+### Razonamiento Arquitectonico:
+1. **Division Comercial vs Core**: Mantener las facturas del pago del SaaS (Comercial) alejadas de las lechugas y computadores del inventario (SAAS) garantiza que si un modulo cae, el otro sigue vivo.
+2. **El Agente como Proxy Restringido**: La peticion al Agente (IA) viaja desde el BFF con los permisos cargados. Si el usuario es Chofer, la IA sabe por defecto que no puede inyectar SQL de borrado.
+3. **Fallback PL/SQL**: Es imperativo en entornos de alta disponibilidad (inventarios en tiempo real) que la IA nunca paralice al operario. Si Gemini no responde, el modulo entra en modo "Consulta Directa" (Scripting) temporalmente.
