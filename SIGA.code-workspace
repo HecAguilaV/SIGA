@@ -1,7 +1,50 @@
 {
-    "folders": [
-        {
-            "path": "."
-        }
-    ]
+	"folders": [
+		{
+			"name": "SIGA [RAIZ]",
+			"path": "."
+		},
+		{
+			"name": "📦 Backend",
+			"path": "services/backend"
+		},
+		{
+			"name": "🌐 WebApp",
+			"path": "services/webapp"
+		},
+		{
+			"name": "📱 Mobile",
+			"path": "services/mobile"
+		},
+		{
+			"name": "🛒 Comercial",
+			"path": "services/comercial"
+		},
+		{
+			"name": "🧠 Arquitectura Agéntica",
+			"path": "arquitectura-agentica"
+		},
+		{
+			"name": "🛠️ Skills",
+			"path": "skills"
+		},
+		{
+			"name": "📚 Documentación Origen",
+			"path": "docs"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"SIGA-APP": true,
+			"SIGA-BACKEND": true,
+			"SIGA-WEBAPP": true,
+			"SIGA-WEBCOMERCIAL": true
+		}
+	}
 }
