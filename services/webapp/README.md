@@ -88,4 +88,4 @@ src/
 
 ## Autor
 
-> Un Soñador con Poca RAM 👨🏻💻 & Misael
+> Un Soñador con Poca RAM  & Misael
