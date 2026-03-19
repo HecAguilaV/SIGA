@@ -31,6 +31,10 @@
 		{
 			"name": "📚 Documentación Origen",
 			"path": "docs"
+		},
+		{
+			"name": "📚 EXAMEN",
+			"path": "EXAMEN"
 		}
 	],
 	"settings": {
