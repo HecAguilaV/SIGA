@@ -1,4 +1,4 @@
-# El Corazón de SIGA (Gentle Nexus Vision)
+# El Corazón de SIGA (Visión: Siempre Adelante)
 
 Este documento define la razón de ser de SIGA, alejándose de descripciones técnicas para centrarse en el impacto humano.
 
