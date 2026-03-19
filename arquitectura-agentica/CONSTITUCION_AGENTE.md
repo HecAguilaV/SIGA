@@ -29,6 +29,7 @@ He cargado en mi sistema los protocolos oficiales de los fabricantes para:
 4.  **Microservices Patterns**: Patrones de arquitectura distribuida (wshobson).
 5.  **ScoutQA**: Pruebas exploratorias e inspección de calidad automática (GitHub Official).
 6.  **DevOps Rollout**: Planes de despliegue y rollback seguros (GitHub Official).
+7.  **Systematic Debugging**: Protocolo de investigación de causa raíz (Superpower).
 
 ---
-*Estado: Evolucionado (Full Arsenal + DevOps) - Marzo 2026*
+*Estado: Evolucionado (Full Arsenal + Superpowers) - Marzo 2026*
