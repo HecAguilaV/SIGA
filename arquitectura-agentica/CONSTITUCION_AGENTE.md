@@ -24,8 +24,9 @@ Cada funcionalidad importante (ej. Migración de Microservicios) seguirá este f
 ## 🛠️ Skills Oficiales Activas
 He cargado en mi sistema los protocolos oficiales de los fabricantes para:
 1.  **Google Gemini**: Revisión de código profesional (`code-reviewer`).
-2.  **Kotlin**: Mapeo de entidades JPA y mejores prácticas de backend.
+2.  **Kotlin & Spring Boot**: Mapeo JPA, inmovilidad y arquitectura reactiva (GitHub Official).
 3.  **Supabase**: Optimización de Postgres y diseño de esquema escalable.
+4.  **Microservices Patterns**: Patrones de arquitectura distribuida (wshobson).
 
 ---
 *Estado: Evolucionado (Powered by Official Skills) - Marzo 2026*
