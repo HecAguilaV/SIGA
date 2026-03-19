@@ -32,8 +32,10 @@ Cada funcionalidad importante (ej. Migración de Microservicios) seguirá este f
 
 ## 🛠️ Skills Oficiales Activas
 He cargado en mi sistema los protocolos oficiales de los fabricantes para:
-... [Contenido previo se mantiene en memoria] ...
-10. **Gentle Design System**: Fusión de Vercel (Rigor) y Anthropic (Estética) para interfaces premium.
+... [Contenido previo] ...
+10. **Gentle Design System**: Fusión de Vercel y Anthropic.
+11. **Clean Code & Haiku**: Simplicity, Clean Architecture y legibilidad futura.
+12. **Security Blindaje**: Prevención de SQLi y manejo seguro de excepciones.
 
 ---
-*Estado: Evolucionado (Full Arsenal + Design) - Marzo 2026*
+*Estado: Blindaje Profesional (Nexus v2.0) - Marzo 2026*
