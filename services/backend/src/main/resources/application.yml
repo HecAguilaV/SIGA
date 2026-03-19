@@ -1,0 +1,129 @@
+spring:
+  application:
+    name: siga-backend
+  
+  # Inicialización lazy para que el arranque no espere a todos los beans
+  # Esto permite que /health responda antes, sin bloquearse por conexiones DB
+  main:
+    lazy-initialization: true
+  
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://postgresql-hector.alwaysdata.net:5432/hector_siga_db}
+    username: ${DB_USER:hector}
+    password: ${DB_PASSWORD:kike4466}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 0 # No crear conexiones al inicio
+      connection-timeout: 30000
+      idle-timeout: 300000 # 5 minutos
+      max-lifetime: 600000 # 10 minutos (recomendado para bases de datos remotas)
+      validation-timeout: 5000
+      leak-detection-threshold: 60000 # Detectar conexiones que no se cierran
+      initialization-fail-timeout: -1 # No fallar si no puede conectar al inicio
+      # Permitir que la aplicación inicie incluso si la BD no está disponible
+      connection-test-query: SELECT 1
+  
+  jpa:
+    hibernate:
+      ddl-auto: none # No crear tablas automáticamente, usamos migraciones SQL
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        # Permitir que la aplicación inicie incluso si hay problemas con la BD
+        jdbc:
+          time_zone: UTC
+        # No validar esquema al inicio para permitir healthcheck rápido
+        temp:
+          use_jdbc_metadata_defaults: false
+        # No validar relaciones al inicio
+        validator:
+          apply_to_ddl: false
+    open-in-view: false
+    # No inicializar repositorios al inicio si hay problemas
+    repositories:
+      bootstrap-mode: default
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${PORT:8080}
+  address: 0.0.0.0  # Escuchar en todas las interfaces para aceptar healthchecks de Railway
+  error:
+    include-message: always
+    include-binding-errors: always
+  forward-headers-strategy: framework
+  use-forward-headers: true
+
+# Swagger/OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+    use-root-path: false
+    disable-swagger-default-url: false
+    try-it-out-enabled: true
+    # Personalización de la UI
+    doc-expansion: list  # none, list, full - muestra solo títulos inicialmente
+    default-models-expand-depth: 1
+    default-model-expand-depth: 1
+    filter: true  # Habilitar filtro de búsqueda
+    show-common-extensions: true
+    show-extensions: true
+    # NO ordenar tags alfabéticamente - respetar el orden definido en SwaggerConfig (1, 2, 3, 4, 5)
+    # Si se especifica tags-sorter, Swagger UI los ordenará alfabéticamente
+    # Ordenar operaciones dentro de cada tag alfabéticamente
+    operations-sorter: alpha
+  show-actuator: false
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  # Ordenar paths
+  paths-to-match: /api/**
+
+# CORS
+# En desarrollo: se permite cualquier puerto de localhost automáticamente
+# En producción: usar ALLOWED_ORIGINS en Railway
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS:https://siga-webapp.vercel.app,https://siga-webcomercial.vercel.app}
+
+# JWT
+jwt:
+  secret: ${JWT_SECRET:default_secret_change_in_production}
+  issuer: siga-backend
+  access-token-expiry: 86400000 # 24 horas en ms
+  refresh-token-expiry: 604800000 # 7 días en ms
+
+# Gemini API
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+
+# Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  health:
+    liveness-state:
+      enabled: true
+    readiness-state:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.siga.backend: DEBUG
+    org.springframework.security: DEBUG
+
