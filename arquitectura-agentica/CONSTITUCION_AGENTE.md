@@ -34,8 +34,10 @@ Cada funcionalidad importante (ej. Migración de Microservicios) seguirá este f
 He cargado en mi sistema los protocolos oficiales de los fabricantes para:
 ... [Contenido previo] ...
 10. **Gentle Design System**: Fusión de Vercel y Anthropic.
-11. **Clean Code & Haiku**: Simplicity, Clean Architecture y legibilidad futura.
-12. **Security Blindaje**: Prevención de SQLi y manejo seguro de excepciones.
+11. **Clean Code & Haiku**: Simplicity y Clean Architecture.
+12. **Security Blindaje**: Prevención de SQLi y manejo seguro.
+13. **Observability Stack**: Prometheus, Grafana y Loki (Métricas/Logs).
+14. **CI/CD Automation**: Automatización real con GitHub Actions.
 
 ---
-*Estado: Blindaje Profesional (Nexus v2.0) - Marzo 2026*
+*Estado: Nexus v3.0 (Automated & Observed) - Marzo 2026*
