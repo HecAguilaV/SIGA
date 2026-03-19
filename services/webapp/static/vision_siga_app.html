@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIGA App Vision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --primary: #03045e;
+            --primary-light: #0077b6;
+            --secondary: #00b4d8;
+            --accent: #90e0ef;
+            --bg: #f8f9fa;
+            --surface: #ffffff;
+            --text: #1a1a1a;
+            --text-sub: #666;
+            --danger: #ff4757;
+            --success: #2ed573;
+            --header-height: 60px;
+            --nav-height: 70px;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header --- */
+        header {
+            height: var(--header-height);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+        
+        .brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* --- Main Content Area --- */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 100px; /* Space for nav */
+            display: none; /* Hidden by default, JS toggles */
+            animation: fadeIn 0.3s ease;
+        }
+
+        main.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Components --- */
+        .card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 100px; height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 0.8rem; color: var(--text-sub); }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .see-all { color: var(--secondary); font-size: 0.9rem; text-decoration: none; }
+
+        .product-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            gap: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .prod-icon {
+            width: 48px; height: 48px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .prod-info { flex: 1; }
+        .prod-name { font-weight: 600; font-size: 1rem; }
+        .prod-stock { font-size: 0.85rem; color: var(--text-sub); }
+        .prod-price { font-weight: 700; color: var(--primary-light); }
+        
+        .stock-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .low-stock { background: rgba(255, 71, 87, 0.1); color: var(--danger); }
+        .good-stock { background: rgba(46, 213, 115, 0.1); color: var(--success); }
+
+        /* --- Floating Action Button (Scanner) --- */
+        .fab-container {
+            position: fixed;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        
+        .fab {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-light) 100%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.4);
+            border: 4px solid var(--bg);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .fab:active { transform: scale(0.95); }
+
+        /* --- Bottom Navigation --- */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0; width: 100%;
+            height: var(--nav-height);
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+            z-index: 90;
+            padding-bottom: 5px; /* Safe area */
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #999;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-decoration: none;
+            width: 60px;
+            cursor: pointer;
+        }
+        
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 1.5rem; margin-bottom: 2px; }
+        
+        .nav-spacer { width: 60px; } /* Space for FAB */
+
+        /* --- IA Overlay --- */
+        .ia-overlay {
+            position: fixed;
+            bottom: -100%; left: 0; width: 100%; height: 80vh;
+            background: white;
+            border-radius: 25px 25px 0 0;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+            transition: bottom 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 200;
+            display: flex; flex-direction: column;
+        }
+        
+        .ia-overlay.open { bottom: 0; }
+        
+        .ia-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .ia-body { flex: 1; padding: 20px; overflow-y: auto; background: #f9f9f9; }
+        
+        .ia-input-area {
+            padding: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: flex; gap: 10px;
+        }
+        
+        .ia-input {
+            flex: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd;
+            outline: none; font-family: inherit;
+        }
+        
+        .chat-bubble {
+            max-width: 80%; padding: 12px 16px; border-radius: 16px; margin-bottom: 12px;
+            font-size: 0.95rem; line-height: 1.4;
+        }
+        
+        .chat-user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; margin-left: auto; }
+        .chat-bot { background: white; color: var(--text); border: 1px solid #eee; align-self: flex-start; border-bottom-left-radius: 4px; }
+
+        /* --- Camera/Scanner View --- */
+        #scanner-view {
+            background: black;
+            padding: 0;
+            position: relative;
+        }
+        .camera-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .scan-frame {
+            width: 250px; height: 250px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 20px;
+            position: relative;
+        }
+        .scan-frame::before {
+            content: ''; position: absolute; top: -2px; left: -2px; width: 30px; height: 30px;
+            border-top: 4px solid var(--secondary); border-left: 4px solid var(--secondary);
+            border-radius: 6px 0 0 0;
+        }
+        .scan-frame::after {
+            content: ''; position: absolute; bottom: -2px; right: -2px; width: 30px; height: 30px;
+            border-bottom: 4px solid var(--secondary); border-right: 4px solid var(--secondary);
+            border-radius: 0 0 6px 0;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <i class="ph-fill ph-circles-three-plus" style="color: var(--secondary);"></i>
+            SIGA
+        </div>
+        <div class="user-avatar">HA</div>
+    </header>
+
+    <!-- VISTA DASHBOARD (HOME) -->
+    <main id="home" class="active">
+        <div class="card welcome-card">
+            <h2 style="font-size: 1.5rem; margin-bottom: 5px;">Hola, Héctor 👋</h2>
+            <p style="opacity: 0.9;">Tu negocio marcha sobre ruedas.</p>
+            <div style="margin-top: 20px;">
+                <p style="font-size: 0.85rem; opacity: 0.8; text-transform: uppercase;">Ventas Hoy</p>
+                <h1 style="font-size: 2.5rem; font-weight: 700;">$ 245.900</h1>
+            </div>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-item">
+                <div style="color: var(--success); margin-bottom: 5px;"><i class="ph-bold ph-trend-up"></i> +12%</div>
+                <div class="stat-value">58</div>
+                <div class="stat-label">Pedidos</div>
+            </div>
+            <div class="stat-item">
+                <div style="color: var(--danger); margin-bottom: 5px;"><i class="ph-bold ph-warning"></i> Atento</div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Stock Bajo</div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            Alertas de Stock
+            <a href="#" class="see-all" onclick="switchTab('stock')">Ver todo</a>
+        </div>
+
+        <div class="product-list">
+            <div class="product-item">
+                <div class="prod-icon"><i class="ph-fill ph-beer-bottle"></i></div>
+                <div class="prod-info">
+                    <div class="prod-name">Coca-Cola 3L</div>
+                    <div class="prod-stock">Quedan: <b>2</b> un.</div>
+                </div>
+                <span class="stock-badge low-stock">Reponer</span>
+            </div>
+            <div class="product-item">
+                <div class="prod-icon"><i class="ph-fill ph-cookie"></i></div>
+                <div class="prod-info">
+                    <div class="prod-name">Galletas Oreo</div>
+                    <div class="prod-stock">Quedan: <b>4</b> un.</div>
+                </div>
+                <span class="stock-badge low-stock">Bajo</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- VISTA PRODUCTOS -->
+    <main id="stock">
+        <div class="section-title">Inventario</div>
+        <input type="text" placeholder="Buscar producto..." style="width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 20px; font-family: inherit;">
+        
+        <div class="product-list">
+            <!-- Repetir n veces -->
+            <div class="product-item">
+                <div class="prod-icon"><i class="ph-fill ph-hamburger"></i></div>
+                <div class="prod-info">
+                    <div class="prod-name">Hamburguesa Doble</div>
+                    <div class="prod-price">$ 4.500</div>
+                </div>
+                <span class="stock-badge good-stock">50 un.</span>
+            </div>
+            <div class="product-item">
+                <div class="prod-icon"><i class="ph-fill ph-pizza"></i></div>
+                <div class="prod-info">
+                    <div class="prod-name">Pizza Familiar</div>
+                    <div class="prod-price">$ 8.990</div>
+                </div>
+                <span class="stock-badge good-stock">12 un.</span>
+            </div>
+        </div>
+    </main>
+    
+    <!-- VISTA SCANNER -->
+    <main id="scanner-view">
+        <div class="camera-overlay">
+            <div class="scan-frame">
+                <div style="position: absolute; top: 50%; width: 100%; height: 2px; background: red; box-shadow: 0 0 10px red; animation: scan 2s infinite;"></div>
+            </div>
+            <p style="color: white; margin-top: 20px; font-weight: 500;">Apunta el código de barras</p>
+            <button onclick="switchTab('home')" style="margin-top: 30px; padding: 10px 20px; border-radius: 30px; background: rgba(255,255,255,0.2); color: white; border: none; backdrop-filter: blur(5px);">Cancelar</button>
+        </div>
+    </main>
+
+    <!-- VISTA PERFIL -->
+    <main id="profile">
+        <div style="text-align: center; margin-top: 30px;">
+            <div style="width: 80px; height: 80px; background: var(--secondary); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">HA</div>
+            <h2>Héctor Águila</h2>
+            <p style="color: var(--text-sub);">Administrador</p>
+        </div>
+        
+        <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="product-item">
+                <div class="prod-icon"><i class="ph-bold ph-storefront"></i></div>
+                <div class="prod-info"><div class="prod-name">Mis Locales</div></div>
+                <i class="ph-bold ph-caret-right"></i>
+            </div>
+            <div class="product-item">
+                <div class="prod-icon"><i class="ph-bold ph-gear"></i></div>
+                <div class="prod-info"><div class="prod-name">Configuración</div></div>
+                <i class="ph-bold ph-caret-right"></i>
+            </div>
+            <div class="product-item" style="color: var(--danger);">
+                <div class="prod-icon" style="color: var(--danger); background: rgba(255,71,87,0.1);"><i class="ph-bold ph-sign-out"></i></div>
+                <div class="prod-info"><div class="prod-name">Cerrar Sesión</div></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FAB -->
+    <div class="fab-container">
+        <div class="fab" onclick="switchTab('scanner-view')">
+            <i class="ph-bold ph-barcode"></i>
+        </div>
+    </div>
+
+    <!-- IA OVERLAY -->
+    <div class="ia-overlay" id="ia-panel">
+        <div class="ia-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="ph-fill ph-sparkle" style="color: var(--secondary); font-size: 1.5rem;"></i>
+                <h3 style="font-size: 1.1rem;">Asistente SIGA</h3>
+            </div>
+            <button onclick="toggleIA()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;"><i class="ph-bold ph-x"></i></button>
+        </div>
+        <div class="ia-body">
+            <div class="chat-bubble chat-bot">
+                Hola Héctor, ¿en qué te ayudo hoy con tu inventario? 🤖
+            </div>
+            <div class="chat-bubble chat-user">
+                ¿Qué productos están por agotarse?
+            </div>
+            <div class="chat-bubble chat-bot">
+                Detecto 3 productos críticos: <br>• Coca-Cola 3L (2 un)<br>• Galletas Oreo (4 un)<br>• Leche Entera (5 un)
+            </div>
+        </div>
+        <div class="ia-input-area">
+            <input type="text" class="ia-input" placeholder="Pregunta algo...">
+            <button style="width: 44px; height: 44px; background: var(--primary); border-radius: 50%; color: white; border: none; display: flex; align-items: center; justify-content: center;"><i class="ph-bold ph-paper-plane-right"></i></button>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="bottom-nav">
+        <a class="nav-item active" onclick="switchTab('home')" id="nav-home">
+            <i class="ph-bold ph-house"></i>
+            <span>Inicio</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('stock')" id="nav-stock">
+            <i class="ph-bold ph-package"></i>
+            <span>Stock</span>
+        </a>
+        <div class="nav-spacer"></div> <!-- Spacer for FAB -->
+        <a class="nav-item" onclick="toggleIA()">
+            <i class="ph-bold ph-sparkle"></i>
+            <span>IA</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('profile')" id="nav-profile">
+            <i class="ph-bold ph-user"></i>
+            <span>Perfil</span>
+        </a>
+    </nav>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all
+            document.querySelectorAll('main').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            // Show target
+            const target = document.getElementById(tabId);
+            if(target) target.classList.add('active');
+
+            // Update nav active state (simple matching)
+            const navItem = document.getElementById('nav-' + (tabId === 'scanner-view' ? 'home' : tabId));
+            if(navItem) navItem.classList.add('active');
+        }
+
+        function toggleIA() {
+            document.getElementById('ia-panel').classList.toggle('open');
+        }
+
+        // Animations
+        document.querySelectorAll('.stat-item').forEach((el, index) => {
+            el.style.animation = `fadeIn 0.5s ease ${index * 0.1}s forwards`;
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(10px)';
+        });
+        
+        setTimeout(() => {
+            document.querySelectorAll('.stat-item').forEach(el => {
+                el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+            });
+        }, 100);
+    </script>
+</body>
+</html>
