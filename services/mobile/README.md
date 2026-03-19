@@ -181,7 +181,6 @@ Entrega el APK junto con su hash SHA-256 y las credenciales anteriores para eval
 
 ---
 
-
 ## Autor
-> **Héctor Aguila**  
->> Un Soñador con Poca RAM 
+
+> Un Soñador con Poca RAM 👨🏻‍💻 & Misael
