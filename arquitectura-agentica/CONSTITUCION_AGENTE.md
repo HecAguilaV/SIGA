@@ -27,6 +27,7 @@ He cargado en mi sistema los protocolos oficiales de los fabricantes para:
 2.  **Kotlin & Spring Boot**: Mapeo JPA, inmovilidad y arquitectura reactiva (GitHub Official).
 3.  **Supabase**: Optimización de Postgres y diseño de esquema escalable.
 4.  **Microservices Patterns**: Patrones de arquitectura distribuida (wshobson).
+5.  **ScoutQA**: Pruebas exploratorias e inspección de calidad automática (GitHub Official).
 
 ---
-*Estado: Evolucionado (Powered by Official Skills) - Marzo 2026*
+*Estado: Evolucionado (Full Arsenal) - Marzo 2026*
