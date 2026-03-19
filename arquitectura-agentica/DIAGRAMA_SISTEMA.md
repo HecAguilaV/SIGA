@@ -3,14 +3,16 @@
 El siguiente diagrama refleja la arquitectura real y refinada de SIGA, basandose en las tablas de la base de datos divididas por contexto (`siga_comercial` y `siga_saas`) y el diseño de contingencia para la Inteligencia Artificial.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'clusterBkg': '#1E293B', 'clusterBorder': '#334155', 'edgeLabelBackground': '#0F172A', 'mainBkg': '#0F172A'}}}%%
 graph TD
-    %% Estilos Profesionales Soberbios
-    classDef client fill:#2D3748,stroke:#4A5568,stroke-width:2px,color:#E2E8F0;
-    classDef gateway fill:#2B6CB0,stroke:#2C5282,stroke-width:3px,color:#E2E8F0;
-    classDef service fill:#2F855A,stroke:#276749,stroke-width:2px,color:#E2E8F0;
-    classDef database fill:#4A5568,stroke:#2D3748,stroke-width:2px,color:#E2E8F0;
-    classDef ai fill:#805AD5,stroke:#6B46C1,stroke-width:2px,color:#E2E8F0;
-    classDef fallback fill:#C53030,stroke:#9B2C2C,stroke-width:2px,color:#E2E8F0;
+    %% Estilos Profesionales Soberbios (Dark Slate Theme)
+    classDef client fill:#1E293B,stroke:#475569,stroke-width:2px,color:#F8FAFC;
+    classDef gateway fill:#0F172A,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC;
+    classDef service fill:#0F172A,stroke:#10B981,stroke-width:2px,color:#F8FAFC;
+    classDef database fill:#0F172A,stroke:#64748B,stroke-width:2px,color:#F8FAFC;
+    classDef ai fill:#0F172A,stroke:#8B5CF6,stroke-width:2px,color:#F8FAFC;
+    classDef fallback fill:#0F172A,stroke:#F59E0B,stroke-width:2px,color:#F8FAFC;
+
 
     User([Usuario / Emprendedor]):::client
 
