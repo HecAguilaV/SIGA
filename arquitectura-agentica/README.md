@@ -3,7 +3,7 @@
 Este directorio es el "cerebro" de SIGA para la interacción con Inteligencia Artificial.
 
 ## 🤖 Colaboración Humano-Agente
-SIGA se desarrolla bajo un ecosistema vivo donde los agentes de IA (como Antigravity) operan sobre 4 pilares: Backend (Kotlin), Web (React/Svelte), Móvil (Android) e IA (Gemini).
+SIGA se desarrolla bajo un ecosistema vivo donde los agentes de IA (como Antigravity) operan bajo las **[Reglas de Oro](file:///c:/Users/hdagu/Desktop/SIGA/arquitectura-agentica/REGLAS_DE_ORO.md)**.
 
 ### 🛠️ Metodología SDD (Spec-Driven Development)
 Todo cambio arquitectónico sigue este flujo:
@@ -17,7 +17,6 @@ Todo cambio arquitectónico sigue este flujo:
 - `AGENTIC-mobile.md`: Operación Android.
 - `AGENTIC-comercial.md`: Portal React.
 - `SIGA_STATUS.md`: Estado actual del ecosistema.
-- `plan_migracion_supabase.md`: Hoja de ruta para la migración DB.
 
 ## 🛡️ Resiliencia y Memoria
 - **Fallback**: Usamos SafeMode (SQL) si la API de IA falla.

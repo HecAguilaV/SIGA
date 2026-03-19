@@ -21,8 +21,14 @@ Este monorepo unifica los componentes críticos del sistema para facilitar el de
 
 Para una experiencia de desarrollo óptima, te recomendamos abrir el archivo **[SIGA.code-workspace](file:///c:/Users/hdagu/Desktop/SIGA/SIGA.code-workspace)** en VS Code. Esto configurará automáticamente los "roots" con sus respectivos iconos y ocultará archivos redundantes.
 
-## 🧭 Plan Maestro Actual
-Actualmente estamos preparando la gran migración a **Supabase** para potenciar la escalabilidad y reducir la latencia. Puedes encontrar los detalles en `arquitectura-agentica/plan_migracion_supabase.md`.
+## 🤝 Contribución y Gobernanza
+
+Este proyecto sigue normas estrictas para asegurar la calidad y el aprendizaje:
+- **Commits**: Siempre en español.
+- **Aprobación**: Se requiere autorización explícita antes de cualquier `push`.
+- **Transparencia**: Cada paso técnico debe ser explicado y justificado previamente.
+
+Para más detalles, consulta las **[Reglas de Oro de Colaboración](file:///c:/Users/hdagu/Desktop/SIGA/arquitectura-agentica/REGLAS_DE_ORO.md)**.
 
 ---
 *Mantenido por el equipo de SIGA & Antigravity.*
