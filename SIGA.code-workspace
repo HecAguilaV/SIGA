@@ -49,6 +49,7 @@
 			"SIGA-BACKEND": true,
 			"SIGA-WEBAPP": true,
 			"SIGA-WEBCOMERCIAL": true
-		}
+		},
+		"java.compile.nullAnalysis.mode": "automatic"
 	}
 }
