@@ -1,259 +1,199 @@
-# Biblia Arquitectónica SIGA — Defensa Técnica Completa
+# Arquitectura de Referencia — SIGA Microservicios
 
-Este documento es la referencia definitiva para la defensa de la arquitectura de SIGA.
-Cubre las decisiones técnicas, los patrones de comunicación, la infraestructura
-y la preparación para escalabilidad futura (Big Data).
+Documento técnico que fundamenta las decisiones arquitectónicas del proyecto SIGA
+en su migración desde un monolito modular hacia una arquitectura de microservicios.
 
 ---
 
-## 1. ¿Por qué Kotlin y NO Java?
+## 1. Fundamentación del Lenguaje: Kotlin sobre JVM
 
-### El argumento académico (para tu profesor)
+### Compatibilidad con el Ecosistema Java
 
-Kotlin no reemplaza a Java — **lo extiende**. Kotlin compila a bytecode JVM idéntico.
-TODO lo que Java puede hacer, Kotlin lo hace con menos código y más seguridad.
+Kotlin compila a bytecode JVM estándar. El resultado binario es indistinguible del
+generado por el compilador de Java. Esto garantiza compatibilidad total con las
+bibliotecas, frameworks y herramientas del ecosistema Java (Spring Boot, Hibernate,
+JUnit, Gradle, Maven).
 
-### Los argumentos técnicos irrefutables
+### Ventajas Técnicas Medibles
 
-| Aspecto | Java | Kotlin | Veredicto |
-|---------|------|--------|-----------|
-| Null Safety | `@Nullable` (anotación, no se aplica en runtime) | `String?` (el compilador te IMPIDE acceder sin verificar) | Kotlin elimina NullPointerException en compilación |
-| Verbosidad | 40-60 líneas para un DTO | 5 líneas con `data class` | Kotlin produce el mismo bytecode con 70% menos código |
-| Coroutines | `CompletableFuture` (complejo) | `suspend fun` (natural) | Kotlin maneja async sin callback hell |
-| Spring Boot | Soporte completo | Soporte first-class desde Spring 5+ | Ambos son ciudadanos de primera clase |
-| Google | N/A | Lenguaje oficial de Android desde 2019 | Google eligió Kotlin sobre Java |
-| JetBrains | IntelliJ está hecho en Java | JetBrains CREÓ Kotlin para reemplazar Java en sus propios productos | El creador del IDE más popular del mundo prefiere Kotlin |
+| Aspecto | Java | Kotlin | Impacto |
+|---------|------|--------|---------|
+| Null Safety | Anotaciones opcionales (`@Nullable`) sin enforcement en compilación | Sistema de tipos nullable (`String?`) con verificación en compilación | Eliminación de `NullPointerException` como categoría de error |
+| Verbosidad | DTO típico requiere 30-40 líneas (constructor, getters, setters, equals, hashCode, toString) | `data class` genera lo mismo en 3-5 líneas | Reducción de 60-70% en código boilerplate |
+| Concurrencia | `CompletableFuture`, callbacks anidados | Coroutines (`suspend fun`) con flujo secuencial legible | Código asíncrono más mantenible |
+| Soporte Oficial | Lenguaje base de la JVM | Lenguaje oficial de Android (Google, 2019). Soporte first-class en Spring Framework 5+ | Respaldo institucional de Google y JetBrains |
 
-### El argumento killer para tu profesor
+### Consideraciones Específicas para JPA
 
-> "Profesor, Kotlin compila a bytecode JVM. Si usted descompila mi `.class`, verá
-> exactamente el mismo código que Java generaría. La diferencia es que Kotlin me
-> da null-safety en tiempo de compilación, lo cual REDUCE bugs en producción.
-> Spring Boot 3.x tiene soporte nativo para Kotlin. No estoy abandonando el
-> ecosistema Java — estoy usando una sintaxis más segura sobre la misma JVM."
+Las entidades JPA en SIGA NO utilizan `data class` de Kotlin. Se implementan como
+clases abiertas (`open class`) para garantizar compatibilidad con los proxies de
+Hibernate y el mecanismo de lazy loading. Esta decisión demuestra un entendimiento
+de las limitaciones de la integración Kotlin-JPA y evita errores sutiles en producción.
 
-### Evidencia concreta en SIGA
+### Interoperabilidad
 
-```kotlin
-// Kotlin (5 líneas)
-data class ProductoDTO(
-    val id: Int,
-    val nombre: String,
-    val precio: BigDecimal?  // El ? te OBLIGA a manejar el null
-)
-
-// Java equivalente (30+ líneas)
-public class ProductoDTO {
-    private int id;
-    private String nombre;
-    private BigDecimal precio;
-    // + constructor + getters + setters + equals + hashCode + toString
-}
-```
-
-**NOTA IMPORTANTE**: Para entidades JPA, NO usamos `data class` (por problemas con
-lazy loading y proxies de Hibernate). Usamos clases normales de Kotlin con `open`.
-Esto demuestra que conocemos las limitaciones y no aplicamos patrones ciegamente.
+Todo código Kotlin puede llamar código Java y viceversa. Las dependencias del proyecto
+(`spring-boot-starter-*`, `postgresql`, `java-jwt`) son bibliotecas Java que Kotlin
+consume sin adaptadores ni wrappers adicionales.
 
 ---
 
 ## 2. Patrones de Arquitectura
 
-### 2.1 Arquitectura de Microservicios (Patrón Principal)
+### 2.1 Microservicios (Patrón Principal)
 
-SIGA usa microservicios como patrón base. Cada servicio es independiente,
-tiene su propio ciclo de vida y puede desplegarse por separado.
+Cada dominio de negocio se encapsula en un servicio independiente con su propio ciclo
+de despliegue. La comunicación entre servicios se realiza exclusivamente a través de
+interfaces de red (REST), eliminando el acoplamiento directo entre módulos.
 
-### 2.2 Arquitectura Orientada a Eventos (Event-Driven) — Futuro
+### 2.2 Strangler Fig (Estrategia de Migración)
 
-SIGA está PREPARADA para evolucionar a event-driven, pero NO lo implementamos hoy.
-¿Por qué? Porque añadir Apache Kafka o RabbitMQ ahora sería over-engineering.
+La migración del monolito se ejecuta de forma incremental. El API Gateway rutea
+las peticiones hacia el nuevo microservicio correspondiente a medida que cada dominio
+se extrae. El monolito original permanece operativo para los dominios aún no migrados,
+garantizando continuidad del servicio durante la transición.
 
-**Cuándo activarla**: Cuando SIGA tenga más de 100 clientes concurrentes y necesitemos
-desacoplar las ventas del inventario (ej: el stock se actualiza por eventos, no por
-llamadas directas).
+### 2.3 Arquitectura Orientada a Eventos (Preparación)
 
-### 2.3 Serverless — NO aplica
+La arquitectura actual está diseñada para evolucionar hacia un modelo event-driven
+sin reestructuración. Los servicios emiten eventos de dominio bien definidos que,
+al incorporar un broker de mensajería (Apache Kafka), habilitarán comunicación asíncrona
+y desacoplamiento temporal entre servicios.
 
-Serverless (AWS Lambda, Google Cloud Functions) elimina los servidores.
-SIGA no es candidata porque:
-- Necesitamos conexiones persistentes a PostgreSQL (serverless tiene cold starts)
-- Nuestro asistente IA requiere contexto de sesión
-- Docker Compose nos da control total del entorno
+### 2.4 CQRS — Puente hacia Big Data
 
-### 2.4 Patrón Strangler Fig (Migración Progresiva)
+CQRS (Command Query Responsibility Segregation) separa las operaciones de escritura
+(comandos) de las de lectura (consultas). Esta separación permite que los datos
+transaccionales (OLTP) fluyan hacia un sistema analítico (OLAP) sin afectar
+el rendimiento operacional.
 
-Este SÍ lo usamos. Es la estrategia para migrar del monolito a microservicios
-sin detener la producción. El Gateway rutea gradualmente endpoints al nuevo
-servicio mientras el monolito sigue funcionando para lo que aún no se migra.
+Pipeline proyectado:
+```
+SIGA (OLTP)
+  └── Venta registrada
+        ├── PostgreSQL (operacional, tiempo real)
+        └── Pub/Sub → Dataflow → BigQuery (analítico, batch/streaming)
+                                    └── Vertex AI (ML: predicción de demanda,
+                                        detección de anomalías, análisis de tendencias)
+```
 
 ---
 
-## 3. Patrones de Comunicación entre Microservicios
+## 3. Patrones de Comunicación
 
-### 3.1 Comunicación Síncrona (Lo que usamos HOY)
+### 3.1 Comunicación Síncrona (Implementación Actual)
 
-#### REST (HTTP/JSON) — Patrón principal de SIGA
-```
-siga-gateway ──HTTP──▶ siga-auth ──HTTP──▶ siga-inventario
-```
-- **Cuándo**: Cuando el cliente necesita una respuesta inmediata
-- **Ejemplo**: El cajero escanea un producto → necesita el precio AHORA
-- **Herramienta**: Spring Boot `RestTemplate` o `WebClient`
+| Protocolo | Uso en SIGA | Justificación |
+|-----------|-------------|---------------|
+| REST (HTTP/JSON) | Toda la comunicación entre servicios | Estándar de la industria, compatible con Swagger/OpenAPI, depurable con Postman |
+| gRPC (Futuro) | Comunicación interna de alta frecuencia | Protocolo binario con menor latencia, adecuado para llamadas internas masivas |
 
-#### gRPC (Protocol Buffers) — Opcional/Futuro
-- Más rápido que REST (binario vs texto)
-- Ideal para comunicación interna entre servicios (no expuesto al frontend)
-- **Cuándo activarlo**: Si la latencia entre servicios se vuelve un problema
-- Spring Boot tiene soporte via `grpc-spring-boot-starter`
+### 3.2 Comunicación Asíncrona (Proyección)
 
-### 3.2 Comunicación Asíncrona (Preparación Futura)
+| Tecnología | Caso de Uso Proyectado | Beneficio |
+|------------|----------------------|-----------|
+| Apache Kafka / Pub/Sub | Eventos de ventas hacia analytics | Desacoplamiento temporal, tolerancia a fallos |
+| Spring Cloud Stream | Abstracción del broker | Cambio de broker sin modificar código de negocio |
 
-#### Mensajería con Apache Kafka / RabbitMQ
-```
-siga-ventas ──evento──▶ [Cola] ──▶ siga-inventario (actualiza stock)
-                              ──▶ siga-billing (registra la transacción)
-```
-- **Cuándo**: Cuando NO necesitas respuesta inmediata
-- **Ejemplo**: Una venta se registra → el stock se actualiza en background
-- **Herramienta futura**: Spring Cloud Stream + Kafka
+### 3.3 Flujos de Comunicación Actuales
 
-### 3.3 SIGA Hoy: Comunicación Híbrida
-
-| Flujo | Tipo | Razón |
-|-------|------|-------|
-| Frontend → Gateway → Auth | Síncrono (REST) | El usuario necesita su token AHORA |
-| Frontend → Gateway → Inventario | Síncrono (REST) | Consulta de stock en tiempo real |
-| Frontend → Gateway → Ventas | Síncrono (REST) | Registro de venta requiere confirmación |
-| Ventas → Inventario (descuento stock) | Síncrono (REST) | Integridad: no vender sin stock |
-| Agente → Fallback | Síncrono (REST) | Si Gemini falla, respuesta inmediata de respaldo |
-| *Futuro*: Ventas → Kafka → Analytics | Asíncrono | Big Data no necesita datos en tiempo real |
+| Origen | Destino | Tipo | Descripción |
+|--------|---------|------|-------------|
+| Cliente (Web/Mobile) | `siga-gateway` | REST | Punto de entrada único |
+| `siga-gateway` | `siga-auth` | REST | Validación de credenciales y emisión de JWT |
+| `siga-gateway` | `siga-inventario` | REST | Consultas de catálogo y stock |
+| `siga-gateway` | `siga-ventas` | REST | Registro de transacciones |
+| `siga-ventas` | `siga-inventario` | REST | Verificación y descuento de stock |
+| `siga-agente` | Gemini API | REST | Procesamiento de lenguaje natural |
+| `siga-agente` | `siga-fallback` | REST | Respuestas de contingencia ante timeout o fallo de Gemini |
 
 ---
 
-## 4. Stack Tecnológico Definitivo (con versiones para Docker)
+## 4. Stack Tecnológico (Versiones Pinneadas)
 
 ### 4.1 Backend
 
-| Tecnología | Versión | Justificación |
-|------------|---------|---------------|
-| Kotlin | 1.9.22 | Ya definida en build.gradle.kts |
-| Spring Boot | 3.2.0 | Última LTS estable |
-| Spring Cloud | 2023.0.x (Leyton) | Compatible con Spring Boot 3.2 |
-| Spring Cloud Netflix (Eureka) | 4.1.x | Service Discovery requerido |
+| Componente | Versión | Notas |
+|------------|---------|-------|
+| JDK | 21 (LTS) | Última versión de soporte extendido |
+| Kotlin | 1.9.22 | Versión estable con soporte Spring Boot 3.x |
+| Spring Boot | 3.2.0 | Release actual con soporte LTS |
+| Spring Cloud | 2023.0.x (Leyton) | Release train compatible con Boot 3.2 |
+| Spring Cloud Netflix Eureka | 4.1.x | Service Discovery |
 | Spring Cloud Gateway | 4.1.x | API Gateway reactivo |
-| Spring Security + OAuth2 | (incluido en Boot 3.2) | Auth con Google/Apple |
-| PostgreSQL Driver | 42.7.1 | Ya definido |
-| java-jwt (Auth0) | 4.4.0 | Emisión/validación JWT |
-| springdoc-openapi | 2.3.0 | Swagger UI automático |
-| JDK | 21 (LTS) | Última LTS de Java |
+| PostgreSQL Driver | 42.7.1 | Driver JDBC para PostgreSQL |
+| Auth0 java-jwt | 4.4.0 | Generación y validación de tokens JWT |
+| springdoc-openapi | 2.3.0 | Documentación automática Swagger/OpenAPI |
+| Resilience4j | 2.2.x | Circuit Breaker, retry, rate limiter |
 
 ### 4.2 Frontend
 
-| Tecnología | Versión | Uso |
-|------------|---------|-----|
-| SvelteKit | 2.x + Svelte 5 | Webapp (cajeros/operadores) |
-| React | 18.x + Vite | Web Comercial (dueños de negocio) |
-| Bulma | 1.x | CSS Framework (webapp) |
-| Bootstrap | 5.x | CSS Framework (comercial) |
+| Componente | Versión | Aplicación |
+|------------|---------|------------|
+| Svelte 5 + SvelteKit | 2.x | Webapp (operadores y cajeros) |
+| React 18 + Vite | 5.x | Web Comercial (administradores de negocio) |
+| Bulma | 1.x | Sistema de estilos para Webapp |
+| Bootstrap | 5.x | Sistema de estilos para Comercial |
 
-### 4.3 Infraestructura Docker
+### 4.3 Infraestructura
 
-```yaml
-# Versiones pinneadas para reproducibilidad total
-services:
-  siga-db:
-    image: postgres:15-alpine           # Alpine = imagen liviana
-
-  siga-eureka:
-    image: eclipse-temurin:21-jre-alpine # JRE 21 minimalista
-    # build: ./services/registry
-
-  siga-gateway:
-    image: eclipse-temurin:21-jre-alpine
-    # build: ./services/gateway
-
-  # ... mismo base image para todos los servicios Spring Boot
-
-  # ----- MONITORIZACIÓN -----
-
-  # Prometheus: recolecta métricas de todos los servicios
-  prometheus:
-    image: prom/prometheus:v2.51.0
-
-  # Grafana: dashboards visuales de salud del sistema
-  grafana:
-    image: grafana/grafana:10.4.0
-
-  # ----- LOG AGGREGATION (ELK Stack) -----
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.13.0
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.13.0
-
-  # ----- DISTRIBUTED TRACING -----
-
-  zipkin:
-    image: openzipkin/zipkin:3.3
-```
+| Componente | Imagen Docker | Puerto | Función |
+|------------|---------------|--------|---------|
+| PostgreSQL | `postgres:15-alpine` | 5432 | Base de datos relacional |
+| pgAdmin | `dpage/pgadmin4` | 8080 | Administración visual de BD |
+| Prometheus | `prom/prometheus:v2.51.0` | 9090 | Recolección de métricas |
+| Grafana | `grafana/grafana:10.4.0` | 3000 | Visualización de métricas |
+| Elasticsearch | `elasticsearch:8.13.0` | 9200 | Almacenamiento de logs |
+| Logstash | `logstash:8.13.0` | 5044 | Procesamiento de logs |
+| Kibana | `kibana:8.13.0` | 5601 | Visualización de logs |
+| Zipkin | `openzipkin/zipkin:3.3` | 9411 | Distributed tracing |
 
 ---
 
-## 5. Observabilidad y Monitorización
+## 5. Observabilidad
 
-### 5.1 Swagger / OpenAPI (Documentación de API)
+### 5.1 Documentación de API (Swagger + Postman)
 
-Ya tenemos `springdoc-openapi` en las dependencias. Cada microservicio expondrá
-automáticamente su documentación en `/swagger-ui.html`.
+Cada microservicio expone automáticamente su documentación OpenAPI en `/swagger-ui.html`
+mediante `springdoc-openapi`. Las colecciones de Postman se generan exportando la
+especificación OpenAPI desde cada servicio.
 
-**Para Postman**: Exportaremos las colecciones desde Swagger → Postman Collection.
-Esto permite al profesor probar los endpoints sin levantar el frontend.
-
-### 5.2 Health Checks (Spring Boot Actuator)
-
-Cada servicio expone `/actuator/health` con estado de salud.
-Eureka usa estos endpoints para saber si un servicio está vivo.
-
-### 5.3 Log Aggregation (ELK Stack)
+### 5.2 Log Aggregation (ELK Stack)
 
 ```
-Servicio → Logback → Logstash → Elasticsearch → Kibana (Dashboard visual)
+Microservicio → Logback (JSON) → Logstash → Elasticsearch → Kibana
 ```
 
-- **Elasticsearch**: Motor de búsqueda donde se almacenan los logs
-- **Logstash**: Recolector que formatea y envía los logs a Elasticsearch
-- **Kibana**: Interfaz web para buscar y visualizar logs
+Spring Boot utiliza Logback por defecto. Se configura un appender JSON que envía los
+logs estructurados a Logstash para su indexación en Elasticsearch y visualización
+en Kibana.
 
-Spring Boot ya usa Logback por defecto. Solo necesitamos un appender
-que envíe los logs a Logstash en formato JSON.
+### 5.3 Distributed Tracing (Micrometer + Zipkin)
 
-### 5.4 Distributed Tracing (Zipkin + Micrometer)
+Cada petición recibe un identificador único (`traceId`) que se propaga automáticamente
+entre microservicios. Spring Boot 3.x integra Micrometer Tracing (sucesor de Spring
+Cloud Sleuth) con exportación nativa a Zipkin.
 
-Cuando una petición cruza 3 servicios (Gateway → Auth → Ventas),
-¿cómo sabes dónde se demoró o falló? 
+### 5.4 Métricas (Prometheus + Grafana)
 
-**Tracing distribuido**: Cada petición recibe un `traceId` único.
-Zipkin recolecta los tiempos de cada servicio y te muestra un "mapa de calor"
-de dónde está el cuello de botella.
+Spring Boot Actuator expone métricas en formato Prometheus (`/actuator/prometheus`).
+Prometheus las recolecta periódicamente y Grafana las presenta en dashboards
+configurables (latencia, throughput, uso de memoria por servicio).
 
-Spring Boot 3.x usa Micrometer Tracing (reemplaza a Spring Cloud Sleuth).
+### 5.5 Health Checks (Spring Boot Actuator)
 
-### 5.5 Métricas (Prometheus + Grafana)
-
-- **Prometheus**: Recolecta métricas (CPU, memoria, requests/segundo) de cada servicio
-- **Grafana**: Dashboards bonitos con gráficas en tiempo real
-- Spring Boot Actuator + Micrometer exporta métricas en formato Prometheus automáticamente
+Cada servicio expone `/actuator/health` con indicadores de salud (conexión a BD,
+espacio en disco, estado de Eureka). El Service Registry utiliza estos endpoints
+para determinar la disponibilidad de cada instancia.
 
 ---
 
-## 6. Manejo de Errores y Logging Real
+## 6. Manejo de Excepciones y Logging
 
-### 6.1 Global Exception Handler (Kotlin)
+### 6.1 Global Exception Handler
+
+Implementación centralizada mediante `@RestControllerAdvice` que intercepta todas
+las excepciones no capturadas y devuelve respuestas estandarizadas al cliente.
 
 ```kotlin
 @RestControllerAdvice
@@ -264,125 +204,154 @@ class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException::class)
     fun handleNotFound(ex: ResourceNotFoundException): ResponseEntity<ErrorResponse> {
         logger.warn("Recurso no encontrado: {}", ex.message)
-        return ResponseEntity
-            .status(HttpStatus.NOT_FOUND)
-            .body(ErrorResponse(
-                status = 404,
-                error = "Not Found",
-                message = ex.message ?: "Recurso no encontrado",
-                timestamp = Instant.now()
-            ))
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(404, "Not Found", ex.message, Instant.now()))
     }
 
     @ExceptionHandler(Exception::class)
     fun handleGeneral(ex: Exception): ResponseEntity<ErrorResponse> {
-        logger.error("Error inesperado", ex)  // Stack trace completo en logs
-        return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse(
-                status = 500,
-                error = "Internal Server Error",
-                message = "Error interno del servidor",  // NO exponemos detalles al cliente
-                timestamp = Instant.now()
-            ))
+        logger.error("Error interno", ex)
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorResponse(500, "Internal Server Error",
+                "Error interno del servidor", Instant.now()))
     }
 }
 ```
 
-Esto es IDÉNTICO a como se hace en Java, pero con menos verbosidad.
-`@RestControllerAdvice` funciona igual en Kotlin y en Java.
+Este patrón es idéntico al utilizado en Java con Spring MVC. La anotación
+`@RestControllerAdvice` funciona de forma transparente en ambos lenguajes.
 
-### 6.2 Custom Exceptions
+### 6.2 Excepciones de Dominio
 
 ```kotlin
 class ResourceNotFoundException(message: String) : RuntimeException(message)
 class UnauthorizedException(message: String) : RuntimeException(message)
 class BusinessRuleViolationException(message: String) : RuntimeException(message)
+class InsufficientStockException(productoId: Int, solicitado: Int, disponible: Int) :
+    RuntimeException("Stock insuficiente para producto $productoId: solicitado=$solicitado, disponible=$disponible")
 ```
 
 ---
 
-## 7. siga-fallback vs Docker Fallback
+## 7. Resiliencia: siga-fallback
 
-### Tu siga-fallback (Microservicio de Resiliencia)
-Es un servicio que responde cuando `siga-agente` no puede conectarse a Gemini AI.
-Devuelve respuestas predefinidas y/o ejecuta consultas SQL directas.
+### Concepto
 
-### Docker Fallback (Concepto diferente)
-En Docker, "fallback" se refiere a la política de reinicio de un contenedor:
-```yaml
-services:
-  siga-agente:
-    restart: on-failure       # Si el contenedor falla, Docker lo reinicia
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3       # Máximo 3 reintentos
-```
+`siga-fallback` es un microservicio de soporte que garantiza la continuidad del
+servicio cuando la API externa de Gemini AI no está disponible (timeout, error 5xx,
+cuota agotada).
 
-Son conceptos completamente diferentes. Tu `siga-fallback` es lógica de negocio.
-El fallback de Docker es infraestructura de recuperación.
+### Mecanismo
 
----
+`siga-agente` utiliza el patrón Circuit Breaker (Resilience4j) para detectar fallos
+consecutivos en la comunicación con Gemini. Cuando el circuito se abre, las peticiones
+se redirigen automáticamente a `siga-fallback`, que responde con:
 
-## 8. Preparación para Big Data
+1. Respuestas pre-definidas para consultas frecuentes
+2. Consultas SQL directas sobre los servicios internos (inventario, ventas)
+3. Mensaje informativo al usuario indicando modo de operación reducida
 
-### Arquitectura lista para escalar
+### Diferencia con Docker restart policy
 
-La clave para que SIGA esté "Big Data Ready" es separar los flujos:
-- **OLTP** (Online Transaction Processing): Lo que hacemos hoy — ventas, stock, auth
-- **OLAP** (Online Analytical Processing): Lo que haremos mañana — analytics, reportes masivos
-
-### Cómo lo logramos sin reescribir nada
-
-```
-HOY (OLTP):
-  siga-ventas → PostgreSQL (siga_saas)  ← Transaccional, rápido
-
-MAÑANA (OLAP - Big Data):
-  siga-ventas → Kafka → Apache Spark / BigQuery ← Analítico, masivo
-                   ↓
-              Data Lake (S3/GCS)
-```
-
-El truco: Cuando añadamos Kafka (comunicación asíncrona), cada venta emitirá
-un EVENTO que viaja a dos destinos:
-1. PostgreSQL (para la operación diaria)
-2. Data Lake (para análisis masivo)
-
-Esto se llama **CQRS** (Command Query Responsibility Segregation) y es el
-puente natural entre microservicios y Big Data.
-
-### ¿Qué necesitamos HOY para que funcione MAÑANA?
-- Nada extra. Solo necesitamos que nuestros servicios emitan eventos bien
-  estructurados. El día que conectemos Kafka, los eventos ya estarán definidos.
+`siga-fallback` resuelve fallos de lógica de negocio (la IA no responde).
+La directiva `restart: on-failure` de Docker resuelve fallos de infraestructura
+(el contenedor se detiene). Son capas de resiliencia complementarias.
 
 ---
 
-## 9. Stack Completo: Spring Boot + Spring Cloud
+## 8. Estrategia de Base de Datos
 
-**Sí, usamos ambos.** Aquí está la diferencia:
+### Esquemas Actuales
 
-| Framework | Qué hace | Se usa en |
-|-----------|----------|-----------|
-| Spring Boot | Framework base (web, JPA, security) | TODOS los servicios |
-| Spring Cloud Netflix Eureka | Service Discovery | `siga-eureka` (server) + todos los demás (clients) |
-| Spring Cloud Gateway | API Gateway reactivo | `siga-gateway` |
-| Spring Cloud CircuitBreaker (Resilience4j) | Resiliencia (fallback patterns) | `siga-agente` → `siga-fallback` |
-| Spring Cloud Config | Configuración centralizada (futuro) | Opcional |
-| Micrometer Tracing | Distributed tracing | Todos los servicios |
+| Esquema | Propósito | Servicios que acceden |
+|---------|-----------|----------------------|
+| `siga_saas` | Datos operativos del negocio del cliente | `siga-auth`, `siga-inventario`, `siga-ventas` |
+| `siga_comercial` | Datos administrativos de la plataforma SaaS | `siga-billing` |
+
+### Multi-Tenancy
+
+El aislamiento entre clientes se implementa mediante `usuario_comercial_id` presente
+en las entidades del esquema `siga_saas`. Cada consulta filtra por este identificador,
+garantizando que un cliente solo accede a sus propios datos.
+
+### Estrategia de Conexión
+
+Una única instancia PostgreSQL con dos esquemas lógicos. Cada microservicio se conecta
+a la misma instancia pero configura su `search_path` para acceder exclusivamente a
+su esquema asignado. Esta estrategia minimiza el costo de infraestructura y simplifica
+las operaciones de respaldo y recuperación.
 
 ---
 
-## 10. Catálogo Final de Microservicios SIGA
+## 9. Preparación para Big Data
 
-| # | Servicio | Puerto | Tipo | Tecnología |
-|---|----------|--------|------|------------|
+### Arquitectura de Datos Analíticos (OLAP)
+
+SIGA genera datos transaccionales (ventas, movimientos de stock, eventos de usuario)
+que constituyen una fuente de datos valiosa para análisis predictivo y de negocio.
+
+### Pipeline Propuesto (GCP)
+
+```
+┌─────────────────────────┐
+│   SIGA (OLTP)           │
+│   PostgreSQL             │
+└────────┬────────────────┘
+         │ Change Data Capture / Eventos
+         ▼
+┌─────────────────────────┐
+│   Cloud Pub/Sub         │  ← Ingesta de eventos en tiempo real
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│   Dataflow (Apache Beam)│  ← Transformación y enriquecimiento
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│   BigQuery              │  ← Data Warehouse analítico
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│   Vertex AI             │  ← Machine Learning
+│   - Predicción de demanda│
+│   - Detección de anomalías│
+│   - Segmentación de clientes│
+└─────────────────────────┘
+```
+
+### Vertex AI en el Contexto de SIGA
+
+| Producto | Uso en SIGA | Capa |
+|----------|-------------|------|
+| Vertex AI Gemini API | Asistente conversacional (`siga-agente`) | Aplicación (OLTP) |
+| Vertex AI AutoML / Pipelines | Predicción de demanda, anomalías | Analítica (OLAP) |
+| BigQuery ML | Modelos directamente sobre datos de ventas | Analítica (OLAP) |
+
+Son dos usos completamente diferentes del mismo ecosistema. El asistente conversacional
+opera en tiempo real sobre datos transaccionales. Los modelos analíticos operan en
+batch sobre datos históricos almacenados en BigQuery.
+
+### Generación de Datos Sintéticos
+
+Para la evaluación de Big Data, SIGA puede generar datos sintéticos programáticamente
+utilizando las entidades existentes. Un script de inyección creará registros realistas
+de ventas, movimientos de stock y comportamiento de usuarios a escala (millones de
+registros) para alimentar el pipeline analítico.
+
+---
+
+## 10. Catálogo de Microservicios
+
+| # | Servicio | Puerto | Tipo | Tecnología Principal |
+|---|----------|--------|------|---------------------|
 | 1 | `siga-eureka` | 8761 | Infraestructura | Spring Cloud Netflix Eureka Server |
 | 2 | `siga-gateway` | 8080 | Infraestructura | Spring Cloud Gateway + Eureka Client |
-| 3 | `siga-auth` | 8081 | Negocio | Spring Boot + Security + OAuth2 |
+| 3 | `siga-auth` | 8081 | Negocio | Spring Boot + Security + OAuth2 Client |
 | 4 | `siga-inventario` | 8082 | Negocio | Spring Boot + JPA |
 | 5 | `siga-ventas` | 8083 | Negocio | Spring Boot + JPA |
 | 6 | `siga-billing` | 8084 | Negocio | Spring Boot + JPA |
-| 7 | `siga-agente` | 8085 | Negocio | Spring Boot + WebFlux + Gemini AI SDK |
+| 7 | `siga-agente` | 8085 | Negocio | Spring Boot + WebFlux + Gemini API |
 | 8 | `siga-fallback` | 8086 | Soporte | Spring Boot + Resilience4j |
