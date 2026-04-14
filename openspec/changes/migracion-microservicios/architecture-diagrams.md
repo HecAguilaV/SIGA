@@ -186,30 +186,28 @@ sequenceDiagram
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
 flowchart LR
-    subgraph Docker["Docker Compose"]
-        subgraph Red["Red: siga-network"]
-            EU["siga-eureka<br/>:8761"]
-            GW["siga-gateway<br/>:8080"]
+    subgraph Red["Red: siga-network"]
+        EU["siga-eureka<br/>:8761"]
+        GW["siga-gateway<br/>:8080"]
 
-            AU["siga-auth<br/>:8081"]
-            IN["siga-inventario<br/>:8082"]
-            VE["siga-ventas<br/>:8083"]
-            BI["siga-billing<br/>:8084"]
-            AG["siga-agente<br/>:8085"]
-            FB["siga-fallback<br/>:8086"]
+        AU["siga-auth<br/>:8081"]
+        IN["siga-inventario<br/>:8082"]
+        VE["siga-ventas<br/>:8083"]
+        BI["siga-billing<br/>:8084"]
+        AG["siga-agente<br/>:8085"]
+        FB["siga-fallback<br/>:8086"]
 
-            DB[("PostgreSQL<br/>:5432")]
-            PA["pgAdmin<br/>:8090"]
-        end
+        DB["🗄️ PostgreSQL<br/>:5432"]
+        PA["pgAdmin<br/>:8090"]
+    end
 
-        subgraph Observabilidad["Observabilidad"]
-            PR["Prometheus<br/>:9090"]
-            GR["Grafana<br/>:3000"]
-            ES["Elasticsearch<br/>:9200"]
-            LS["Logstash<br/>:5044"]
-            KI["Kibana<br/>:5601"]
-            ZI["Zipkin<br/>:9411"]
-        end
+    subgraph Observabilidad["Observabilidad"]
+        PR["Prometheus<br/>:9090"]
+        GR["Grafana<br/>:3000"]
+        ES["Elasticsearch<br/>:9200"]
+        LS["Logstash<br/>:5044"]
+        KI["Kibana<br/>:5601"]
+        ZI["Zipkin<br/>:9411"]
     end
 
     GW --> EU
