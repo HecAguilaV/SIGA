@@ -259,27 +259,34 @@ La directiva `restart: on-failure` de Docker resuelve fallos de infraestructura
 
 ---
 
-## 8. Estrategia de Base de Datos
+## 8. Estrategia de Base de Datos (Database-per-Service)
 
-### Esquemas Actuales
+### Aislamiento Lógico (Schema-per-Service)
 
-| Esquema | Propósito | Servicios que acceden |
-|---------|-----------|----------------------|
-| `siga_saas` | Datos operativos del negocio del cliente | `siga-auth`, `siga-inventario`, `siga-ventas` |
-| `siga_comercial` | Datos administrativos de la plataforma SaaS | `siga-billing` |
+Para el entorno de producción (o clúster principal), SIGA implementa el patrón **Database-per-Service** utilizando la variante de **Aislamiento Lógico**. En lugar de provisionar 4 servidores físicos separados (lo cual genera un costo financiero y operativo de DevOps innecesario para esta escala), se utiliza **un único servidor de base de datos PostgreSQL** que contiene múltiples esquemas completamente aislados.
 
-### Multi-Tenancy
+| Esquema (Bounded Context) | Microservicio Dueño | Responsabilidad de Dominio |
+|---------------------------|----------------------|----------------------------|
+| `siga_auth`               | `siga-auth`          | Usuarios, roles, permisos. |
+| `siga_inventario`         | `siga-inventario`    | Productos, categorías, stock local. |
+| `siga_ventas`             | `siga-ventas`        | Transacciones, tickets, trazabilidad de ventas. |
+| `siga_billing`            | `siga-billing`       | Suscripciones SaaS, usuarios comerciales, facturas. |
 
-El aislamiento entre clientes se implementa mediante `usuario_comercial_id` presente
-en las entidades del esquema `siga_saas`. Cada consulta filtra por este identificador,
-garantizando que un cliente solo accede a sus propios datos.
+### La Regla de Oro del Desacoplamiento
 
-### Estrategia de Conexión
+El código fuente de los microservicios y los usuarios de base de datos están configurados para tener **acceso exclusivo a su propio esquema** (mediante contraseñas y `search_path`).
+- `siga-ventas` **no tiene permisos** para consultar la tabla de stock en `siga_inventario`.
+- Si `siga-ventas` requiere disminuir stock tras una venta, debe realizar una petición por red (API REST o Eventos) a `siga-inventario`.
+- Esto garantiza que el acoplamiento a nivel de datos está físicamente bloqueado.
 
-Una única instancia PostgreSQL con dos esquemas lógicos. Cada microservicio se conecta
-a la misma instancia pero configura su `search_path` para acceder exclusivamente a
-su esquema asignado. Esta estrategia minimiza el costo de infraestructura y simplifica
-las operaciones de respaldo y recuperación.
+### Pruebas Locales (El polimorfismo de H2)
+
+La prueba definitiva de que los servicios están verdaderamente desacoplados se demuestra en el entorno de pruebas (`application-test.yml` o perfiles locales). Para el desarrollo local y pipelines CI/CD, la conexión a PostgreSQL se reemplaza por bases de datos H2 en memoria completamente independientes:
+
+- `siga-auth` instancia: `jdbc:h2:mem:auth_db`
+- `siga-inventario` instancia: `jdbc:h2:mem:inventario_db`
+
+Este comportamiento demuestra que la lógica de negocio es 100% agnóstica a la topología física. Los servicios no dependen estructuralmente de un PostgreSQL compartido; la consolidación física ocurre solo en producción para optimizar costos de infraestructura.
 
 ---
 
