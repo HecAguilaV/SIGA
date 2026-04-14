@@ -42,3 +42,6 @@ captures/
 .env
 *.pem
 *.key
+
+# Gentle AI / SDD
+.atl/
