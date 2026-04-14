@@ -14,7 +14,7 @@ flowchart TD
         W2["🖥️ Web Comercial (Dueños)"]
     end
 
-    GW["🚪 siga-gateway (:8080)"]
+    GW["🚪 siga-gateway :8080"]
 
     subgraph Microservicios["⚙️ Capa de Negocio e IA"]
         direction LR
@@ -27,10 +27,10 @@ flowchart TD
     end
 
     subgraph Datos["🗄️ Capa de Datos"]
-        DB[("PostgreSQL")]
+        DB["PostgreSQL"]
     end
     
-    EU("🌐 siga-eureka (:8761)")
+    EU["🌐 siga-eureka :8761"]
 
     Clientes --> GW
     
@@ -162,11 +162,11 @@ sequenceDiagram
 flowchart TD
     subgraph App["Microservicios SIGA (Red Docker)"]
         direction TB
-        GW["Gateway (:8080)"]
+        GW["Gateway :8080"]
         MS["Servicios de Negocio"]
-        DB[("PostgreSQL (:5432)")]
-        EU("Eureka (:8761)")
-        PA["pgAdmin (:8090)"]
+        DB["PostgreSQL :5432"]
+        EU["Eureka :8761"]
+        PA["pgAdmin :8090"]
         
         GW --> MS --> DB
         MS -.-> EU
@@ -176,14 +176,14 @@ flowchart TD
 
     subgraph Obs["Stack de Observabilidad"]
         direction TB
-        PR["Prometheus (:9090)"] --> GR["Grafana (:3000)"]
-        LS["Logstash (:5044)"] --> ES["Elasticsearch (:9200)"] --> KI["Kibana (:5601)"]
-        ZI["Zipkin (:9411)"]
+        PR["Prometheus :9090"] --> GR["Grafana :3000"]
+        LS["Logstash :5044"] --> ES["Elasticsearch :9200"] --> KI["Kibana :5601"]
+        ZI["Zipkin :9411"]
     end
     
-    App ===>|Métricas| PR
-    App ===>|Logs JSON| LS
-    App ===>|Traces| ZI
+    App ==>|Métricas| PR
+    App ==>|Logs JSON| LS
+    App ==>|Traces| ZI
 ```
 
 ---
