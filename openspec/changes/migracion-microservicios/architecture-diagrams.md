@@ -157,53 +157,66 @@ sequenceDiagram
 ## 5. Infraestructura Docker Compose
 
 ```mermaid
-flowchart TD
-    subgraph App["Microservicios SIGA (Red Docker)"]
-        direction TB
-        GW["Gateway :8080"]
-        MS["Servicios de Negocio"]
-        DB["PostgreSQL :5432"]
-        EU["Eureka :8761"]
+graph TD
+    subgraph App["Microservicios SIGA - Red Docker"]
+        GW["siga-gateway :8080"]
+        EU["siga-eureka :8761"]
+        AU["siga-auth :8081"]
+        IN["siga-inventario :8082"]
+        VE["siga-ventas :8083"]
+        BI["siga-billing :8084"]
+        AG["siga-agente :8085"]
+        FB["siga-fallback :8086"]
+        DB[("PostgreSQL :5432")]
         PA["pgAdmin :8090"]
-        
-        GW --> MS --> DB
-        MS -.-> EU
-        GW -.-> EU
-        PA -.-> DB
     end
 
     subgraph Obs["Stack de Observabilidad"]
-        direction TB
-        PR["Prometheus :9090"] --> GR["Grafana :3000"]
-        LS["Logstash :5044"] --> ES["Elasticsearch :9200"] --> KI["Kibana :5601"]
+        PR["Prometheus :9090"]
+        GR["Grafana :3000"]
+        ES["Elasticsearch :9200"]
+        LS["Logstash :5044"]
+        KI["Kibana :5601"]
         ZI["Zipkin :9411"]
     end
-    
-    MS ==>|Métricas| PR
-    MS ==>|Logs JSON| LS
-    MS ==>|Traces| ZI
+
+    GW --> AU
+    GW --> IN
+    GW --> VE
+    GW --> BI
+    GW --> AG
+    AU --> DB
+    IN --> DB
+    VE --> DB
+    BI --> DB
+    PA --> DB
+    PR --> GR
+    LS --> ES
+    ES --> KI
 ```
+
+> **Nota:** Todos los servicios envian metricas a Prometheus, logs a Logstash y traces a Zipkin.
+> Las conexiones de observabilidad se omiten para mantener la claridad del diagrama.
 
 ---
 
 ## 6. Pipeline CI/CD (GitHub Actions)
 
 ```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
-flowchart LR
-    subgraph Desarrollo["Desarrollo"]
-        DEV["Developer<br/>Push a rama"]
+graph LR
+    subgraph Desarrollo
+        DEV["Developer - Push a rama"]
     end
 
     subgraph CI["GitHub Actions - CI"]
-        BU["Build + Test<br/>./gradlew build"]
-        LI["Lint + Quality<br/>ktlint / detekt"]
-        DO["Docker Build<br/>por servicio"]
+        BU["Build + Test"]
+        LI["Lint + Quality"]
+        DO["Docker Build"]
     end
 
     subgraph CD["GitHub Actions - CD"]
-        DH["Push a<br/>DockerHub"]
-        DP["Deploy<br/>(staging / prod)"]
+        DH["Push a DockerHub"]
+        DP["Deploy"]
     end
 
     DEV --> BU
@@ -218,27 +231,26 @@ flowchart LR
 ## 7. Preparación Big Data (Pipeline Analítico)
 
 ```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
-flowchart TD
-    subgraph OLTP["OLTP — Operacional (Hoy)"]
+graph TD
+    subgraph OLTP["Operacional - Hoy"]
         VE["siga-ventas"]
         IN["siga-inventario"]
         DB[("PostgreSQL")]
     end
 
     subgraph Ingesta["Ingesta de Eventos"]
-        CDC["Change Data Capture<br/>(Debezium / Eventos)"]
+        CDC["Change Data Capture"]
         PS["Cloud Pub/Sub"]
     end
 
-    subgraph Procesamiento["Procesamiento"]
-        DF["Dataflow<br/>(Apache Beam)"]
+    subgraph Procesamiento
+        DF["Dataflow - Apache Beam"]
     end
 
-    subgraph OLAP["OLAP — Analítico (Futuro)"]
-        BQ["BigQuery<br/>Data Warehouse"]
-        VA["Vertex AI<br/>AutoML / Pipelines"]
-        DS["Dashboard<br/>Looker Studio"]
+    subgraph OLAP["Analitico - Futuro"]
+        BQ["BigQuery"]
+        VA["Vertex AI"]
+        DS["Looker Studio"]
     end
 
     VE --> DB
@@ -249,6 +261,5 @@ flowchart TD
     DF --> BQ
     BQ --> VA
     BQ --> DS
-
-    VA -->|"Predicción de demanda<br/>Detección de anomalías<br/>Segmentación de clientes"| DS
+    VA --> DS
 ```
