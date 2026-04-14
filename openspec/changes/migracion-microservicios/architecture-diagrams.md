@@ -28,7 +28,11 @@ graph TD
         FB["siga-fallback :8086"]
     end
 
-    DB[("PostgreSQL :5432")]
+    subgraph DB["Base de Datos PostgreSQL :5432"]
+        DB_SAAS[("esquema: siga_saas")]
+        DB_COMERCIAL[("esquema: siga_comercial")]
+    end
+    
     EU["siga-eureka :8761"]
 
     W1 --> GW
@@ -40,10 +44,10 @@ graph TD
     GW --> AG
     AG -.->|Circuit Breaker| FB
     VE -.->|Verifica stock| IN
-    AU --> DB
-    IN --> DB
-    VE --> DB
-    BI --> DB
+    AU --> DB_SAAS
+    IN --> DB_SAAS
+    VE --> DB_SAAS
+    BI --> DB_COMERCIAL
 ```
 
 > **Nota:** Todos los servicios se registran en `siga-eureka` para Service Discovery.
@@ -167,7 +171,12 @@ graph TD
         BI["siga-billing :8084"]
         AG["siga-agente :8085"]
         FB["siga-fallback :8086"]
-        DB[("PostgreSQL :5432")]
+        
+        subgraph DB["PostgreSQL :5432"]
+            DB_SAAS[("siga_saas")]
+            DB_COMERCIAL[("siga_comercial")]
+        end
+        
         PA["pgAdmin :8090"]
     end
 
@@ -185,11 +194,12 @@ graph TD
     GW --> VE
     GW --> BI
     GW --> AG
-    AU --> DB
-    IN --> DB
-    VE --> DB
-    BI --> DB
-    PA --> DB
+    AU --> DB_SAAS
+    IN --> DB_SAAS
+    VE --> DB_SAAS
+    BI --> DB_COMERCIAL
+    PA --> DB_SAAS
+    PA --> DB_COMERCIAL
     PR --> GR
     LS --> ES
     ES --> KI
