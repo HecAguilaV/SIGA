@@ -35,7 +35,11 @@ Este checklist detalla los pasos técnicos para extraer los 5 microservicios def
 - [ ] **3.1 Asistente AI (`siga-asistente`)**
     - [ ] Migrar lógica de integración con Google Gemini.
     - [ ] Implementar RAG consultando al servicio de Inventario.
-- [ ] **3.2 Integración de Accesibilidad**
+- [ ] **3.2 Microservicio de Fallback (`siga-fallback`)**
+    - [ ] Crear módulo `services/fallback`.
+    - [ ] Implementar lógica de contingencia (respuestas por defecto, acceso a cache o DB simplificada).
+    - [ ] Integrar con `siga-agente` como destino de respaldo.
+- [ ] **3.3 Integración de Accesibilidad**
     - [ ] Convertir POJO A11Y Toolbar a componente Svelte (Webapp).
     - [ ] Convertir POJO A11Y Toolbar a componente React (Comercial).
 
