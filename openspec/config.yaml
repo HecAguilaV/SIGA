@@ -1,0 +1,37 @@
+# Esquema utilizado para validar este archivo (SDP: Spec-Driven Development)
+schema: spec-driven
+
+# Contexto global del proyecto (stack, arquitectura, etc.)
+context: |
+  Tech stack: Kotlin (Spring Boot), SvelteKit, React, Android.
+  Architecture: Microservices (Eureka-based), Clean Architecture.
+  Testing: JUnit, Karma + Jasmine.
+  Style: Conventional Commits (Spanish).
+
+# Modo estricto TDD activado (Desarrollo guiado por pruebas)
+strict_tdd: true
+
+# Configuración de pruebas para cada servicio
+testing:
+  comercial: pnpm test
+  backend: ./gradlew test
+  webapp: npx svelte-check
+
+# Reglas generales por fase de SDD
+rules:
+  # Reglas para propuestas (proposal)
+  proposal:
+    - Incluir plan de rollback para cambios riesgosos (Include rollback plan for risky changes)
+    - Identificar módulos/paquetes afectados (Identify affected modules/packages)
+  # Reglas para especificaciones (specs)
+  specs:
+    - Usar formato Given/When/Then para los escenarios (Use Given/When/Then format for scenarios)
+    - Usar palabras clave RFC 2119 (DEBE, DEBERÍA, PODRÍA) (Use RFC 2119 keywords)
+  # Reglas para diseño técnico (design)
+  design:
+    - Incluir diagramas de secuencia para flujos complejos (Include sequence diagrams for complex flows)
+    - Documentar decisiones de arquitectura con justificación (Document architecture decisions with rationale)
+  # Reglas para tareas de implementación (tasks)
+  tasks:
+    - Agrupar tareas por fase (infraestructura, implementación, pruebas) (Group tasks by phase)
+    - Mantener tareas lo suficientemente pequeñas para completar en una sesión (Keep tasks small enough)
