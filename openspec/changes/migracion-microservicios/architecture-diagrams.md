@@ -8,72 +8,47 @@ Todos los diagramas utilizan la sintaxis Mermaid compatible con GitHub.
 ## 1. Vista General del Sistema
 
 ```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
 flowchart TD
-    subgraph Clientes["Clientes"]
-        WA["🖥️ Webapp<br/>(SvelteKit + Bulma)<br/>Cajeros / Operadores"]
-        WC["🖥️ Web Comercial<br/>(React + Bootstrap)<br/>Dueños de Negocio"]
-        LP["🌐 Landing Page<br/>(Estática)<br/>Vercel / GitHub Pages"]
+    subgraph Clientes["📱 Clientes (Web/Mobile)"]
+        W1["🖥️ Webapp (Cajeros)"]
+        W2["🖥️ Web Comercial (Dueños)"]
     end
 
-    subgraph Infraestructura["Capa de Infraestructura"]
-        EU["siga-eureka<br/>:8761<br/>Service Discovery"]
-        GW["siga-gateway<br/>:8080<br/>API Gateway + JWT"]
+    GW["🚪 siga-gateway (:8080)"]
+
+    subgraph Microservicios["⚙️ Capa de Negocio e IA"]
+        direction LR
+        AU["🔐 siga-auth"]
+        IN["📦 siga-inventario"]
+        VE["🛒 siga-ventas"]
+        BI["💳 siga-billing"]
+        AG["🤖 siga-agente"]
+        FB["🚑 siga-fallback"]
     end
 
-    subgraph Negocio["Capa de Negocio"]
-        AU["siga-auth<br/>:8081<br/>Identidad + OAuth2"]
-        IN["siga-inventario<br/>:8082<br/>Catálogo + Stock"]
-        VE["siga-ventas<br/>:8083<br/>Transacciones"]
-        BI["siga-billing<br/>:8084<br/>Planes + Suscripciones"]
+    subgraph Datos["🗄️ Capa de Datos"]
+        DB[("PostgreSQL")]
     end
+    
+    EU("🌐 siga-eureka (:8761)")
 
-    subgraph Inteligencia["Capa de Inteligencia"]
-        AG["siga-agente<br/>:8085<br/>Asistente IA"]
-        FB["siga-fallback<br/>:8086<br/>Resiliencia"]
-    end
-
-    subgraph Datos["Capa de Datos"]
-        DB[("PostgreSQL :5432")]
-        SS["esquema: siga_saas"]
-        SC["esquema: siga_comercial"]
-    end
-
-    subgraph Externos["Servicios Externos"]
-        GG["Google Gemini API"]
-        GO["Google OAuth2"]
-        AP["Apple Sign-In"]
-    end
-
-    WA --> GW
-    WC --> GW
-    GW --> EU
+    Clientes --> GW
+    
     GW --> AU
     GW --> IN
     GW --> VE
     GW --> BI
     GW --> AG
+    
+    AG -.->|Respaldo| FB
+    VE -.->|Verifica| IN
 
-    AU -.->|registra| EU
-    IN -.->|registra| EU
-    VE -.->|registra| EU
-    BI -.->|registra| EU
-    AG -.->|registra| EU
-    FB -.->|registra| EU
-
-    AU --> GO
-    AU --> AP
-    AG --> GG
-    AG -->|Circuit Breaker| FB
-
-    VE -->|verificar stock| IN
-
-    AU --> SS
-    IN --> SS
-    VE --> SS
-    BI --> SC
-    DB --- SS
-    DB --- SC
+    AU --> DB
+    IN --> DB
+    VE --> DB
+    BI --> DB
+    
+    Microservicios -.->|Todos se registran en| EU
 ```
 
 ---
@@ -184,64 +159,31 @@ sequenceDiagram
 ## 5. Infraestructura Docker Compose
 
 ```mermaid
-%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
-flowchart LR
-    subgraph Red["Red: siga-network"]
-        EU["siga-eureka<br/>:8761"]
-        GW["siga-gateway<br/>:8080"]
-
-        AU["siga-auth<br/>:8081"]
-        IN["siga-inventario<br/>:8082"]
-        VE["siga-ventas<br/>:8083"]
-        BI["siga-billing<br/>:8084"]
-        AG["siga-agente<br/>:8085"]
-        FB["siga-fallback<br/>:8086"]
-
-        DB["🗄️ PostgreSQL<br/>:5432"]
-        PA["pgAdmin<br/>:8090"]
+flowchart TD
+    subgraph App["Microservicios SIGA (Red Docker)"]
+        direction TB
+        GW["Gateway (:8080)"]
+        MS["Servicios de Negocio"]
+        DB[("PostgreSQL (:5432)")]
+        EU("Eureka (:8761)")
+        PA["pgAdmin (:8090)"]
+        
+        GW --> MS --> DB
+        MS -.-> EU
+        GW -.-> EU
+        PA -.-> DB
     end
 
-    subgraph Observabilidad["Observabilidad"]
-        PR["Prometheus<br/>:9090"]
-        GR["Grafana<br/>:3000"]
-        ES["Elasticsearch<br/>:9200"]
-        LS["Logstash<br/>:5044"]
-        KI["Kibana<br/>:5601"]
-        ZI["Zipkin<br/>:9411"]
+    subgraph Obs["Stack de Observabilidad"]
+        direction TB
+        PR["Prometheus (:9090)"] --> GR["Grafana (:3000)"]
+        LS["Logstash (:5044)"] --> ES["Elasticsearch (:9200)"] --> KI["Kibana (:5601)"]
+        ZI["Zipkin (:9411)"]
     end
-
-    GW --> EU
-    AU --> EU
-    IN --> EU
-    VE --> EU
-    BI --> EU
-    AG --> EU
-    FB --> EU
-
-    AU --> DB
-    IN --> DB
-    VE --> DB
-    BI --> DB
-    PA --> DB
-
-    PR --> AU
-    PR --> IN
-    PR --> VE
-    PR --> BI
-    PR --> AG
-    GR --> PR
-
-    AU --> LS
-    IN --> LS
-    VE --> LS
-    BI --> LS
-    AG --> LS
-    LS --> ES
-    KI --> ES
-
-    AU --> ZI
-    IN --> ZI
-    VE --> ZI
+    
+    App ===>|Métricas| PR
+    App ===>|Logs JSON| LS
+    App ===>|Traces| ZI
 ```
 
 ---
