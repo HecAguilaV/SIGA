@@ -8,54 +8,46 @@ Todos los diagramas utilizan la sintaxis Mermaid compatible con GitHub.
 ## 1. Vista General del Sistema
 
 ```mermaid
-flowchart TD
-    subgraph Clientes["📱 Clientes (Web/Mobile)"]
-        W1["🖥️ Webapp (Cajeros)"]
-        W2["🖥️ Web Comercial (Dueños)"]
+graph TD
+    subgraph Clientes
+        W1["Webapp SvelteKit"]
+        W2["Web Comercial React"]
     end
 
-    GW["🚪 siga-gateway :8080"]
+    GW["siga-gateway :8080"]
 
-    subgraph Microservicios["⚙️ Capa de Negocio e IA"]
-        direction LR
-        AU["🔐 siga-auth"]
-        IN["📦 siga-inventario"]
-        VE["🛒 siga-ventas"]
-        BI["💳 siga-billing"]
-        AG["🤖 siga-agente"]
-        FB["🚑 siga-fallback"]
+    subgraph Negocio["Servicios de Negocio"]
+        AU["siga-auth :8081"]
+        IN["siga-inventario :8082"]
+        VE["siga-ventas :8083"]
+        BI["siga-billing :8084"]
     end
 
-    subgraph Datos["🗄️ Capa de Datos"]
-        DB["PostgreSQL"]
+    subgraph IA["Servicios de Inteligencia"]
+        AG["siga-agente :8085"]
+        FB["siga-fallback :8086"]
     end
-    
-    EU["🌐 siga-eureka :8761"]
+
+    DB[("PostgreSQL :5432")]
+    EU["siga-eureka :8761"]
 
     W1 --> GW
     W2 --> GW
-    
     GW --> AU
     GW --> IN
     GW --> VE
     GW --> BI
     GW --> AG
-    
-    AG -.->|Respaldo| FB
-    VE -.->|Verifica| IN
-
+    AG -.->|Circuit Breaker| FB
+    VE -.->|Verifica stock| IN
     AU --> DB
     IN --> DB
     VE --> DB
     BI --> DB
-    
-    AU -.->|Todos se registran en| EU
-    IN -.-> EU
-    VE -.-> EU
-    BI -.-> EU
-    AG -.-> EU
-    FB -.-> EU
 ```
+
+> **Nota:** Todos los servicios se registran en `siga-eureka` para Service Discovery.
+> Las flechas de registro se omiten para mantener la claridad del diagrama.
 
 ---
 
