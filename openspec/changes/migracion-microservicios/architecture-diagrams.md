@@ -32,7 +32,8 @@ flowchart TD
     
     EU["🌐 siga-eureka :8761"]
 
-    Clientes --> GW
+    W1 --> GW
+    W2 --> GW
     
     GW --> AU
     GW --> IN
@@ -48,7 +49,12 @@ flowchart TD
     VE --> DB
     BI --> DB
     
-    Microservicios -.->|Todos se registran en| EU
+    AU -.->|Todos se registran en| EU
+    IN -.-> EU
+    VE -.-> EU
+    BI -.-> EU
+    AG -.-> EU
+    FB -.-> EU
 ```
 
 ---
@@ -181,9 +187,9 @@ flowchart TD
         ZI["Zipkin :9411"]
     end
     
-    App ==>|Métricas| PR
-    App ==>|Logs JSON| LS
-    App ==>|Traces| ZI
+    MS ==>|Métricas| PR
+    MS ==>|Logs JSON| LS
+    MS ==>|Traces| ZI
 ```
 
 ---
