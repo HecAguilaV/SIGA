@@ -1,0 +1,139 @@
+{
+	"info": {
+		"_postman_id": "42d22f25-86b2-4d51-93c4-ecab783421f5",
+		"name": "SIGA - APIs",
+		"description": "Coleccion de Postman para probar el API Gateway de SIGA y validar ruteo, autenticacion por JWT y aislacion de tenant (Mocks).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth Service",
+			"item": [
+				{
+					"name": "Generar Token Login (Mock)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@siga.cl\",\n  \"password\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Inventario Service",
+			"item": [
+				{
+					"name": "Listar Productos (Con Tenant)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Tenant-Id",
+								"value": "tenant-42",
+								"description": "Obligatorio para la Arquitectura Zero-Trust"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/inventario/productos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"inventario",
+								"productos"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Productos (Causa 401 Unauthorized)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/inventario/productos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"inventario",
+								"productos"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Ventas Service",
+			"item": [
+				{
+					"name": "Registrar Venta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Tenant-Id",
+								"value": "tenant-42"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"localId\": 1,\n  \"productos\": [\n    {\"sku\": \"PROD-001\", \"cantidad\": 2}\n  ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/ventas/registrar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"ventas",
+								"registrar"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	]
+}
