@@ -35,10 +35,10 @@ Este checklist detalla los pasos técnicos para extraer los 5 microservicios def
 ### 3.1 Agente Autónomo AI (`siga-agente`)
 - [x] Crear contenedor y carpeta `services/agente` (Python/FastAPI).
 - [x] Instalar cliente de Eureka (`py_eureka_client`).
-- [ ] Implementar framework Strands + Ollama Cloud.
-- [ ] **Bots Especializados**:
-  - [ ] Implementar `AnalystBot` (Herramientas KPI / Extracción de métricas de negocio para dueños).
-  - [ ] Implementar `OperatorBot` (Herramientas transaccionales: stock, consultar estado).
+- [x] Implementar framework Strands + Ollama Cloud.
+- [x] **Bots Especializados**:
+  - [x] Implementar el `Analista` (Herramientas KPI / Extracción de métricas de negocio para dueños).
+  - [x] Implementar el `Operador` (Herramientas transaccionales: stock, registrar venta).
 
 ### 3.2 Microservicio de Resiliencia y Estabilidad (`siga-fallback`)
 - [ ] Implementar Circuit Breakers (Resilience4j / Timeouts) en Gateway o servicios.
