@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: siga-auth
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:-localhost}:5432/siga_db
+    username: admin
+    password: password123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: siga_saas # Default a saas, aunque el modulo accede a ambos
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:-localhost}:8761/eureka/
+
+jwt:
+  secret: super-secret-key-too-long-to-be-secure-enough-probably-123456

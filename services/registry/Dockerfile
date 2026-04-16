@@ -1,0 +1,32 @@
+# Build stage
+FROM gradle:8.5-jdk21 AS build
+WORKDIR /app
+
+# Copy Gradle files
+COPY build.gradle.kts settings.gradle.kts gradlew ./
+COPY gradle ./gradle
+
+# Copy source code
+COPY src ./src
+
+# Build the application (skip tests for faster builds)
+RUN ./gradlew build -x test --no-daemon
+
+# Find and copy the executable JAR (exclude -plain.jar)
+RUN find /app/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
+
+# Runtime stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Copy the executable JAR from build stage
+COPY --from=build /app/app.jar app.jar
+
+# Expose port
+EXPOSE 8761
+
+# Set environment variables
+ENV JAVA_OPTS="-Xmx256m -Xms128m"
+
+# Run the application
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
