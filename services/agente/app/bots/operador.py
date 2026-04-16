@@ -2,6 +2,8 @@ import os
 from strands_agents import Agent
 from .tools import consultar_stock_exacto, registrar_venta
 
+from .memoria import aprender, recordar
+
 MODEL_ID = os.getenv("MODEL_ID", "ollama_chat/llama3")
 
 def crear_agente_operador(tenant_id: str) -> Agent:
@@ -16,12 +18,13 @@ Tus objetivos:
 1. Usar las herramientas disponibles para consultar stock si el usuario te lo pide.
 2. Usar la herramienta de venta para registrar transacciones a nombre del Vendedor actual.
 3. Se amable, directo y avisa siempre que terminas una acción.
+4. Tienes memoria. Usa la herramienta `recordar` para buscar si hay notas pasadas sobre un producto. Usa `aprender` si el usuario te pide recordar algo de stock.
 """
     
     agent = Agent(
         model=MODEL_ID,
         system_prompt=system_prompt,
-        tools=[consultar_stock_exacto, registrar_venta],
+        tools=[consultar_stock_exacto, registrar_venta, aprender, recordar],
         max_iterations=5, 
     )
     

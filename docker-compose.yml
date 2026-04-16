@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Base de Datos Local (Emulación de Supabase)
   siga-db:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: siga-postgres
     environment:
       POSTGRES_DB: siga_db
