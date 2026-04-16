@@ -3,6 +3,11 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [sveltekit()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/setupTest.js']
+  },
   server: {
     port: 5174,
     strictPort: true, // Force 5174 to avoid confusion

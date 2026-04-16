@@ -26,6 +26,9 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     
+    // Swagger / OpenAPI (WebFlux variant para Gateway reactivo)
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
+    
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
