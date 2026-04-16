@@ -16,7 +16,13 @@ def test_chat_requires_auth_header():
 
 def test_chat_with_valid_tenant_id_header():
     headers = {"X-Tenant-Id": "100"}
-    response = client.post("/api/agente/chat", json={"prompt": "Hola"}, headers=headers)
+    response = client.post("/api/agente/chat", json={"prompt": "Dime kpis", "bot_type": "analista"}, headers=headers)
     assert response.status_code == 200
-    assert "Validando datos para tenant 100" in response.json()["reply"]
+    assert "Analista de Negocio" in response.json()["reply"]
+
+def test_chat_with_operador_bot_type():
+    headers = {"X-Tenant-Id": "200"}
+    response = client.post("/api/agente/chat", json={"prompt": "Vende esto", "bot_type": "operador"}, headers=headers)
+    assert response.status_code == 200
+    assert "Operador de Flujo" in response.json()["reply"]
 
