@@ -7,6 +7,8 @@ from contextlib import asynccontextmanager
 EUREKA_SERVER = os.getenv("EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", "http://localhost:8761/eureka")
 APP_PORT = int(os.getenv("PORT", 8000))
 
+from app.core.database import db
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Registrar en Eureka al inicio
@@ -15,8 +17,13 @@ async def lifespan(app: FastAPI):
         app_name="siga-agente",
         instance_port=APP_PORT
     )
+    # Inicializar PGVector Database
+    await db.connect()
+    
     yield
-    # No es estrictamente necesario, py-eureka-client se encarga de parar graceful pero podemos explicitarlo
+    
+    # Desconectar Limpiamente
+    await db.disconnect()
 
 app = FastAPI(title="SIGA Agente de IA", lifespan=lifespan)
 

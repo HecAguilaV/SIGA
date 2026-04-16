@@ -6,3 +6,6 @@ httpx==0.27.0
 pytest==8.2.2
 strands-agents
 strands-agents-tools
+psycopg[binary,pool]
+pgvector
+sentence-transformers
