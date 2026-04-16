@@ -13,6 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - siga-db-data:/var/lib/postgresql/data
+    networks:
+      - siga-net
 
   # Admin de Base de Datos (Web GUI)
   pgadmin:
@@ -22,15 +24,86 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@siga.cl
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8080:80"
+      - "8081:80"
     depends_on:
       - siga-db
+    networks:
+      - siga-net
 
-  # Placeholder para Eureka Server (Próximo Requisito)
-  # eureka-server:
-  #   image: openjdk:17-slim
-  #   ports:
-  #     - "8761:8761"
+  # Eureka Server (Service Registry)
+  siga-eureka:
+    build:
+      context: ./services/registry
+      dockerfile: Dockerfile
+    container_name: siga-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - siga-net
+      
+  # API Gateway
+  siga-gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile
+    container_name: siga-gateway
+    ports:
+      - "8080:8080" # El puerto público
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
+    depends_on:
+      - siga-eureka
+    networks:
+      - siga-net
+
+  # Dominio de Inventario
+  siga-inventario:
+    build:
+      context: ./services/inventario
+      dockerfile: Dockerfile
+    container_name: siga-inventario
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
+      - DB_HOST=siga-db
+    depends_on:
+      - siga-eureka
+      - siga-db
+    networks:
+      - siga-net
+      
+  # Dominio de Ventas
+  siga-ventas:
+    build:
+      context: ./services/ventas
+      dockerfile: Dockerfile
+    container_name: siga-ventas
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
+      - DB_HOST=siga-db
+    depends_on:
+      - siga-eureka
+      - siga-db
+      - siga-inventario
+    networks:
+      - siga-net
+
+  # Polyglot AI - Agente
+  siga-agente:
+    build:
+      context: ./services/agente
+      dockerfile: Dockerfile
+    container_name: siga-agente
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
+      - PORT=8000
+    depends_on:
+      - siga-eureka
+    networks:
+      - siga-net
 
 volumes:
   siga-db-data:
+
+networks:
+  siga-net:
+    driver: bridge

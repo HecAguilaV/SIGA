@@ -1,48 +1,52 @@
-# Tasks: Descomposición de Monolito SIGA
+# Tasks: Descomposición de Monolito SIGA (Polyglot)
 
 Este checklist detalla los pasos técnicos para extraer los 5 microservicios definitivos del backend actual.
 
 ## Fase 1: Infraestructura de Soporte
-- [ ] **1.1 Configurar Service Registry (Eureka)**
-    - [ ] Crear módulo `services/registry`.
-    - [ ] Configurar anotación `@EnableEurekaServer`.
-    - [ ] Añadir a `docker-compose.yml`.
-- [ ] **1.2 Configurar API Gateway**
-    - [ ] Crear módulo `services/gateway`.
-    - [ ] Implementar `DiscoveryClient` para ruteo dinámico.
-    - [ ] Configurar CORS global y validación inicial de JWT.
+- [x] **1.1 Configurar Service Registry (Eureka)**
+    - [x] Crear módulo `services/registry` (Kotlin).
+    - [x] Configurar anotación `@EnableEurekaServer`.
+    - [x] Añadir a `docker-compose.yml`.
+- [x] **1.2 Configurar API Gateway**
+    - [x] Crear módulo `services/gateway` (Kotlin).
+    - [x] Implementar `DiscoveryClient` enrutando mediante Eureka.
+    - [x] Configurar CORS global y delegación de headers JWT (`X-Tenant-Id`).
 
-## Fase 2: Extracción de Dominios (Strangler Fig)
+## Fase 2: Extracción de Dominios Core (Strangler Fig)
 
 ### 2.1 Dominio de Identidad (`siga-auth`)
-- [ ] Crear módulo `services/auth`.
-- [ ] Migrar entidades: `UsuarioSaas`, `UsuarioComercial`, `Permiso`.
-- [ ] Implementar endpoints de Login y Token Exchange.
-- [ ] **Desafío**: Romper dependencia directa con el esquema del monolito.
+- [x] Crear módulo `services/auth` (Kotlin).
+- [x] Migrar entidades: `UsuarioSaas`, `UsuarioComercial`, `Permiso`.
+- [x] Implementar emisión de JWT firmados y OAuth2 genérico.
+- [ ] Implementar OIDC Client para **Google Login / Registro (SSO)** para `UsuarioComercial` (Dueños).
+- [ ] Validar esquema de username/pwd estándar para `UsuarioSaas` (Empleados).
 
 ### 2.2 Dominio de Inventario (`siga-inventario`)
-- [ ] Crear módulo `services/inventario`.
-- [ ] Migrar entidades: `Producto`, `Categoria`, `Local`, `Stock`.
-- [ ] Implementar lógica de movimientos de stock.
-- [ ] Exponer API para consulta desde el Asistente.
+- [x] Crear módulo `services/inventario` (Kotlin).
+- [x] Migrar DB Entities: `Producto`, `Categoria`, `Local`, `Stock`.
+- [x] Exponer API REST filtrada por `tenant_id` (vía JWT).
 
 ### 2.3 Dominio Transaccional (`siga-ventas`)
-- [ ] Crear módulo `services/ventas`.
-- [ ] Migrar entidades: `Venta`, `Factura`.
-- [ ] **Integración**: Consumir `siga-inventario` vía REST para validar stock antes de la venta.
+- [x] Crear módulo `services/ventas` (Kotlin).
+- [x] Integrar consumo REST síncrono a `siga-inventario` para validar stock.
 
-## Fase 3: Inteligencia y UX
-- [ ] **3.1 Asistente AI (`siga-asistente`)**
-    - [ ] Migrar lógica de integración con Google Gemini.
-    - [ ] Implementar RAG consultando al servicio de Inventario.
-- [ ] **3.2 Microservicio de Fallback (`siga-fallback`)**
-    - [ ] Crear módulo `services/fallback`.
-    - [ ] Implementar lógica de contingencia (respuestas por defecto, acceso a cache o DB simplificada).
-    - [ ] Integrar con `siga-agente` como destino de respaldo.
-- [ ] **3.3 Integración de Accesibilidad**
+## Fase 3: Polyglot AI (Strands + Python)
+
+### 3.1 Agente Autónomo AI (`siga-agente`)
+- [x] Crear contenedor y carpeta `services/agente` (Python/FastAPI).
+- [x] Instalar cliente de Eureka (`py_eureka_client`).
+- [ ] Implementar framework Strands + Ollama Cloud.
+- [ ] **Bots Especializados**:
+  - [ ] Implementar `AnalystBot` (Herramientas KPI / Extracción de métricas de negocio para dueños).
+  - [ ] Implementar `OperatorBot` (Herramientas transaccionales: stock, consultar estado).
+
+### 3.2 Microservicio de Resiliencia y Estabilidad (`siga-fallback`)
+- [ ] Implementar Circuit Breakers (Resilience4j / Timeouts) en Gateway o servicios.
+- [ ] Desarrollar respuestas heurísticas crudas en caso de falla o alta latencia del LLM en `siga-agente`.
+
+## Fase 4: Integración UI y Verificación
+- [ ] **4.1 Integración de Accesibilidad**
     - [ ] Convertir POJO A11Y Toolbar a componente Svelte (Webapp).
     - [ ] Convertir POJO A11Y Toolbar a componente React (Comercial).
-
-## Fase 4: Verificación y Cierre
-- [ ] Pruebas de integración entre Gateway y servicios.
-- [ ] Verificación de flujo completo: Login -> Consulta Inventario -> Venta.
+- [ ] **4.2 Verificación de Comunicación Polyglot**
+    - [ ] Comprobar flujo de Gateway -> Agente (Python) -> Inventario (Kotlin).

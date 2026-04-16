@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: siga-gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Rutas de ejemplo según Spec
+        - id: siga-auth
+          uri: lb://siga-auth
+          predicates:
+            - Path=/api/auth/**
+        - id: siga-inventario
+          uri: lb://siga-inventario
+          predicates:
+            - Path=/api/inventario/**
+        - id: siga-ventas
+          uri: lb://siga-ventas
+          predicates:
+            - Path=/api/ventas/**
+        - id: siga-billing
+          uri: lb://siga-billing
+          predicates:
+            - Path=/api/billing/**
+        - id: siga-agente
+          uri: lb://siga-agente
+          predicates:
+            - Path=/api/agente/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
