@@ -1,6 +1,7 @@
 <script>
     import { page } from "$app/stores";
     import { uiStore } from "$lib/stores/uiStore";
+    import { fly, fade } from "svelte/transition";
     import {
         House,
         Package,
@@ -17,37 +18,12 @@
     import { authService } from "$lib/services/auth";
 
     const menuItems = [
-        { label: "Dashboard", href: "/", icon: House }, // Público / Básico
-        {
-            label: "Análisis",
-            href: "/analisis",
-            icon: ChartBar,
-            requiredPermission: "REPORTES_VER",
-        }, // ANALISIS_IA? o REPORTES_VER
-        {
-            label: "Productos",
-            href: "/productos",
-            icon: Package,
-            requiredPermission: "PRODUCTOS_VER",
-        },
-        {
-            label: "Categorías",
-            href: "/categorias",
-            icon: Tag,
-            requiredPermission: "CATEGORIAS_ACTUALIZAR",
-        }, // Asumiendo view is implicitly update for now, or just show if can update
-        {
-            label: "Locales",
-            href: "/locales",
-            icon: Storefront,
-            requiredPermission: "LOCALES_ACTUALIZAR",
-        },
-        {
-            label: "Usuarios",
-            href: "/usuarios",
-            icon: Users,
-            requiredPermission: "USUARIOS_CREAR",
-        }, // O USUARIOS_PERMISOS
+        { label: "Dashboard", href: "/", icon: House },
+        { label: "Análisis", href: "/analisis", icon: ChartBar, requiredPermission: "REPORTES_VER" },
+        { label: "Productos", href: "/productos", icon: Package, requiredPermission: "PRODUCTOS_VER" },
+        { label: "Categorías", href: "/categorias", icon: Tag, requiredPermission: "CATEGORIAS_ACTUALIZAR" },
+        { label: "Locales", href: "/locales", icon: Storefront, requiredPermission: "LOCALES_ACTUALIZAR" },
+        { label: "Usuarios", href: "/usuarios", icon: Users, requiredPermission: "USUARIOS_CREAR" },
     ];
 
     $: user = $authStore.user || {
@@ -58,8 +34,8 @@
     };
 
     $: filteredItems = menuItems.filter((item) => {
-        if (!item.requiredPermission) return true; // Siempre visible si no requiere permiso
-        if (user.rol === "ADMINISTRADOR") return true; // Admin ve todo
+        if (!item.requiredPermission) return true;
+        if (user.rol === "ADMINISTRADOR") return true;
         return (user.permisos || []).includes(item.requiredPermission);
     });
 
@@ -68,67 +44,54 @@
         window.location.href = "/login";
     };
 
-    // Si estamos en móvil, cerramos el sidebar al navegar
     $: if ($uiStore.isMobile && $page.url.pathname) {
         uiStore.closeSidebar();
     }
 </script>
 
-<aside class="sidebar" class:closed={!$uiStore.isSidebarOpen}>
+<aside class="sidebar glass-card" class:closed={!$uiStore.isSidebarOpen} in:fly={{ x: -260, duration: 400 }}>
     <div class="sidebar-header">
         <div class="logo-container">
-            <img src="/S.png" alt="SIGA" class="logo-img" />
-            <div class="logo-text-col">
-                <span class="logo-text">SIGA</span>
-                <span class="logo-subtitle">Inventario</span>
+            <div class="logo-box">
+                <img src="/S.png" alt="SIGA" />
+            </div>
+            <div class="logo-text-group">
+                <span class="logo-title">SIGA</span>
+                <span class="logo-tag">MNGMNT</span>
             </div>
         </div>
-        <!-- Botón para colapsar el menú -->
-        <button
-            class="toggle-icon-btn"
-            on:click={uiStore.closeSidebar}
-            title="Ocultar menú"
-        >
-            <CaretLeft size={20} weight="bold" />
+        <button class="icon-btn-subtle" on:click={uiStore.closeSidebar}>
+            <CaretLeft size={18} weight="bold" />
         </button>
     </div>
 
     <nav class="sidebar-nav">
+        <p class="nav-section-title">Navegación principal</p>
         {#each filteredItems as item}
-            <a
-                href={item.href}
-                class="nav-item"
-                class:active={$page.url.pathname === item.href}
-            >
-                <svelte:component
-                    this={item.icon}
-                    size={24}
-                    weight={$page.url.pathname === item.href
-                        ? "fill"
-                        : "regular"}
-                />
+            <a href={item.href} class="nav-link" class:active={$page.url.pathname === item.href}>
+                <div class="icon-wrapper">
+                    <svelte:component this={item.icon} size={20} weight={$page.url.pathname === item.href ? "fill" : "regular"} />
+                </div>
                 <span class="nav-label">{item.label}</span>
             </a>
         {/each}
     </nav>
 
     <div class="sidebar-footer">
-        <div class="user-profile">
-            <div class="user-avatar">
-                <User size={20} />
+        <div class="user-pill">
+            <div class="user-info-min">
+                <div class="avatar-small">
+                    <User size={14} weight="bold" />
+                </div>
+                <div class="user-meta">
+                    <span class="u-name">{user.nombre}</span>
+                    <span class="u-role">{user.rol}</span>
+                </div>
             </div>
-            <div class="user-info">
-                <span class="user-name">{user.nombre} {user.apellido}</span>
-                <span class="user-role">{user.rol}</span>
-            </div>
+            <button class="logout-btn-min" on:click={handleLogout} title="Cerrar Sesión">
+                <SignOut size={18} />
+            </button>
         </div>
-        <button
-            class="logout-btn"
-            on:click={handleLogout}
-            title="Cerrar Sesión"
-        >
-            <SignOut size={24} />
-        </button>
     </div>
 </aside>
 
@@ -136,16 +99,16 @@
     .sidebar {
         width: 260px;
         height: 100vh;
-        background-color: var(--color-primario);
-        color: #ffffff;
+        background: var(--canvas);
+        border-right: 1px solid var(--border-subtle);
         display: flex;
         flex-direction: column;
         position: fixed;
         left: 0;
         top: 0;
         z-index: 3000;
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none; /* Dejar que app.css maneje shadows si es necesario */
     }
 
     .sidebar.closed {
@@ -153,8 +116,7 @@
     }
 
     .sidebar-header {
-        padding: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.75rem 1.25rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -163,151 +125,172 @@
     .logo-container {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 12px;
     }
 
-    .logo-img {
+    .logo-box {
+        width: 32px;
         height: 32px;
-        width: auto;
-    }
-
-    .logo-text-col {
-        display: flex;
-        flex-direction: column;
-        line-height: 1;
-    }
-
-    .logo-text {
-        font-size: 1.25rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-        color: #ffffff;
-    }
-
-    .logo-subtitle {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: rgba(255, 255, 255, 0.85);
-        letter-spacing: 0.5px;
-    }
-
-    .toggle-icon-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        color: rgba(255, 255, 255, 0.8);
-        cursor: pointer;
-        padding: 6px;
+        background: var(--accent-primary);
         border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 0.3);
+    }
+
+    .logo-box img {
+        width: 20px;
+        height: auto;
+        filter: brightness(0) invert(1);
+    }
+
+    .logo-text-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .logo-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+    }
+
+    .logo-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        letter-spacing: 0.1em;
+        margin-top: -2px;
+    }
+
+    .icon-btn-subtle {
+        background: transparent;
+        border: 1px solid var(--border-subtle);
+        color: var(--text-tertiary);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        display: flex;
         transition: all 0.2s;
     }
 
-    .toggle-icon-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-        color: #fff;
+    .icon-btn-subtle:hover {
+        background: var(--surface-secondary);
+        color: var(--text-primary);
+        border-color: var(--border-hover);
     }
 
     .sidebar-nav {
         flex: 1;
-        padding: 1.5rem 1rem;
+        padding: 0 12px;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 4px;
     }
 
-    .nav-item {
+    .nav-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 1rem 0 0.75rem 12px;
+    }
+
+    .nav-link {
         display: flex;
         align-items: center;
-        gap: 0.875rem;
-        padding: 0.875rem 1rem;
-        border-radius: 8px;
-        color: rgba(255, 255, 255, 0.7);
+        gap: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        color: var(--text-secondary);
         text-decoration: none;
+        font-size: 13px;
         font-weight: 500;
         transition: all 0.2s ease;
     }
 
-    .nav-item:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-        color: #ffffff;
-        transform: translateX(4px);
+    .nav-link:hover {
+        background: var(--surface-secondary);
+        color: var(--text-primary);
     }
 
-    .nav-item.active {
-        background-color: rgba(255, 255, 255, 0.15);
-        color: #ffffff;
+    .nav-link.active {
+        background: rgba(var(--accent-primary-rgb), 0.1);
+        color: var(--accent-primary);
         font-weight: 600;
-        box-shadow: inset 4px 0 0 var(--color-secundario);
     }
 
-    .nav-label {
-        font-size: 0.95rem;
+    .icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .sidebar-footer {
-        padding: 1rem;
-        background-color: rgba(0, 0, 0, 0.2);
+        padding: 20px 12px;
+        border-top: 1px solid var(--border-subtle);
+    }
+
+    .user-pill {
+        background: var(--surface-secondary);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 8px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 0.5rem;
     }
 
-    .user-profile {
+    .user-info-min {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        overflow: hidden;
+        gap: 10px;
     }
 
-    .user-avatar {
-        width: 36px;
-        height: 36px;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
+    .avatar-small {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        background: var(--surface-elevated);
+        border: 1px solid var(--border-subtle);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #ffffff;
+        color: var(--text-tertiary);
     }
 
-    .user-info {
+    .user-meta {
         display: flex;
         flex-direction: column;
-        min-width: 0;
+        line-height: 1.1;
     }
 
-    .user-name {
-        font-size: 0.85rem;
+    .u-name {
+        font-size: 12px;
         font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 140px;
+        color: var(--text-primary);
     }
 
-    .user-role {
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.6);
+    .u-role {
+        font-size: 10px;
+        color: var(--text-tertiary);
     }
 
-    .logout-btn {
-        background: none;
+    .logout-btn-min {
+        background: transparent;
         border: none;
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--text-tertiary);
         cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 6px;
-        transition: all 0.2s;
+        padding: 4px;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        transition: color 0.2s;
     }
 
-    .logout-btn:hover {
-        color: #ff6b6b;
-        background-color: rgba(255, 255, 255, 0.05);
+    .logout-btn-min:hover {
+        color: var(--status-danger);
     }
 </style>

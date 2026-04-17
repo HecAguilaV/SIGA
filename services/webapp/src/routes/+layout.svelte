@@ -2,6 +2,7 @@
   import "../app.css";
   import Sidebar from "$lib/components/Sidebar.svelte";
   import AsistenteContextual from "$lib/components/AsistenteContextual.svelte";
+  import A11yToolbar from "$lib/components/A11yToolbar.svelte";
   import { authStore } from "$lib/stores/authStore";
   import { uiStore } from "$lib/stores/uiStore";
   import ToastContainer from "$lib/components/ToastContainer.svelte";
@@ -38,6 +39,8 @@
 
 <div class="app-layout">
   <ToastContainer />
+  <A11yToolbar />
+  
   {#if isAuthenticated && !isPublicRoute}
     <!-- Usuario autenticado en ruta privada -->
     <Sidebar />

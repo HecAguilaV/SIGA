@@ -8,6 +8,22 @@ export const authService = {
      * @param {string} password 
      */
     async login(email, password) {
+        // BYPASS DE DESARROLLO (MOCK LOGIN) - Eliminar antes de producción
+        if (email === 'admin@siga.cl' && password === 'admin') {
+            const mockUser = {
+                accessToken: 'mock-token-siga-dev',
+                user: {
+                    id: '1',
+                    email: 'admin@siga.cl',
+                    name: 'Administrador SIGA',
+                    role: 'ADMIN',
+                    tenant_id: 'saas_default'
+                }
+            };
+            loginUser(mockUser);
+            return { success: true, user: mockUser.user };
+        }
+
         try {
             const response = await api.post('/api/auth/login', { email, password });
             if (response.success) {
