@@ -430,6 +430,9 @@
     >
       <div
         class="window-header"
+        role="button"
+        tabindex="0"
+        aria-label="Arrastrar ventana de insights"
         on:mousedown={(e) => iniciarArrastre(e, "insight")}
       >
         <div class="window-title">

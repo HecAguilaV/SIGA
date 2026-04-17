@@ -1,14 +1,16 @@
 <script>
   import { datosNegocio } from "$lib/stores/datosNegocio.js";
   import { onMount } from "svelte";
+  import { fly, fade } from "svelte/transition";
   import {
     Package,
     Storefront,
-    CheckCircle,
-    ArrowUp,
-    ArrowDown,
+    ArrowUpRight,
     MagnifyingGlass,
     Funnel,
+    CurrencyDollar,
+    TrendUp,
+    TrendDown
   } from "phosphor-svelte";
 
   onMount(() => {
@@ -16,11 +18,10 @@
   });
 
   let localSeleccionado = 0;
-  let ordenarPor = "stock"; // Default sort by stock to see critical items first
+  let ordenarPor = "stock"; 
   let ordenAscendente = true;
   let busqueda = "";
 
-  // Esta reacción asegura que siempre tengamos un local activo cuando el store cargue datos
   $: {
     const localesDisponibles = $datosNegocio.locales ?? [];
     if (!localSeleccionado && localesDisponibles.length) {
@@ -28,20 +29,15 @@
     }
   }
 
-  // Mapa de Categorías para acceso rápido (ID -> Nombre)
   $: categoriasMap = new Map(
     ($datosNegocio.categorias ?? []).map((c) => [c.id, c.nombre]),
   );
 
-  // Filtrado y búsqueda
   $: productosFiltrados = ($datosNegocio.productos ?? [])
     .filter((p) => {
       if (!busqueda) return true;
       const term = busqueda.toLowerCase();
-      // Resolver nombre de categoría para búsqueda
-      const nombreCategoria =
-        categoriasMap.get(p.categoriaId)?.toLowerCase() || "";
-
+      const nombreCategoria = categoriasMap.get(p.categoriaId)?.toLowerCase() || "";
       return (
         p.nombre.toLowerCase().includes(term) ||
         p.codigoBarras?.toLowerCase().includes(term) ||
@@ -49,138 +45,90 @@
       );
     })
     .map((producto) => {
-      // Búsqueda real en el array de stock plano del store
       const stockEntry = ($datosNegocio.stock ?? []).find(
-        (s) =>
-          s.producto_id === producto.id && s.local_id === localSeleccionado,
+        (s) => s.producto_id === producto.id && s.local_id === localSeleccionado,
       );
-
       const stockActual = stockEntry ? stockEntry.cantidad : 0;
-      const nombreCategoria =
-        categoriasMap.get(producto.categoriaId) || "Sin categoría";
-
-      return {
-        ...producto,
-        stockActual,
-        // Mapeo de nombre de categoría real
-        categoria: nombreCategoria,
-      };
+      const nombreCategoria = categoriasMap.get(producto.categoriaId) || "Sin categoría";
+      return { ...producto, stockActual, categoria: nombreCategoria };
     });
 
-  // Ordenamiento
   $: productosOrdenados = [...productosFiltrados].sort((a, b) => {
-    let valorA = 0;
-    let valorB = 0;
-
-    if (ordenarPor === "nombre") {
-      valorA = a.nombre.toLowerCase() > b.nombre.toLowerCase() ? 1 : -1;
-      valorB = 0;
-    } else if (ordenarPor === "sku") {
-      const skuA = (a.sku || "").toString();
-      const skuB = (b.sku || "").toString();
-      valorA = skuA.toLowerCase() > skuB.toLowerCase() ? 1 : -1;
-      valorB = 0;
-    } else if (ordenarPor === "categoria") {
-      const catA = (a.categoria || "").toString();
-      const catB = (b.categoria || "").toString();
-      valorA = catA.toLowerCase() > catB.toLowerCase() ? 1 : -1;
-      valorB = 0;
-    } else if (ordenarPor === "stock") {
-      valorA = a.stockActual;
-      valorB = b.stockActual;
-    }
-
+    let valorA = 0; let valorB = 0;
+    if (ordenarPor === "nombre") { valorA = a.nombre.toLowerCase() > b.nombre.toLowerCase() ? 1 : -1; valorB = 0; }
+    else if (ordenarPor === "stock") { valorA = a.stockActual; valorB = b.stockActual; }
     const resultado = valorA < valorB ? -1 : valorA > valorB ? 1 : 0;
     return ordenAscendente ? resultado : -resultado;
   });
 
   const cambiarOrdenamiento = (columna) => {
-    if (ordenarPor === columna) {
-      ordenAscendente = !ordenAscendente;
-    } else {
-      ordenarPor = columna;
-      ordenAscendente = true;
-    }
+    if (ordenarPor === columna) { ordenAscendente = !ordenAscendente; }
+    else { ordenarPor = columna; ordenAscendente = true; }
   };
-  // Cálculo de Valor Inventario Total (Sumatoria de Stock * Precio)
-  $: valorInventario = ($datosNegocio.stock ?? []).reduce((acc, stockItem) => {
-    const prod = ($datosNegocio.productos ?? []).find(
-      (p) => p.id === stockItem.producto_id,
-    );
-    const precio = prod?.precioUnitario || 0;
-    return acc + stockItem.cantidad * precio;
-  }, 0);
 
-  import { CurrencyDollar } from "phosphor-svelte";
+  $: valorInventario = ($datosNegocio.stock ?? []).reduce((acc, stockItem) => {
+    const prod = ($datosNegocio.productos ?? []).find(p => p.id === stockItem.producto_id);
+    return acc + stockItem.cantidad * (prod?.precioUnitario || 0);
+  }, 0);
 </script>
 
-<div class="dashboard-view">
-  <!-- Header -->
-  <header class="page-header mb-5">
-    <div>
-      <h1 class="title is-4 mb-2">Dashboard</h1>
-      <p class="subtitle is-6 has-text-grey">Vista general del inventario</p>
+<div class="dashboard-container" in:fade={{ duration: 400 }}>
+  <!-- Header Animado -->
+  <header class="dashboard-header">
+    <div class="title-group" in:fly={{ y: -20, duration: 500 }}>
+      <h1 class="main-title">Centro de Control</h1>
+      <p class="sub-title">Gestión de activos en tiempo real</p>
     </div>
-    <div class="header-actions">
-      <div class="fecha-actual">
-        {new Date().toLocaleDateString("es-ES", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </div>
+    
+    <div class="header-widgets">
+        <div class="glass-pill">
+            <span class="pulse-indicator"></span>
+            Live Data
+        </div>
     </div>
   </header>
 
-  <!-- Widgets -->
-  <div class="columns is-multiline mb-5">
-    <div class="column is-4-desktop">
-      <div class="widget-card">
-        <div class="widget-icon primary">
-          <Package size={32} />
-        </div>
-        <div class="widget-info">
-          <p class="widget-label">Productos</p>
-          <p class="widget-value">{$datosNegocio.productos?.length || 0}</p>
-        </div>
+  <!-- Key Metrics Grid -->
+  <div class="metrics-grid">
+    <div class="metric-card glass-card glow-accent" in:fly={{ y: 20, duration: 600, delay: 100 }}>
+      <div class="metric-header">
+        <div class="metric-icon primary"><Package weight="duotone" size={24} /></div>
+      </div>
+      <div class="metric-body">
+        <span class="metric-label">Productos</span>
+        <h3 class="metric-value">{$datosNegocio.productos?.length || 0}</h3>
       </div>
     </div>
 
-    <div class="column is-4-desktop">
-      <div class="widget-card">
-        <div class="widget-icon secondary">
-          <Storefront size={32} />
-        </div>
-        <div class="widget-info">
-          <p class="widget-label">Locales Activos</p>
-          <p class="widget-value">{$datosNegocio.locales?.length || 0}</p>
-        </div>
+    <div class="metric-card glass-card" in:fly={{ y: 20, duration: 600, delay: 200 }}>
+      <div class="metric-header">
+        <div class="metric-icon secondary"><Storefront weight="duotone" size={24} /></div>
+      </div>
+      <div class="metric-body">
+        <span class="metric-label">Locales</span>
+        <h3 class="metric-value">{$datosNegocio.locales?.length || 0}</h3>
       </div>
     </div>
 
-    <div class="column is-4-desktop">
-      <div class="widget-card">
-        <div class="widget-icon success">
-          <CurrencyDollar size={32} />
-        </div>
-        <div class="widget-info">
-          <p class="widget-label">Valor Inventario</p>
-          <p class="widget-value">
-            ${new Intl.NumberFormat("es-CL").format(valorInventario)}
-          </p>
-        </div>
+    <div class="metric-card glass-card" in:fly={{ y: 20, duration: 600, delay: 300 }}>
+      <div class="metric-header">
+        <div class="metric-icon success"><CurrencyDollar weight="duotone" size={24} /></div>
+      </div>
+      <div class="metric-body">
+        <span class="metric-label">Capital Total</span>
+        <h3 class="metric-value">${new Intl.NumberFormat("es-CL").format(valorInventario)}</h3>
       </div>
     </div>
   </div>
 
-  <!-- DataGrid Area -->
-  <div class="box datagrid-panel">
-    <div class="datagrid-header mb-4">
-      <div class="tabs-locales">
+  <!-- Main Content Area -->
+  <div class="main-panel glass-card" in:fly={{ y: 30, duration: 700, delay: 400 }}>
+    <div class="panel-header">
+      <div class="filter-tabs">
         {#each $datosNegocio.locales as local}
-          <button
-            class={`tab-local ${localSeleccionado === local.id ? "active" : ""}`}
+          <button 
+            class="filter-tab" 
+            class:active={localSeleccionado === local.id}
             on:click={() => (localSeleccionado = local.id)}
           >
             {local.nombre}
@@ -188,87 +136,44 @@
         {/each}
       </div>
 
-      <div class="search-box">
-        <MagnifyingGlass size={18} class="search-icon" />
-        <input
-          type="text"
-          placeholder="Buscar producto..."
-          bind:value={busqueda}
-          class="search-input"
-        />
+      <div class="panel-actions">
+        <div class="premium-search">
+            <MagnifyingGlass size={16} />
+            <input type="text" placeholder="Buscar activos..." bind:value={busqueda} />
+        </div>
       </div>
     </div>
 
-    <div class="table-container">
-      <table class="table is-fullwidth is-hoverable modern-table">
+    <div class="table-wrapper">
+      <table class="premium-table">
         <thead>
           <tr>
-            <th
-              class="clickable"
-              on:click={() => cambiarOrdenamiento("nombre")}
-            >
-              Producto
-              {#if ordenarPor === "nombre"}
-                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
-              {/if}
-            </th>
-            <th class="clickable" on:click={() => cambiarOrdenamiento("sku")}>
-              SKU
-              {#if ordenarPor === "sku"}
-                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
-              {/if}
-            </th>
-            <th
-              class="clickable"
-              on:click={() => cambiarOrdenamiento("categoria")}
-            >
-              Categoría
-              {#if ordenarPor === "categoria"}
-                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
-              {/if}
-            </th>
-            <th class="has-text-right">Precio</th>
-            <th
-              class="has-text-right clickable"
-              on:click={() => cambiarOrdenamiento("stock")}
-            >
-              Stock
-              {#if ordenarPor === "stock"}
-                <span class="sort-icon">{ordenAscendente ? "↑" : "↓"}</span>
-              {/if}
-            </th>
-            <th class="has-text-right">Estado</th>
+            <th on:click={() => cambiarOrdenamiento("nombre")} class="sortable">Producto</th>
+            <th>Categoría</th>
+            <th class="right">Precio</th>
+            <th on:click={() => cambiarOrdenamiento("stock")} class="sortable right">Stock</th>
+            <th class="right">Estado</th>
           </tr>
         </thead>
         <tbody>
-          {#each productosOrdenados as producto}
-            <tr>
-              <td
-                class="has-text-weight-medium text-primary"
-                data-label="Producto">{producto.nombre}</td
-              >
-              <td class="is-family-monospace has-text-grey" data-label="SKU"
-                >{producto.sku || "S/N"}</td
-              >
-              <td data-label="Categoría"
-                ><span class="tag is-light">{producto.categoria}</span></td
-              >
-              <td class="has-text-right is-family-monospace" data-label="Precio"
-                >${new Intl.NumberFormat("es-CL").format(
-                  producto.precioUnitario || 0,
-                )}</td
-              >
-              <td
-                class="has-text-right has-text-weight-semibold"
-                data-label="Stock">{producto.stockActual}</td
-              >
-              <td class="has-text-right" data-label="Estado">
+          {#each productosOrdenados as producto (producto.id)}
+            <tr in:fly={{ x: -10, duration: 300 }}>
+              <td>
+                <div class="product-cell">
+                   <div class="p-avatar">{producto.nombre.charAt(0)}</div>
+                   <span>{producto.nombre}</span>
+                </div>
+              </td>
+              <td><span class="badge-subtle">{producto.categoria}</span></td>
+              <td class="right mono">${new Intl.NumberFormat("es-CL").format(producto.precioUnitario || 0)}</td>
+              <td class="right mono"><strong>{producto.stockActual}</strong></td>
+              <td class="right">
                 {#if producto.stockActual === 0}
-                  <span class="status-badge critical">Sin Stock</span>
+                  <div class="dot-status danger">Agotado</div>
                 {:else if producto.stockActual < 5}
-                  <span class="status-badge warning">Bajo</span>
+                  <div class="dot-status warning">Crítico</div>
                 {:else}
-                  <span class="status-badge success">Normal</span>
+                  <div class="dot-status success">Óptimo</div>
                 {/if}
               </td>
             </tr>
@@ -280,238 +185,278 @@
 </div>
 
 <style>
-  .page-header {
+  .dashboard-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    border-bottom: 1px solid var(--color-borde);
-    padding-bottom: 1rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
   }
 
-  .fecha-actual {
-    font-size: 0.9rem;
-    color: #666;
-    text-transform: capitalize;
+  .main-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
   }
 
-  /* Widgets */
-  .widget-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 1.5rem;
+  .sub-title {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  /* Pills & Indicators */
+  .glass-pill {
+    padding: 6px 14px;
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid var(--color-borde);
+    gap: 8px;
+    color: var(--text-secondary);
   }
 
-  .widget-icon {
-    width: 64px;
-    height: 64px;
+  .pulse-indicator {
+    width: 6px;
+    height: 6px;
+    background: var(--status-success);
+    border-radius: 50%;
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  /* Metrics Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .metric-icon {
+    width: 44px;
+    height: 44px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .widget-icon.primary {
-    background: rgba(3, 4, 94, 0.1);
-    color: var(--color-primario);
-  }
-  .widget-icon.secondary {
-    background: rgba(0, 180, 216, 0.1);
-    color: var(--color-secundario);
-  }
-  .widget-icon.success {
-    background: rgba(56, 142, 60, 0.1);
-    color: #388e3c;
-  }
+  .metric-icon.primary { background: rgba(var(--accent-primary-rgb), 0.1); color: var(--accent-primary); }
+  .metric-icon.secondary { background: rgba(0, 180, 216, 0.1); color: #00B4D8; }
+  .metric-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--status-success); }
 
-  .widget-label {
-    font-size: 0.85rem;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-  }
-  .widget-value {
-    font-size: 2rem;
+  .trend {
+    font-size: 11px;
     font-weight: 700;
-    color: var(--color-texto);
-    line-height: 1.2;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--surface-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .trend.up { color: var(--status-success); }
+
+  .metric-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
-  /* DataGrid Panel */
-  .datagrid-panel {
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
   }
 
-  .datagrid-header {
+  /* Content Panel */
+  .main-panel {
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 1.25rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(var(--surface-primary-rgb), 0.3);
   }
 
-  .tabs-locales {
+  .filter-tabs {
     display: flex;
-    gap: 0.5rem;
-    background: #f1f3f5;
-    padding: 0.25rem;
-    border-radius: 8px;
+    gap: 4px;
+    background: var(--surface-secondary);
+    padding: 4px;
+    border-radius: 10px;
   }
 
-  .tab-local {
-    padding: 0.5rem 1rem;
+  .filter-tab {
+    padding: 6px 14px;
     border: none;
     background: transparent;
-    border-radius: 6px;
+    border-radius: 7px;
+    font-size: 13px;
     font-weight: 600;
-    font-size: 0.9rem;
-    color: #666;
+    color: var(--text-tertiary);
     cursor: pointer;
     transition: all 0.2s;
   }
 
-  .tab-local.active {
-    background: #fff;
-    color: var(--color-primario);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  .filter-tab.active {
+    background: var(--surface-primary);
+    color: var(--accent-primary);
+    box-shadow: var(--shadow-base);
   }
 
-  .search-box {
-    position: relative;
-    width: 300px;
+  .premium-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-subtle);
+    padding: 6px 14px;
+    border-radius: 10px;
+    color: var(--text-tertiary);
   }
 
-  .search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #aaa;
-  }
-
-  .search-input {
-    width: 100%;
-    padding: 0.6rem 1rem 0.6rem 2.5rem;
-    border: 1px solid var(--color-borde);
-    border-radius: 8px;
+  .premium-search input {
+    background: transparent;
+    border: none;
     outline: none;
-    transition: border-color 0.2s;
+    color: var(--text-primary);
+    font-size: 13px;
+    width: 200px;
   }
 
-  .search-input:focus {
-    border-color: var(--color-secundario);
+  /* Table styling */
+  .table-wrapper {
+    overflow-x: auto;
   }
 
-  /* Table modernization */
-  .modern-table thead th {
-    border-bottom: 2px solid #f1f3f5;
-    color: #888;
+  .premium-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .premium-table th {
+    text-align: left;
+    padding: 1rem 1.5rem;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
     text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
-    padding-bottom: 1rem;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-subtle);
   }
 
-  .clickable {
-    cursor: pointer;
-    user-select: none;
-  }
-  .clickable:hover {
-    color: var(--color-primario);
-  }
+  .premium-table th.sortable { cursor: pointer; }
+  .premium-table th.sortable:hover { color: var(--accent-primary); }
+  .premium-table th.right { text-align: right; }
 
-  .modern-table tbody td {
-    border-bottom: 1px solid #f8f9fa;
-    padding: 1rem 0.75rem;
+  .premium-table td {
+    padding: 0.875rem 1.5rem;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
     vertical-align: middle;
   }
 
-  .text-primary {
-    color: var(--color-primario);
+  .premium-table tr:hover td {
+    background: rgba(var(--accent-primary-rgb), 0.02);
+    color: var(--text-primary);
   }
 
-  .status-badge {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 99px;
-    font-weight: 700;
+  .product-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  .status-badge.critical {
-    background: rgba(211, 47, 47, 0.1);
-    color: #d32f2f;
+  .p-avatar {
+    width: 28px;
+    height: 28px;
+    background: var(--surface-secondary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 11px;
+    color: var(--accent-primary);
   }
-  .status-badge.warning {
-    background: rgba(245, 124, 0, 0.1);
-    color: #f57c00;
+
+  .badge-subtle {
+    padding: 3px 10px;
+    background: var(--surface-secondary);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
   }
-  .status-badge.success {
-    background: rgba(56, 142, 60, 0.1);
-    color: #388e3c;
+
+  .mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+  .right { text-align: right; }
+
+  .dot-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 12px;
   }
 
-  @media (max-width: 768px) {
-    .datagrid-header {
-      flex-direction: column;
-      align-items: stretch;
-    }
+  .dot-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
 
-    .tabs-locales {
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-    }
+  .dot-status.success { color: var(--status-success); }
+  .dot-status.success::before { background: var(--status-success); box-shadow: 0 0 8px var(--status-success); }
+  
+  .dot-status.warning { color: var(--status-warning); }
+  .dot-status.warning::before { background: var(--status-warning); }
 
-    .search-box {
-      width: 100%;
-    }
+  .dot-status.danger { color: var(--status-danger); }
+  .dot-status.danger::before { background: var(--status-danger); }
 
-    /* Table Mobile Card View */
-    .table-container {
-      overflow-x: visible; /* Permitir que las cards usen el espacio */
-    }
-
-    .modern-table thead {
-      display: none; /* Ocultar encabezados en móvil */
-    }
-
-    .modern-table tbody tr {
-      display: block;
-      background: #fff;
-      border: 1px solid var(--color-borde);
-      border-radius: 12px;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    }
-
-    .modern-table tbody td {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #f8f9fa;
-      padding: 0.75rem 0;
-      text-align: right;
-    }
-
-    .modern-table tbody td:last-child {
-      border-bottom: none;
-    }
-
-    .modern-table tbody td::before {
-      content: attr(data-label);
-      font-weight: 600;
-      color: #888;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      text-align: left;
-      margin-right: 1rem;
-    }
+  @media (max-width: 900px) {
+    .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .premium-search input { width: 100%; }
+    .panel-header { flex-direction: column; gap: 1rem; align-items: stretch; }
   }
 </style>
