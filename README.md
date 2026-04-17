@@ -1,61 +1,52 @@
 <p align="center">
   <img src="docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
 </p>
-<<<<<<< HEAD
 
 # SIGA: Sistema Inteligente de Gestión de Activos
 
-Bienvenido al monorepo de **SIGA**, un ecosistema de software profesional diseñado para la gestión integral, la movilidad y la integración de IA.
+Bienvenido a **SIGA**, una plataforma empresarial de grado productivo para la gestión de inventarios y activos físicos. 
 
-## 📂 Estructura del Proyecto
+Recientemente el proyecto ha evolucionado de un monolito a una **Arquitectura de Microservicios Distribuidos**, soportada por inteligencia artificial.
 
-Este monorepo unifica los componentes críticos del sistema para facilitar el desarrollo y la coherencia arquitectónica:
+## Arquitectura del Sistema (V2)
 
-### 🚀 Servicios (`/services`)
-- **[backend](file:///c:/Users/hdagu/Desktop/SIGA/services/backend)**: El motor principal (Kotlin + Spring Boot 3.2).
-- **[webapp](file:///c:/Users/hdagu/Desktop/SIGA/services/webapp)**: Panel administrativo para dueños (SvelteKit / Svelte 5).
-- **[mobile](file:///c:/Users/hdagu/Desktop/SIGA/services/mobile)**: Aplicación móvil para operación en terreno (Android / Jetpack Compose).
-- **[comercial](file:///c:/Users/hdagu/Desktop/SIGA/services/comercial)**: Portal de ventas y landing page (React + Vite).
+SIGA está construido sobre un ecosistema de microservicios resiliente y escalable:
 
-### 🧠 Inteligencia y Documentación
-- **[arquitectura-agentica](file:///c:/Users/hdagu/Desktop/SIGA/arquitectura-agentica)**: El centro de conocimiento para agentes de IA y planificación de specs (SDD).
-- **[docs](file:///c:/Users/hdagu/Desktop/SIGA/docs)**: Historia evolutiva del proyecto y diagramas fundacionales.
-- **[skills](file:///c:/Users/hdagu/Desktop/SIGA/skills)**: Módulos de capacidad extendida para la IA.
+### Microservicios Core (Backend)
+- **Service Registry (`siga-eureka`)**: El corazón del descubrimiento de servicios.
+- **API Gateway (`siga-gateway`)**: El único punto de entrada público, encargado de enrutamiento y balanceo.
+- **Auth Service (`siga-auth`)**: Emisión y validación de tokens corporativos.
+- **Microservicio Inventario (`siga-inventario`)**: Dominio transaccional de productos, categorías y stock.
+- **Microservicio Ventas (`siga-ventas`)**: Motor de transacciones de salida y facturación.
+- **Agente IA (`siga-agente`)**: Microservicio Polyglot (Python + FastAPI) que sirve como motor de análisis y GenAI.
 
-## 🛠️ Cómo Empezar
+### Interfaces de Usuario
+- **Webapp V2 (`/services/webapp`)**: Consola de administración construida en **Svelte 5 / SvelteKit**. Recientemente rediseñada con un sistema de diseño *Void/Glassmorphism* premium de alta fidelidad.
+- **Mobile (`/services/mobile`)**: Aplicación para operarios en terreno (Android / Jetpack Compose).
+- **Portal Comercial (`/services/comercial`)**: B2B Storefront y Landing web.
 
-Para una experiencia de desarrollo óptima, te recomendamos abrir el archivo **[SIGA.code-workspace](file:///c:/Users/hdagu/Desktop/SIGA/SIGA.code-workspace)** en VS Code. Esto configurará automáticamente los "roots" con sus respectivos iconos y ocultará archivos redundantes.
+## Despliegue y Ejecución Rápida
 
-## 🤝 Contribución y Gobernanza
+Todo el stack de backend está orquestado mediante Docker. Para levantar el entorno de desarrollo localizado con emulación de base de datos aislada (Database-per-Service concept en esquema local):
 
-Este proyecto sigue normas estrictas para asegurar la calidad y el aprendizaje:
-- **Commits**: Siempre en español.
-- **Aprobación**: Se requiere autorización explícita antes de cualquier `push`.
-- **Transparencia**: Cada paso técnico debe ser explicado y justificado previamente.
+```bash
+# 1. Levantar infraestuctura backend
+docker-compose up -d
 
-Para más detalles, consulta las **[Reglas de Oro de Colaboración](file:///c:/Users/hdagu/Desktop/SIGA/arquitectura-agentica/REGLAS_DE_ORO.md)**.
-=======
->>>>>>> main
+# 2. Levantar el Frontend V2 Premium
+cd services/webapp
+pnpm install
+pnpm dev
+```
 
----
+> **UI Acceso Rápido**: El frontend se expondrá en `http://localhost:5174`. Para demos académicas rápidas, utiliza el acceso configurado: `admin@siga.cl` / `admin`.
 
-# Rama: Organización Documental
+## Reglas de Gobernanza
 
-Este espacio de trabajo está dedicado exclusivamente al saneamiento, auditoría y reestructuración de la base de conocimiento de SIGA.
-
-## Objetivos de esta fase
-
-1.  **Saneamiento de Servicios**: Eliminación de residuos técnicos y carpetas heredadas de la etapa de repositorios independientes (ej. `.github`, `arquitectura-agentica` local de cada servicio).
-2.  **Centralización de la Verdad**: Movimiento de documentación operativa a la raíz y preservación de documentación histórica en `docs/origen/`.
-3.  **Estandarización Estética**: Aplicación de un estilo profesional y sobrio en toda la documentación del monorepo.
-
-## Estado de la Auditoría
-
-Los detalles de los archivos marcados para eliminación o movimiento se encuentran en:
-**[AUDITORIA_LIMPIEZA.md](file:///c:/Users/hdagu/Desktop/SIGA/arquitectura-agentica/AUDITORIA_LIMPIEZA.md)**
+Este proyecto aplica normativas estrictas (Spec-Driven Development) para asegurar la entrega continua de valor:
+- **Trazabilidad SDD**: Todos los cambios arquitectónicos deben partir de una `proposal` aprobada y registrada en el sistema *Engram*.
+- **Commits**: Convencionales, SIEMPRE en español, descriptivos y justificados (ej: `feat(webapp): rediseño premium v2 y mejoras a11y`).
+- **Seguridad**: Adopción progresiva de los estándares de privaticidad requeridos por la **Ley Chilena 21.719**.
 
 ---
-*Esta rama se fusionará con main una vez finalizada la limpieza total.*
-
----
-> Un Soñador con Poca RAM  & Misael
+> *Un Soñador con Poca RAM & Misael*
