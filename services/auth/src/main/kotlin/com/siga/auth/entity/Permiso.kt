@@ -1,29 +1,40 @@
 package com.siga.auth.entity
 
 import jakarta.persistence.*
+import java.time.Instant
 
 @Entity
 @Table(name = "PERMISOS", schema = "siga_saas")
-data class Permiso(
+class Permiso(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
-    
+
     @Column(nullable = false, unique = true, length = 50)
-    val codigo: String,
-    
+    var codigo: String,
+
     @Column(nullable = false, length = 100)
-    val nombre: String,
-    
+    var nombre: String,
+
     @Column(columnDefinition = "TEXT")
-    val descripcion: String? = null,
-    
+    var descripcion: String? = null,
+
     @Column(nullable = false, length = 50)
-    val categoria: String,
-    
+    var categoria: String,
+
     @Column(nullable = false)
-    val activo: Boolean = true,
-    
+    var activo: Boolean = true,
+
     @Column(name = "fecha_creacion", nullable = false)
-    val fechaCreacion: java.time.Instant = java.time.Instant.now()
-)
+    val fechaCreacion: Instant = Instant.now()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Permiso) return false
+        return id != 0 && id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "Permiso(id=$id, codigo=$codigo)"
+}

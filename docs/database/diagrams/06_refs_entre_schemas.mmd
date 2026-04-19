@@ -1,0 +1,49 @@
+graph LR
+    subgraph siga_auth
+        AU["USUARIOS\n(operativos)"]
+    end
+
+    subgraph siga_inventario
+        LO["LOCALES"]
+        PR["PRODUCTOS"]
+        MO["MOVIMIENTOS"]
+        ST["STOCK"]
+        AL["ALERTAS"]
+    end
+
+    subgraph siga_ventas
+        VE["VENTAS"]
+        DV["DETALLES_VENTA"]
+        TC["TURNOS_CAJA"]
+        TP["TRANSACCIONES_POS"]
+        CP["CARRITO_POS"]
+    end
+
+    subgraph siga_comercial
+        UC["USUARIOS\n(comerciales/dueños)"]
+    end
+
+    AU -.->|"usuario_comercial_id\n(tenant isolation)"| UC
+    LO -.->|"usuario_comercial_id"| UC
+    PR -.->|"usuario_comercial_id"| UC
+    VE -.->|"usuario_comercial_id"| UC
+
+    MO -.->|"usuario_id"| AU
+    MO -.->|"venta_id"| VE
+    VE -.->|"usuario_id"| AU
+    VE -.->|"local_id"| LO
+    DV -.->|"producto_id"| PR
+    TC -.->|"usuario_id"| AU
+    TC -.->|"local_id"| LO
+    CP -.->|"usuario_id"| AU
+    CP -.->|"local_id"| LO
+    CP -.->|"producto_id"| PR
+    ST -.->|"producto_id"| PR
+    ST -.->|"local_id"| LO
+    AL -.->|"producto_id"| PR
+    AL -.->|"local_id"| LO
+
+    style siga_auth fill:#4a90d9,color:#fff
+    style siga_inventario fill:#50c878,color:#fff
+    style siga_ventas fill:#f5a623,color:#fff
+    style siga_comercial fill:#9b59b6,color:#fff
