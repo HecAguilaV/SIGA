@@ -6,42 +6,51 @@ import java.time.Instant
 
 @Entity
 @Table(name = "PLANES", schema = "siga_comercial")
-data class Plan(
+class Plan(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
-    
+
     @Column(nullable = false, unique = true, length = 100)
-    val nombre: String,
-    
+    var nombre: String,
+
     @Column(columnDefinition = "TEXT")
-    val descripcion: String? = null,
-    
+    var descripcion: String? = null,
+
     @Column(name = "precio_mensual", nullable = false, precision = 10, scale = 2)
-    val precioMensual: BigDecimal,
-    
+    var precioMensual: BigDecimal,
+
     @Column(name = "precio_anual", precision = 10, scale = 2)
-    val precioAnual: BigDecimal? = null,
-    
+    var precioAnual: BigDecimal? = null,
+
     @Column(name = "limite_bodegas")
-    val limiteBodegas: Int? = null,  // NULL = ilimitado
-    
+    var limiteBodegas: Int? = null,
+
     @Column(name = "limite_usuarios")
-    val limiteUsuarios: Int? = null,  // NULL = ilimitado
-    
+    var limiteUsuarios: Int? = null,
+
     @Column(name = "limite_productos")
-    val limiteProductos: Int? = null,
-    
-    @Column(columnDefinition = "TEXT")
-    val caracteristicas: String? = null, // JSON almacenado como texto
-    
+    var limiteProductos: Int? = null,
+
+    @Column(columnDefinition = "JSONB")
+    var caracteristicas: String? = null,
+
     @Column(nullable = false)
-    val activo: Boolean = true,
-    
+    var activo: Boolean = true,
+
     @Column(nullable = false)
-    val orden: Int = 0,
-    
+    var orden: Int = 0,
+
     @Column(name = "fecha_creacion", nullable = false)
     val fechaCreacion: Instant = Instant.now()
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Plan) return false
+        return id != 0 && id == other.id
+    }
 
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "Plan(id=$id, nombre=$nombre)"
+}
