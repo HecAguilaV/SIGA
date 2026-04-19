@@ -25,9 +25,10 @@ class SubscriptionService(
             
             // 2. Caso: Es un Operador (Empleado)
             val usuarioSaas = usuarioSaasRepository.findByEmail(email.lowercase()).orElse(null)
-            if (usuarioSaas != null && usuarioSaas.usuarioComercialId != null) {
+            val usuarioComercialId = usuarioSaas?.usuarioComercialId
+            if (usuarioComercialId != null) {
                 // Hereda la suscripción del Jefe
-                return hasActiveSubscription(usuarioSaas.usuarioComercialId)
+                return hasActiveSubscription(usuarioComercialId)
             }
             
             return false

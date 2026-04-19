@@ -86,21 +86,16 @@ class UsuariosController(
         
         // Filtrar usuarios por empresa (usuario_comercial_id)
         // Solo mostrar usuarios de la misma empresa que el usuario actual
-        val usuarios = if (usuarioActual.usuarioComercialId != null) {
-            // Usuario tiene empresa asignada, filtrar por empresa
-            usuarioSaasRepository.findByUsuarioComercialId(usuarioActual.usuarioComercialId)
-        } else {
-            // Usuario legacy sin empresa, buscar por email en usuarios comerciales
+        val usuarios = usuarioActual.usuarioComercialId?.let { empresaId ->
+            usuarioSaasRepository.findByUsuarioComercialId(empresaId)
+        } ?: run {
             val email = SecurityUtils.getUserEmail()
-            val usuarioComercial = email?.let { 
+            val usuarioComercial = email?.let {
                 usuarioComercialRepository.findByEmail(it.lowercase()).orElse(null)
             }
-            
             if (usuarioComercial != null) {
-                // Encontr? usuario comercial, filtrar por su ID
                 usuarioSaasRepository.findByUsuarioComercialId(usuarioComercial.id)
             } else {
-                // No encontr? usuario comercial, retornar solo el usuario actual (legacy)
                 listOf(usuarioActual)
             }
         }

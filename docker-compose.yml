@@ -1,22 +1,33 @@
-version: '3.8'
-
 services:
-  # Base de Datos Local (Emulación de Supabase)
+
+  # ============================================================
+  # Base de Datos PostgreSQL + PGVector
+  # Inicializa automáticamente los 5 schemas de SIGA
+  # ============================================================
   siga-db:
-    image: pgvector/pgvector:pg15
+    image: pgvector/pgvector:pg16
     container_name: siga-postgres
     environment:
       POSTGRES_DB: siga_db
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password123
+      POSTGRES_USER: siga_admin
+      POSTGRES_PASSWORD: siga_dev_2026
     ports:
       - "5432:5432"
     volumes:
       - siga-db-data:/var/lib/postgresql/data
+      - ./scripts/database/DB_SIGA_NEW.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U siga_admin -d siga_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - siga-net
 
-  # Admin de Base de Datos (Web GUI)
+  # ============================================================
+  # pgAdmin 4 (Interfaz Web para PostgreSQL)
+  # Acceso: http://localhost:5050
+  # ============================================================
   pgadmin:
     image: dpage/pgadmin4
     container_name: siga-pgadmin
@@ -24,13 +35,16 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@siga.cl
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8081:80"
+      - "5050:80"
     depends_on:
-      - siga-db
+      siga-db:
+        condition: service_healthy
     networks:
       - siga-net
 
+  # ============================================================
   # Eureka Server (Service Registry)
+  # ============================================================
   siga-eureka:
     build:
       context: ./services/registry
@@ -40,15 +54,17 @@ services:
       - "8761:8761"
     networks:
       - siga-net
-      
+
+  # ============================================================
   # API Gateway
+  # ============================================================
   siga-gateway:
     build:
       context: ./services/gateway
       dockerfile: Dockerfile
     container_name: siga-gateway
     ports:
-      - "8080:8080" # El puerto público
+      - "8080:8080"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
     depends_on:
@@ -56,7 +72,32 @@ services:
     networks:
       - siga-net
 
-  # Dominio de Inventario
+  # ============================================================
+  # Microservicio: Auth (:8081)
+  # Schema: siga_auth
+  # ============================================================
+  siga-auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: siga-auth
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_auth
+      - SPRING_DATASOURCE_USERNAME=siga_admin
+      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
+    depends_on:
+      siga-db:
+        condition: service_healthy
+      siga-eureka:
+        condition: service_started
+    networks:
+      - siga-net
+
+  # ============================================================
+  # Microservicio: Inventario (:8082)
+  # Schema: siga_inventario
+  # ============================================================
   siga-inventario:
     build:
       context: ./services/inventario
@@ -64,14 +105,21 @@ services:
     container_name: siga-inventario
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - DB_HOST=siga-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_inventario
+      - SPRING_DATASOURCE_USERNAME=siga_admin
+      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
     depends_on:
-      - siga-eureka
-      - siga-db
+      siga-db:
+        condition: service_healthy
+      siga-eureka:
+        condition: service_started
     networks:
       - siga-net
-      
-  # Dominio de Ventas
+
+  # ============================================================
+  # Microservicio: Ventas (:8083)
+  # Schema: siga_ventas
+  # ============================================================
   siga-ventas:
     build:
       context: ./services/ventas
@@ -79,15 +127,45 @@ services:
     container_name: siga-ventas
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - DB_HOST=siga-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_ventas
+      - SPRING_DATASOURCE_USERNAME=siga_admin
+      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
     depends_on:
-      - siga-eureka
-      - siga-db
-      - siga-inventario
+      siga-db:
+        condition: service_healthy
+      siga-eureka:
+        condition: service_started
+      siga-inventario:
+        condition: service_started
     networks:
       - siga-net
 
-  # Polyglot AI - Agente
+  # ============================================================
+  # Microservicio: Backend / Comercial (:8084)
+  # Schema: siga_comercial
+  # ============================================================
+  siga-backend:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+    container_name: siga-backend
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_comercial
+      - SPRING_DATASOURCE_USERNAME=siga_admin
+      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
+    depends_on:
+      siga-db:
+        condition: service_healthy
+      siga-eureka:
+        condition: service_started
+    networks:
+      - siga-net
+
+  # ============================================================
+  # Microservicio: Agente IA (:8000)
+  # Schema: siga_agente
+  # ============================================================
   siga-agente:
     build:
       context: ./services/agente
@@ -96,8 +174,12 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
       - PORT=8000
+      - DATABASE_URL=postgresql://siga_admin:siga_dev_2026@siga-db:5432/siga_db?schema=siga_agente
     depends_on:
-      - siga-eureka
+      siga-db:
+        condition: service_healthy
+      siga-eureka:
+        condition: service_started
     networks:
       - siga-net
 

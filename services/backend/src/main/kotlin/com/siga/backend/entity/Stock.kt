@@ -5,28 +5,47 @@ import java.time.Instant
 
 @Entity
 @Table(
-    name = "STOCK", 
+    name = "STOCK",
     schema = "siga_saas",
     uniqueConstraints = [UniqueConstraint(columnNames = ["producto_id", "local_id"])]
 )
-data class Stock(
+class Stock(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-    
+    var id: Int = 0,
+
     @Column(name = "producto_id", nullable = false)
-    val productoId: Int,
-    
+    var productoId: Int,
+
     @Column(name = "local_id", nullable = false)
-    val localId: Int,
-    
+    var localId: Int,
+
     @Column(nullable = false)
-    val cantidad: Int = 0,
-    
+    var cantidad: Int = 0,
+
     @Column(name = "cantidad_minima", nullable = false)
-    val cantidadMinima: Int = 0,
-    
+    var cantidadMinima: Int = 0,
+
     @Column(name = "fecha_actualizacion", nullable = false)
-    val fechaActualizacion: Instant = Instant.now()
-)
+    var fechaActualizacion: Instant = Instant.now()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Stock) return false
+        return id != 0 && id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "Stock(id=$id, productoId=$productoId, localId=$localId, cantidad=$cantidad)"
+
+    fun copy(
+        id: Int = this.id,
+        productoId: Int = this.productoId,
+        localId: Int = this.localId,
+        cantidad: Int = this.cantidad,
+        cantidadMinima: Int = this.cantidadMinima,
+        fechaActualizacion: Instant = this.fechaActualizacion
+    ): Stock = Stock(id, productoId, localId, cantidad, cantidadMinima, fechaActualizacion)
+}
 

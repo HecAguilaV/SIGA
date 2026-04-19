@@ -93,8 +93,9 @@ class AuthController(
         
         // AUTO-ASIGNAR EMPRESA si no tiene
         var usuarioActualizado = user
-        var usuarioComercial = if (user.usuarioComercialId != null) {
-            usuarioComercialRepository.findById(user.usuarioComercialId).orElse(null)
+        val usuarioComercialId = user.usuarioComercialId
+        var usuarioComercial = if (usuarioComercialId != null) {
+            usuarioComercialRepository.findById(usuarioComercialId).orElse(null)
         } else {
             null
         }

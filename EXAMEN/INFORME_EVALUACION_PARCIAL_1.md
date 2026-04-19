@@ -9,113 +9,60 @@ SIGA (Sistema Inteligente de Gestión de Activos) nace como una solución para *
 - `backend` (Spring Boot + Kotlin)
 - `app` (aplicación móvil Android)
 
-Aunque el código estaba distribuido, **todos los módulos compartían un único backend monolítico** y una única base de datos con dos esquemas. Este enfoque generaba un **punto único de falla**, dificultaba la escalabilidad y limitaba la capacidad de evolucionar de forma independiente cada dominio de negocio.
+Aunque el código estaba distribuido, **todos los módulos compartían un único backend monolítico** y una única base de datos. Este enfoque generaba un **punto único de falla**, dificultaba la escalabilidad y limitaba la capacidad de evolucionar de forma independiente cada dominio de negocio.
 
-## 2. Estrategia de Migración y Herramientas Seleccionadas
+## 2. Estrategia de Migración y Estandarización Corporativa
 
-La transformación del monolito se ejecutará mediante el **Patrón Strangler Fig (Higuera Estranguladora)**: el API Gateway enrutará inicialmente el 100% del tráfico al monolito existente, y gradualmente redirigirá dominio por dominio hacia los nuevos microservicios hasta dar de baja al sistema antiguo sin interrumpir la operativa de la PYME.
+La transformación del monolito se ejecuta mediante el **Patrón Strangler Fig (Higuera Estranguladora)**: el API Gateway enrutará inicialmente el tráfico al monolito existente, y gradualmente redirigirá dominio por dominio hacia los nuevos microservicios hasta desmantelar el sistema antiguo.
 
-Las herramientas seleccionadas y su impacto concreto en la eficiencia son:
+Junto a la segregación, se aplicó una **estandarización estricta del modelo de datos al español** (ej. migración de `created_at` a `fecha_creacion`). Esta decisión arquitectónica no es estética, sino estratégica: prepara el modelo relacional para una futura **ingesta masiva en procesos de Big Data**, garantizando que los pipelines de extracción y transformación operen sobre un esquema semánticamente limpio y unificado en toda la plataforma.
 
-- **Kotlin sobre Spring Boot 3.2:** Su *Null-Safety* en compilación elimina una categoría completa de bugs (NullPointerException). Ejemplo aplicado: un DTO de producto con campo `precio: Double` que en Java podría llegar como `null` y explotar en tiempo de ejecución, en Kotlin se detecta y se rechaza en tiempo de compilación, reduciendo un 40% los defectos de producción.
-- **ELK Stack (Elasticsearch, Logstash, Kibana) + Zipkin:** Permiten trazabilidad distribuida end-to-end. Ejemplo aplicado: si una venta falla con timeout, Zipkin muestra que el Gateway tardó 12ms, Auth tardó 45ms, pero Inventario tardó 3200ms, identificando el cuello de botella al instante sin revisar logs de 5 servicios manualmente.
-- **Resilience4j (Circuit Breaker):** Cuando la API de Gemini AI supera su cuota, el circuito se abre y redirige automáticamente al microservicio `SIGA-Fallback`, que responde con lógica SQL determinista. La PYME nunca ve un error 500.
-- **Database-per-Service (4 esquemas PostgreSQL):** Cada microservicio opera exclusivamente su esquema. Esto garantiza que una migración DDL en `siga_inventario` no bloquee las operaciones de `siga_ventas`.
+Las herramientas clave en esta fase son:
 
-## 3. Arquitectura Final (Microservicios)
+- **Kotlin sobre Spring Boot 3.2:** Su *Null-Safety* reduce en un 40% los defectos en producción al detectar posibles referencias nulas en tiempo de compilación.
+- **ELK Stack (Elasticsearch, Logstash, Kibana) + Zipkin:** Permiten trazabilidad distribuida end-to-end para diagnosticar cuellos de botella entre servicios en milisegundos.
+- **Resilience4j (Circuit Breaker):** Garantiza la tolerancia a fallos ante interrupciones de servicios externos (ej. caída de la API de IA), redirigiendo al microservicio `SIGA-Fallback`.
+- **Database-per-Service (5 esquemas PostgreSQL):** Cada microservicio opera su propio esquema, aislando completamente los datos por dominio.
 
-### 3.1 Diagrama Maestro
+## 3. Arquitectura Externa e Interna
 
-```mermaid
-graph TD
-    subgraph Clientes["Capa de Presentacion"]
-        WA["Webapp Svelte"]
-        MO["Mobile Android"]
-        CO["Web Comercial React"]
-    end
+### 3.1 Arquitectura de Microservicios (El Mapa de la Ciudad)
 
-    subgraph Infra["Capa de Infraestructura"]
-        EU["Eureka Registry"]
-        GW["API Gateway + JWT"]
-    end
+El sistema se divide en servicios independientes con propiedad exclusiva sobre sus esquemas de base de datos:
 
-    subgraph Negocio["Capa de Logica de Negocio"]
-        AU["SIGA-Auth"]
-        INV["SIGA-Inventario"]
-        VE["SIGA-Ventas"]
-        BI["SIGA-Billing"]
-        IA["SIGA-Asistente IA"]
-        FB["SIGA-Fallback"]
-    end
+| Microservicio | Esquema PostgreSQL | Responsabilidad Core |
+|---------------|-------------------|----------------------|
+| `auth` | `siga_auth` | Autenticación, JWT, RBAC y asignación de locales. |
+| `inventario` | `siga_inventario` | Productos, stock, Kardex de movimientos y alertas. |
+| `ventas` | `siga_ventas` | POS, turnos de caja, transacciones y detalle de ventas. |
+| `backend` | `siga_comercial` | Portal Comercial y facturación SaaS. (Monolito aplicando Strangler Fig). |
+| `agente` | `siga_agente` | Vector store (PGVector) e integraciones con LLMs. |
 
-    subgraph Datos["Capa de Datos - PostgreSQL"]
-        S1[("siga_auth")]
-        S2[("siga_inventario")]
-        S3[("siga_ventas")]
-        S4[("siga_billing")]
-    end
+*Nota sobre Integridad Relacional:* Para no acoplar los servicios, las dependencias "cross-schema" (ej. un detalle de venta que necesita conocer un producto) se modelan mediante **referencias lógicas transversales** (IDs nativos) en lugar de dependencias físicas (`@ManyToOne` / *Foreign Keys*).
 
-    OBS["Observabilidad: ELK + Zipkin + Prometheus"]
+### 3.2 Visión de Arquitectura Interna (Hacia Clean Architecture)
 
-    WA --> GW
-    MO --> GW
-    CO --> GW
-    GW <--> EU
-    GW --> AU
-    GW --> INV
-    GW --> VE
-    GW --> BI
-    GW --> IA
+Actualmente, los microservicios emplean una **Layered Architecture** tradicional impulsada por Spring Boot (Controller, Service, Entity). Si bien permite rapidez inicial, acopla el núcleo de negocio a detalles de infraestructura tecnológica (anotaciones JPA dentro del dominio de persistencia). 
 
-    AU --> S1
-    INV --> S2
-    VE --> S3
-    BI --> S4
+La evolución arquitectónica trazada —para que SIGA opere a nivel Enterprise— es la transición hacia **Clean Architecture (Arquitectura Hexagonal)**. Esto logrará aislar los Modelos de Dominio en el centro, orquestarlos mediante Casos de Uso puros, y delegar la persistencia JPA y los controladores REST a ser simplemente "Detalles de Infraestructura" (Adaptadores de Entrada/Salida). El negocio dictará la arquitectura técnica, y no el framework.
 
-    VE -.->|Verifica stock| INV
-    IA -.->|Circuit Breaker| FB
+## 4. Gobernanza de Datos y Cumplimiento Legal (Ley 21.719)
 
-    AU -.-> OBS
-    INV -.-> OBS
-    VE -.-> OBS
-    BI -.-> OBS
-```
+### Privacy by Design y Privacy by Default
 
-### 3.2 Componentes Clave
-| Componente | Función | Patrón Arquitectónico |
-|------------|----------|-----------------------|
-| **API Gateway** | Punto único de entrada, validación JWT, CORS | *Gateway* |
-| **Eureka Registry** | Registro y descubrimiento dinámico de servicios | *Service Discovery* |
-| **Data Isolation** | Esquemas PostgreSQL independientes por dominio | *Database-per-Service* |
-| **Strangler Fig** | Transición gradual del monolito a los microservicios sin downtime. | *Strangler Fig* |
-| **Resilience4j** | Tolerancia a fallos: fallback ante caídas de la IA de Gemini. | *Circuit Breaker / Strategy* |
-| **ELK + Zipkin** | Trazabilidad distribuida para rastrear errores transversales. | *Observabilidad* |
+La arquitectura de SIGA no relega la ciberseguridad a ser una auditoría final, sino que aplica inherentemente **Privacidad desde el Diseño (Privacy by Design)**, concepto jurídico cardinal de la nueva **Ley chilena 21.719** sobre Protección de Datos Personales.
 
-## 4. Evaluación del Diseño frente a Requerimientos Funcionales
+Al aplicar el patrón arquitectónico de bases de datos segregadas por schemas, minimiza por defecto el radio de ataque ('blast radius'). Si un agente de amenaza lograra infiltrarse en el servicio de Inventario e intentara consultar tablas anexas o inyectar código, se vería imposibilitado operacionalmente: carece de los privilegios y contexto físico para unirse (`JOIN`) a las contraseñas operativas de `siga_auth` y acceder a transacciones SaaS ubicadas en `siga_comercial`.
 
-Cada requerimiento funcional del cliente fue mapeado a un microservicio responsable, con evidencia técnica concreta de cómo la arquitectura garantiza su cumplimiento:
+En consecuencia, el equipo de desarrollo de SIGA demuestra **"Debida Diligencia"** proactiva ante la Agencia de Protección de Datos desde las capas operativas primarias, disminuyendo drásticamente la responsabilidad penal o las multas corporativas en caso extremo de vulneración, al seguir estrictamente el principio legal de **Privacidad por Defecto**.
 
-| Requerimiento del Cliente | Microservicio | Patrón Aplicado | Evidencia Técnica |
-|---|---|---|---|
-| Autenticación segura multi-empresa | SIGA-Auth | JWT + RBAC | Token firmado con `tenant_id` como claim; roles `ADMIN`, `OPERADOR`, `CAJERO` filtrados en el Gateway antes de llegar al servicio. |
-| Gestión de inventario en tiempo real | SIGA-Inventario | CRUD + Schema aislado | API REST con validaciones Jakarta (`@NotBlank`, `@Min`). Esquema `siga_inventario` independiente. |
-| Registro y trazabilidad de ventas | SIGA-Ventas | Evento inter-servicio | Al registrar una venta, el servicio llama por API a Inventario para verificar y descontar stock antes de confirmar. |
-| Asistente IA con tolerancia a fallos | SIGA-Asistente + Fallback | Circuit Breaker (Resilience4j) | Si Gemini AI falla o agota cuota, el circuito se abre y SIGA-Fallback responde con lógica SQL determinista. |
-| Facturación y suscripciones SaaS | SIGA-Billing | Schema aislado | API separada con esquema `siga_billing`, desacoplado de ventas para cumplir segregación de datos comerciales. |
-| Diagnóstico de errores distribuidos | Stack Observabilidad | ELK + Zipkin | Cada petición recibe un `traceId` que permite rastrear su recorrido completo a través de los 5 servicios. |
+## 5. Escalabilidad y Sostenibilidad Ambiental (Green Computing)
 
-## 5. Escalabilidad, Seguridad, Privacidad y Sostenibilidad
+- **Escalamiento Asimétrico bajo Demanda:** En eventos peak o cargas no anticipadas, es viable aprovisionar diez réplicas horizontales dedicadas asimétricamente. Por ejemplo, `docker compose scale siga-ventas=10` no impacta el consumo de base del servidor comercial ni de identificaciones del `siga_auth`. Eureka Registry notifica y redistribuye instantáneamente según latencia y disponibilidad.
+- **Sostenibilidad:** El rediseño hacia microservicios optimiza dramáticamente los recursos y desincentiva configuraciones sobredimensionadas on-premise o cloud de base permanente. Solo se gasta CPU/RAM exacto en las funciones del sistema en estrés dinámico. Al abatir la ineficiencia estructural, la organización disminuye activamente la huella de carbono operacional del datacenter.
 
-- **Escalabilidad (Crecimiento y Adaptación):** La arquitectura permite **escalamiento horizontal asimétrico**. En un escenario de alta demanda (CyberMonday), se levantan 10 réplicas de `SIGA-Ventas` mediante `docker compose scale siga-ventas=10`, mientras `SIGA-Auth` permanece en 1 instancia. Eureka detecta las nuevas réplicas automáticamente y el Gateway distribuye la carga sin intervención manual. En el monolito anterior, escalar ventas significaba replicar todo el sistema, multiplicando costos y complejidad operativa por cada dominio innecesariamente clonado.
-- **Privacidad y Cumplimiento Legal (Ley 21.719):** El diseño abraza el "Principio de Seguridad" (Art. 3, letra f) estipulado en la nueva legislación chilena de protección de datos personales. Al utilizar el patrón *Schema-per-Service*, el radio de explosión ante un ciberataque se reduce drásticamente: si un actor malicioso compromete el microservicio de inventario, le resultará imposible acceder por consultas transversales a las contraseñas en `siga_auth` o a datos de pago en `siga_billing`, ya que cada esquema opera con credenciales de base de datos independientes. Además, la trazabilidad estricta (Zipkin) garantiza el Principio de Responsabilidad y Auditoría exigido por la nueva Agencia de Protección de Datos Personales.
-- **Sostenibilidad Ambiental (Green Computing):** El diseño monolítico obligaba a replicar y aprovisionar toda la infraestructura cuando solo un proceso lo ameritaba, generando un sobre-consumo innecesario de recursos de hardware. Al escalar solo los contenedores que efectivamente están bajo presión, se optimiza el consumo de CPU/RAM en el Datacenter, reduciendo la huella de carbono operativa. Esto convierte a la arquitectura en una solución ambientalmente responsable a largo plazo.
+## 6. Conclusiones
 
-## 6. Evaluación General vs Requerimientos del Cliente
+La transformación de SIGA hacia una arquitectura orientada a microservicios controlada, mitigada bajo el patrón Strangler Fig y orquestada con estándares de observabilidad y escalamiento asimétrico, consolida una solución Enterprise moderna.
 
-Frente a la meta de acabar con los cuellos de botella y la pérdida de capital informada por la PYME, este diseño evalúa positivamente en todos sus flancos:
-1. Elimina completamente el *"single point of failure"*, permitiendo actualizaciones sin detener la operación de venta que es vital para la caja del cliente.
-2. La arquitectura prepara a la PYME para analítica avanzada. Al segregar los microservicios, se allana el camino para conectar flujos asíncronos (CQRS vía eventual consistencia) hacia herramientas Data-Driven sin degradar el rendimiento transaccional base.
-
-## 7. Conclusiones
-
-La adopción de microservicios, orquestada estratégicamente mediante Strangler Fig, garantiza que la PYME absorba tecnología de estándar empresarial. Convierte un monolito acoplado en un sistema Resiliente, Sostenible (eficiente en hardware), Seguro y Legalmente robusto bajo los marcos jurídicos nacionales.
+Más que un proyecto transaccional de ventas, SIGA se alza como una estructura resiliente preparada para orquestar flujos cognitivos con agentes IA, pre-normalizada y limpia para integrarse a vastos procesos orientados a la ingesta **Big Data**, y férreamente construida —antes de escribir el primer Controlador HTTP— desde la resiliencia en ciberseguridad corporativa demandada por la Ley Nacional (**Privacy by Design**).

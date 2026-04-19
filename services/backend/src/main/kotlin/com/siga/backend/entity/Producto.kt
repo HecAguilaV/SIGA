@@ -6,36 +6,59 @@ import java.time.Instant
 
 @Entity
 @Table(name = "PRODUCTOS", schema = "siga_saas")
-data class Producto(
+class Producto(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-    
+    var id: Int = 0,
+
     @Column(nullable = false, length = 200)
-    val nombre: String,
-    
+    var nombre: String,
+
     @Column(columnDefinition = "TEXT")
-    val descripcion: String? = null,
-    
+    var descripcion: String? = null,
+
     @Column(name = "categoria_id")
-    val categoriaId: Int? = null,
-    
+    var categoriaId: Int? = null,
+
     @Column(name = "codigo_barras", length = 50, unique = true)
-    val codigoBarras: String? = null,
-    
+    var codigoBarras: String? = null,
+
     @Column(name = "precio_unitario", precision = 10, scale = 2)
-    val precioUnitario: BigDecimal? = null,
-    
+    var precioUnitario: BigDecimal? = null,
+
     @Column(name = "usuario_comercial_id")
-    val usuarioComercialId: Int? = null,  // ID del usuario comercial (dueño) al que pertenece
-    
+    var usuarioComercialId: Int? = null,
+
     @Column(nullable = false)
-    val activo: Boolean = true,
-    
+    var activo: Boolean = true,
+
     @Column(name = "fecha_creacion", nullable = false)
-    val fechaCreacion: Instant = Instant.now(),
-    
+    var fechaCreacion: Instant = Instant.now(),
+
     @Column(name = "fecha_actualizacion", nullable = false)
-    val fechaActualizacion: Instant = Instant.now()
-)
+    var fechaActualizacion: Instant = Instant.now()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Producto) return false
+        return id != 0 && id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "Producto(id=$id, nombre=$nombre, precio=$precioUnitario)"
+
+    fun copy(
+        id: Int = this.id,
+        nombre: String = this.nombre,
+        descripcion: String? = this.descripcion,
+        categoriaId: Int? = this.categoriaId,
+        codigoBarras: String? = this.codigoBarras,
+        precioUnitario: BigDecimal? = this.precioUnitario,
+        usuarioComercialId: Int? = this.usuarioComercialId,
+        activo: Boolean = this.activo,
+        fechaCreacion: Instant = this.fechaCreacion,
+        fechaActualizacion: Instant = this.fechaActualizacion
+    ): Producto = Producto(id, nombre, descripcion, categoriaId, codigoBarras, precioUnitario, usuarioComercialId, activo, fechaCreacion, fechaActualizacion)
+}
 
