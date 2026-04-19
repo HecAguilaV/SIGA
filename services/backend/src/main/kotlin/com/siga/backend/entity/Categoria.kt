@@ -5,24 +5,43 @@ import java.time.Instant
 
 @Entity
 @Table(name = "CATEGORIAS", schema = "siga_saas")
-data class Categoria(
+class Categoria(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-    
+    var id: Int = 0,
+
     @Column(nullable = false, unique = true, length = 100)
-    val nombre: String,
-    
+    var nombre: String,
+
     @Column(columnDefinition = "TEXT")
-    val descripcion: String? = null,
-    
+    var descripcion: String? = null,
+
     @Column(name = "usuario_comercial_id")
-    val usuarioComercialId: Int? = null,  // ID del usuario comercial (dueño) al que pertenece
-    
+    var usuarioComercialId: Int? = null,
+
     @Column(nullable = false)
-    val activa: Boolean = true,
+    var activa: Boolean = true,
     
     @Column(name = "fecha_creacion", nullable = false)
-    val fechaCreacion: Instant = Instant.now()
-)
+    var fechaCreacion: Instant = Instant.now()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Categoria) return false
+        return id != 0 && id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "Categoria(id=$id, nombre=$nombre)"
+
+    fun copy(
+        id: Int = this.id,
+        nombre: String = this.nombre,
+        descripcion: String? = this.descripcion,
+        usuarioComercialId: Int? = this.usuarioComercialId,
+        activa: Boolean = this.activa,
+        fechaCreacion: Instant = this.fechaCreacion
+    ): Categoria = Categoria(id, nombre, descripcion, usuarioComercialId, activa, fechaCreacion)
+}
 

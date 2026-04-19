@@ -1,0 +1,52 @@
+graph TD
+    subgraph Origen ["Orígenes de Datos (Transaccional)"]
+        MS[Microservicios SIGA<br/>Spring Boot / Kotlin]
+        DB[(Esquemas PostgreSQL<br/>siga_inventario, siga_ventas)]
+    end
+
+    subgraph SpeedLayer ["Capa Speed (Tiempo Real)"]
+        PS[Google Cloud Pub/Sub<br/>Streaming de Eventos]
+        DF_S[Cloud Dataflow<br/>Procesamiento Streaming]
+    end
+
+    subgraph BatchLayer ["Capa Batch (Histórico Profundo)"]
+        CS[Google Cloud Storage<br/>Data Lake Raw / Processed]
+        DF_B[Cloud Dataflow<br/>Procesamiento Batch]
+    end
+
+    subgraph ServingLayer ["Capa Serving / Data Warehouse"]
+        BQ[(Google BigQuery<br/>Single Source of Truth)]
+    end
+
+    subgraph AILayer ["Capa de Inteligencia (Machine Learning)"]
+        VAI((Vertex AI<br/>Modelos Predictivos))
+    end
+
+    subgraph Consumo ["Consumo Gerencial y Operativo"]
+        BI[Dashboards BI y Looker<br/>Análisis de Tendencias]
+        AL[Alertas SIGA<br/>Quiebre de Stock]
+    end
+
+    %% Relaciones
+    MS -->|Operación Diaria| DB
+    MS -.->|Emisión de Eventos JSON de Ventas| PS
+    PS --> DF_S
+    DB -.->|Extractor Nocturno y Dumps| CS
+    CS --> DF_B
+    DF_S -->|Ingesta Continua| BQ
+    DF_B -->|Cargas Masivas Limpias| BQ
+    BQ ---|Insumo de Entrenamiento| VAI
+    VAI ---|Predicciones| BQ
+    BQ --> BI
+    VAI -.->|Webhook Predicción de Agotamiento| AL
+    
+    %% Estilos nativos para GCP y Arquitectura
+    classDef gcp fill:#e8f0fe,stroke:#1a73e8,stroke-width:2px,color:#174ea6;
+    classDef siga fill:#fce8e6,stroke:#c5221f,stroke-width:2px,color:#b0120a;
+    classDef database fill:#fef7e0,stroke:#f29900,stroke-width:2px,color:#e65100;
+    classDef ai fill:#e6f4ea,stroke:#1e8e3e,stroke-width:2px,color:#0d652d;
+    
+    class PS,DF_S,CS,DF_B gcp;
+    class MS,AL siga;
+    class DB database;
+    class BQ,VAI ai;

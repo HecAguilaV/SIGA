@@ -4,21 +4,22 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "ROLES_PERMISOS", schema = "siga_saas")
-data class RolPermiso(
+class RolPermiso(
     @Id
     @EmbeddedId
-    val id: RolPermisoId,
-    
+    var id: RolPermisoId,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "permiso_id", insertable = false, updatable = false)
-    val permiso: Permiso? = null
-)
+    var permiso: Permiso? = null
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is RolPermiso) return false
+        return id == other.id
+    }
 
-@Embeddable
-data class RolPermisoId(
-    @Column(name = "rol", nullable = false, length = 20)
-    val rol: String,
-    
-    @Column(name = "permiso_id", nullable = false)
-    val permisoId: Int
-) : java.io.Serializable
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "RolPermiso(id=$id)"
+}

@@ -5,54 +5,82 @@ import java.time.Instant
 
 @Entity
 @Table(name = "USUARIOS", schema = "siga_comercial")
-data class UsuarioComercial(
+class UsuarioComercial(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-    
-    @Column(nullable = false, unique = true, length = 255)
-    val email: String,
-    
-    @Column(name = "password_hash", nullable = false, length = 255)
-    val passwordHash: String,
-    
-    @Column(nullable = false, length = 100)
-    val nombre: String,
-    
-    @Column(length = 100)
-    val apellido: String? = null,
-    
-    @Column(length = 20)
-    val rut: String? = null,
-    
-    @Column(length = 20)
-    val telefono: String? = null,
-    
-    @Column(name = "nombre_empresa", length = 255)
-    val nombreEmpresa: String? = null,
-    
-    @Column(nullable = false)
-    val activo: Boolean = true,
-    
-    @Column(name = "en_trial", nullable = false)
-    val enTrial: Boolean = false,
-    
-    @Column(name = "fecha_inicio_trial")
-    val fechaInicioTrial: Instant? = null,
-    
-    @Column(name = "fecha_fin_trial")
-    val fechaFinTrial: Instant? = null,
-    
-    @Column(length = 20)
-    val rol: String = "cliente",  // 'admin' o 'cliente'
-    
-    @Column(name = "plan_id")
-    val planId: Int? = null,  // Cache del plan actual
-    
-    @Column(name = "fecha_creacion", nullable = false)
-    val fechaCreacion: Instant = Instant.now(),
-    
-    @Column(name = "fecha_actualizacion", nullable = false)
-    val fechaActualizacion: Instant = Instant.now()
-)
+    var id: Int = 0,
 
+    @Column(nullable = false, unique = true, length = 255)
+    var email: String,
+
+    @Column(name = "password_hash", nullable = false, length = 255)
+    var passwordHash: String,
+
+    @Column(nullable = false, length = 100)
+    var nombre: String,
+
+    @Column(length = 100)
+    var apellido: String? = null,
+
+    @Column(length = 20)
+    var rut: String? = null,
+
+    @Column(length = 20)
+    var telefono: String? = null,
+
+    @Column(name = "nombre_empresa", length = 255)
+    var nombreEmpresa: String? = null,
+
+    @Column(nullable = false)
+    var activo: Boolean = true,
+
+    @Column(name = "en_trial", nullable = false)
+    var enTrial: Boolean = false,
+
+    @Column(name = "fecha_inicio_trial")
+    var fechaInicioTrial: Instant? = null,
+
+    @Column(name = "fecha_fin_trial")
+    var fechaFinTrial: Instant? = null,
+
+    @Column(length = 20)
+    var rol: String = "cliente",
+
+    @Column(name = "plan_id")
+    var planId: Int? = null,
+
+    @Column(name = "fecha_creacion", nullable = false)
+    var fechaCreacion: Instant = Instant.now(),
+
+    @Column(name = "fecha_actualizacion", nullable = false)
+    var fechaActualizacion: Instant = Instant.now()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UsuarioComercial) return false
+        return id != 0 && id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "UsuarioComercial(id=$id, email=$email, nombreEmpresa=$nombreEmpresa)"
+
+    fun copy(
+        id: Int = this.id,
+        email: String = this.email,
+        passwordHash: String = this.passwordHash,
+        nombre: String = this.nombre,
+        apellido: String? = this.apellido,
+        rut: String? = this.rut,
+        telefono: String? = this.telefono,
+        nombreEmpresa: String? = this.nombreEmpresa,
+        activo: Boolean = this.activo,
+        enTrial: Boolean = this.enTrial,
+        fechaInicioTrial: Instant? = this.fechaInicioTrial,
+        fechaFinTrial: Instant? = this.fechaFinTrial,
+        rol: String = this.rol,
+        planId: Int? = this.planId,
+        fechaCreacion: Instant = this.fechaCreacion,
+        fechaActualizacion: Instant = this.fechaActualizacion
+    ): UsuarioComercial = UsuarioComercial(id, email, passwordHash, nombre, apellido, rut, telefono, nombreEmpresa, activo, enTrial, fechaInicioTrial, fechaFinTrial, rol, planId, fechaCreacion, fechaActualizacion)
+}

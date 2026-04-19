@@ -4,6 +4,13 @@ import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
 
+enum class EstadoFactura {
+    PAGADA,
+    PENDIENTE,
+    VENCIDA,
+    CANCELADA
+}
+
 /**
  * Factura del portal comercial (Monolito).
  * Mapea a siga_comercial.facturas.

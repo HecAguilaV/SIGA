@@ -5,43 +5,65 @@ import java.time.Instant
 
 @Entity
 @Table(name = "USUARIOS", schema = "siga_saas")
-data class UsuarioSaas(
+class UsuarioSaas(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-    
+    var id: Int = 0,
+
     @Column(nullable = false, unique = true, length = 255)
-    val email: String,
-    
+    var email: String,
+
     @Column(name = "password_hash", nullable = false, length = 255)
-    val passwordHash: String,
-    
+    var passwordHash: String,
+
     @Column(nullable = false, length = 100)
-    val nombre: String,
-    
+    var nombre: String,
+
     @Column(length = 100)
-    val apellido: String? = null,
-    
+    var apellido: String? = null,
+
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    val rol: Rol,
-    
+    var rol: Rol,
+
     @Column(name = "usuario_comercial_id")
-    val usuarioComercialId: Int? = null,  // ID del usuario comercial (dueño) al que pertenece
-    
+    var usuarioComercialId: Int? = null,
+
     @Column(nullable = false)
-    val activo: Boolean = true,
-    
+    var activo: Boolean = true,
+
     @Column(name = "fecha_creacion", nullable = false)
-    val fechaCreacion: Instant = Instant.now(),
-    
+    var fechaCreacion: Instant = Instant.now(),
+
     @Column(name = "fecha_actualizacion", nullable = false)
-    val fechaActualizacion: Instant = Instant.now()
-)
+    var fechaActualizacion: Instant = Instant.now()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UsuarioSaas) return false
+        return id != 0 && id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "UsuarioSaas(id=$id, email=$email, rol=$rol)"
+
+    fun copy(
+        id: Int = this.id,
+        email: String = this.email,
+        passwordHash: String = this.passwordHash,
+        nombre: String = this.nombre,
+        apellido: String? = this.apellido,
+        rol: Rol = this.rol,
+        usuarioComercialId: Int? = this.usuarioComercialId,
+        activo: Boolean = this.activo,
+        fechaCreacion: Instant = this.fechaCreacion,
+        fechaActualizacion: Instant = this.fechaActualizacion
+    ): UsuarioSaas = UsuarioSaas(id, email, passwordHash, nombre, apellido, rol, usuarioComercialId, activo, fechaCreacion, fechaActualizacion)
+}
 
 enum class Rol {
     ADMINISTRADOR,
     OPERADOR,
     CAJERO
 }
-
