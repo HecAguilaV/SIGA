@@ -6,7 +6,7 @@ import java.time.Instant
 @Entity
 @Table(
     name = "STOCK",
-    schema = "siga_saas",
+    schema = "siga_inventario",
     uniqueConstraints = [UniqueConstraint(columnNames = ["producto_id", "local_id"])]
 )
 class Stock(

@@ -4,7 +4,7 @@ import jakarta.persistence.*
 import java.time.Instant
 
 @Entity
-@Table(name = "CATEGORIAS", schema = "siga_saas")
+@Table(name = "CATEGORIAS", schema = "siga_inventario")
 class Categoria(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,7 +11,7 @@ enum class EstadoVenta {
 }
 
 @Entity
-@Table(name = "VENTAS", schema = "siga_saas")
+@Table(name = "VENTAS", schema = "siga_ventas")
 class Venta(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

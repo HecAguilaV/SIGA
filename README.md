@@ -4,9 +4,9 @@
 
 # SIGA: Sistema Inteligente de Gestión de Activos
 
-Bienvenido a **SIGA**, una plataforma empresarial de grado productivo para la gestión de inventarios y activos físicos. 
+Bienvenido a **SIGA**, una solución tecnológica inteligente diseñada específicamente para **PYMES** (desde 1 hasta N locales). SIGA se centra en la **Gestión de Activos (Inventario)** como corazón del negocio, potenciada por **Agentes de IA** operativos.
 
-Recientemente el proyecto ha evolucionado de un monolito a una **Arquitectura de Microservicios Distribuidos**, soportada por inteligencia artificial.
+El proyecto ha evolucionado a una **Arquitectura de Microservicios Multi-tenant**, donde cada servicio opera en su propio esquema de base de datos, garantizando aislamiento y escalabilidad bajo un modelo SaaS.
 
 ## Arquitectura del Sistema (V2)
 
@@ -16,9 +16,9 @@ SIGA está construido sobre un ecosistema de microservicios resiliente y escalab
 - **Service Registry (`siga-eureka`)**: El corazón del descubrimiento de servicios.
 - **API Gateway (`siga-gateway`)**: El único punto de entrada público, encargado de enrutamiento y balanceo.
 - **Auth Service (`siga-auth`)**: Emisión y validación de tokens corporativos.
-- **Microservicio Inventario (`siga-inventario`)**: Dominio transaccional de productos, categorías y stock.
-- **Microservicio Ventas (`siga-ventas`)**: Motor de transacciones de salida y facturación.
-- **Agente IA (`siga-agente`)**: Microservicio Polyglot (Python + FastAPI) que sirve como motor de análisis y GenAI.
+- **Microservicio Inventario (`siga-inventario`)**: El corazón del sistema. Gestión de productos, categorías y stock por local.
+- **Microservicio Ventas (`siga-ventas`)**: Módulo POS diseñado específicamente para garantizar el descuento de stock preciso y autónomo por local.
+- **Agente IA (`siga-agente`)**: Motor de inteligencia operativa. Ayuda al usuario con análisis y ejecuciones CRUD heredadas de sus privilegios.
 
 ### Interfaces de Usuario
 - **Webapp V2 (`/services/webapp`)**: Consola de administración construida en **Svelte 5 / SvelteKit**. Recientemente rediseñada con un sistema de diseño *Void/Glassmorphism* premium de alta fidelidad.

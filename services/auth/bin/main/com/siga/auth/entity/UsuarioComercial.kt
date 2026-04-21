@@ -4,8 +4,8 @@ import jakarta.persistence.*
 import java.time.Instant
 
 @Entity
-@Table(name = "USUARIOS", schema = "siga_auth")
-class UsuarioSaas(
+@Table(name = "USUARIOS", schema = "siga_comercial")
+class UsuarioComercial(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
@@ -22,15 +22,32 @@ class UsuarioSaas(
     @Column(length = 100)
     var apellido: String? = null,
 
-    @Column(nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
-    var rol: Rol,
+    @Column(length = 20)
+    var rut: String? = null,
 
-    @Column(name = "usuario_comercial_id")
-    val usuarioComercialId: Int? = null,
+    @Column(length = 20)
+    var telefono: String? = null,
+
+    @Column(name = "nombre_empresa", length = 255)
+    var nombreEmpresa: String? = null,
 
     @Column(nullable = false)
     var activo: Boolean = true,
+
+    @Column(name = "en_trial", nullable = false)
+    var enTrial: Boolean = false,
+
+    @Column(name = "fecha_inicio_trial")
+    var fechaInicioTrial: Instant? = null,
+
+    @Column(name = "fecha_fin_trial")
+    var fechaFinTrial: Instant? = null,
+
+    @Column(length = 20)
+    var rol: String = "cliente",
+
+    @Column(name = "plan_id")
+    var planId: Int? = null,
 
     @Column(name = "fecha_creacion", nullable = false)
     val fechaCreacion: Instant = Instant.now(),
@@ -40,11 +57,11 @@ class UsuarioSaas(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is UsuarioSaas) return false
+        if (other !is UsuarioComercial) return false
         return id != 0 && id == other.id
     }
 
     override fun hashCode(): Int = id.hashCode()
 
-    override fun toString(): String = "UsuarioSaas(id=$id, email=$email, rol=$rol)"
+    override fun toString(): String = "UsuarioComercial(id=$id, email=$email, empresa=$nombreEmpresa)"
 }

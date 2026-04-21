@@ -5,7 +5,7 @@ import java.io.Serializable
 import java.time.Instant
 
 @Entity
-@Table(name = "USUARIOS_PERMISOS", schema = "siga_saas")
+@Table(name = "USUARIOS_PERMISOS", schema = "siga_auth")
 class UsuarioPermiso(
     @Id
     @EmbeddedId
