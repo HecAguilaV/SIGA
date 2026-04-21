@@ -3,7 +3,7 @@ package com.siga.backend.entity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "ROLES_PERMISOS", schema = "siga_saas")
+@Table(name = "ROLES_PERMISOS", schema = "siga_auth")
 class RolPermiso(
     @Id
     @EmbeddedId

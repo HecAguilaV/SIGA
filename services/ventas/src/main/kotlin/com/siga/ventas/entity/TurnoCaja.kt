@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.Instant
 
 @Entity
-@Table(name = "TURNOS_CAJA", schema = "siga_saas")
+@Table(name = "TURNOS_CAJA", schema = "siga_ventas")
 class TurnoCaja(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
