@@ -1,108 +1,60 @@
-# Design: Arquitectura Definitiva de Microservicios SIGA
+# Design: Arquitectura Definitiva de Microservicios SIGA v2.1
 
 ## Technical Approach
-
-Monorepo multi-módulo con arquitectura poli-glota (Polyglot Programming). El Core transaccional utiliza Kotlin + Spring Cloud, mientras que el motor de IA utiliza Python. Cada microservicio es independiente y tiene su propio ciclo de vida de despliegue y pipelines CI/CD aislados.
+Monorepo multi-módulo con arquitectura poli-glota. El Core transaccional utiliza Kotlin + Spring Cloud, mientras que el motor de IA utiliza Python. Cada microservicio es independiente y utiliza aislamiento de datos por esquema en una base de datos PostgreSQL compartida.
 
 ## Architecture Decisions
 
-### Decision: Catálogo de Microservicios
+### Decision: Catálogo de Microservicios Normalizado
 
-| Servicio | Tipo | Esquema DB | Entidades / Responsabilidad | Stack Tecnológico |
-|----------|------|------------|----------------------------|-------------------|
+| Servicio | Tipo | Esquema DB | Responsabilidad | Stack Tecnológico |
+| :--- | :--- | :--- | :--- | :--- |
 | `siga-eureka` | Infraestructura | — | Service Discovery | Kotlin / Spring Boot |
-| `siga-gateway` | Infraestructura | — | Ruteo, CORS, validación JWT | Kotlin / Spring Cloud |
-| `siga-auth` | Negocio | `siga_saas` | Identity Provider, Emisión JWT + OAuth2 | Kotlin / Spring Boot |
-| `siga-inventario` | Negocio | `siga_saas` | Producto, Stock, Local | Kotlin / Spring Boot |
-| `siga-ventas` | Negocio | `siga_saas` | Transacciones y Facturación | Kotlin / Spring Boot |
-| `siga-billing` | Negocio | `siga_comercial`| Suscripciones SaaS | Kotlin / Spring Boot |
-| `siga-agente` | Negocio | — (stateless) | Orquestador de Agentes IA (Strands) | **Python** / Strands |
-| `siga-fallback` | Soporte | — | Resiliencia (Circuit Breaker target) | Kotlin / Spring Boot |
+| `siga-gateway` | Infraestructura | — | Ruteo y Seguridad Perimetral | Kotlin / Spring Cloud |
+| `siga-auth` | Negocio | `siga_auth` | Gestión de identidades y permisos heredables. | Kotlin / Spring Boot |
+| `siga-inventario` | Negocio | `siga_inventario` | Gestión de activos y stock inteligente. | Kotlin / Spring Boot |
+| `siga-ventas` | Negocio | `siga_ventas` | POS y descuento de stock en tiempo real. | Kotlin / Spring Boot |
+| `siga-backend` | Legacy / Billing | `siga_comercial` | Portal comercial y suscripciones SaaS. | Kotlin / Spring Boot |
+| `siga-agente` | Negocio | `siga_agente` | Orquestador de IA (Ejecución CRUD). | Python / FastAPI |
+| `siga-fallback` | Soporte | — | Resiliencia SQL/PL-SQL para fallos de IA. | Kotlin o Node.js |
 
-**Descartados**:
-- ~~`siga-asistente`~~: Renombrado a `siga-agente` para reflejar su nueva capacidad autónoma.
-- ~~`siga-comercial`~~: Renombrado a `siga-billing`.
-- ~~`siga-backend`~~: El monolito será deprecado.
+### Decision: Polyglot AI (SIGA-Agente)
+El servicio de IA se implementa en **Python** para aprovechar el ecosistema de LLMs. Se comunica con los servicios Kotlin mediante REST y hereda el JWT del usuario para realizar acciones CRUD en su nombre, respetando los permisos granulares.
 
-### Decision: Polyglot Architecture para IA (SIGA-Agente)
+### Decision: Aislamiento de Datos (Multi-Tenant)
+Se utiliza un único servidor PostgreSQL por eficiencia de costos, pero con **aislamiento estricto por esquemas**. Ningún microservicio accede directamente a las tablas de otro; la comunicación es vía API.
 
-**Choice**: Microservicio en **Python** usando framework **Strands** conectado a **Ollama Cloud**.
-**Alternatives**: Kotlin + Spring AI + Gemini API.
-**Rationale**: Python domina el ecosistema de IA. Strands permite crear "Agentes" reales que exponen `@tool`s. En lugar de un RAG monolítico en Kotlin, el servicio Python se registra en Eureka (vía `py_eureka_client`) y, de forma autónoma, el Agente realiza HTTP GET/POST a `siga-inventario` o `siga-ventas` utilizando el JWT del usuario (Pass-through) para mantener la seguridad mandatada por la Ley 21.719. Ollama Cloud saca la carga de inferencia del hardware local.
+---
 
-### Decision: Autenticación con OAuth 2.0 y JWT Pass-through
+## Data Flow (Normalizado)
 
-**Choice**: Spring Security OAuth2 Client + JWT propios
-**Alternatives**: Firebase Auth, Keycloak
-**Rationale**: `siga-auth` emite un JWT firmado. Este JWT es el "pasaporte" que `siga-agente` (Python) debe presentar al llamar a endpoints de inventario para asegurar aislamiento Multi-Tenant.
-
-### Decision: Base de Datos y Aislamiento
-
-**Choice**: 1 Servidor PostgreSQL (Infraestructura Compartida), esquemas lógicos aislados por servicio.
-**Alternatives**: 1 Servidor por microservicio.
-**Rationale**: Mantiene costos bajos. Ningún microservicio puede ver las tablas del otro. Si `siga-ventas` necesita stock, no hace un `JOIN` a la base de datos de inventario, le hace una llamada REST a `siga-inventario`.
-
-## Data Flow
-
-```
-                     ┌──────────────┐
-    Clientes         │   Gateway    │
-    (Web/Mobile) ───▶│   :8080      │
-                     └──────┬───────┘
-                            │ JWT validation & Routing
-               ┌────────────┼────────────┐
-               ▼            ▼            ▼
-         ┌──────────┐ ┌──────────┐ ┌──────────┐
-         │  Auth    │ │ Inventario│ │  Ventas  │
-         │ (Kotlin) │ │ (Kotlin) │ │ (Kotlin) │
-         └────┬─────┘ └────┬─────┘ └────┬─────┘
-              │            │             │
-              ▼            ▼             ▼
-         ┌─────────────────────────────────────┐
-         │      PostgreSQL (Infraestructura)   │
-         │  ┌─────────────┐ ┌───────────────┐  │
-         │  │  siga_saas  │ │siga_comercial │  │
-         │  └─────────────┘ └───────────────┘  │
-         └─────────────────────────────────────┘
-                               ▲
-         ┌──────────┐ ┌────────┴─┐ ┌──────────┐
-         │ Billing  │ │ Fallback │ │ Agente   │▶─▶ Ollama
-         │ (Kotlin) │ │ (Kotlin) │ │ (Python) │    Cloud
-         └────┬─────┘ └──────────┘ └────┬─────┘
-              │           ▲             │
-              ▼           │ (Circuit Breaker)
-        siga_comercial    └─────────────┘
+```mermaid
+graph TD
+    User((Usuario)) --> Gateway[API Gateway :8080]
+    Gateway --> Auth[siga-auth :8081]
+    Gateway --> Inv[siga-inventario :8082]
+    Gateway --> Ventas[siga-ventas :8083]
+    Gateway --> Agente[siga-agente :8000]
+    
+    Agente -- "Intercepción Fallo" --> Fallback[siga-fallback]
+    Agente -- "Herencia JWT" --> Inv
+    
+    Auth --> DB[(PostgreSQL)]
+    Inv --> DB
+    Ventas --> DB
+    
+    subgraph Schemas
+        DB --- SA[siga_auth]
+        DB --- SI[siga_inventario]
+        DB --- SV[siga_ventas]
+        DB --- SC[siga_comercial]
+        DB --- SAG[siga_agente]
+    end
 ```
 
-## File Changes (Estructura Polyglot)
-
-| File | Action | Description |
-|------|--------|-------------|
-| `services/registry/` | Create | Eureka Server (Kotlin) |
-| `services/gateway/` | Create | API Gateway (Kotlin) |
-| `services/auth/` | Create | Identity Provider (Kotlin) |
-| `services/inventario/` | Create | Stock API (Kotlin) |
-| `services/ventas/` | Create | Transacciones API (Kotlin) |
-| `services/billing/` | Create | Suscripciones API (Kotlin) |
-| `services/agente/` | Create | Microservicio **Python** + Strands (`main.py`, `requirements.txt`) |
-| `services/fallback/` | Create | Contingencia analítica SQL (Kotlin) |
-| `.github/workflows/` | Create | Pipelines CI/CD independientes por servicio |
-
-## Interfaces / Contracts
-
-- Comunicación inter-servicios: REST síncrono.
-- Registro cruzado de lenguajes: El cliente Python usa `py_eureka_client` para notificar al `registry` de Kotlin.
-- Propagación de Seguridad: Todo microservicio debe leer el header `Authorization: Bearer <jwt>`.
+---
 
 ## Testing Strategy
-
-| Layer | What to Test | Approach |
-|-------|-------------|----------|
-| Unit (Kt) | Lógica de negocio Kotlin | JUnit 5 + Mockito |
-| Unit (Py) | Tools del Agente Python | Pytest + Unit tests de Strands |
-| Integration | Endpoints REST | @SpringBootTest / FastAPI TestClient |
-| E2E | Polyglot Flow | Docker Compose + Jest/Cypress |
-
-## Open Questions
-
-- [ ] ¿Cómo empaquetaremos el contenedor Docker del servicio de Python para que coexista en el mismo `docker-compose.yml` de los servicios Gradle construidos con Jib o Dockerfiles de Java?
+- **Unitarios**: JUnit 5 para Kotlin, Pytest para Python.
+- **Integración**: Testcontainers para validar el aislamiento de esquemas.
+- **Resiliencia**: Chaos engineering para forzar el uso del servicio Fallback.
