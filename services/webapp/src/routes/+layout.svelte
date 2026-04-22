@@ -1,7 +1,7 @@
 <script>
   import "../app.css";
   import Sidebar from "$lib/components/Sidebar.svelte";
-  import AsistenteContextual from "$lib/components/AsistenteContextual.svelte";
+  import ContextualAssistant from "$lib/components/ContextualAssistant.svelte";
   import A11yToolbar from "$lib/components/A11yToolbar.svelte";
   import { authStore } from "$lib/stores/authStore";
   import { uiStore } from "$lib/stores/uiStore";
@@ -58,7 +58,7 @@
     >
       <slot />
     </main>
-    <AsistenteContextual />
+    <ContextualAssistant />
   {:else if isPublicRoute}
     <!-- Ruta pública (Login/SSO) -->
     <main class="main-content public">

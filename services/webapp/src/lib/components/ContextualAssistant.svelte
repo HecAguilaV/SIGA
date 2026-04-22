@@ -4,9 +4,9 @@
   import { onMount } from "svelte";
   import { datosNegocio } from "$lib/stores/datosNegocio.js";
   import { api } from "$lib/services/api.js";
-  import GraficoTorta from "./GraficoTorta.svelte";
-  import GraficoBarras from "./GraficoBarras.svelte";
-  import GraficoLineas from "./GraficoLineas.svelte";
+  import PieChart from "./PieChart.svelte";
+  import BarChart from "./BarChart.svelte";
+  import LineChart from "./LineChart.svelte";
   import {
     X,
     ArrowsOutSimple,
@@ -450,13 +450,13 @@
         <div class="chart-section">
           <div class="chart-container">
             {#if insightData.tipo === "barras"}
-              <GraficoBarras
+              <BarChart
                 titulo=""
                 etiquetas={insightData.etiquetas}
                 valores={insightData.valores}
               />
             {:else}
-              <GraficoBarras etiquetas={[]} valores={[]} />
+              <BarChart etiquetas={[]} valores={[]} />
             {/if}
           </div>
         </div>
