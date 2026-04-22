@@ -20,7 +20,7 @@ graph TD
         AU["siga-auth :8081"]
         IN["siga-inventario :8082"]
         VE["siga-ventas :8083"]
-        BI["siga-billing :8084"]
+        BI["siga-comercial :8084"]
     end
 
     subgraph IA["Servicios de Inteligencia"]
@@ -170,7 +170,7 @@ graph TD
         AU["siga-auth :8081"]
         IN["siga-inventario :8082"]
         VE["siga-ventas :8083"]
-        BI["siga-billing :8084"]
+        BI["siga-comercial :8084"]
         AG["siga-agente :8085"]
         FB["siga-fallback :8086"]
         

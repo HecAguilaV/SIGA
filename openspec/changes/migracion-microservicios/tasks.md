@@ -20,6 +20,14 @@
 - [ ] Implementar Reconciliación de Caja (Monto Contado vs Monto Sistema).
 - [ ] Integrar Webhooks de stock entre Ventas e Inventario.
 
+### 2.3 Dominio Billing (`siga-billing`)
+- [x] Crear servicio `siga-billing` (schema: `siga_comercial`).
+- [x] Entidades: CommercialUser, Plan, Subscription, Payment, ShoppingCart, Invoice.
+- [ ] Implementar registro de empresas via Google OAuth2.
+- [ ] Implementar flujo de compra de suscripción.
+- [ ] Implementar gestión de planes (CRUD).
+- [ ] Integrar con `siga-auth` para usuarios comerciales.
+
 ## Fase 3: Inteligencia y Resiliencia (PRÓXIMO PASO 🚀)
 
 ### 3.1 Agente de IA (`siga-agente`)

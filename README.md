@@ -1,52 +1,53 @@
 <p align="center">
-  <img src="docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
+  <img src="docs/brand/Logo_SIGA.png" alt="SIGA Logo" width="220" />
 </p>
 
-# SIGA: Sistema Inteligente de Gestión de Activos
+# SIGA: Intelligent Asset Management System
 
-Bienvenido a **SIGA**, una solución tecnológica inteligente diseñada específicamente para **PYMES** (desde 1 hasta N locales). SIGA se centra en la **Gestión de Activos (Inventario)** como corazón del negocio, potenciada por **Agentes de IA** operativos.
+Welcome to **SIGA**, an intelligent technological solution specifically designed for **SMEs** (from 1 to N locations). SIGA focuses on **Asset Management (Inventory)** as the business core, powered by operational **AI Agents**.
 
-El proyecto ha evolucionado a una **Arquitectura de Microservicios Multi-tenant**, donde cada servicio opera en su propio esquema de base de datos, garantizando aislamiento y escalabilidad bajo un modelo SaaS.
+The project has evolved into a **Multi-tenant Microservices Architecture**, where each service operates within its own database schema, ensuring isolation and scalability under a SaaS model.
 
-## Arquitectura del Sistema (V2)
+## System Architecture (V2)
 
-SIGA está construido sobre un ecosistema de microservicios resiliente y escalable:
+SIGA is built on a resilient and scalable microservices ecosystem:
 
-### Microservicios Core (Backend)
-- **Service Registry (`siga-eureka`)**: El corazón del descubrimiento de servicios.
-- **API Gateway (`siga-gateway`)**: El único punto de entrada público, encargado de enrutamiento y balanceo.
-- **Auth Service (`siga-auth`)**: Emisión y validación de tokens corporativos.
-- **Microservicio Inventario (`siga-inventario`)**: El corazón del sistema. Gestión de productos, categorías y stock por local.
-- **Microservicio Ventas (`siga-ventas`)**: Módulo POS diseñado específicamente para garantizar el descuento de stock preciso y autónomo por local.
-- **Agente IA (`siga-agente`)**: Motor de inteligencia operativa. Ayuda al usuario con análisis y ejecuciones CRUD heredadas de sus privilegios.
+### Core Microservices (Backend)
+- **Service Registry (`siga-eureka`)**: The heart of service discovery.
+- **API Gateway (`siga-gateway`)**: The single public entry point, responsible for routing and load balancing.
+- **Auth Service (`siga-auth`)**: Issue and validation of corporate JWT tokens.
+- **Inventory Service (`siga-inventory`)**: The system core. Management of products, categories, and stock per store.
+- **Sales Service (`siga-sales`)**: POS module designed to ensure precise and autonomous stock deduction per store.
+- **AI Agent (`siga-agent`)**: Operational intelligence engine. Assists users with analytics and CRUD executions based on their privileges.
+- **Billing Service (`siga-billing`)**: Management of commercial transactions and invoices.
 
-### Interfaces de Usuario
-- **Webapp V2 (`/services/webapp`)**: Consola de administración construida en **Svelte 5 / SvelteKit**. Recientemente rediseñada con un sistema de diseño *Void/Glassmorphism* premium de alta fidelidad.
-- **Mobile (`/services/mobile`)**: Aplicación para operarios en terreno (Android / Jetpack Compose).
-- **Portal Comercial (`/services/comercial`)**: B2B Storefront y Landing web.
+### User Interfaces
+- **Webapp V2 (`/services/webapp`)**: Administration console built with **Svelte 5 / SvelteKit**. Features a high-fidelity *Void/Glassmorphism* premium design system.
+- **Mobile (`/services/mobile`)**: Application for field operators (Android / Jetpack Compose).
+- **Commercial Portal (`/services/comercial`)**: B2B Storefront and Landing page.
 
-## Despliegue y Ejecución Rápida
+## Deployment & Quick Start
 
-Todo el stack de backend está orquestado mediante Docker. Para levantar el entorno de desarrollo localizado con emulación de base de datos aislada (Database-per-Service concept en esquema local):
+The entire backend stack is orchestrated via Docker. To start the development environment with isolated database emulation (Database-per-Service concept in local schema):
 
 ```bash
-# 1. Levantar infraestuctura backend
+# 1. Start backend infrastructure
 docker-compose up -d
 
-# 2. Levantar el Frontend V2 Premium
+# 2. Start the Premium V2 Frontend
 cd services/webapp
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
-> **UI Acceso Rápido**: El frontend se expondrá en `http://localhost:5174`. Para demos académicas rápidas, utiliza el acceso configurado: `admin@siga.cl` / `admin`.
+> **Quick Access UI**: The frontend will be exposed at `http://localhost:5173`. For quick academic demos, use the configured access: `admin@siga.cl` / `admin`.
 
-## Reglas de Gobernanza
+## Governance Rules
 
-Este proyecto aplica normativas estrictas (Spec-Driven Development) para asegurar la entrega continua de valor:
-- **Trazabilidad SDD**: Todos los cambios arquitectónicos deben partir de una `proposal` aprobada y registrada en el sistema *Engram*.
-- **Commits**: Convencionales, SIEMPRE en español, descriptivos y justificados (ej: `feat(webapp): rediseño premium v2 y mejoras a11y`).
-- **Seguridad**: Adopción progresiva de los estándares de privaticidad requeridos por la **Ley Chilena 21.719**.
+This project applies strict regulations (Spec-Driven Development) to ensure continuous value delivery:
+- **SDD Traceability**: All architectural changes must originate from an approved `proposal` registered in the *Engram* system.
+- **Commits**: Conventional, ALWAYS in English, descriptive, and justified (e.g., `feat(webapp): premium v2 redesign and a11y improvements`).
+- **Security**: Progressive adoption of privacy standards required by **Chilean Law 21.719**.
 
 ---
-> *Un Soñador con Poca RAM & Misael*
+> *A Dreamer with little RAM & Misael*
