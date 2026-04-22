@@ -1,0 +1,48 @@
+# SIGA Frontend Architecture & Repository Pact
+
+## Status: STIPULATED & DEFINED
+**Date**: April 21, 2026
+**Architecture Level**: Professional Microservices Ecosystem
+
+---
+
+## 1. Repository Strategy (Hybrid Monorepo)
+The project remains a **Monorepo** managed via **PNPM Workspaces** to ensure atomic refactors and shared infrastructure.
+
+### Shared Core (`/packages`)
+- **`@siga/api-client`**: The "Translator". Base Axios/Fetch configuration, JWT interceptors, and error handling for the API Gateway.
+- **`@siga/types`**: The "Data Contract". Shared TypeScript interfaces, enums, and DTOs between all frontends and the backend.
+- **`@siga/design-tokens`**: The "Visual DNA". CSS variables, Tailwind configuration, and brand assets for 100% visual consistency.
+
+---
+
+## 2. Frontend Services Layout
+Each frontend application is independent in its business logic but consumes the **Shared Core**.
+
+| Frontend | Technology | Pattern | Logic Scope |
+| :--- | :--- | :--- | :--- |
+| **Comercial** | React | MVVM + Service Layer | Auth, Billing, Plans, Payments. |
+| **Webapp** | Svelte 5 | Observer + Stores | Admin Dashboard, Inventory, Sales, AI Agent. |
+| **Landing** | Svelte/HTML | Minimalist | Tracking, Static Content, Conversion. |
+
+---
+
+## 3. Mandatory Design Patterns
+- **Pragmatic Atomic Design**: 
+    - `Atoms/Molecules` -> Shared UI Kit.
+    - `Organisms/Pages` -> Domain-specific components.
+- **Container-Presentational**: 
+    - Logic stays in Pages (`+page.svelte` / `Container.tsx`).
+    - UI stays in Components (`$lib/components` / `components/`).
+- **Adapter Pattern**: Mandatory for sanitizing AI Agent responses before rendering.
+
+---
+
+## 4. Next Session Roadmap
+1. **Docker Sequential Boot**: Eureka -> Gateway -> Auth -> Inventory.
+2. **Smoke Test**: Verify cross-service communication (Sales -> Inventory stock deduction).
+3. **Packages Scaffold**: Create `@siga/api-client` and `@siga/types`.
+
+---
+> [!NOTE]
+> This pact ensures that SIGA can grow to support thousands of stores with a maintainable, high-performance, and ethically compliant codebase.
