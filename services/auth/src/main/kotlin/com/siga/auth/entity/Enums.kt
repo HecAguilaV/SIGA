@@ -1,11 +1,11 @@
 package com.siga.auth.entity
 
 /**
- * Roles operativos del sistema SaaS.
- * Cada usuario tiene exactamente un rol que define sus permisos base.
+ * Operational roles of the SaaS system.
+ * Each user has exactly one role that defines their base permissions.
  */
-enum class Rol {
-    ADMINISTRADOR,
-    OPERADOR,
-    CAJERO
+enum class UserRole {
+    ADMINISTRATOR,
+    OPERATOR,
+    CASHIER
 }
