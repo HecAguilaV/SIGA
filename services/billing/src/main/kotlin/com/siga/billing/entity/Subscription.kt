@@ -1,0 +1,62 @@
+package com.siga.billing.entity
+
+import jakarta.persistence.*
+import java.time.Instant
+
+/**
+ * Active subscription of a customer to a plan.
+ */
+@Entity
+@Table(name = "subscriptions", schema = "commercial")
+class Subscription(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Int = 0,
+
+    @Column(name = "customer_id", nullable = false)
+    var customerId: Int,
+
+    @Column(name = "plan_id", nullable = false)
+    var planId: Int,
+
+    @Column(name = "billing_period", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    var period: BillingPeriod = BillingPeriod.MONTHLY,
+
+    @Column(nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    var status: SubscriptionStatus = SubscriptionStatus.ACTIVE,
+
+    @Column(name = "starts_at", nullable = false)
+    var startsAt: Instant = Instant.now(),
+
+    @Column(name = "ends_at")
+    var endsAt: Instant? = null,
+
+    @Column(name = "updated_at", nullable = false)
+    var updatedAt: Instant = Instant.now()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Subscription) return false
+        return id != 0 && id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString(): String = "Subscription(id=$id, status=$status, period=$period)"
+}
+
+/**
+ * Billing period types.
+ */
+enum class BillingPeriod {
+    MONTHLY, ANNUAL
+}
+
+/**
+ * Possible subscription statuses.
+ */
+enum class SubscriptionStatus {
+    ACTIVE, SUSPENDED, CANCELLED, EXPIRED
+}

@@ -3,13 +3,12 @@ FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
 
 # 1. Copy the common library to the parent directory of /app
-# This matches includeBuild("../common") in settings.gradle.kts
 COPY services/common /common
 
-# 2. Copy auth service files
-COPY services/auth/build.gradle.kts services/auth/settings.gradle.kts services/auth/gradlew ./
-COPY services/auth/gradle ./gradle
-COPY services/auth/src ./src
+# 2. Copy inventory service files
+COPY services/inventory/build.gradle.kts services/inventory/settings.gradle.kts services/inventory/gradlew ./
+COPY services/inventory/gradle ./gradle
+COPY services/inventory/src ./src
 
 # Build the application (skip tests)
 RUN ./gradlew build -x test --no-daemon
@@ -22,7 +21,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 COPY --from=build /app/app.jar app.jar
-EXPOSE 8081
+EXPOSE 8082
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
 # Execute

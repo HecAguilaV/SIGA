@@ -24,14 +24,20 @@ dependencyManagement {
 }
 
 dependencies {
-    // TODO: Agregar cuando siga-common esté disponible
-    // implementation("com.siga:siga-common")
+    // Audit Trail Starter (siga-common)
+    implementation("com.siga:siga-common")
     
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    
+    // Feign para consumo síncrono
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    
+    // Auth Utils for JWT pass-through validation
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("com.auth0:java-jwt:4.4.0")
     
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -39,9 +45,6 @@ dependencies {
     
     // PostgreSQL
     implementation("org.postgresql:postgresql:42.7.1")
-    
-    // JWT
-    implementation("com.auth0:java-jwt:4.4.0")
     
     // Swagger / OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
