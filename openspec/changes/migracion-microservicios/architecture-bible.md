@@ -270,7 +270,7 @@ Para el entorno de producción (o clúster principal), SIGA implementa el patró
 | `siga_auth`               | `siga-auth`          | Usuarios, roles, permisos. |
 | `siga_inventario`         | `siga-inventario`    | Productos, categorías, stock local. |
 | `siga_ventas`             | `siga-ventas`        | Transacciones, tickets, trazabilidad de ventas. |
-| `siga_billing`            | `siga-billing`       | Suscripciones SaaS, usuarios comerciales, facturas. |
+| `siga_comercial`         | `siga-comercial`    | Suscripciones SaaS, usuarios comerciales, facturas. |
 
 ### La Regla de Oro del Desacoplamiento
 
@@ -359,6 +359,6 @@ registros) para alimentar el pipeline analítico.
 | 3 | `siga-auth` | 8081 | Negocio | Spring Boot + Security + OAuth2 Client |
 | 4 | `siga-inventario` | 8082 | Negocio | Spring Boot + JPA |
 | 5 | `siga-ventas` | 8083 | Negocio | Spring Boot + JPA |
-| 6 | `siga-billing` | 8084 | Negocio | Spring Boot + JPA |
+| 6 | `siga-comercial` | 8084 | Negocio | Spring Boot + JPA |
 | 7 | `siga-agente` | 8085 | Negocio | Spring Boot + WebFlux + Gemini API |
 | 8 | `siga-fallback` | 8086 | Soporte | Spring Boot + Resilience4j |

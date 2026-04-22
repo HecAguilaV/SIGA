@@ -1,8 +1,8 @@
 services:
 
   # ============================================================
-  # Base de Datos PostgreSQL + PGVector
-  # Inicializa automáticamente los 5 schemas de SIGA
+  # Database: PostgreSQL + PGVector
+  # Automatically initializes the 5 SIGA schemas
   # ============================================================
   siga-db:
     image: pgvector/pgvector:pg16
@@ -15,7 +15,7 @@ services:
       - "5432:5432"
     volumes:
       - siga-db-data:/var/lib/postgresql/data
-      - ./scripts/database/DB_SIGA_NEW.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./scripts/database/DB_SIGA_ENGLISH.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U siga_admin -d siga_db"]
       interval: 5s
@@ -25,8 +25,8 @@ services:
       - siga-net
 
   # ============================================================
-  # pgAdmin 4 (Interfaz Web para PostgreSQL)
-  # Acceso: http://localhost:5050
+  # pgAdmin 4 (Web Interface for PostgreSQL)
+  # Access: http://localhost:5050
   # ============================================================
   pgadmin:
     image: dpage/pgadmin4
@@ -73,17 +73,17 @@ services:
       - siga-net
 
   # ============================================================
-  # Microservicio: Auth (:8081)
-  # Schema: siga_auth
+  # Microservice: Auth (:8081)
+  # Schema: auth
   # ============================================================
   siga-auth:
     build:
-      context: ./services/auth
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/auth/Dockerfile
     container_name: siga-auth
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_auth
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=auth
       - SPRING_DATASOURCE_USERNAME=siga_admin
       - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
     depends_on:
@@ -95,17 +95,17 @@ services:
       - siga-net
 
   # ============================================================
-  # Microservicio: Inventario (:8082)
-  # Schema: siga_inventario
+  # Microservice: Inventory (:8082)
+  # Schema: inventory
   # ============================================================
-  siga-inventario:
+  siga-inventory:
     build:
-      context: ./services/inventario
-      dockerfile: Dockerfile
-    container_name: siga-inventario
+      context: .
+      dockerfile: ./services/inventory/Dockerfile
+    container_name: siga-inventory
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_inventario
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=inventory
       - SPRING_DATASOURCE_USERNAME=siga_admin
       - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
     depends_on:
@@ -117,17 +117,17 @@ services:
       - siga-net
 
   # ============================================================
-  # Microservicio: Ventas (:8083)
-  # Schema: siga_ventas
+  # Microservice: Sales (:8083)
+  # Schema: sales
   # ============================================================
-  siga-ventas:
+  siga-sales:
     build:
-      context: ./services/ventas
-      dockerfile: Dockerfile
-    container_name: siga-ventas
+      context: .
+      dockerfile: ./services/sales/Dockerfile
+    container_name: siga-sales
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_ventas
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=sales
       - SPRING_DATASOURCE_USERNAME=siga_admin
       - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
     depends_on:
@@ -135,23 +135,23 @@ services:
         condition: service_healthy
       siga-eureka:
         condition: service_started
-      siga-inventario:
+      siga-inventory:
         condition: service_started
     networks:
       - siga-net
 
   # ============================================================
-  # Microservicio: Backend / Comercial (:8084)
-  # Schema: siga_comercial
+  # Microservice: Commercial/Billing (:8084)
+  # Schema: commercial
   # ============================================================
-  siga-backend:
+  siga-billing:
     build:
-      context: ./services/backend
-      dockerfile: Dockerfile
-    container_name: siga-backend
+      context: .
+      dockerfile: ./services/billing/Dockerfile
+    container_name: siga-billing
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=siga_comercial
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=commercial
       - SPRING_DATASOURCE_USERNAME=siga_admin
       - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
     depends_on:
@@ -163,18 +163,18 @@ services:
       - siga-net
 
   # ============================================================
-  # Microservicio: Agente IA (:8000)
-  # Schema: siga_agente
+  # Microservice: AI Agent (:8000)
+  # Schema: agent
   # ============================================================
-  siga-agente:
+  siga-agent:
     build:
-      context: ./services/agente
+      context: ./services/agent
       dockerfile: Dockerfile
-    container_name: siga-agente
+    container_name: siga-agent
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
       - PORT=8000
-      - DATABASE_URL=postgresql://siga_admin:siga_dev_2026@siga-db:5432/siga_db?schema=siga_agente
+      - DATABASE_URL=postgresql://siga_admin:siga_dev_2026@siga-db:5432/siga_db?schema=agent
     depends_on:
       siga-db:
         condition: service_healthy

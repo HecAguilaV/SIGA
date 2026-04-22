@@ -22,53 +22,41 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        # Rutas de ejemplo según Spec
+        # Auth Routes
         - id: siga-auth
           uri: lb://siga-auth
           predicates:
             - Path=/api/auth/**
-        - id: siga-inventario
-          uri: lb://siga-inventario
+
+        # Inventory Routes
+        - id: siga-inventory
+          uri: lb://siga-inventory
           predicates:
-            - Path=/api/inventario/**
-        - id: siga-ventas
-          uri: lb://siga-ventas
+            - Path=/api/products/**
+            - Path=/api/stores/**
+            - Path=/api/inventory/**
+
+        # Sales Routes
+        - id: siga-sales
+          uri: lb://siga-sales
           predicates:
-            - Path=/api/ventas/**
+            - Path=/api/sales/**
+            - Path=/api/cash-shifts/**
+
+        # Billing / Commercial Routes
         - id: siga-billing
           uri: lb://siga-billing
           predicates:
             - Path=/api/billing/**
-        - id: siga-agente
-          uri: lb://siga-agente
-          predicates:
-            - Path=/api/agente/**
-        # Rutas de documentación OpenAPI (Swagger Aggregation)
-        - id: siga-auth-docs
-          uri: lb://siga-auth
-          predicates:
-            - Path=/siga-auth/v3/api-docs/**
-        - id: siga-inventario-docs
-          uri: lb://siga-inventario
-          predicates:
-            - Path=/siga-inventario/v3/api-docs/**
-        - id: siga-ventas-docs
-          uri: lb://siga-ventas
-          predicates:
-            - Path=/siga-ventas/v3/api-docs/**
+            - Path=/api/comercial/**
 
-springdoc:
-  swagger-ui:
-    enabled: true
-    urls:
-      - name: Auth Service
-        url: /siga-auth/v3/api-docs
-      - name: Inventario Service
-        url: /siga-inventario/v3/api-docs
-      - name: Ventas Service
-        url: /siga-ventas/v3/api-docs
+        # AI Agent Routes
+        - id: siga-agent
+          uri: lb://siga-agent
+          predicates:
+            - Path=/api/agent/**
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://siga-eureka:8761/eureka/}

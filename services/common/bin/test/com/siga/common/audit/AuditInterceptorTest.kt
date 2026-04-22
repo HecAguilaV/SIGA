@@ -55,10 +55,10 @@ class AuditInterceptorTest {
     fun `AuditEntry serializes to JSON correctly`() {
         val entry = AuditEntry(
             timestamp = "2026-04-16T10:00:00Z",
-            service = "siga-ventas",
+            service = "siga-sales",
             tenantId = "tenant-99",
             method = "POST",
-            path = "/api/ventas/registrar",
+            path = "/api/sales/register",
             queryParams = null,
             statusCode = 201,
             durationMs = 45,
@@ -70,7 +70,7 @@ class AuditInterceptorTest {
         val json = objectMapper.writeValueAsString(entry)
 
         assertTrue(json.contains("\"tenantId\":\"tenant-99\""))
-        assertTrue(json.contains("\"service\":\"siga-ventas\""))
+        assertTrue(json.contains("\"service\":\"siga-sales\""))
         assertTrue(json.contains("\"statusCode\":201"))
         assertFalse(json.contains("\"error\":\""))
     }

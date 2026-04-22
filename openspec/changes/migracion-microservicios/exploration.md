@@ -39,7 +39,7 @@ Aplicando la **Opción 2**, estos son los **Microservicios Definitivos** que deb
     - *Entidades*: `Venta`, `Factura` (asumiendo que es la factura/boleta de la venta comercial).
     - *Responsabilidad*: Registrar las transacciones, procesar los carritos y generar los comprobantes. 
 
-4.  **`siga-billing` (Microservicio SaaS Administrativo)**
+4.  **`siga-comercial` (Microservicio SaaS Administrativo)**
     - *Entidades*: `Plan`, `Suscripcion` (y posiblemente una entidad `FacturaSaaS` si cobras por el uso de SIGA).
     - *Responsabilidad*: Cobros recurrentes de las empresas clientes, validación de que un comercio tiene su suscripción al día.
 
