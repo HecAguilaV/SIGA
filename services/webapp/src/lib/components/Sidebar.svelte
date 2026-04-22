@@ -6,7 +6,6 @@
         House,
         Package,
         ChartBar,
-        Sparkle,
         SignOut,
         User,
         Storefront,
@@ -19,24 +18,24 @@
 
     const menuItems = [
         { label: "Dashboard", href: "/", icon: House },
-        { label: "Análisis", href: "/analisis", icon: ChartBar, requiredPermission: "REPORTES_VER" },
-        { label: "Productos", href: "/productos", icon: Package, requiredPermission: "PRODUCTOS_VER" },
-        { label: "Categorías", href: "/categorias", icon: Tag, requiredPermission: "CATEGORIAS_ACTUALIZAR" },
-        { label: "Locales", href: "/locales", icon: Storefront, requiredPermission: "LOCALES_ACTUALIZAR" },
-        { label: "Usuarios", href: "/usuarios", icon: Users, requiredPermission: "USUARIOS_CREAR" },
+        { label: "Analytics", href: "/analytics", icon: ChartBar, requiredPermission: "REPORTES_VER" },
+        { label: "Products", href: "/products", icon: Package, requiredPermission: "PRODUCTOS_VER" },
+        { label: "Categories", href: "/categories", icon: Tag, requiredPermission: "CATEGORIAS_ACTUALIZAR" },
+        { label: "Stores", href: "/stores", icon: Storefront, requiredPermission: "LOCALES_ACTUALIZAR" },
+        { label: "Users", href: "/users", icon: Users, requiredPermission: "USUARIOS_CREAR" },
     ];
 
     $: user = $authStore.user || {
-        nombre: "Usuario",
-        apellido: "",
-        rol: "Invitado",
-        permisos: [],
+        name: "User",
+        lastName: "",
+        role: "Guest",
+        permissions: [],
     };
 
     $: filteredItems = menuItems.filter((item) => {
         if (!item.requiredPermission) return true;
-        if (user.rol === "ADMINISTRADOR") return true;
-        return (user.permisos || []).includes(item.requiredPermission);
+        if (user.role === "ADMINISTRADOR") return true;
+        return (user.permissions || []).includes(item.requiredPermission);
     });
 
     const handleLogout = () => {
@@ -66,7 +65,7 @@
     </div>
 
     <nav class="sidebar-nav">
-        <p class="nav-section-title">Navegación principal</p>
+        <p class="nav-section-title">Main Navigation</p>
         {#each filteredItems as item}
             <a href={item.href} class="nav-link" class:active={$page.url.pathname === item.href}>
                 <div class="icon-wrapper">
@@ -84,11 +83,11 @@
                     <User size={14} weight="bold" />
                 </div>
                 <div class="user-meta">
-                    <span class="u-name">{user.nombre}</span>
-                    <span class="u-role">{user.rol}</span>
+                    <span class="u-name">{user.name}</span>
+                    <span class="u-role">{user.role}</span>
                 </div>
             </div>
-            <button class="logout-btn-min" on:click={handleLogout} title="Cerrar Sesión">
+            <button class="logout-btn-min" on:click={handleLogout} title="Logout">
                 <SignOut size={18} />
             </button>
         </div>
@@ -108,7 +107,6 @@
         top: 0;
         z-index: 3000;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: none; /* Dejar que app.css maneje shadows si es necesario */
     }
 
     .sidebar.closed {

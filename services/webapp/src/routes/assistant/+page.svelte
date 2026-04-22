@@ -1,5 +1,5 @@
 <script>
-  import GraficoTorta from "$lib/components/GraficoTorta.svelte";
+  import PieChart from "$lib/components/PieChart.svelte";
   import { datosNegocio } from "$lib/stores/datosNegocio.js";
   import { api } from "$lib/services/api.js";
 
@@ -111,7 +111,7 @@
               <p class="mb-3">
                 Aquí tienes el panorama de mermas por categoría:
               </p>
-              <GraficoTorta
+              <PieChart
                 titulo="Mermas mensuales por categoría"
                 etiquetas={obtenerDatosMermas().etiquetas}
                 valores={obtenerDatosMermas().valores}

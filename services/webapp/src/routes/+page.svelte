@@ -1,5 +1,5 @@
 <script>
-  import { datosNegocio } from "$lib/stores/datosNegocio.js";
+  import { businessStore } from "$lib/stores/businessStore.js";
   import { onMount } from "svelte";
   import { fly, fade } from "svelte/transition";
   import {
@@ -14,70 +14,70 @@
   } from "phosphor-svelte";
 
   onMount(() => {
-    datosNegocio.cargarDatos();
+    businessStore.loadData();
   });
 
-  let localSeleccionado = 0;
-  let ordenarPor = "stock"; 
-  let ordenAscendente = true;
-  let busqueda = "";
+  let selectedStore = 0;
+  let sortBy = "stock"; 
+  let sortAscending = true;
+  let searchQuery = "";
 
   $: {
-    const localesDisponibles = $datosNegocio.locales ?? [];
-    if (!localSeleccionado && localesDisponibles.length) {
-      localSeleccionado = localesDisponibles[0].id;
+    const availableStores = $businessStore.stores ?? [];
+    if (!selectedStore && availableStores.length) {
+      selectedStore = availableStores[0].id;
     }
   }
 
-  $: categoriasMap = new Map(
-    ($datosNegocio.categorias ?? []).map((c) => [c.id, c.nombre]),
+  $: categoriesMap = new Map(
+    ($businessStore.categories ?? []).map((c) => [c.id, c.name]),
   );
 
-  $: productosFiltrados = ($datosNegocio.productos ?? [])
+  $: filteredProducts = ($businessStore.products ?? [])
     .filter((p) => {
-      if (!busqueda) return true;
-      const term = busqueda.toLowerCase();
-      const nombreCategoria = categoriasMap.get(p.categoriaId)?.toLowerCase() || "";
+      if (!searchQuery) return true;
+      const term = searchQuery.toLowerCase();
+      const categoryName = categoriesMap.get(p.categoryId)?.toLowerCase() || "";
       return (
-        p.nombre.toLowerCase().includes(term) ||
-        p.codigoBarras?.toLowerCase().includes(term) ||
-        nombreCategoria.includes(term)
+        p.name.toLowerCase().includes(term) ||
+        p.barcode?.toLowerCase().includes(term) ||
+        categoryName.includes(term)
       );
     })
-    .map((producto) => {
-      const stockEntry = ($datosNegocio.stock ?? []).find(
-        (s) => s.producto_id === producto.id && s.local_id === localSeleccionado,
+    .map((product) => {
+      const stockEntry = ($businessStore.stock ?? []).find(
+        (s) => s.productId === product.id && s.storeId === selectedStore,
       );
-      const stockActual = stockEntry ? stockEntry.cantidad : 0;
-      const nombreCategoria = categoriasMap.get(producto.categoriaId) || "Sin categoría";
-      return { ...producto, stockActual, categoria: nombreCategoria };
+      const currentStock = stockEntry ? stockEntry.quantity : 0;
+      const categoryName = categoriesMap.get(product.categoryId) || "No Category";
+      return { ...product, currentStock, category: categoryName };
     });
 
-  $: productosOrdenados = [...productosFiltrados].sort((a, b) => {
-    let valorA = 0; let valorB = 0;
-    if (ordenarPor === "nombre") { valorA = a.nombre.toLowerCase() > b.nombre.toLowerCase() ? 1 : -1; valorB = 0; }
-    else if (ordenarPor === "stock") { valorA = a.stockActual; valorB = b.stockActual; }
-    const resultado = valorA < valorB ? -1 : valorA > valorB ? 1 : 0;
-    return ordenAscendente ? resultado : -resultado;
+  $: sortedProducts = [...filteredProducts].sort((a, b) => {
+    let valA = 0; let valB = 0;
+    if (sortBy === "name") { valA = a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1; valB = 0; }
+    else if (sortBy === "stock") { valA = a.currentStock; valB = b.currentStock; }
+    const result = valA < valB ? -1 : valA > valB ? 1 : 0;
+    return sortAscending ? result : -result;
   });
 
-  const cambiarOrdenamiento = (columna) => {
-    if (ordenarPor === columna) { ordenAscendente = !ordenAscendente; }
-    else { ordenarPor = columna; ordenAscendente = true; }
+  const toggleSort = (column) => {
+    if (sortBy === column) { sortAscending = !sortAscending; }
+    else { sortBy = column; sortAscending = true; }
   };
 
-  $: valorInventario = ($datosNegocio.stock ?? []).reduce((acc, stockItem) => {
-    const prod = ($datosNegocio.productos ?? []).find(p => p.id === stockItem.producto_id);
-    return acc + stockItem.cantidad * (prod?.precioUnitario || 0);
+  $: inventoryValue = ($businessStore.stock ?? []).reduce((acc, stockItem) => {
+    const prod = ($businessStore.products ?? []).find(p => p.id === stockItem.productId);
+    return acc + stockItem.quantity * (prod?.unitPrice || 0);
   }, 0);
 </script>
 
 <div class="dashboard-container" in:fade={{ duration: 400 }}>
-  <!-- Header Animado -->
+  <!-- Animated Header -->
   <header class="dashboard-header">
     <div class="title-group" in:fly={{ y: -20, duration: 500 }}>
-      <h1 class="main-title">Centro de Control</h1>
-      <p class="sub-title">Gestión de activos en tiempo real</p>
+      <h1 class="main-title">Control Center</h1>
+      <p class="sub-title">Real-time asset management</p>
     </div>
     
     <div class="header-widgets">
@@ -95,8 +95,8 @@
         <div class="metric-icon primary"><Package weight="duotone" size={24} /></div>
       </div>
       <div class="metric-body">
-        <span class="metric-label">Productos</span>
-        <h3 class="metric-value">{$datosNegocio.productos?.length || 0}</h3>
+        <span class="metric-label">Products</span>
+        <h3 class="metric-value">{$businessStore.products?.length || 0}</h3>
       </div>
     </div>
 
@@ -105,8 +105,8 @@
         <div class="metric-icon secondary"><Storefront weight="duotone" size={24} /></div>
       </div>
       <div class="metric-body">
-        <span class="metric-label">Locales</span>
-        <h3 class="metric-value">{$datosNegocio.locales?.length || 0}</h3>
+        <span class="metric-label">Stores</span>
+        <h3 class="metric-value">{$businessStore.stores?.length || 0}</h3>
       </div>
     </div>
 
@@ -115,8 +115,8 @@
         <div class="metric-icon success"><CurrencyDollar weight="duotone" size={24} /></div>
       </div>
       <div class="metric-body">
-        <span class="metric-label">Capital Total</span>
-        <h3 class="metric-value">${new Intl.NumberFormat("es-CL").format(valorInventario)}</h3>
+        <span class="metric-label">Total Capital</span>
+        <h3 class="metric-value">${new Intl.NumberFormat("es-CL").format(inventoryValue)}</h3>
       </div>
     </div>
   </div>
@@ -125,13 +125,13 @@
   <div class="main-panel glass-card" in:fly={{ y: 30, duration: 700, delay: 400 }}>
     <div class="panel-header">
       <div class="filter-tabs">
-        {#each $datosNegocio.locales as local}
+        {#each $businessStore.stores as store}
           <button 
             class="filter-tab" 
-            class:active={localSeleccionado === local.id}
-            on:click={() => (localSeleccionado = local.id)}
+            class:active={selectedStore === store.id}
+            on:click={() => (selectedStore = store.id)}
           >
-            {local.nombre}
+            {store.name}
           </button>
         {/each}
       </div>
@@ -139,7 +139,7 @@
       <div class="panel-actions">
         <div class="premium-search">
             <MagnifyingGlass size={16} />
-            <input type="text" placeholder="Buscar activos..." bind:value={busqueda} />
+            <input type="text" placeholder="Search assets..." bind:value={searchQuery} />
         </div>
       </div>
     </div>
@@ -148,32 +148,32 @@
       <table class="premium-table">
         <thead>
           <tr>
-            <th on:click={() => cambiarOrdenamiento("nombre")} class="sortable">Producto</th>
-            <th>Categoría</th>
-            <th class="right">Precio</th>
-            <th on:click={() => cambiarOrdenamiento("stock")} class="sortable right">Stock</th>
-            <th class="right">Estado</th>
+            <th on:click={() => toggleSort("name")} class="sortable">Product</th>
+            <th>Category</th>
+            <th class="right">Price</th>
+            <th on:click={() => toggleSort("stock")} class="sortable right">Stock</th>
+            <th class="right">Status</th>
           </tr>
         </thead>
         <tbody>
-          {#each productosOrdenados as producto (producto.id)}
+          {#each sortedProducts as product (product.id)}
             <tr in:fly={{ x: -10, duration: 300 }}>
               <td>
                 <div class="product-cell">
-                   <div class="p-avatar">{producto.nombre.charAt(0)}</div>
-                   <span>{producto.nombre}</span>
+                   <div class="p-avatar">{product.name.charAt(0)}</div>
+                   <span>{product.name}</span>
                 </div>
               </td>
-              <td><span class="badge-subtle">{producto.categoria}</span></td>
-              <td class="right mono">${new Intl.NumberFormat("es-CL").format(producto.precioUnitario || 0)}</td>
-              <td class="right mono"><strong>{producto.stockActual}</strong></td>
+              <td><span class="badge-subtle">{product.category}</span></td>
+              <td class="right mono">${new Intl.NumberFormat("es-CL").format(product.unitPrice || 0)}</td>
+              <td class="right mono"><strong>{product.currentStock}</strong></td>
               <td class="right">
-                {#if producto.stockActual === 0}
-                  <div class="dot-status danger">Agotado</div>
-                {:else if producto.stockActual < 5}
-                  <div class="dot-status warning">Crítico</div>
+                {#if product.currentStock === 0}
+                  <div class="dot-status danger">Out of Stock</div>
+                {:else if product.currentStock < 5}
+                  <div class="dot-status warning">Critical</div>
                 {:else}
-                  <div class="dot-status success">Óptimo</div>
+                  <div class="dot-status success">Optimal</div>
                 {/if}
               </td>
             </tr>
@@ -273,18 +273,6 @@
   .metric-icon.primary { background: rgba(var(--accent-primary-rgb), 0.1); color: var(--accent-primary); }
   .metric-icon.secondary { background: rgba(0, 180, 216, 0.1); color: #00B4D8; }
   .metric-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--status-success); }
-
-  .trend {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: var(--surface-secondary);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .trend.up { color: var(--status-success); }
 
   .metric-label {
     font-size: 13px;
