@@ -8,16 +8,16 @@ services:
     image: pgvector/pgvector:pg16
     container_name: siga-postgres
     environment:
-      POSTGRES_DB: siga_db
-      POSTGRES_USER: siga_admin
-      POSTGRES_PASSWORD: siga_dev_2026
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - siga-db-data:/var/lib/postgresql/data
       - ./scripts/database/DB_SIGA_ENGLISH.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U siga_admin -d siga_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,8 +32,8 @@ services:
     image: dpage/pgadmin4
     container_name: siga-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@siga.cl
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
       - "5050:80"
     depends_on:
@@ -64,9 +64,9 @@ services:
       dockerfile: Dockerfile
     container_name: siga-gateway
     ports:
-      - "8080:8080"
+      - "${GATEWAY_PORT}:8080"
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
     depends_on:
       - siga-eureka
     networks:
@@ -82,10 +82,10 @@ services:
       dockerfile: ./services/auth/Dockerfile
     container_name: siga-auth
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=auth
-      - SPRING_DATASOURCE_USERNAME=siga_admin
-      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=auth
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -104,10 +104,10 @@ services:
       dockerfile: ./services/inventory/Dockerfile
     container_name: siga-inventory
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=inventory
-      - SPRING_DATASOURCE_USERNAME=siga_admin
-      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=inventory
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -126,10 +126,10 @@ services:
       dockerfile: ./services/sales/Dockerfile
     container_name: siga-sales
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=sales
-      - SPRING_DATASOURCE_USERNAME=siga_admin
-      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=sales
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -150,10 +150,10 @@ services:
       dockerfile: ./services/billing/Dockerfile
     container_name: siga-billing
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/siga_db?currentSchema=commercial
-      - SPRING_DATASOURCE_USERNAME=siga_admin
-      - SPRING_DATASOURCE_PASSWORD=siga_dev_2026
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=commercial
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -172,9 +172,9 @@ services:
       dockerfile: Dockerfile
     container_name: siga-agent
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-      - PORT=8000
-      - DATABASE_URL=postgresql://siga_admin:siga_dev_2026@siga-db:5432/siga_db?schema=agent
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - PORT=${AGENT_PORT}
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=agent
     depends_on:
       siga-db:
         condition: service_healthy
