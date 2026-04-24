@@ -20,6 +20,7 @@ SIGA-WEBCOMERCIAL/
 
 # Java/Kotlin (Backend, Mobile)
 **/build/
+**/bin/
 **/out/
 *.class
 *.jar
