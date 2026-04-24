@@ -1,40 +1,43 @@
 # Estado Actual del Ecosistema SIGA
 
-Este documento resume el estado de los componentes del Proyecto SIGA al **17 de marzo de 2026**.
+Este documento resume el estado de los componentes del Proyecto SIGA al **24 de abril de 2026**.
 
-##  Resumen de Componentes
+## Componentes
 
-| Servicio | Estado Git | Tecnología | Propósito |
+| Servicio | Estado | Tecnología | Propósito |
 | :--- | :--- | :--- | :--- |
-| **SIGA-BACKEND** |  Sincronizado | Kotlin / Spring Boot | API Central, Gestión de IA y DB. |
-| **SIGA-WEBCOMERCIAL** |  Sincronizado | React + Vite | Landing page, registro y mantenimiento. |
-| **SIGA-WEBAPP** |  Sincronizado | SvelteKit | Panel administrativo para dueños. |
-| **SIGA-APP** |  Sincronizado | Android (Compose) | Operación en terreno y stock. |
+| **auth** | ✅ Compilando | Kotlin / Spring | Autenticación y usuarios |
+| **inventory** | ✅ Compilando | Kotlin / Spring | Productos, stock, locales |
+| **sales** | ✅ Compilando | Kotlin / Spring | Ventas, métricas |
+| **billing** | ✅ Compilando (MOCK) | Kotlin / Spring | Planes, suscripciones |
+| **agent** | ⏳ Por implementar | Python / FastAPI | A2UI Engine |
+| **gateway** | ⏳ Configurado | Kotlin | Enrutador |
+| **comercial** | 🟡 Legacy | React | Portal registro |
+| **webapp** | 🟡 Legacy | SvelteKit | Panel principal |
+| **landing** | ⏳ Por crear | TBD | Landing page |
 
-## ️ Detalles Técnicos y Logros Recientes
+## Schema agent (A2UI)
 
-### SIGA-BACKEND (Repositorio Remoto Actualizado)
-- **Migraciones**: Se ha añadido y pusheado el script `015_ai_fallback_functions.sql` que garantiza la continuidad del negocio mediante **SafeMode** (funciones SQL) si la IA falla.
-- **Preparación Supabase**: El archivo `application.yml` está pre-configurado para facilitar la transición desde AlwaysData.
-- **Seguridad**: Autenticación JWT implementada y funcional.
+Tablas creadas en `scripts/database/DB_SIGA_ENGLISH.sql`:
 
-### SIGA-WEBCOMERCIAL (Repositorio Remoto Actualizado)
-- **Modo Mantenimiento**: Implementada la `MigrationPage.jsx`. El sistema ahora puede redirigir usuarios automáticamente durante migraciones críticas.
-- **Integración API**: Configurada para detectar caídas del backend y activar el fallback visual.
+| Tabla | Propósito |
+| :--- | :--- |
+| `agent.documents` | RAG con tenant_id |
+| `agent.conversations` | Contexto + tenant_id |
+| `agent.intent_logs` | Auditoría de intents |
+| `agent.pending_actions` | Confirmación 60s |
+| `agent.intent_permissions` | Permisos por plan |
 
-### Arquitectura Base
-- **Multi-tenancy**: Estructura sólida basada en `usuario_comercial_id`.
-- **Base de Datos**: Esquemas separados (`siga_comercial` y `siga_saas`) en PostgreSQL 16.
+## Contratos
 
-##  Recomendación: Arquitectura Agéntica
+- `docs/A2UI_PROTOCOL.md` — Contrato agent ↔ webapp
 
-Respecto a la **Arquitectura Agéntica**, mi recomendación es integrarla de la siguiente manera:
+## Próximos Pasos
 
-1.  **Directorio Central**: Mantener la carpeta raíz `SIGA/arquitectura-agentica` como el **Cerebro del Proyecto**. Es el lugar ideal para los planes de migración, documentos de diseño y guías de agentes (SDD).
-2.  **Documentación de Código**:
-    -   **Backend**: Añadir un archivo `AGENTIC.md` dentro de `SIGA-BACKEND` que explique cómo el código Kotlin interactúa con los prompts y las funciones de fallback.
-    -   **WebApps**: Documentar el flujo de "Conversación a Acción" en los servicios de chat.
-3.  **Memoria del Sistema**: Seguir utilizando el sistema de **Engram** para que yo (u otros agentes) recordemos decisiones arquitectónicas cruzadas entre repositorios.
+1. Agent Service (Python): parser → validación DB → ejecución
+2. Webapp + A2UI: chat + visual hints
 
 ---
-*Documento generado automáticamente para seguimiento de estado.*
+
+*Actualizado: 2026-04-24*
+*Último commit: 59d8c32 feat: añadir schema agent para A2UI*
