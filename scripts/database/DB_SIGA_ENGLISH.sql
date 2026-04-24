@@ -443,7 +443,7 @@ CREATE TABLE commercial.invoices (
 -- ============================================================
 
 CREATE SCHEMA agent;
-COMMENT ON SCHEMA agent IS 'Vector store (PGVector) and AI conversation contexts';
+COMMENT ON SCHEMA agent IS 'Vector store (PGVector), conversation contexts and A2UI pending actions';
 
 -- -------------------------------------------------------
 -- Table: agent.documents
@@ -455,9 +455,10 @@ CREATE TABLE agent.documents (
     content TEXT NOT NULL,
     embedding vector(1536),
     source VARCHAR(100),
-    commercial_user_id INTEGER,
+    tenant_id INTEGER NOT NULL,  -- SECURITY: Multi-tenant mandatory
     indexed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX idx_documents_tenant ON agent.documents(tenant_id);
 
 -- -------------------------------------------------------
 -- Table: agent.conversations
@@ -465,6 +466,7 @@ CREATE TABLE agent.documents (
 -- -------------------------------------------------------
 CREATE TABLE agent.conversations (
     id SERIAL PRIMARY KEY,
+    tenant_id INTEGER NOT NULL,  -- SECURITY: Multi-tenant
     user_id INTEGER NOT NULL,
     session_id UUID NOT NULL DEFAULT uuid_generate_v4(),
     context JSONB,
@@ -472,22 +474,105 @@ CREATE TABLE agent.conversations (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX idx_conversations_tenant ON agent.conversations(tenant_id);
+CREATE INDEX idx_conversations_user ON agent.conversations(user_id);
+CREATE INDEX idx_conversations_session ON agent.conversations(session_id);
 
 -- -------------------------------------------------------
--- Table: agent.responses
--- Agent response history
+-- Table: agent.intent_logs
+-- Audit: what the agent understood and confidence score
 -- -------------------------------------------------------
-CREATE TABLE agent.responses (
+CREATE TABLE agent.intent_logs (
     id SERIAL PRIMARY KEY,
-    conversation_id INTEGER NOT NULL,
-    question TEXT NOT NULL,
-    answer TEXT NOT NULL,
-    model VARCHAR(50),
-    tokens INTEGER,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_response_conversation FOREIGN KEY (conversation_id) 
-        REFERENCES agent.conversations(id) ON DELETE CASCADE
+    tenant_id INTEGER NOT NULL,  -- SECURITY: Multi-tenant mandatory
+    user_id INTEGER NOT NULL,
+    query_text TEXT NOT NULL,       -- What the user typed/spoke
+    detected_intent VARCHAR(50),   -- e.g., 'ADD_STOCK'
+    confidence_score DECIMAL(3,2),  -- 0.00 to 1.00
+    raw_response JSONB,            -- Raw agent response
+    metadata JSONB,               -- Extra info (browser, OS, etc.)
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX idx_intent_logs_tenant ON agent.intent_logs(tenant_id);
+CREATE INDEX idx_intent_logs_intent ON agent.intent_logs(detected_intent);
+CREATE INDEX idx_intent_logs_created ON agent.intent_logs(created_at);
+
+-- -------------------------------------------------------
+-- Table: agent.pending_actions
+-- Actions waiting for user confirmation (60s timeout)
+-- -------------------------------------------------------
+CREATE TABLE agent.pending_actions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id INTEGER NOT NULL,  -- SECURITY: Multi-tenant mandatory
+    user_id INTEGER NOT NULL,
+    intent VARCHAR(50) NOT NULL,      -- e.g., 'ADD_STOCK'
+    action_data JSONB NOT NULL,         -- Data to execute
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' 
+        CHECK (status IN ('PENDING', 'CONFIRMED', 'EXPIRED', 'CANCELLED')),
+    expires_at TIMESTAMP NOT NULL,     -- 60 second limit
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    confirmed_at TIMESTAMP
+);
+CREATE INDEX idx_pending_actions_tenant ON agent.pending_actions(tenant_id);
+CREATE INDEX idx_pending_actions_status ON agent.pending_actions(status);
+CREATE INDEX idx_pending_actions_expires ON agent.pending_actions(expires_at);
+
+-- -------------------------------------------------------
+-- Table: agent.intent_permissions
+-- Defines which intents each plan can execute
+-- -------------------------------------------------------
+CREATE TABLE agent.intent_permissions (
+    id SERIAL PRIMARY KEY,
+    plan_name VARCHAR(20) NOT NULL,      -- STARTER, PRO
+    intent VARCHAR(50) NOT NULL,         -- ADD_STOCK, GET_SALES, etc.
+    is_allowed BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_intent_plan UNIQUE (plan_name, intent)
+);
+
+-- Default permissions (STARTER)
+INSERT INTO agent.intent_permissions (plan_name, intent, is_allowed) VALUES
+    ('STARTER', 'ADD_STOCK', true),
+    ('STARTER', 'REMOVE_STOCK', true),
+    ('STARTER', 'GET_STOCK', true),
+    ('STARTER', 'SET_STOCK', true),
+    ('STARTER', 'GET_SALES', true),
+    ('STARTER', 'GET_LOW_STOCK', true),
+    ('STARTER', 'GET_LOCALES', true),
+    ('STARTER', 'LIST_USERS', true),
+    ('STARTER', 'HELP', true),
+    ('STARTER', 'PLAN', true),
+    ('STARTER', 'REPORT_BUG', true),
+    ('STARTER', 'TRANSFER_STOCK', false),
+    ('STARTER', 'GET_TOP_PRODUCTS', false),
+    ('STARTER', 'GET_PROFIT', false),
+    ('STARTER', 'ADD_LOCAL', false),
+    ('STARTER', 'ADD_USER', false),
+    ('STARTER', 'REMOVE_USER', false);
+
+-- Default permissions (PRO)
+INSERT INTO agent.intent_permissions (plan_name, intent, is_allowed) VALUES
+    ('PRO', 'ADD_STOCK', true),
+    ('PRO', 'REMOVE_STOCK', true),
+    ('PRO', 'GET_STOCK', true),
+    ('PRO', 'SET_STOCK', true),
+    ('PRO', 'TRANSFER_STOCK', true),
+    ('PRO', 'GET_SALES', true),
+    ('PRO', 'GET_TOP_PRODUCTS', true),
+    ('PRO', 'GET_LOW_STOCK', true),
+    ('PRO', 'GET_PROFIT', true),
+    ('PRO', 'GET_LOCALES', true),
+    ('PRO', 'ADD_LOCAL', true),
+    ('PRO', 'CLOSE_LOCAL', true),
+    ('PRO', 'LIST_USERS', true),
+    ('PRO', 'ADD_USER', true),
+    ('PRO', 'REMOVE_USER', true),
+    ('PRO', 'HELP', true),
+    ('PRO', 'PLAN', true),
+    ('PRO', 'REPORT_BUG', true);
+
+CREATE INDEX idx_intent_permissions_plan ON agent.intent_permissions(plan_name);
+CREATE INDEX idx_intent_permissions_intent ON agent.intent_permissions(intent);
 
 -- ============================================================
 -- CROSS-SCHEMA FOREIGN KEYS
