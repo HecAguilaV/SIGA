@@ -1,40 +1,60 @@
 {
 	"folders": [
 		{
-			"name": "💎 SIGA",
+			"name": "SIGA (Root)",
 			"path": "."
 		},
 		{
-			"name": "⚙️ Microservices (Backend)",
-			"path": "services/backend"
+			"name": "Auth Service",
+			"path": "services/auth"
 		},
 		{
-			"name": "🖥️ Web Portal (Next.js)",
+			"name": "Inventory Service",
+			"path": "services/inventory"
+		},
+		{
+			"name": "Sales Service",
+			"path": "services/sales"
+		},
+		{
+			"name": "Billing Service",
+			"path": "services/billing"
+		},
+		{
+			"name": "Agent Service (Python)",
+			"path": "services/agent"
+		},
+		{
+			"name": "API Gateway",
+			"path": "services/gateway"
+		},
+		{
+			"name": "Service Registry",
+			"path": "services/registry"
+		},
+		{
+			"name": "Common Library",
+			"path": "services/common"
+		},
+		{
+			"name": "Webapp (Svelte)",
 			"path": "services/webapp"
 		},
 		{
-			"name": "📱 Mobile App (Android)",
-			"path": "services/mobile"
+			"name": "Commercial Portal (React)",
+			"path": "services/commercial"
 		},
 		{
-			"name": "🏬 Comercial Hub",
-			"path": "services/comercial"
+			"name": "Landing Page",
+			"path": "services/landing"
 		},
 		{
-			"name": "🧠 COLEGA Orchestrator (Engram/SDD)",
-			"path": "arquitectura-agentica"
-		},
-		{
-			"name": "🛡️ Agentic Arsenal (Skills)",
-			"path": "skills"
-		},
-		{
-			"name": "📜 Legacy Docs",
+			"name": "Documentation",
 			"path": "docs"
 		},
 		{
-			"name": "🏛️ EXAMEN (EFT Documents)",
-			"path": "EXAMEN"
+			"name": "Academic",
+			"path": "ACADEMIC"
 		}
 	],
 	"settings": {
@@ -45,10 +65,10 @@
 			"**/CVS": true,
 			"**/.DS_Store": true,
 			"**/Thumbs.db": true,
-			"SIGA-APP": true,
-			"SIGA-BACKEND": true,
-			"SIGA-WEBAPP": true,
-			"SIGA-WEBCOMERCIAL": true
+			"**/.gradle": true,
+			"**/.idea": true,
+			"**/build": true,
+			"**/node_modules": true
 		},
 		"java.compile.nullAnalysis.mode": "automatic"
 	}
