@@ -17,7 +17,7 @@ services:
       - siga-db-data:/var/lib/postgresql/data
       - ./scripts/database/DB_SIGA_ENGLISH.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
