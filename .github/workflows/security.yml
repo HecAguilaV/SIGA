@@ -300,11 +300,18 @@ jobs:
           echo "Requires OWASP Dependency Track deployment"
 
       - name: Upload SBOM to Dependency Track
+        env:
+          DEPENDENCY_TRACK_API_KEY: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+          DEPENDENCY_TRACK_URL: ${{ secrets.DEPENDENCY_TRACK_URL }}
         run: |
-          curl -X POST \
-            -u ${{ secrets.DEPENDENCY_TRACK_API_KEY }} \
-            -F "Bom=${GITHUB_WORKSPACE}/sbom.json" \
-            ${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom
+          if [ -n "$DEPENDENCY_TRACK_API_KEY" ] && [ -n "$DEPENDENCY_TRACK_URL" ]; then
+            curl -X POST \
+              -H "X-Api-Key: $DEPENDENCY_TRACK_API_KEY" \
+              -F "Bom=${GITHUB_WORKSPACE}/sbom.json" \
+              "$DEPENDENCY_TRACK_URL/api/v1/bom"
+          else
+            echo "Dependency Track credentials not set, skipping upload"
+          fi
         continue-on-error: true
 
   # ═════════════════════════════════════════════════════════════════════════
