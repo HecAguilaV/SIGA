@@ -46,10 +46,17 @@ services:
   # Eureka Server (Service Registry)
   # ============================================================
   siga-eureka:
+    image: hdaguila/siga-eureka:latest
     build:
       context: ./services/registry
       dockerfile: Dockerfile
     container_name: siga-eureka
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     ports:
       - "8761:8761"
     networks:
@@ -59,10 +66,17 @@ services:
   # API Gateway
   # ============================================================
   siga-gateway:
+    image: hdaguila/siga-gateway:latest
     build:
       context: .
       dockerfile: ./services/gateway/Dockerfile
     container_name: siga-gateway
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     ports:
       - "${GATEWAY_PORT}:8080"
     environment:
@@ -77,10 +91,17 @@ services:
   # Schema: auth
   # ============================================================
   siga-auth:
+    image: hdaguila/siga-auth:latest
     build:
       context: .
       dockerfile: ./services/auth/Dockerfile
     container_name: siga-auth
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=auth
@@ -99,10 +120,17 @@ services:
   # Schema: inventory
   # ============================================================
   siga-inventory:
+    image: hdaguila/siga-inventory:latest
     build:
       context: .
       dockerfile: ./services/inventory/Dockerfile
     container_name: siga-inventory
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=inventory
@@ -121,10 +149,17 @@ services:
   # Schema: sales
   # ============================================================
   siga-sales:
+    image: hdaguila/siga-sales:latest
     build:
       context: .
       dockerfile: ./services/sales/Dockerfile
     container_name: siga-sales
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=sales
@@ -145,10 +180,17 @@ services:
   # Schema: commercial
   # ============================================================
   siga-billing:
+    image: hdaguila/siga-billing:latest
     build:
       context: .
       dockerfile: ./services/billing/Dockerfile
     container_name: siga-billing
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=commercial
@@ -167,10 +209,17 @@ services:
   # Schema: agent
   # ============================================================
   siga-agent:
+    image: hdaguila/siga-agent:latest
     build:
       context: ./services/agent
       dockerfile: Dockerfile
     container_name: siga-agent
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - PORT=${AGENT_PORT}
