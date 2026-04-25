@@ -1,20 +1,24 @@
 # Build stage
-FROM gradle:8.5-jdk21 AS build
+FROM gradle:8.10-jdk21 AS build
 WORKDIR /app
 
-# 1. Copy the common library to the parent directory of /app
-COPY services/common /common
+# 1. Copiar Gradle Wrapper y archivos de configuración básicos
+COPY gradlew .
+COPY gradle gradle
 
-# 2. Copy inventory service files
-COPY services/inventory/build.gradle.kts services/inventory/settings.gradle.kts services/inventory/gradlew ./
-COPY services/inventory/gradle ./gradle
-COPY services/inventory/src ./src
+# 2. Generar un settings.gradle.kts temporal para construir solo este módulo
+# Esto evita errores por falta de otros microservicios en el contexto de Docker
+RUN echo 'rootProject.name = "siga"\ninclude("services:common")\ninclude("services:inventory")' > settings.gradle.kts
 
-# Build the application (skip tests)
-RUN ./gradlew build -x test --no-daemon
+# 3. Copiar la librería común y el microservicio específico
+COPY services/common services/common
+COPY services/inventory services/inventory
 
-# Find and copy JAR
-RUN find /app/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
+# 4. Construir el microservicio (omitir tests para velocidad)
+RUN ./gradlew :services:inventory:assemble --no-daemon
+
+# 5. Extraer el JAR (evitando el -plain.jar)
+RUN find services/inventory/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
@@ -24,5 +28,5 @@ COPY --from=build /app/app.jar app.jar
 EXPOSE 8082
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
-# Execute
+# Ejecución
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
