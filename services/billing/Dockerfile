@@ -2,18 +2,19 @@
 FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
 
-# Copy Gradle files
-COPY build.gradle.kts settings.gradle.kts gradlew ./
-COPY gradle ./gradle
+# 1. Copy the common library
+COPY services/common /common
 
-# Copy source code
-COPY src ./src
+# 2. Copy billing service files
+COPY services/billing/build.gradle.kts services/billing/settings.gradle.kts services/billing/gradlew ./
+COPY services/billing/gradle ./gradle
+COPY services/billing/src ./src
 
 # Build the application (skip tests)
 RUN ./gradlew build -x test --no-daemon
 
 # Find and copy JAR
-RUN find /app/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
+RUN find /app/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar ;
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
