@@ -33,7 +33,7 @@ jobs:
             dockerfile: ./services/sales/Dockerfile
             image: hdaguila/siga-sales
           - service: registry
-            context: ./services/registry
+            context: .
             dockerfile: ./services/registry/Dockerfile
             image: hdaguila/siga-eureka
           - service: agent
