@@ -1,33 +1,50 @@
 package com.siga.inventory.controller
 
 import com.siga.inventory.entity.Product
+import com.siga.inventory.repository.ProductRepository
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 import org.springframework.http.HttpStatus
+import java.math.BigDecimal
 
 class ProductControllerTest {
 
-    private val controller = ProductController()
+    @Mock
+    private lateinit var productRepository: ProductRepository
 
-    @Test
-    fun `list products returns 401 if no X-Tenant-Id`() {
-        val response = controller.listProducts(null)
+    private lateinit var controller: ProductController
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+    @BeforeEach
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+        controller = ProductController(productRepository)
     }
 
     @Test
-    fun `list products returns 200 with valid tenant`() {
-        val response = controller.listProducts("tenant-42")
+    fun `get all products returns 200 and list of products`() {
+        val products = listOf(
+            Product(id = 1, name = "Product 1", unitPrice = BigDecimal("10.0")),
+            Product(id = 2, name = "Product 2", unitPrice = BigDecimal("20.0"))
+        )
+        `when`(productRepository.findAll()).thenReturn(products)
+
+        val response = controller.getAllProducts()
 
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertNotNull(response.body)
+        assertEquals(2, response.body?.size)
     }
 
     @Test
-    fun `list products returns empty list by default`() {
-        val response = controller.listProducts("tenant-1")
+    fun `get all products returns empty list when no products exist`() {
+        `when`(productRepository.findAll()).thenReturn(emptyList())
 
+        val response = controller.getAllProducts()
+
+        assertEquals(HttpStatus.OK, response.statusCode)
         assertTrue(response.body!!.isEmpty())
     }
 }
