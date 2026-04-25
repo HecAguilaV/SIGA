@@ -1,20 +1,23 @@
 # Build stage
-FROM gradle:8.5-jdk21 AS build
+FROM gradle:8.10-jdk21 AS build
 WORKDIR /app
 
-# 1. Copy the common library to the parent directory of /app
-COPY services/common /common
+# 1. Copiar Gradle Wrapper y archivos de configuración básicos
+COPY gradlew .
+COPY gradle gradle
 
-# 2. Copy sales service files
-COPY services/sales/build.gradle.kts services/sales/settings.gradle.kts services/sales/gradlew ./
-COPY services/sales/gradle ./gradle
-COPY services/sales/src ./src
+# 2. Generar un settings.gradle.kts temporal para construir solo este módulo
+RUN echo 'rootProject.name = "siga"\ninclude("services:common")\ninclude("services:sales")' > settings.gradle.kts
 
-# Build the application (skip tests)
-RUN ./gradlew build -x test --no-daemon
+# 3. Copiar la librería común y el microservicio específico
+COPY services/common services/common
+COPY services/sales services/sales
 
-# Find and copy JAR
-RUN find /app/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
+# 4. Construir el microservicio
+RUN ./gradlew :services:sales:assemble --no-daemon
+
+# 5. Extraer el JAR
+RUN find services/sales/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
@@ -24,5 +27,4 @@ COPY --from=build /app/app.jar app.jar
 EXPOSE 8083
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
-# Execute
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
