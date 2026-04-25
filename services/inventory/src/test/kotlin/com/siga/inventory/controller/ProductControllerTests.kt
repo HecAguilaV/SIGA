@@ -1,9 +1,11 @@
 package com.siga.inventory.controller
 
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.extensions.spring.SpringExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -12,21 +14,30 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class ProductControllerTests {
+class ProductControllerTests : DescribeSpec() {
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
-    @Test
-    fun `should return 401 or 403 when requesting products without token`() {
-        mockMvc.perform(get("/api/products"))
-            .andExpect(status().isForbidden)
+    init {
+        describe("ProductController Integration") {
+
+            it("given no token when requesting products then should return 403 Forbidden") {
+                mockMvc.perform(get("/api/products"))
+                    .andExpect(status().isForbidden)
+            }
+
+            it("given mock user when requesting products then should return 200 OK") {
+                mockMvc.perform(
+                    get("/api/products")
+                        .with(user("testuser"))
+                        .header("X-Tenant-Id", "50")
+                ).andExpect(status().isOk)
+            }
+        }
     }
 
-    @Test
-    @org.springframework.security.test.context.support.WithMockUser
-    fun `should return 200 OK and filter products by tenant_id claim`() {
-        mockMvc.perform(get("/api/products").header("X-Tenant-Id", "50"))
-            .andExpect(status().isOk)
-    }
+    // Nota: @WithMockUser en métodos it() requiere configuraciones adicionales o usarlo a nivel de clase/init
+    // Para simplificar y seguir el estándar, lo dejamos así por ahora.
 }
