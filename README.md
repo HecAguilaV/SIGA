@@ -57,5 +57,9 @@ Este proyecto aplica estrictas normas de ingeniería (Spec-Driven Development):
 - **Commits en Español**: Todos los mensajes de commit en el repositorio de Git deben estar **ESTRICTAMENTE en Español** (siguiendo el formato de Conventional Commits, ej: `feat(webapp): rediseño premium v2 y mejoras de accesibilidad`).
 - **Seguridad y Privacidad**: Adopción de normas de privacidad requeridas por la **Ley Chilena 21.719** a través del módulo transversal de auditoría (`siga-common`).
 
+## Problemas Conocidos (En Desarrollo)
+
+- **AI Agent (`siga-agent`)**: El servicio se encuentra actualmente en mantenimiento debido a una incompatibilidad de importación en la librería `strands-agents`. Se resolverá en la próxima iteración.
+
 ---
 > *Un soñador con poca RAM & Misael*
