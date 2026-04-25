@@ -14,7 +14,7 @@ COPY services/gateway/src ./src
 RUN ./gradlew build -x test --no-daemon
 
 # Find and copy JAR
-RUN find /app/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar ;
+RUN find /app/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
