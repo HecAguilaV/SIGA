@@ -1,0 +1,430 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Semgrep Configuration - SIGA
+# SAST rules for Kotlin and JavaScript/TypeScript
+# ═══════════════════════════════════════════════════════════════════════════
+
+rules:
+  # ═════════════════════════════════════════════════════════════════════════
+  # KOTLIN SECURITY RULES
+  # ═════════════════════════════════════════════════════════════════════════
+
+  - id: kotlin-hardcoded-secret
+    pattern: |
+      val $KEY = "$LITERAL"
+      ...
+      if ($KEY.contains(...))
+    message: |
+      Possible hardcoded secret detected. Use environment variables or Vault instead.
+      Example: @Value("\${secret.key}") instead of val key = "literal"
+    severity: ERROR
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-798
+      owasp: A02:2021
+      category: security
+
+  - id: kotlin-weak-crypto-md5
+    pattern: |
+      MessageDigest.getInstance("MD5")
+    message: |
+      MD5 is a weak cryptographic hash function. Use SHA-256 or stronger.
+      MD5 is vulnerable to collision attacks and should not be used for security purposes.
+    severity: ERROR
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-327
+      owasp: A02:2021
+      category: security
+
+  - id: kotlin-weak-crypto-sha1
+    pattern: |
+      MessageDigest.getInstance("SHA1")
+    message: |
+      SHA-1 is a weak cryptographic hash function. Use SHA-256 or stronger.
+      SHA-1 is vulnerable to collision attacks and deprecated for security use.
+    severity: WARNING
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-327
+      owasp: A02:2021
+      category: security
+
+  - id: kotlin-sql-injection-native
+    pattern: |
+      entityManager.createNativeQuery($SQL + $INPUT)
+    message: |
+      Possible SQL injection vulnerability. Use parameterized queries instead of string concatenation.
+      Always use parameterized queries: entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User::class.java)
+        .setParameter("email", userInput)
+    severity: ERROR
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-89
+      owasp: A03:2021
+      category: security
+
+  - id: kotlin-println-secret
+    pattern: |
+      println($ARG)
+      ...
+      where:
+        $ARG contains ["password", "secret", "token", "key", "pwd", "pass"]
+    message: |
+      Sensitive data should not be logged. Use a structured logger instead of println.
+    severity: ERROR
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-532
+      owasp: A01:2021
+      category: security
+
+  - id: kotlin-insecure-random
+    pattern: |
+      java.util.Random()
+    message: |
+      java.util.Random is not cryptographically secure. Use java.security.SecureRandom for security-sensitive operations.
+    severity: WARNING
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-338
+      category: security
+
+  - id: kotlin-cookie-secure-missing
+    pattern: |
+      Cookie.setSecure(false)
+    message: |
+      Cookie secure flag should be set to true for production environments to prevent cookies from being sent over HTTP.
+    severity: WARNING
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-614
+      category: security
+
+  - id: kotlin-weak-jwt-algorithm
+    pattern: |
+      Algorithm.HS256(...)
+      Algorithm.HS512(...)
+    message: |
+      HS256/HS512 (HMAC) symmetric algorithms should not be used for JWT in multi-tenant applications.
+      Use RS256 (RSA with SHA-256) asymmetric algorithm instead for better security.
+    severity: WARNING
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-347
+      owasp: A02:2021
+      category: security
+
+  - id: kotlin-xss-htmlraw
+    pattern: |
+      @Html raw($INPUT)
+    message: |
+      Raw HTML injection risk. Ensure input is sanitized before rendering.
+    severity: WARNING
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-79
+      owasp: A03:2021
+      category: security
+
+  - id: kotlin-stacktrace-exposed
+    pattern: |
+      e.printStackTrace()
+    message: |
+      Stack traces should not be exposed to users in production. Use proper error handling and logging.
+    severity: WARNING
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-209
+      owasp: A05:2021
+      category: security
+
+  - id: kotlin-deserialization-untrusted
+    pattern: |
+      ObjectInputStream(...)
+    message: |
+      Deserialization of untrusted data can lead to remote code execution.
+      Use safe deserialization libraries or validate input thoroughly.
+    severity: ERROR
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-502
+      owasp: A08:2021
+      category: security
+
+  - id: kotlin-path-traversal
+    pattern: |
+      Paths.get($INPUT)
+      ...
+      Files.readString(...)
+    message: |
+      Potential path traversal vulnerability. Validate and sanitize file paths from user input.
+    severity: WARNING
+    languages:
+      - kotlin
+    metadata:
+      cwe: CWE-22
+      owasp: A01:2021
+      category: security
+
+  # ═════════════════════════════════════════════════════════════════════════
+  # JAVASCRIPT/TYPESCRIPT SECURITY RULES
+  # ═════════════════════════════════════════════════════════════════════════
+
+  - id: js-hardcoded-secret
+    pattern: |
+      const $KEY = "$LITERAL"
+    message: |
+      Possible hardcoded secret detected. Use environment variables instead.
+      Example: process.env.SECRET_KEY instead of const secret = "literal"
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-798
+      owasp: A02:2021
+      category: security
+
+  - id: js-xss-innerhtml
+    pattern: |
+      element.innerHTML = $INPUT
+    message: |
+      Potential XSS vulnerability. Use textContent or sanitize HTML before setting innerHTML.
+      Prefer: element.textContent = userInput
+      Or use a sanitization library like DOMPurify.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-79
+      owasp: A03:2021
+      category: security
+
+  - id: js-xss-document-write
+    pattern: |
+      document.write($INPUT)
+    message: |
+      document.write is a common XSS vector. Use textContent or innerText instead.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-79
+      owasp: A03:2021
+      category: security
+
+  - id: js-sql-injection-template
+    pattern: |
+      `$SQL: ${$INPUT}`
+    message: |
+      Possible SQL injection in template literal. Use parameterized queries.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-89
+      owasp: A03:2021
+      category: security
+
+  - id: js-eval-user-input
+    pattern: |
+      eval($INPUT)
+      new Function($INPUT)
+    message: |
+      eval() with user input is dangerous and can lead to code injection.
+      Avoid eval() or thoroughly sanitize and validate the input.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-95
+      owasp: A03:2021
+      category: security
+
+  - id: js-insecure-regex
+    pattern: |
+      new RegExp($INPUT)
+    message: |
+      Constructing RegExp from user input can lead to ReDoS (Regular Expression Denial of Service).
+      Validate and sanitize input before using in RegExp.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-1333
+      category: security
+
+  - id: js-weak-crypto
+    pattern: |
+      crypto.createCipher(...)
+      crypto.createDecipher(...)
+    message: |
+      crypto.createCipher is deprecated and insecure. Use crypto.createCipheriv with a proper IV.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-327
+      owasp: A02:2021
+      category: security
+
+  - id: js-cookie-missing-secure
+    pattern: |
+      document.cookie = $COOKIE
+    message: |
+      Cookie should include Secure flag. Add ; Secure to the cookie string.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-614
+      category: security
+
+  - id: js-localstorage-sensitive
+    pattern: |
+      localStorage.setItem($KEY, $VALUE)
+    message: |
+      Avoid storing sensitive data in localStorage. Data in localStorage is accessible via JavaScript and can be stolen via XSS.
+      Consider using httpOnly cookies or server-side storage.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-922
+      category: security
+
+  - id: js-fetch-without-credentials
+    pattern: |
+      fetch($URL, { credentials: 'omit' })
+    message: |
+      Using credentials: 'omit' may be intentional, but ensure this is the correct setting for your use case.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-346
+      category: security
+
+  # ═════════════════════════════════════════════════════════════════════════
+  # SVELTE SPECIFIC RULES
+  # ═════════════════════════════════════════════════════════════════════════
+
+  - id: svelte-xss-bind
+    pattern: |
+      {@html $INPUT}
+    message: |
+      {@html} can lead to XSS. Use {@const sanitized = sanitize(input)} first or use text interpolation instead.
+    severity: ERROR
+    languages:
+      - generic
+    metadata:
+      cwe: CWE-79
+      owasp: A03:2021
+      category: security
+
+  # ═════════════════════════════════════════════════════════════════════════
+  # GENERAL SECURITY RULES
+  # ═════════════════════════════════════════════════════════════════════════
+
+  - id: sensitive-data-logging
+    pattern: |
+      console.log($ARG)
+    message: |
+      Avoid logging sensitive data. Ensure '$ARG' does not contain PII or secrets.
+    severity: WARNING
+    languages:
+      - kotlin
+      - javascript
+      - typescript
+    metadata:
+      cwe: CWE-532
+      category: security
+
+  - id: cors-wildcard
+    pattern: |
+      allowedOrigins("*")
+    message: |
+      CORS wildcard (*) allows any origin. Use explicit origins in production.
+    severity: WARNING
+    languages:
+      - kotlin
+      - java
+    metadata:
+      cwe: CWE-942
+      category: security
+
+  - id: cors-allow-credentials-with-origin
+    pattern: |
+      allowCredentials(true)
+      ...
+      allowedOrigins("*")
+    message: |
+      Cannot use allowCredentials(true) with allowedOrigins("*"). Use explicit origins.
+    severity: ERROR
+    languages:
+      - kotlin
+      - java
+    metadata:
+      cwe: CWE-942
+      category: security
+
+  - id: spring-boot-debug-enabled
+    pattern: |
+      debug = true
+    message: |
+      Debug mode should be disabled in production. It exposes internal application details.
+    severity: WARNING
+    languages:
+      - yaml
+    metadata:
+      cwe: CWE-489
+      category: security
+
+  - id: jwt-hardcoded-secret
+    pattern: |
+      jwt.secret = "$LITERAL"
+    message: |
+      JWT secret should not be hardcoded. Use environment variables or a secrets manager.
+    severity: ERROR
+    languages:
+      - yaml
+      - properties
+    metadata:
+      cwe: CWE-798
+      category: security
+
+# ═════════════════════════════════════════════════════════════════════════
+# PATHS TO EXCLUDE
+# ═════════════════════════════════════════════════════════════════════════
+exclude-paths:
+  - tests/**
+  - test/**
+  - "**/*test*/**"
+  - "**/*mock*/**"
+  - "**/*fixture*/**"
+  - docs/**
+  - legacy/**
+  - node_modules/**
+  - build/**
+  - target/**
+  - coverage/**
