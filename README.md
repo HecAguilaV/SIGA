@@ -13,8 +13,8 @@ Este proyecto es una **Arquitectura de Microservicios Multi-tenant alojada en un
 ## Documentación Educativa
 
 Dado el rápido avance técnico del proyecto con la ayuda de agentes de IA, hemos compilado un documento académico que detalla la estructura, flujo y diseño de arquitectura.
-> **[Leer el Manual Docente de Arquitectura](docs/MANUAL_DOCENTE.md)**
-> **[Ver Arquitectura Modelo C4 (Nivel 1 y 2)](docs/C4_ARCHITECTURE.md)**
+> **[Leer el Diario de Aprendizaje (Learning Log)](docs/es/learning/LEARNING.md)**
+> **[Ver Arquitectura Modelo C4 (Nivel 1 y 2)](docs/es/architecture/C4_MODEL.md)**
 
 ## Arquitectura del Sistema (V2)
 

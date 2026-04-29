@@ -107,3 +107,6 @@ sequenceDiagram
 
 El archivo `docker-compose.yml` permite levantar una réplica exacta del ecosistema en cualquier dispositivo de desarrollo.
 Descarga automáticamente las imágenes publicadas desde Docker Hub, inyecta las credenciales por variables de entorno y ejecuta una única base de datos PostgreSQL particionada lógicamente en esquemas.
+
+---
+> Un Soñador con poca RAM 🧑‍💻

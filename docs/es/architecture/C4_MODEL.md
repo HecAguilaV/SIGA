@@ -1,6 +1,6 @@
 # Modelo de Arquitectura C4 - SIGA
 
-*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](C4_ARCHITECTURE.en.md)*
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/architecture/C4_MODEL.md)*
 
 Este documento describe la arquitectura del **Sistema Inteligente de Gestión de Activos (SIGA)** utilizando el estándar del **Modelo C4**. Nos enfocamos en los niveles estratégicos (Contexto y Contenedores) para proporcionar una visión clara tanto para el negocio como para la ingeniería.
 
@@ -124,3 +124,6 @@ flowchart TB
 - **API Gateway**: Mantiene los microservicios internos ocultos del internet público. Centraliza CORS y enrutamiento.
 - **Service Registry (Eureka)**: Permite escalar microservicios horizontalmente sin necesidad de balanceadores de carga físicos.
 - **Aislamiento de Datos**: Cada microservicio se conecta a un único servidor PostgreSQL, pero tiene su propio `esquema` restringido, garantizando que un servicio no pueda corromper los datos de otro de forma directa.
+
+---
+> Un Soñador con poca RAM 🧑‍💻
