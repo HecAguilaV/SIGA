@@ -98,10 +98,18 @@ flowchart TB
     MobileApp -->|REST/JSON| Gateway
     
     %% Routing
-    Gateway -->|Routes requests (lb://)| Microservicios
+    Gateway -->|Routes requests| Auth
+    Gateway -->|Routes requests| Inv
+    Gateway -->|Routes requests| Sales
+    Gateway -->|Routes requests| Bill
+    Gateway -->|Routes requests| Agent
     
     %% Discovery
-    Microservicios -.->|Register and discover| Eureka
+    Auth -.->|Registers| Eureka
+    Inv -.->|Registers| Eureka
+    Sales -.->|Registers| Eureka
+    Bill -.->|Registers| Eureka
+    Agent -.->|Registers| Eureka
     Gateway -.->|Queries locations| Eureka
     
     %% Persistence
