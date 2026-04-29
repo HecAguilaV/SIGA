@@ -75,4 +75,4 @@ SIGA está preparado para entornos de desarrollo remoto distribuido:
 - **HTTPS Público (Tailscale Funnel)**: Para compartir el sistema con terceros sin abrir puertos, ejecute: `tailscale funnel 8080`. Esto generará una URL pública segura con certificado SSL automático.
 
 ---
-> Un Soñador con poca RAM 👨🏻💻
+> Un Soñador con poca RAM 🧑‍💻
