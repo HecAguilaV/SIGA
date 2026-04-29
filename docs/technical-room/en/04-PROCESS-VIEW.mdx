@@ -1,0 +1,60 @@
+# 04. Process View (Flow & Transactions)
+
+The Process View focuses on the dynamic behavior of the system. Here we explain how microservices interact in real-time to complete a transaction and how we ensure data consistency.
+
+[🇪🇸 Ver versión en Español](../es/04-PROCESS-VIEW.mdx)
+
+## 1. Sales Flow and Stock Deduction
+
+This sequence diagram shows the interaction between the Frontend, the Gateway, and the Sales and Inventory services.
+
+```mermaid
+sequenceDiagram
+    participant Web as WebApp (Svelte)
+    participant GT as API Gateway
+    participant Sales as Siga-Sales
+    participant Inv as Siga-Inventory
+
+    Web->>GT: POST /sales/checkout (JWT)
+    GT->>Sales: Forward Request
+    Sales->>Sales: Validate Cart
+    Sales->>Inv: Reserve Stock (id, qty)
+    alt Stock Available
+        Inv-->>Sales: Reservation OK
+        Sales->>Sales: Register Sale
+        Sales-->>Web: 201 Created (Invoice)
+    else Out of Stock
+        Inv-->>Sales: Error: Insufficient
+        Sales-->>Web: 400 Bad Request
+    end
+```
+
+## 2. Distributed Consistency (SAGA Pattern)
+
+For complex operations involving multiple services (such as a commercial subscription), we use an **Orchestration-based SAGA** to handle failures and perform compensations.
+
+```mermaid
+graph TD
+    Start((Start)) --> CheckAuth[Validate User]
+    CheckAuth --> CreateSub[Create Subscription]
+    CreateSub --> Pay[Process Payment]
+    
+    Pay -- Success --> End((End: Active))
+    
+    Pay -- Failure --> CancelSub[Compensate: Cancel Sub]
+    CancelSub --> Refund[Notify User]
+    Refund --> Fail((End: Error))
+```
+
+---
+
+## 🛡️ Architect's Defense (Capstone Tips)
+
+> **Why do we use the SAGA Pattern?**
+> "In a microservices architecture, we cannot use traditional ACID database transactions across different services. The SAGA pattern allows us to guarantee 'eventual consistency': if one step in the chain fails, we execute compensating actions to leave the system in a consistent state."
+>
+> **Why Orchestration over Choreography?**
+> "We chose orchestration to have centralized control over the business flow. It's easier to debug and visualize than purely event-based choreography, which is vital for SIGA's financial traceability."
+
+---
+> **Un Soñador con poca RAM 🧑‍💻**
