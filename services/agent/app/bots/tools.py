@@ -1,7 +1,7 @@
 import os
 import httpx
 import logging
-from strands_agents.tools import tool
+from strands import tool
 
 # Configuration for service URLs (internal docker network preferred)
 INVENTORY_URL = os.getenv("INVENTORY_SERVICE_URL", "http://siga-inventory:8082")
