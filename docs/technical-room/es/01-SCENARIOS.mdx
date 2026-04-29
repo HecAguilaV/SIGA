@@ -7,26 +7,22 @@ Esta vista es el punto de partida del Modelo 4+1. Aquí definimos los casos de u
 ## Diagrama de Casos de Uso (Core SIGA)
 
 ```mermaid
-useCaseDiagram
-    actor "Administrador / Dueño" as Admin
-    actor "Operador de Caja" as Op
-    actor "Agente de IA" as AI
+graph TD
+    subgraph Actores
+        Admin[Administrador / Dueño]
+        Op[Operador de Caja]
+        AI[Agente de IA]
+    end
 
-    package "Módulo de Gestión" {
-        usecase "Administrar Inventario Multi-sucursal" as UC1
-        usecase "Analizar Reportes de Ventas" as UC2
-        usecase "Configurar Permisos de Empleados" as UC3
-    }
-
-    package "Módulo POS (Punto de Venta)" {
-        usecase "Registrar Venta (Stock automático)" as UC4
-        usecase "Apertura/Cierre de Turno" as UC5
-    }
-
-    package "Módulo A2UI (Agentic UI)" {
-        usecase "Ejecutar Comandos por Voz/Chat" as AI1
-        usecase "Búsqueda Semántica de Productos" as AI2
-    }
+    subgraph "Casos de Uso"
+        UC1(Administrar Inventario)
+        UC2(Analizar Reportes)
+        UC3(Configurar Permisos)
+        UC4(Registrar Venta)
+        UC5(Apertura/Cierre Turno)
+        AI1(Comandos de Voz/Chat)
+        AI2(Búsqueda Semántica)
+    end
 
     Admin --> UC1
     Admin --> UC2
@@ -37,8 +33,12 @@ useCaseDiagram
     
     AI --> AI1
     AI --> AI2
-    AI --> UC1 : "Optimiza"
-    AI --> UC4 : "Valida"
+    AI -.-> UC1
+    AI -.-> UC4
+
+    style AI fill:#38bdf8,stroke:#fff,color:#000
+    style AI1 fill:#1e293b,stroke:#38bdf8
+    style AI2 fill:#1e293b,stroke:#38bdf8
 ```
 
 ---

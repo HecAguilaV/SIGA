@@ -7,26 +7,22 @@ This view is the starting point of the 4+1 Model. Here we define the use cases t
 ## Use Case Diagram (SIGA Core)
 
 ```mermaid
-useCaseDiagram
-    actor "Administrator / Owner" as Admin
-    actor "POS Operator" as Op
-    actor "AI Agent" as AI
+graph TD
+    subgraph Actors
+        Admin[Administrator / Owner]
+        Op[POS Operator]
+        AI[AI Agent]
+    end
 
-    package "Management Module" {
-        usecase "Manage Multi-branch Inventory" as UC1
-        usecase "Analyze Sales Reports" as UC2
-        usecase "Configure Employee Permissions" as UC3
-    }
-
-    package "POS Module (Point of Sale)" {
-        usecase "Register Sale (Auto-stock)" as UC4
-        usecase "Shift Opening/Closing" as UC5
-    }
-
-    package "A2UI Module (Agentic UI)" {
-        usecase "Execute Voice/Chat Commands" as AI1
-        usecase "Semantic Product Search" as AI2
-    }
+    subgraph "Use Cases"
+        UC1(Manage Inventory)
+        UC2(Analyze Reports)
+        UC3(Configure Permissions)
+        UC4(Register Sale)
+        UC5(Shift Opening/Closing)
+        AI1(Voice/Chat Commands)
+        AI2(Semantic Search)
+    end
 
     Admin --> UC1
     Admin --> UC2
@@ -37,8 +33,12 @@ useCaseDiagram
     
     AI --> AI1
     AI --> AI2
-    AI --> UC1 : "Optimizes"
-    AI --> UC4 : "Validates"
+    AI -.-> UC1
+    AI -.-> UC4
+
+    style AI fill:#38bdf8,stroke:#fff,color:#000
+    style AI1 fill:#1e293b,stroke:#38bdf8
+    style AI2 fill:#1e293b,stroke:#38bdf8
 ```
 
 ---
