@@ -15,14 +15,14 @@ graph TD
     end
 
     subgraph "Application Layer (Ports)"
-        InputPort[Service Interfaces]
-        OutputPort[Repository Interfaces]
+        InputPort[InventoryService / SalesService]
+        OutputPort[InventoryRepository / SalesRepository]
     end
 
     subgraph "Domain Layer (The Heart)"
-        Entities[Business Entities]
-        Values[Value Objects]
-        BusinessLogic[Domain Services]
+        Entities[Product, Sale, Stock, User]
+        Values[Money, SKU, Quantity]
+        BusinessLogic[PriceCalculator, StockValidator]
     end
 
     WebController --> InputPort
