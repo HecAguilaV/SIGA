@@ -1,5 +1,5 @@
 import os
-from strands_agents import Agent
+from strands import Agent
 from .tools import get_exact_stock, register_sale
 from .memory import learn, recall
 

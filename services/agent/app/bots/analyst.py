@@ -1,5 +1,5 @@
 import os
-from strands_agents import Agent
+from strands import Agent
 from .tools import get_inventory_kpis, get_sales_metrics
 from .memory import learn, recall
 
