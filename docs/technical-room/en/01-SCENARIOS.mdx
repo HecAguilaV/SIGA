@@ -1,0 +1,54 @@
+# 01. Scenarios View (The "+1" View)
+
+This view is the starting point of the 4+1 Model. Here we define the use cases that justify the existence of the entire technical architecture. It serves as the bridge between the business world and the code.
+
+[🇪🇸 Ver versión en Español](../es/01-SCENARIOS.mdx)
+
+## Use Case Diagram (SIGA Core)
+
+```mermaid
+useCaseDiagram
+    actor "Administrator / Owner" as Admin
+    actor "POS Operator" as Op
+    actor "AI Agent" as AI
+
+    package "Management Module" {
+        usecase "Manage Multi-branch Inventory" as UC1
+        usecase "Analyze Sales Reports" as UC2
+        usecase "Configure Employee Permissions" as UC3
+    }
+
+    package "POS Module (Point of Sale)" {
+        usecase "Register Sale (Auto-stock)" as UC4
+        usecase "Shift Opening/Closing" as UC5
+    }
+
+    package "A2UI Module (Agentic UI)" {
+        usecase "Execute Voice/Chat Commands" as AI1
+        usecase "Semantic Product Search" as AI2
+    }
+
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    
+    Op --> UC4
+    Op --> UC5
+    
+    AI --> AI1
+    AI --> AI2
+    AI --> UC1 : "Optimizes"
+    AI --> UC4 : "Validates"
+```
+
+---
+
+## 🛡️ Architect's Defense (Capstone Tips)
+
+> **Why do we use this view?**
+> In a complex microservices system, it's easy to get lost in ports and databases. The Scenarios View forces us to remember WHO we are building for. If a microservice doesn't help fulfill any of these use cases, it's redundant.
+>
+> **Key Point**: Note how the **AI Agent** is not just a decorative chat; it's connected to Inventory and Sales use cases. This demonstrates that the AI is OPERATIONAL, not just informative.
+
+---
+> **Un Soñador con poca RAM 🧑~💻**

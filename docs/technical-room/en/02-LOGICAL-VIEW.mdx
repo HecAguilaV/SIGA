@@ -1,0 +1,83 @@
+# 02. Logical View (Hexagonal & Data)
+
+The Logical View focuses on the functional structure of the system: how classes are organized and how data relates to each other. In SIGA, we apply **Hexagonal Architecture (Ports and Adapters)** to shield the business logic from technology changes.
+
+[🇪🇸 Ver versión en Español](../es/02-LOGICAL-VIEW.mdx)
+
+## 1. Hexagonal Architecture (Clean Architecture)
+
+```mermaid
+graph TD
+    subgraph "Infrastructure Layer (Adapters)"
+        WebController[Spring RestController]
+        DBAdapter[Spring Data JPA]
+        ExternalAPI[Feign Client / Retrofit]
+    end
+
+    subgraph "Application Layer (Ports)"
+        InputPort[Service Interfaces]
+        OutputPort[Repository Interfaces]
+    end
+
+    subgraph "Domain Layer (The Heart)"
+        Entities[Business Entities]
+        Values[Value Objects]
+        BusinessLogic[Domain Services]
+    end
+
+    WebController --> InputPort
+    InputPort --> BusinessLogic
+    BusinessLogic --> OutputPort
+    OutputPort --> DBAdapter
+    BusinessLogic --> Entities
+```
+
+## 2. Consolidated Entity-Relationship (ER) Model
+
+SIGA uses a **Multi-tenancy by Schemas** approach. Here is the logical relationship between the 5 main schemas.
+
+```mermaid
+erDiagram
+    %% Auth Schema
+    AUTH_USER ||--o{ USER_LOCAL : "works at"
+    AUTH_USER {
+        string id PK
+        string email
+        string password
+        string role
+    }
+
+    %% Inventory Schema
+    PRODUCT ||--o{ STOCK : "has"
+    LOCAL ||--o{ STOCK : "stores"
+    PRODUCT {
+        string id PK
+        string name
+        string sku
+    }
+
+    %% Sales Schema
+    SALE ||--o{ SALE_DETAIL : "contains"
+    SALE {
+        string id PK
+        datetime date
+        decimal total
+    }
+
+    %% Cross-schema Relations (Logical)
+    AUTH_USER ||--o{ SALE : "registers"
+    PRODUCT ||--o{ SALE_DETAIL : "is sold in"
+```
+
+---
+
+## 🛡️ Architect's Defense (Capstone Tips)
+
+> **Why Hexagonal Architecture?**
+> Tell your professors this: "Hexagonal architecture allows our DOMAIN (the business rules) to be agnostic to the database or framework. If we decide to swap PostgreSQL for MongoDB tomorrow, we only change the Adapter; the heart of SIGA remains untouched."
+>
+> **Why Multi-tenant Schemas?**
+> "We implemented data isolation at the schema level to ensure Company A can never see Company B's data, complying with privacy laws (like Chile's Law 21.719) from the system's design phase."
+
+---
+> **Un Soñador con poca RAM 🧑‍💻**
