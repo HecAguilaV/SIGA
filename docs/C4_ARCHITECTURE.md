@@ -98,10 +98,18 @@ flowchart TB
     MobileApp -->|REST/JSON| Gateway
     
     %% Enrutamiento
-    Gateway -->|Enruta peticiones (lb://)| Microservicios
+    Gateway -->|Enruta peticiones| Auth
+    Gateway -->|Enruta peticiones| Inv
+    Gateway -->|Enruta peticiones| Sales
+    Gateway -->|Enruta peticiones| Bill
+    Gateway -->|Enruta peticiones| Agent
     
     %% Descubrimiento
-    Microservicios -.->|Se registran y descubren| Eureka
+    Auth -.->|Se registra| Eureka
+    Inv -.->|Se registra| Eureka
+    Sales -.->|Se registra| Eureka
+    Bill -.->|Se registra| Eureka
+    Agent -.->|Se registra| Eureka
     Gateway -.->|Consulta ubicaciones| Eureka
     
     %% Persistencia
