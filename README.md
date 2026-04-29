@@ -4,7 +4,7 @@
 
 # SIGA: Sistema Inteligente de Gestión de Activos
 
-*Read this in other languages: [English](README.en.md).*
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](README.en.md)*
 
 Bienvenido a **SIGA**, una solución tecnológica inteligente diseñada específicamente para **Pymes** (desde 1 a N sucursales). El núcleo operativo de SIGA es la **Gestión de Activos (Inventario)** impulsado por **Agentes de Inteligencia Artificial**.
 
