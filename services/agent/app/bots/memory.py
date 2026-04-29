@@ -1,4 +1,4 @@
-from strands_agents.tools import tool
+from strands import tool
 from app.core.database import db
 from sentence_transformers import SentenceTransformer
 import logging
