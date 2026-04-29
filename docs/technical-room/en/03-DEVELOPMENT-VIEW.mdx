@@ -1,57 +1,63 @@
 # 03. Development View (Monorepo & Components)
 
-The Development View describes how the source code is organized and the components that integrate it. SIGA uses a **Monorepo** to facilitate the management of shared dependencies and coordination between teams.
+The Development View describes how the source code is organized. SIGA utilizes a **Monorepo** to ensure the integrity of contracts between frontend and backend.
 
 [🇪🇸 Ver versión en Español](../es/03-DEVELOPMENT-VIEW.mdx)
 
-## 1. Monorepo Structure
+## 1. Monorepo Structure (Single Source of Truth)
 
 ```mermaid
 graph LR
-    Root[SIGA Root] --> Services[services/]
+    Root((SIGA Root)) --> Services[services/]
     Root --> Docs[docs/]
     Root --> OpenSpec[openspec/]
 
-    Services --> Auth[siga-auth]
-    Services --> Inv[siga-inventory]
-    Services --> Sales[siga-sales]
-    Services --> Agent[siga-agent]
-    Services --> Web[webapp-v2]
+    Services --> Backends[Backends]
+    Services --> Frontends[Frontends]
 
-    Docs --> ES[es/]
-    Docs --> EN[en/]
-    Docs --> Room[technical-room/]
+    Backends --> Auth[siga-auth]
+    Backends --> Inv[siga-inventory]
+    Backends --> Sales[siga-sales]
+    Backends --> Agent[siga-agent]
+
+    Frontends --> WebApp[webapp-v2 / Admin]
+    Frontends --> Commercial[web-commercial]
+    Frontends --> Landing[landing-page]
+
+    style Root fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style Frontends fill:rgba(56, 189, 248, 0.1),stroke:#38bdf8
 ```
 
-## 2. Technical Components (The Stack)
+## 2. Technical Components and Layers
 
-| Component | Responsibility | Technology |
+| Component | Role in the Ecosystem | Main Stack |
 | :--- | :--- | :--- |
-| **Backend Core** | Business rules and persistence. | Kotlin / Spring Boot |
-| **AI Agent** | Cognitive orchestrator and RAG. | Python / FastAPI / LangChain |
-| **API Gateway** | Entry point and perimeter security. | Spring Cloud Gateway |
-| **Frontend** | Premium user interface. | SvelteKit / Tailwind CSS |
+| **Backends** | Transactional & AI Microservices. | Kotlin (Spring) / Python (FastAPI) |
+| **Frontends** | Responsive User Interfaces. | SvelteKit / Tailwind CSS |
+| **Common** | Shared Contracts and Utilities. | Shared JARs / TS Definitions |
 
-## 3. Continuous Integration Workflow (CI/CD)
+## 3. Integration Workflow (CI/CD)
 
 ```mermaid
 flowchart LR
-    Push[Git Push] --> Lint[Lint & Style]
-    Lint --> Test[Unit & Integration Tests]
-    Test --> Build[Docker Build]
-    Build --> PushHub[Push to Docker Hub]
-    PushHub --> Deploy[Auto-deploy / Manual Staging]
+    Push[Git Push] --> Lint[Code Quality]
+    Lint --> Test[Unit Testing]
+    Test --> Build[Docker Multi-arch]
+    Build --> Deploy[Staging / Prod]
+
+    style Push fill:#0f172a,stroke:#38bdf8,color:#fff
+    style Deploy fill:#0369a1,stroke:#38bdf8,color:#fff
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why a Monorepo?**
-> "The monorepo allows us to have a 'Single Source of Truth'. If I change a contract in `siga-common`, I can immediately see how it affects all microservices without having to manage complex external library versioning."
+> **Why do we include Marketing Webs in the Repo?**
+> "A SaaS product like SIGA is not just the Dashboard. By including the **Commercial Web** and the **Landing** in the Monorepo, we ensure that any change in branding or pricing plans is reflected atomically across the ecosystem, maintaining visual and business coherence."
 >
-> **Why Polyglot Microservices?**
-> "We use the right tool for the right job: **Kotlin** for the transactional robustness of the backend and **Python** for its unmatched ecosystem in Artificial Intelligence. This is possible because we communicate via standardized REST/JSON."
+> **Is the WebApp a microservice?**
+> "Technically, it is a frontend artifact, but in our architecture we treat it with the same rigor as a microservice: it has its own Dockerfile, its own deployment pipeline, and it consumes versioned contracts from the backend."
 
 ---
 > **Un Soñador con poca RAM 🧑‍💻**

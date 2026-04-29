@@ -1,57 +1,63 @@
 # 03. Vista de Desarrollo (Monorepo & Components)
 
-La Vista de Desarrollo describe cómo se organiza el código fuente y los componentes que lo integran. SIGA utiliza un **Monorepo** para facilitar la gestión de dependencias compartidas y la coordinación entre equipos.
+La Vista de Desarrollo describe cómo se organiza el código fuente. SIGA utiliza un **Monorepo** para garantizar la integridad de los contratos entre el front y el back.
 
 [🇺🇸 View English Version](../en/03-DEVELOPMENT-VIEW.mdx)
 
-## 1. Estructura del Monorepo
+## 1. Estructura del Monorepo (Single Source of Truth)
 
 ```mermaid
 graph LR
-    Root[SIGA Root] --> Services[services/]
+    Root((SIGA Root)) --> Services[services/]
     Root --> Docs[docs/]
     Root --> OpenSpec[openspec/]
 
-    Services --> Auth[siga-auth]
-    Services --> Inv[siga-inventory]
-    Services --> Sales[siga-sales]
-    Services --> Agent[siga-agent]
-    Services --> Web[webapp-v2]
+    Services --> Backends[Backends]
+    Services --> Frontends[Frontends]
 
-    Docs --> ES[es/]
-    Docs --> EN[en/]
-    Docs --> Room[technical-room/]
+    Backends --> Auth[siga-auth]
+    Backends --> Inv[siga-inventory]
+    Backends --> Sales[siga-sales]
+    Backends --> Agent[siga-agent]
+
+    Frontends --> WebApp[webapp-v2 / Admin]
+    Frontends --> Commercial[web-commercial]
+    Frontends --> Landing[landing-page]
+
+    style Root fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style Frontends fill:rgba(56, 189, 248, 0.1),stroke:#38bdf8
 ```
 
-## 2. Componentes Técnicos (The Stack)
+## 2. Componentes y Capas Técnicas
 
-| Componente | Responsabilidad | Tecnología |
+| Componente | Rol en el Ecosistema | Stack Principal |
 | :--- | :--- | :--- |
-| **Backend Core** | Reglas de negocio y persistencia. | Kotlin / Spring Boot |
-| **AI Agent** | Orquestador cognitivo y RAG. | Python / FastAPI / LangChain |
-| **API Gateway** | Punto de entrada y seguridad perimetral. | Spring Cloud Gateway |
-| **Frontend** | Interfaz de usuario premium. | SvelteKit / Tailwind CSS |
+| **Backends** | Microservicios transaccionales e IA. | Kotlin (Spring) / Python (FastAPI) |
+| **Frontends** | Interfaces de usuario responsivas. | SvelteKit / Tailwind CSS |
+| **Common** | Contratos y utilidades compartidas. | JARs compartidos / TS Definitions |
 
-## 3. Workflow de Integración Continua (CI/CD)
+## 3. Workflow de Integración (CI/CD)
 
 ```mermaid
 flowchart LR
-    Push[Git Push] --> Lint[Lint & Style]
-    Lint --> Test[Unit & Integration Tests]
-    Test --> Build[Docker Build]
-    Build --> PushHub[Push to Docker Hub]
-    PushHub --> Deploy[Auto-deploy / Manual Staging]
+    Push[Git Push] --> Lint[Calidad Código]
+    Lint --> Test[Tests Unitarios]
+    Test --> Build[Docker Multi-arch]
+    Build --> Deploy[Staging / Prod]
+
+    style Push fill:#0f172a,stroke:#38bdf8,color:#fff
+    style Deploy fill:#0369a1,stroke:#38bdf8,color:#fff
 ```
 
 ---
 
 ## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
 
-> **¿Por qué un Monorepo?**
-> "El monorepo nos permite tener una 'Single Source of Truth'. Si cambio un contrato en `siga-common`, puedo ver inmediatamente cómo afecta a todos los microservicios sin tener que gestionar versiones de librerías externas complejas".
+> **¿Por qué incluimos las Webs de Marketing en el Repo?**
+> "Un producto SaaS como SIGA no es solo el Dashboard. Al incluir la **Web Comercial** y la **Landing** en el Monorepo, aseguramos que cualquier cambio en la marca o en los planes de precios se refleje de forma atómica en todo el ecosistema, manteniendo la coherencia visual y de negocio".
 >
-> **¿Por qué Microservicios Políglotas?**
-> "Usamos el lenguaje adecuado para cada tarea: **Kotlin** para la robustez transaccional del backend y **Python** por su ecosistema inigualable en Inteligencia Artificial. Esto es posible gracias a que nos comunicamos vía REST/JSON estandarizado".
+> **¿Es la WebApp un microservicio?**
+> "Técnicamente, es un artefacto de frontend, pero en nuestra arquitectura la tratamos con la misma rigurosidad que un microservicio: tiene su propio Dockerfile, su propio pipeline de despliegue y consume contratos versionados del backend".
 
 ---
 > **Un Soñador con poca RAM 🧑‍💻**

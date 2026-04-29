@@ -1,60 +1,67 @@
 # 04. Vista de Proceso (Flow & Transactions)
 
-La Vista de Proceso se enfoca en el comportamiento dinámico del sistema. Aquí explicamos cómo interactúan los microservicios en tiempo real para completar una transacción y cómo garantizamos la consistencia de los datos.
+La Vista de Proceso describe cómo fluye la información entre los microservicios para completar una transacción de negocio.
 
 [🇺🇸 View English Version](../en/04-PROCESS-VIEW.mdx)
 
-## 1. Flujo de Venta y Descuento de Stock
+## 1. Flujo de Venta y Sincronización de Inventario
 
-Este diagrama de secuencia muestra la interacción entre el Frontend, el Gateway y los servicios de Ventas e Inventario.
+Este diagrama detalla la interacción desde que el cliente confirma la compra hasta que el stock se actualiza de forma segura.
 
 ```mermaid
 sequenceDiagram
     participant Web as WebApp (Svelte)
     participant GT as API Gateway
-    participant Sales as Siga-Sales
+    participant Ventas as Siga-Sales
     participant Inv as Siga-Inventory
 
-    Web->>GT: POST /sales/checkout (JWT)
-    GT->>Sales: Forward Request
-    Sales->>Sales: Validar Carrito
-    Sales->>Inv: Reservar Stock (id, qty)
+    Web->>GT: POST /ventas/pago (JWT)
+    GT->>Ventas: Redirigir Solicitud
+    Ventas->>Ventas: Validar Carrito y Totales
+    Ventas->>Inv: Solicitar Reserva de Stock
+    
     alt Stock Disponible
-        Inv-->>Sales: Reserva OK
-        Sales->>Sales: Registrar Venta
-        Sales-->>Web: 201 Created (Boleta)
-    else Sin Stock
-        Inv-->>Sales: Error: Insuficiente
-        Sales-->>Web: 400 Bad Request
+        Inv-->>Ventas: Reserva Exitosa
+        Ventas->>Ventas: Generar Boleta / Factura
+        Ventas->>Inv: Confirmar Despacho Stock
+        Ventas-->>Web: 201 Creado (Éxito)
+    else Stock Insuficiente
+        Inv-->>Ventas: Error de Disponibilidad
+        Ventas-->>Web: 400 Error (Sin Stock)
     end
 ```
 
 ## 2. Consistencia Distribuida (Patrón SAGA)
 
-Para operaciones complejas que involucran múltiples servicios (como una suscripción comercial), utilizamos una **SAGA basada en Orquestación** para manejar fallos y realizar compensaciones.
+SIGA utiliza una **SAGA basada en Orquestación** para procesos complejos que abarcan varios servicios.
 
 ```mermaid
 graph TD
-    Start((Inicio)) --> CheckAuth[Validar Usuario]
-    CheckAuth --> CreateSub[Crear Suscripción]
-    CreateSub --> Pay[Procesar Pago]
+    Inicio((Inicio Transacción)) --> Validar[Validar Identidad]
+    Validar --> Suscribir[Crear Suscripción]
+    Suscribir --> Cobrar[Procesar Cobro Bancario]
     
-    Pay -- Éxito --> End((Fin: Activo))
+    Cobrar -- Éxito --> Activar[Activar Servicio]
+    Activar --> Fin((Fin: Éxito))
     
-    Pay -- Fallo --> CancelSub[Compensación: Cancelar Sub]
-    CancelSub --> Refund[Notificar Usuario]
-    Refund --> Fail((Fin: Error))
+    Cobrar -- Fallo --> Compensar[Compensación: Cancelar Suscripción]
+    Compensar --> Notificar[Notificar Error Usuario]
+    Notificar --> Error((Fin: Fallo))
+
+    style Inicio fill:#0f172a,stroke:#38bdf8,color:#fff
+    style Fin fill:#0369a1,stroke:#38bdf8,color:#fff
+    style Error fill:#991b1b,stroke:#f87171,color:#fff
 ```
 
 ---
 
 ## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
 
-> **¿Por qué usamos el Patrón SAGA?**
-> "En una arquitectura de microservicios, no podemos usar transacciones ACID tradicionales de base de datos entre servicios distintos. El patrón SAGA nos permite garantizar la 'consistencia eventual': si un paso de la cadena falla, ejecutamos acciones de compensación para dejar el sistema en un estado consistente".
+> **¿Por qué evitamos el Spanglish en diagramas?**
+> "La documentación técnica de alto nivel debe ser coherente. Usar términos en un solo idioma (exceptuando estándares industriales como 'Gateway' o 'SAGA') facilita la comprensión para equipos internacionales y demuestra una disciplina editorial que es fundamental en proyectos de gran escala".
 >
-> **¿Por qué Orquestación sobre Coreografía?**
-> "Elegimos orquestación para tener un control centralizado del flujo de negocio. Es más fácil de debuggear y visualizar que la coreografía basada puramente en eventos, lo cual es vital para la trazabilidad financiera de SIGA".
+> **¿Por qué Orquestación en la SAGA?**
+> "Elegimos orquestación (un director central) en lugar de coreografía (eventos sueltos) porque en un ERP la trazabilidad es lo más importante. Necesitamos saber exactamente en qué punto falló un cobro y asegurarnos de que la acción de compensación se ejecutó correctamente".
 
 ---
-> **Un Soñador con poca RAM 🧑‍💻**
+> **Un Soñador con poca RAM 🧑~💻**
