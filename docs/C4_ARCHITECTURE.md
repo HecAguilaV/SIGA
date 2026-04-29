@@ -113,11 +113,11 @@ flowchart TB
     Gateway -.->|Consulta ubicaciones| Eureka
     
     %% Persistencia
-    Auth -->|Lee/Escribe (esquema: auth)| DB
-    Inv -->|Lee/Escribe (esquema: inventory)| DB
-    Sales -->|Lee/Escribe (esquema: sales)| DB
-    Bill -->|Lee/Escribe (esquema: commercial)| DB
-    Agent -->|Búsqueda Vectorial (esquema: agent)| DB
+    Auth -->|Lee/Escribe esquema: auth| DB
+    Inv -->|Lee/Escribe esquema: inventory| DB
+    Sales -->|Lee/Escribe esquema: sales| DB
+    Bill -->|Lee/Escribe esquema: commercial| DB
+    Agent -->|Búsqueda Vectorial esquema: agent| DB
 ```
 
 ### Decisiones Técnicas Clave (L2)

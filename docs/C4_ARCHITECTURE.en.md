@@ -113,11 +113,11 @@ flowchart TB
     Gateway -.->|Queries locations| Eureka
     
     %% Persistence
-    Auth -->|Reads/Writes (schema: auth)| DB
-    Inv -->|Reads/Writes (schema: inventory)| DB
-    Sales -->|Reads/Writes (schema: sales)| DB
-    Bill -->|Reads/Writes (schema: commercial)| DB
-    Agent -->|Vector Search (schema: agent)| DB
+    Auth -->|Reads/Writes schema: auth| DB
+    Inv -->|Reads/Writes schema: inventory| DB
+    Sales -->|Reads/Writes schema: sales| DB
+    Bill -->|Reads/Writes schema: commercial| DB
+    Agent -->|Vector Search schema: agent| DB
 ```
 
 ### Key Technical Decisions (L2)
