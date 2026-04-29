@@ -1,0 +1,83 @@
+# 02. Vista Lógica (Hexagonal & Data)
+
+La Vista Lógica se centra en la estructura funcional del sistema: cómo se organizan las clases y cómo se relacionan los datos entre sí. En SIGA, aplicamos **Arquitectura Hexagonal (Puertos y Adaptadores)** para blindar el negocio de la tecnología.
+
+[🇺🇸 View English Version](../en/02-LOGICAL-VIEW.mdx)
+
+## 1. Arquitectura Hexagonal (Clean Architecture)
+
+```mermaid
+graph TD
+    subgraph "Infrastructure Layer (Adapters)"
+        WebController[Spring RestController]
+        DBAdapter[Spring Data JPA]
+        ExternalAPI[Feign Client / Retrofit]
+    end
+
+    subgraph "Application Layer (Ports)"
+        InputPort[Service Interfaces]
+        OutputPort[Repository Interfaces]
+    end
+
+    subgraph "Domain Layer (The Heart)"
+        Entities[Business Entities]
+        Values[Value Objects]
+        BusinessLogic[Domain Services]
+    end
+
+    WebController --> InputPort
+    InputPort --> BusinessLogic
+    BusinessLogic --> OutputPort
+    OutputPort --> DBAdapter
+    BusinessLogic --> Entities
+```
+
+## 2. Modelo Entidad-Relación (ER) Consolidado
+
+SIGA utiliza un enfoque de **Multi-tenancy por Esquemas**. Aquí se muestra la relación lógica entre los 5 esquemas principales.
+
+```mermaid
+erDiagram
+    %% Esquema Auth
+    AUTH_USER ||--o{ USER_LOCAL : "trabaja en"
+    AUTH_USER {
+        string id PK
+        string email
+        string password
+        string role
+    }
+
+    %% Esquema Inventario
+    PRODUCT ||--o{ STOCK : "tiene"
+    LOCAL ||--o{ STOCK : "almacena"
+    PRODUCT {
+        string id PK
+        string name
+        string sku
+    }
+
+    %% Esquema Ventas
+    SALE ||--o{ SALE_DETAIL : "contiene"
+    SALE {
+        string id PK
+        datetime date
+        decimal total
+    }
+
+    %% Relaciones cruzadas (Lógicas)
+    AUTH_USER ||--o{ SALE : "registra"
+    PRODUCT ||--o{ SALE_DETAIL : "se vende en"
+```
+
+---
+
+## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
+
+> **¿Por qué Arquitectura Hexagonal?**
+> Dile esto a tus profes: "La arquitectura hexagonal nos permite que el DOMINIO (las reglas de negocio) sea agnóstico a la base de datos o al framework. Si mañana decidimos cambiar PostgreSQL por MongoDB, solo cambiamos el Adaptador, el corazón de SIGA no se toca".
+>
+> **¿Por qué Schemas Multi-tenant?**
+> "Implementamos aislamiento de datos a nivel de esquema para garantizar que la Empresa A nunca pueda ver los datos de la Empresa B, cumpliendo con leyes de privacidad (como la Ley 21.719 de Chile) desde el diseño mismo de la base de datos".
+
+---
+> **Un Soñador con poca RAM 🧑‍💻**

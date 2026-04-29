@@ -1,0 +1,54 @@
+# 01. Vista de Escenarios (The "+1" View)
+
+Esta vista es el punto de partida del Modelo 4+1. Aquí definimos los casos de uso que justifican la existencia de toda la arquitectura técnica. Es el puente entre el mundo del negocio y el código.
+
+[🇺🇸 View English Version](../en/01-SCENARIOS.mdx)
+
+## Diagrama de Casos de Uso (Core SIGA)
+
+```mermaid
+useCaseDiagram
+    actor "Administrador / Dueño" as Admin
+    actor "Operador de Caja" as Op
+    actor "Agente de IA" as AI
+
+    package "Módulo de Gestión" {
+        usecase "Administrar Inventario Multi-sucursal" as UC1
+        usecase "Analizar Reportes de Ventas" as UC2
+        usecase "Configurar Permisos de Empleados" as UC3
+    }
+
+    package "Módulo POS (Punto de Venta)" {
+        usecase "Registrar Venta (Stock automático)" as UC4
+        usecase "Apertura/Cierre de Turno" as UC5
+    }
+
+    package "Módulo A2UI (Agentic UI)" {
+        usecase "Ejecutar Comandos por Voz/Chat" as AI1
+        usecase "Búsqueda Semántica de Productos" as AI2
+    }
+
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    
+    Op --> UC4
+    Op --> UC5
+    
+    AI --> AI1
+    AI --> AI2
+    AI --> UC1 : "Optimiza"
+    AI --> UC4 : "Valida"
+```
+
+---
+
+## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
+
+> **¿Por qué usamos esta vista?**
+> En un sistema complejo de microservicios, es fácil perderse en los puertos y las bases de datos. La Vista de Escenarios nos obliga a recordar para QUIÉN construimos. Si un microservicio no ayuda a cumplir ninguno de estos casos de uso, sobra.
+>
+> **Punto Clave**: Nota cómo el **Agente de IA** no es solo un chat decorativo; está conectado a los casos de uso de Inventario y Ventas. Esto demuestra que la IA es OPERATIVA, no solo informativa.
+
+---
+> **Un Soñador con poca RAM 🧑‍💻**
