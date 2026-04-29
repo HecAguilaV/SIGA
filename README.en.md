@@ -13,7 +13,8 @@ The project is structured as a **Multi-tenant Microservices Architecture within 
 ## Educational Documentation
 
 Given the rapid technical advancement of the project with the help of AI agents, we have compiled an academic document detailing the structure, flow, and architecture design.
-> **[Read the Architecture Teacher Manual (Spanish)](docs/MANUAL_DOCENTE.md)**
+> **[Read the Learning Journal (Spanish)](docs/es/learning/LEARNING.md)**
+> **[View C4 Architecture Model (Level 1 & 2)](docs/en/architecture/C4_MODEL.md)**
 
 ## System Architecture (V2)
 
@@ -58,4 +59,4 @@ This project applies strict engineering regulations (Spec-Driven Development):
 - **Security & Privacy**: Adoption of privacy standards required by **Chilean Law 21.719** through the cross-cutting auditing module (`siga-common`).
 
 ---
-> *A Dreamer with little RAM & Misael*
+> A Dreamer with little RAM 🧑‍💻
