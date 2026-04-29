@@ -25,7 +25,7 @@ SIGA está construido sobre un ecosistema de microservicios robusto (Java/Kotlin
 - **Auth Service (`siga-auth`)**: Emisión y validación de tokens corporativos JWT.
 - **Inventory Service (`siga-inventory`)**: El núcleo del sistema. Gestión de productos, categorías y stock por tienda.
 - **Sales Service (`siga-sales`)**: Módulo POS (Punto de Venta) diseñado para la deducción precisa de stock por sucursal.
-- **AI Agent (`siga-agent`)**: Motor de inteligencia operativa. Asiste a los usuarios con analíticas y automatizaciones.
+- **AI Agent (`siga-agent`)**: Motor de inteligencia operativa impulsado por **LangChain/Strands** y memoria vectorial en **PGVector**. Procesa analíticas y automatizaciones para cada Tenant.
 - **Billing Service (`siga-billing`)**: Gestión de transacciones comerciales y facturas.
 
 ### Interfaces de Usuario
@@ -54,12 +54,24 @@ npm run dev
 Este proyecto aplica estrictas normas de ingeniería (Spec-Driven Development):
 
 - **Trazabilidad SDD**: Todos los cambios arquitectónicos deben originarse a partir de una `propuesta` aprobada y registrada en el sistema de memoria *Engram*.
-- **Commits en Español**: Todos los mensajes de commit en el repositorio de Git deben estar **ESTRICTAMENTE en Español** (siguiendo el formato de Conventional Commits, ej: `feat(webapp): rediseño premium v2 y mejoras de accesibilidad`).
+- **Evolución de Commits (Estándar Bilingüe)**: El proyecto inició con una política de commits estrictamente en español. Tras recibir feedback de desarrolladores Senior y alinearse con estándares internacionales de ingeniería, se ha evolucionado hacia un modelo de **Commits Bilingües**. Esto garantiza legibilidad local y compatibilidad con equipos globales.
 - **Seguridad y Privacidad**: Adopción de normas de privacidad requeridas por la **Ley Chilena 21.719** a través del módulo transversal de auditoría (`siga-common`).
 
 ## Problemas Conocidos (En Desarrollo)
 
-- **AI Agent (`siga-agent`)**: El servicio se encuentra actualmente en mantenimiento debido a una incompatibilidad de importación en la librería `strands-agents`. Se resolverá en la próxima iteración.
+- **Sincronización Eureka**: Tras el primer arranque, los servicios pueden tardar hasta 60 segundos en aparecer en el Gateway mientras se completan los registros en Eureka.
+
+## Requisitos y Acceso Remoto
+
+### Requisitos de Hardware
+Para un despliegue fluido del ecosistema completo (incluyendo los modelos de IA local):
+- **RAM Mínima**: 12GB (asignar al menos 8GB a Docker Desktop/Engine).
+- **Almacenamiento**: 15GB de espacio libre (debido al peso de las imágenes de IA).
+
+### Acceso Remoto y SSH
+SIGA está preparado para entornos de desarrollo remoto distribuido:
+- **SSH & Tailscale**: Se recomienda el uso de **Tailscale** para establecer un túnel seguro punto a punto entre la máquina de desarrollo y el servidor de despliegue.
+- **HTTPS Público (Tailscale Funnel)**: Para compartir el sistema con terceros sin abrir puertos, ejecute: `tailscale funnel 8080`. Esto generará una URL pública segura con certificado SSL automático.
 
 ---
 > *Un soñador con poca RAM & Misael*
