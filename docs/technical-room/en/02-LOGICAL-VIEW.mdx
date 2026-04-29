@@ -1,83 +1,92 @@
 # 02. Logical View (Hexagonal & Data)
 
-The Logical View focuses on the functional structure of the system: how classes are organized and how data relates to each other. In SIGA, we apply **Hexagonal Architecture (Ports and Adapters)** to shield the business logic from technology changes.
+The Logical View focuses on the system's functional structure. In SIGA, we apply **Hexagonal Architecture (Ports and Adapters)** to decouple business rules from technical details.
 
 [🇪🇸 Ver versión en Español](../es/02-LOGICAL-VIEW.mdx)
 
-## 1. Hexagonal Architecture (Clean Architecture)
+## 1. Detailed Hexagonal Architecture
 
 ```mermaid
 graph TD
-    subgraph "Infrastructure Layer (Adapters)"
-        WebController[Spring RestController]
-        DBAdapter[Spring Data JPA]
-        ExternalAPI[Feign Client / Retrofit]
+    subgraph "Inbound Adapters"
+        Web[RestController / API]
+        EventIn[Event Listener / Kafka]
     end
 
-    subgraph "Application Layer (Ports)"
-        InputPort[InventoryService / SalesService]
-        OutputPort[InventoryRepository / SalesRepository]
+    subgraph "Input Port"
+        IService[InventoryService Interface]
     end
 
-    subgraph "Domain Layer (The Heart)"
-        Entities[Product, Sale, Stock, User]
-        Values[Money, SKU, Quantity]
-        BusinessLogic[PriceCalculator, StockValidator]
+    subgraph "Domain (Core)"
+        Logic[Business Logic / Entities]
     end
 
-    WebController --> InputPort
-    InputPort --> BusinessLogic
-    BusinessLogic --> OutputPort
-    OutputPort --> DBAdapter
-    BusinessLogic --> Entities
+    subgraph "Output Port"
+        IRepo[InventoryRepository Interface]
+        IExt[ExternalClient Interface]
+    end
+
+    subgraph "Outbound Adapters"
+        DB[Postgres Adapter]
+        Feign[FeignClient / Other Services]
+    end
+
+    Web --> IService
+    IService --> Logic
+    Logic --> IRepo
+    Logic --> IExt
+    IRepo --> DB
+    IExt --> Feign
+
+    style Logic fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style Web fill:#0f172a,stroke:#38bdf8,color:#fff
+    style DB fill:#0f172a,stroke:#38bdf8,color:#fff
 ```
 
-## 2. Consolidated Entity-Relationship (ER) Model
+## 2. Domain Class Diagram (Moderate Level)
 
-SIGA uses a **Multi-tenancy by Schemas** approach. Here is the logical relationship between the 5 main schemas.
+This diagram shows the key relationships between the system's main entities.
 
 ```mermaid
-erDiagram
-    %% Auth Schema
-    AUTH_USER ||--o{ USER_LOCAL : "works at"
-    AUTH_USER {
-        string id PK
-        string email
-        string password
-        string role
+classDiagram
+    class Product {
+        +UUID id
+        +String sku
+        +String name
+        +Decimal basePrice
+        +updateStock(qty)
     }
-
-    %% Inventory Schema
-    PRODUCT ||--o{ STOCK : "has"
-    LOCAL ||--o{ STOCK : "stores"
-    PRODUCT {
-        string id PK
-        string name
-        string sku
+    class Sale {
+        +UUID id
+        +DateTime createdAt
+        +Decimal total
+        +calculateTax()
     }
-
-    %% Sales Schema
-    SALE ||--o{ SALE_DETAIL : "contains"
-    SALE {
-        string id PK
-        datetime date
-        decimal total
+    class Stock {
+        +UUID id
+        +Integer quantity
+        +UUID branchId
     }
-
-    %% Cross-schema Relations (Logical)
-    AUTH_USER ||--o{ SALE : "registers"
-    PRODUCT ||--o{ SALE_DETAIL : "is sold in"
+    class User {
+        +UUID id
+        +String email
+        +Role role
+    }
+    
+    Product "1" -- "0..*" Stock : tracks
+    Sale "1" -- "1..*" Product : contains
+    User "1" -- "0..*" Sale : registers
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why Hexagonal Architecture?**
-> Tell your professors this: "Hexagonal architecture allows our DOMAIN (the business rules) to be agnostic to the database or framework. If we decide to swap PostgreSQL for MongoDB tomorrow, we only change the Adapter; the heart of SIGA remains untouched."
+> **RestController vs FeignClient?**
+> "They should not be confused. The **RestController** is an **INBOUND** adapter; it is the door we open for the world to speak to us. The **FeignClient** is an **OUTBOUND** adapter; it is the telephone we use to speak to other microservices."
 >
-> **Why Multi-tenant Schemas?**
-> "We implemented data isolation at the schema level to ensure Company A can never see Company B's data, complying with privacy laws (like Chile's Law 21.719) from the system's design phase."
+> **Why Domain Class Diagram?**
+> "Because the Domain is the only thing that should be stable over time. Databases change, frameworks die, but the relationship between a 'Sale' and a 'Product' is a business rule that remains, and that is what we capture in this diagram."
 
 ---
-> **Un Soñador con poca RAM 🧑‍💻**
+> **Un Soñador con poca RAM 🧑~💻**

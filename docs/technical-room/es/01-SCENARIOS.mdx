@@ -1,6 +1,6 @@
 # 01. Vista de Escenarios (The "+1" View)
 
-Esta vista es el punto de partida del Modelo 4+1. Aquí definimos los casos de uso que justifican la existencia de toda la arquitectura técnica. Es el puente entre el mundo del negocio y el código.
+Esta vista define los casos de uso críticos que validan la arquitectura técnica de SIGA. Es el punto de unión entre el negocio y la tecnología.
 
 [🇺🇸 View English Version](../en/01-SCENARIOS.mdx)
 
@@ -11,17 +11,24 @@ graph TD
     subgraph Actores
         Admin[Administrador / Dueño]
         Op[Operador de Caja]
+        Inv[Encargado de Inventario]
         AI[Agente de IA]
     end
 
-    subgraph "Casos de Uso"
+    subgraph "Gestión de Negocio"
         UC1(Administrar Inventario)
-        UC2(Analizar Reportes)
-        UC3(Configurar Permisos)
-        UC4(Registrar Venta)
-        UC5(Apertura/Cierre Turno)
-        AI1(Comandos de Voz/Chat)
-        AI2(Búsqueda Semántica)
+        UC2(Analizar Reportes de Ventas)
+        UC3(Configurar Permisos de Empleados)
+    end
+
+    subgraph "Operación POS"
+        UC4(Registrar Venta / Boleta)
+        UC5(Apertura y Cierre de Turno)
+    end
+
+    subgraph "A2UI (Agentic UI)"
+        AI1(Comandos de Voz y Chat)
+        AI2(Búsqueda Semántica de Productos)
     end
 
     Admin --> UC1
@@ -31,24 +38,31 @@ graph TD
     Op --> UC4
     Op --> UC5
     
+    Inv --> UC1
+    
     AI --> AI1
     AI --> AI2
     AI -.-> UC1
     AI -.-> UC4
 
-    style AI fill:#38bdf8,stroke:#fff,color:#000
-    style AI1 fill:#1e293b,stroke:#38bdf8
-    style AI2 fill:#1e293b,stroke:#38bdf8
+    %% Estilos de Accesibilidad (Contraste Alto)
+    style Admin fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Op fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Inv fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style AI fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style AI1 fill:#1e293b,stroke:#7dd3fc,color:#fff
+    style AI2 fill:#1e293b,stroke:#7dd3fc,color:#fff
 ```
 
 ---
 
 ## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
 
-> **¿Por qué usamos esta vista?**
-> En un sistema complejo de microservicios, es fácil perderse en los puertos y las bases de datos. La Vista de Escenarios nos obliga a recordar para QUIÉN construimos. Si un microservicio no ayuda a cumplir ninguno de estos casos de uso, sobra.
+> **¿Por qué un nuevo actor para Inventario?**
+> "En un sistema de grado empresarial, la separación de funciones (Separation of Duties) es vital. Mientras el Administrador tiene una visión estratégica y de permisos, el Encargado de Inventario tiene un acceso granular y operativo a la cadena de suministro, reduciendo el riesgo de fraude o errores administrativos".
 >
-> **Punto Clave**: Nota cómo el **Agente de IA** no es solo un chat decorativo; está conectado a los casos de uso de Inventario y Ventas. Esto demuestra que la IA es OPERATIVA, no solo informativa.
+> **¿Cómo maneja la IA los permisos?**
+> "Es fundamental entender que el **Agente de IA no es un actor autónomo con permisos infinitos**. Funciona bajo un patrón de **Proxy/Impersonation**: la IA hereda exactamente los mismos permisos (Scopes) del usuario que la invoca. Si el Operador de Caja no puede borrar una venta, la IA tampoco podrá hacerlo, garantizando la integridad de las reglas de negocio".
 
 ---
 > **Un Soñador con poca RAM 🧑‍💻**

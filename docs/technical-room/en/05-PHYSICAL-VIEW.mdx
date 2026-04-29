@@ -1,62 +1,69 @@
 # 05. Physical View (Deployment & Scaling)
 
-The Physical View describes the system's deployment topology: where the code runs, how containers communicate, and how we plan to scale to support **Big Data**.
+The Physical View details how components are deployed and how traffic flows from the outside world into our private microservices network.
 
 [🇪🇸 Ver versión en Español](../es/05-PHYSICAL-VIEW.mdx)
 
-## 1. Deployment Topology (Docker & Network)
+## 1. Network Topology and Request Flow
 
-SIGA operates in a virtualized network where services are discovered dynamically.
+This diagram shows how a client (Postman or Browser) interacts with the system through the API Gateway.
 
 ```mermaid
 graph BT
-    subgraph Cloud [External / Internet]
-        User((User))
-        Funnel[Tailscale Funnel]
+    subgraph Exterior [Outside World / Internet]
+        Client[Postman / Browser]
     end
 
-    subgraph InternalNet [Docker Network]
-        GT[API Gateway:8080]
-        Eureka[Eureka Server:8761]
-        Auth[siga-auth]
-        Inv[siga-inventory]
-        Sales[siga-sales]
-        Agent[siga-agent:8000]
-        Postgres[(PostgreSQL)]
+    subgraph "Docker Network (Private)"
+        GT[API Gateway :8080]
+        Eureka[Eureka Registry :8761]
+        
+        subgraph Cluster [Transactional Microservices]
+            Auth[siga-auth :8081]
+            Inv[siga-inventory :8082]
+            Sales[siga-sales :8083]
+            Agent[siga-agent :8000]
+        end
+        
+        DB[(PostgreSQL :5432)]
     end
 
-    User --> Funnel
-    Funnel --> GT
-    GT --> Eureka
-    GT --> Auth
-    GT --> Inv
-    GT --> Sales
-    GT --> Agent
-    Auth & Inv & Sales & Agent --> Postgres
+    Client -- HTTP Request --> GT
+    GT -- 1. Query Registry --> Eureka
+    Eureka -- 2. Return Internal IP --> GT
+    GT -- 3. Forward to Service --> Cluster
+    Cluster --> DB
+
+    style Client fill:#0f172a,stroke:#38bdf8,color:#fff
+    style GT fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style Eureka fill:#1e293b,stroke:#7dd3fc,color:#fff
 ```
 
-## 2. Scaling to Big Data (Lambda Architecture)
+## 2. Scaling Towards Big Data (Lambda Architecture)
 
-To process large volumes of historical data (advanced analytics), SIGA is prepared to implement a Lambda architecture.
+SIGA is designed to scale from a pure transactional system to a massive analytics engine.
 
 ```mermaid
 graph LR
-    Source[Microservices] --> Speed[Speed Layer: Redis/Kafka]
-    Source --> Batch[Batch Layer: Data Lake / S3]
+    Source[Microservices] --> Kafka[Event Bus: Kafka]
+    Kafka --> Speed[Speed Layer: Redis/Spark Streaming]
+    Kafka --> Batch[Batch Layer: S3 / Hadoop]
     
-    Speed --> Serving[Serving Layer: Real-time Dashboards]
-    Batch --> Serving
+    Speed --> UI[Real-time Dashboards]
+    Batch --> UI
+
+    style Kafka fill:#0369a1,stroke:#38bdf8,color:#fff
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why Service Discovery with Eureka?**
-> "In an elastic microservices architecture, container IPs change constantly. Eureka allows services to find each other by name (`siga-inventory`) instead of IP, making the system resilient and easy to scale horizontally."
+> **Why is the Gateway the only entry point?**
+> "For security and simplicity. The **API Gateway** acts as a 'Bouncer': it centralizes JWT authentication and hides the complexity of the internal network. Postman never talks to the Inventory microservice directly; it always goes through the Gateway's port 8080."
 >
-> **How does SIGA scale to Big Data?**
-> "We designed SIGA to be 'Data-Ready'. The current schema separation facilitates migration to a Data Lake. The Lambda architecture would allow us to provide immediate answers (Speed Layer) while processing deep historical trends (Batch Layer) without degrading POS performance."
+> **What is the real role of Eureka?**
+> "Eureka is not an orchestrator; it's a **Directory**. When we scale a service (e.g., we have 3 instances of `siga-sales`), Eureka knows the IPs of all three. The Gateway queries Eureka to know where to send the traffic, allowing the system to grow without manual IP configuration."
 
 ---
 > **Un Soñador con poca RAM 🧑‍💻**

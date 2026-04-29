@@ -1,6 +1,6 @@
 # 01. Scenarios View (The "+1" View)
 
-This view is the starting point of the 4+1 Model. Here we define the use cases that justify the existence of the entire technical architecture. It serves as the bridge between the business world and the code.
+This view defines the critical use cases that validate SIGA's technical architecture. It serves as the bridge between business requirements and technology.
 
 [🇪🇸 Ver versión en Español](../es/01-SCENARIOS.mdx)
 
@@ -11,17 +11,24 @@ graph TD
     subgraph Actors
         Admin[Administrator / Owner]
         Op[POS Operator]
+        Inv[Inventory Manager]
         AI[AI Agent]
     end
 
-    subgraph "Use Cases"
+    subgraph "Business Management"
         UC1(Manage Inventory)
-        UC2(Analyze Reports)
-        UC3(Configure Permissions)
-        UC4(Register Sale)
-        UC5(Shift Opening/Closing)
-        AI1(Voice/Chat Commands)
-        AI2(Semantic Search)
+        UC2(Analyze Sales Reports)
+        UC3(Configure Employee Permissions)
+    end
+
+    subgraph "POS Operation"
+        UC4(Register Sale / Invoice)
+        UC5(Shift Opening & Closing)
+    end
+
+    subgraph "A2UI (Agentic UI)"
+        AI1(Voice & Chat Commands)
+        AI2(Semantic Product Search)
     end
 
     Admin --> UC1
@@ -31,24 +38,31 @@ graph TD
     Op --> UC4
     Op --> UC5
     
+    Inv --> UC1
+    
     AI --> AI1
     AI --> AI2
     AI -.-> UC1
     AI -.-> UC4
 
-    style AI fill:#38bdf8,stroke:#fff,color:#000
-    style AI1 fill:#1e293b,stroke:#38bdf8
-    style AI2 fill:#1e293b,stroke:#38bdf8
+    %% Accessibility Styles (High Contrast)
+    style Admin fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Op fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style Inv fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    style AI fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style AI1 fill:#1e293b,stroke:#7dd3fc,color:#fff
+    style AI2 fill:#1e293b,stroke:#7dd3fc,color:#fff
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why do we use this view?**
-> In a complex microservices system, it's easy to get lost in ports and databases. The Scenarios View forces us to remember WHO we are building for. If a microservice doesn't help fulfill any of these use cases, it's redundant.
+> **Why a new actor for Inventory?**
+> "In an enterprise-grade system, Separation of Duties (SoD) is vital. While the Administrator has a strategic and permission-based focus, the Inventory Manager has granular and operational access to the supply chain, reducing the risk of fraud or administrative errors."
 >
-> **Key Point**: Note how the **AI Agent** is not just a decorative chat; it's connected to Inventory and Sales use cases. This demonstrates that the AI is OPERATIONAL, not just informative.
+> **How does the AI handle permissions?**
+> "It is essential to understand that the **AI Agent is not an autonomous actor with infinite permissions**. It functions under a **Proxy/Impersonation** pattern: the AI inherits the exact same permissions (Scopes) of the user who invokes it. If the POS Operator cannot delete a sale, the AI will not be able to do so either, ensuring the integrity of business rules."
 
 ---
-> **Un Soñador con poca RAM 🧑~💻**
+> **Un Soñador con poca RAM 🧑‍💻**

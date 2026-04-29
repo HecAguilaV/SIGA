@@ -1,12 +1,12 @@
 # 04. Process View (Flow & Transactions)
 
-The Process View focuses on the dynamic behavior of the system. Here we explain how microservices interact in real-time to complete a transaction and how we ensure data consistency.
+The Process View describes how information flows between microservices to complete a business transaction.
 
 [🇪🇸 Ver versión en Español](../es/04-PROCESS-VIEW.mdx)
 
-## 1. Sales Flow and Stock Deduction
+## 1. Sales Flow and Inventory Synchronization
 
-This sequence diagram shows the interaction between the Frontend, the Gateway, and the Sales and Inventory services.
+This diagram details the interaction from the moment the customer confirms the purchase until the stock is safely updated.
 
 ```mermaid
 sequenceDiagram
@@ -17,44 +17,51 @@ sequenceDiagram
 
     Web->>GT: POST /sales/checkout (JWT)
     GT->>Sales: Forward Request
-    Sales->>Sales: Validate Cart
-    Sales->>Inv: Reserve Stock (id, qty)
+    Sales->>Sales: Validate Cart and Totals
+    Sales->>Inv: Request Stock Reservation
+    
     alt Stock Available
-        Inv-->>Sales: Reservation OK
-        Sales->>Sales: Register Sale
-        Sales-->>Web: 201 Created (Invoice)
-    else Out of Stock
-        Inv-->>Sales: Error: Insufficient
-        Sales-->>Web: 400 Bad Request
+        Inv-->>Sales: Successful Reservation
+        Sales->>Sales: Generate Invoice
+        Sales->>Inv: Confirm Stock Dispatch
+        Sales-->>Web: 201 Created (Success)
+    else Insufficient Stock
+        Inv-->>Sales: Availability Error
+        Sales-->>Web: 400 Error (Out of Stock)
     end
 ```
 
 ## 2. Distributed Consistency (SAGA Pattern)
 
-For complex operations involving multiple services (such as a commercial subscription), we use an **Orchestration-based SAGA** to handle failures and perform compensations.
+SIGA uses an **Orchestration-based SAGA** for complex processes that span multiple services.
 
 ```mermaid
 graph TD
-    Start((Start)) --> CheckAuth[Validate User]
-    CheckAuth --> CreateSub[Create Subscription]
-    CreateSub --> Pay[Process Payment]
+    Start((Start Transaction)) --> Validate[Validate Identity]
+    Validate --> Subscribe[Create Subscription]
+    Subscribe --> Charge[Process Bank Payment]
     
-    Pay -- Success --> End((End: Active))
+    Charge -- Success --> Activate[Activate Service]
+    Activate --> End((End: Success))
     
-    Pay -- Failure --> CancelSub[Compensate: Cancel Sub]
-    CancelSub --> Refund[Notify User]
-    Refund --> Fail((End: Error))
+    Charge -- Failure --> Compensate[Compensate: Cancel Subscription]
+    Compensate --> Notify[Notify User Error]
+    Notify --> Fail((End: Failure))
+
+    style Start fill:#0f172a,stroke:#38bdf8,color:#fff
+    style End fill:#0369a1,stroke:#38bdf8,color:#fff
+    style Fail fill:#991b1b,stroke:#f87171,color:#fff
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why do we use the SAGA Pattern?**
-> "In a microservices architecture, we cannot use traditional ACID database transactions across different services. The SAGA pattern allows us to guarantee 'eventual consistency': if one step in the chain fails, we execute compensating actions to leave the system in a consistent state."
+> **Why do we avoid Spanglish in diagrams?**
+> "High-level technical documentation must be consistent. Using terms in a single language (except for industrial standards like 'Gateway' or 'SAGA') facilitates understanding for international teams and demonstrates an editorial discipline that is fundamental in large-scale projects."
 >
-> **Why Orchestration over Choreography?**
-> "We chose orchestration to have centralized control over the business flow. It's easier to debug and visualize than purely event-based choreography, which is vital for SIGA's financial traceability."
+> **Why Orchestration in the SAGA?**
+> "We chose orchestration (a central conductor) over choreography (loose events) because in an ERP, traceability is paramount. We need to know exactly at what point a charge failed and ensure that the compensating action was executed correctly."
 
 ---
 > **Un Soñador con poca RAM 🧑‍💻**

@@ -1,83 +1,92 @@
 # 02. Vista Lógica (Hexagonal & Data)
 
-La Vista Lógica se centra en la estructura funcional del sistema: cómo se organizan las clases y cómo se relacionan los datos entre sí. En SIGA, aplicamos **Arquitectura Hexagonal (Puertos y Adaptadores)** para blindar el negocio de la tecnología.
+La Vista Lógica se centra en la estructura funcional del sistema. En SIGA, aplicamos **Arquitectura Hexagonal (Puertos y Adaptadores)** para separar las reglas de negocio de los detalles técnicos.
 
 [🇺🇸 View English Version](../en/02-LOGICAL-VIEW.mdx)
 
-## 1. Arquitectura Hexagonal (Clean Architecture)
+## 1. Arquitectura Hexagonal Detallada
 
 ```mermaid
 graph TD
-    subgraph "Infrastructure Layer (Adapters)"
-        WebController[Spring RestController]
-        DBAdapter[Spring Data JPA]
-        ExternalAPI[Feign Client / Retrofit]
+    subgraph "Adaptadores de Entrada (Inbound)"
+        Web[RestController / API]
+        EventIn[Event Listener / Kafka]
     end
 
-    subgraph "Application Layer (Ports)"
-        InputPort[InventoryService / SalesService]
-        OutputPort[InventoryRepository / SalesRepository]
+    subgraph "Puerto de Entrada"
+        IService[InventoryService Interface]
     end
 
-    subgraph "Domain Layer (The Heart)"
-        Entities[Product, Sale, Stock, User]
-        Values[Money, SKU, Quantity]
-        BusinessLogic[PriceCalculator, StockValidator]
+    subgraph "Dominio (Core)"
+        Logic[Business Logic / Entities]
     end
 
-    WebController --> InputPort
-    InputPort --> BusinessLogic
-    BusinessLogic --> OutputPort
-    OutputPort --> DBAdapter
-    BusinessLogic --> Entities
+    subgraph "Puerto de Salida"
+        IRepo[InventoryRepository Interface]
+        IExt[ExternalClient Interface]
+    end
+
+    subgraph "Adaptadores de Salida (Outbound)"
+        DB[Postgres Adapter]
+        Feign[FeignClient / Other Services]
+    end
+
+    Web --> IService
+    IService --> Logic
+    Logic --> IRepo
+    Logic --> IExt
+    IRepo --> DB
+    IExt --> Feign
+
+    style Logic fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style Web fill:#0f172a,stroke:#38bdf8,color:#fff
+    style DB fill:#0f172a,stroke:#38bdf8,color:#fff
 ```
 
-## 2. Modelo Entidad-Relación (ER) Consolidado
+## 2. Diagrama de Clases del Dominio (Nivel Moderado)
 
-SIGA utiliza un enfoque de **Multi-tenancy por Esquemas**. Aquí se muestra la relación lógica entre los 5 esquemas principales.
+Este diagrama muestra las relaciones clave entre las entidades principales del sistema.
 
 ```mermaid
-erDiagram
-    %% Esquema Auth
-    AUTH_USER ||--o{ USER_LOCAL : "trabaja en"
-    AUTH_USER {
-        string id PK
-        string email
-        string password
-        string role
+classDiagram
+    class Product {
+        +UUID id
+        +String sku
+        +String name
+        +Decimal basePrice
+        +updateStock(qty)
     }
-
-    %% Esquema Inventario
-    PRODUCT ||--o{ STOCK : "tiene"
-    LOCAL ||--o{ STOCK : "almacena"
-    PRODUCT {
-        string id PK
-        string name
-        string sku
+    class Sale {
+        +UUID id
+        +DateTime createdAt
+        +Decimal total
+        +calculateTax()
     }
-
-    %% Esquema Ventas
-    SALE ||--o{ SALE_DETAIL : "contiene"
-    SALE {
-        string id PK
-        datetime date
-        decimal total
+    class Stock {
+        +UUID id
+        +Integer quantity
+        +UUID branchId
     }
-
-    %% Relaciones cruzadas (Lógicas)
-    AUTH_USER ||--o{ SALE : "registra"
-    PRODUCT ||--o{ SALE_DETAIL : "se vende en"
+    class User {
+        +UUID id
+        +String email
+        +Role role
+    }
+    
+    Product "1" -- "0..*" Stock : tracks
+    Sale "1" -- "1..*" Product : contains
+    User "1" -- "0..*" Sale : registers
 ```
 
 ---
 
 ## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
 
-> **¿Por qué Arquitectura Hexagonal?**
-> Dile esto a tus profes: "La arquitectura hexagonal nos permite que el DOMINIO (las reglas de negocio) sea agnóstico a la base de datos o al framework. Si mañana decidimos cambiar PostgreSQL por MongoDB, solo cambiamos el Adaptador, el corazón de SIGA no se toca".
+> **¿RestController vs FeignClient?**
+> "No se deben confundir. El **RestController** es un adaptador de **ENTRADA** (Inbound); es la puerta que nosotros abrimos para que el mundo nos hable. El **FeignClient** es un adaptador de **SALIDA** (Outbound); es el teléfono que nosotros usamos para hablar con otros microservicios".
 >
-> **¿Por qué Schemas Multi-tenant?**
-> "Implementamos aislamiento de datos a nivel de esquema para garantizar que la Empresa A nunca pueda ver los datos de la Empresa B, cumpliendo con leyes de privacidad (como la Ley 21.719 de Chile) desde el diseño mismo de la base de datos".
+> **¿Por qué Diagrama de Clases en el Dominio?**
+> "Porque el Dominio es lo único que debería ser estable en el tiempo. Las bases de datos cambian, los frameworks mueren, pero la relación entre una 'Venta' y un 'Producto' es una regla de negocio que permanece, y eso es lo que capturamos en este diagrama".
 
 ---
 > **Un Soñador con poca RAM 🧑‍💻**

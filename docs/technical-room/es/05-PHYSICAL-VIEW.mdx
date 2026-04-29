@@ -1,62 +1,69 @@
 # 05. Vista Física (Deployment & Scaling)
 
-La Vista Física describe la topología de despliegue del sistema: dónde corre el código, cómo se comunican los contenedores y cómo planeamos escalar para soportar **Big Data**.
+La Vista Física detalla cómo se despliegan los componentes y cómo fluye el tráfico desde el mundo exterior hacia nuestra red privada de microservicios.
 
 [🇺🇸 View English Version](../en/05-PHYSICAL-VIEW.mdx)
 
-## 1. Topología de Despliegue (Docker & Network)
+## 1. Topología de Red y Flujo de Peticiones
 
-SIGA opera en una red virtualizada donde los servicios se descubren dinámicamente.
+Este diagrama muestra cómo un cliente (Postman o Browser) interactúa con el sistema a través del API Gateway.
 
 ```mermaid
 graph BT
-    subgraph Cloud [External / Internet]
-        User((Usuario))
-        Funnel[Tailscale Funnel]
+    subgraph Exterior [Mundo Exterior / Internet]
+        Client[Postman / Browser]
     end
 
-    subgraph InternalNet [Docker Network]
-        GT[API Gateway:8080]
-        Eureka[Eureka Server:8761]
-        Auth[siga-auth]
-        Inv[siga-inventory]
-        Sales[siga-sales]
-        Agent[siga-agent:8000]
-        Postgres[(PostgreSQL)]
+    subgraph "Docker Network (Private)"
+        GT[API Gateway :8080]
+        Eureka[Eureka Registry :8761]
+        
+        subgraph Cluster [Microservicios Transaccionales]
+            Auth[siga-auth :8081]
+            Inv[siga-inventory :8082]
+            Sales[siga-sales :8083]
+            Agent[siga-agent :8000]
+        end
+        
+        DB[(PostgreSQL :5432)]
     end
 
-    User --> Funnel
-    Funnel --> GT
-    GT --> Eureka
-    GT --> Auth
-    GT --> Inv
-    GT --> Sales
-    GT --> Agent
-    Auth & Inv & Sales & Agent --> Postgres
+    Client -- HTTP Request --> GT
+    GT -- 1. Query Registry --> Eureka
+    Eureka -- 2. Return Internal IP --> GT
+    GT -- 3. Forward to Service --> Cluster
+    Cluster --> DB
+
+    style Client fill:#0f172a,stroke:#38bdf8,color:#fff
+    style GT fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
+    style Eureka fill:#1e293b,stroke:#7dd3fc,color:#fff
 ```
 
-## 2. Escalamiento a Big Data (Arquitectura Lambda)
+## 2. Escalamiento Hacia Big Data (Lambda Architecture)
 
-Para procesar grandes volúmenes de datos históricos (analítica avanzada), SIGA está preparado para implementar una arquitectura Lambda.
+SIGA está diseñado para escalar de un sistema transaccional puro a un motor de analítica masiva.
 
 ```mermaid
 graph LR
-    Source[Microservicios] --> Speed[Capa de Velocidad: Redis/Kafka]
-    Source --> Batch[Capa de Lote: Data Lake / S3]
+    Source[Microservicios] --> Kafka[Bus de Eventos: Kafka]
+    Kafka --> Speed[Capa Rápida: Redis/Spark Streaming]
+    Kafka --> Batch[Capa de Lote: S3 / Hadoop]
     
-    Speed --> Serving[Capa de Servicio: Dashboards Real-time]
-    Batch --> Serving
+    Speed --> UI[Dashboards Tiempo Real]
+    Batch --> UI
+
+    style Kafka fill:#0369a1,stroke:#38bdf8,color:#fff
 ```
 
 ---
 
 ## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
 
-> **¿Por qué Service Discovery con Eureka?**
-> "En una arquitectura de microservicios elástica, las IPs de los contenedores cambian constantemente. Eureka permite que los servicios se encuentren por nombre (`siga-inventory`) en lugar de por IP, haciendo que el sistema sea resiliente y fácil de escalar horizontalmente".
+> **¿Por qué el Gateway es el único punto de entrada?**
+> "Por seguridad y simplicidad. El **API Gateway** actúa como un 'Bouncer' (portero): centraliza la autenticación JWT y oculta la complejidad de la red interna. Postman nunca habla con el microservicio de Inventario directamente; siempre pasa por el puerto 8080 del Gateway".
 >
-> **¿Cómo escala SIGA a Big Data?**
-> "Diseñamos SIGA para ser 'Data-Ready'. La separación de esquemas actual facilita la migración a un Data Lake. La arquitectura Lambda nos permitiría dar respuestas inmediatas (Speed Layer) mientras procesamos tendencias históricas profundas (Batch Layer) sin degradar el rendimiento del POS".
+> **¿Cuál es el rol real de Eureka?**
+> "Eureka no es un orquestador, es un **Directorio**. Cuando escalamos un servicio (ej. tenemos 3 instancias de `siga-sales`), Eureka sabe las IPs de las tres. El Gateway consulta a Eureka para saber a dónde enviar el tráfico, permitiendo que el sistema crezca sin necesidad de configurar IPs manuales".
 
 ---
 > **Un Soñador con poca RAM 🧑‍💻**
