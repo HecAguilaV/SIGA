@@ -1,53 +1,47 @@
 # 05. Physical View (Deployment & Scaling)
 
-The Physical View details how components are deployed and how traffic flows from the outside world into our private microservices network.
+Mapping of software components to server and network infrastructure.
 
 [🇪🇸 Ver versión en Español](../es/05-PHYSICAL-VIEW.mdx)
 
-## 1. Network Topology and Request Flow
-
-This diagram shows how a client (Postman or Browser) interacts with the system through the API Gateway.
+## 1. Docker Network Topology (Internal Nodes)
 
 ```mermaid
 graph BT
-    subgraph Exterior [Outside World / Internet]
-        Client[Postman / Browser]
-    end
-
-    subgraph "Docker Network (Private)"
-        GT[API Gateway :8080]
-        Eureka[Eureka Registry :8761]
+    subgraph Net [<b>Docker Internal Network</b>]
+        GT[API Gateway]
+        Eureka[Service Registry]
         
-        subgraph Cluster [Transactional Microservices]
-            Auth[siga-auth :8081]
-            Inv[siga-inventory :8082]
-            Sales[siga-sales :8083]
-            Agent[siga-agent :8000]
+        subgraph Cluster [<b>Microservices Cluster</b>]
+            S1[siga-auth]
+            S2[siga-inventory]
+            S3[siga-sales]
         end
         
-        DB[(PostgreSQL :5432)]
+        DB[(PostgreSQL)]
     end
 
-    Client -- HTTP Request --> GT
-    GT -- 1. Query Registry --> Eureka
-    Eureka -- 2. Return Internal IP --> GT
-    GT -- 3. Forward to Service --> Cluster
+    User((User)) -->|Port 8080| GT
+    GT --> Eureka
+    GT --> Cluster
     Cluster --> DB
 
-    style Client fill:#0f172a,stroke:#38bdf8,color:#fff
-    style GT fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
-    style Eureka fill:#1e293b,stroke:#7dd3fc,color:#fff
+    %% Glass-Tech Styles
+    style Net fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px,stroke-dasharray: 5 5
+    style Cluster fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style GT fill:#0369a1,stroke:#38bdf8,stroke-width:3px,color:#fff
+    style DB fill:#0f172a,stroke:#38bdf8,color:#fff
 ```
 
-## 2. Scaling Towards Big Data (Lambda Architecture)
+## 2. Scaling Vision: Lambda Architecture
 
-SIGA is designed to scale from a pure transactional system to a massive analytics engine.
+Structure for massive data processing (Big Data).
 
 ```mermaid
 graph LR
-    Source[Microservices] --> Kafka[Event Bus: Kafka]
-    Kafka --> Speed[Speed Layer: Redis/Spark Streaming]
-    Kafka --> Batch[Batch Layer: S3 / Hadoop]
+    Input[POS Events] --> Kafka{Kafka}
+    Kafka --> Speed[Speed Layer: Redis]
+    Kafka --> Batch[Batch Layer: S3/HDFS]
     
     Speed --> UI[Real-time Dashboards]
     Batch --> UI
@@ -59,11 +53,8 @@ graph LR
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why is the Gateway the only entry point?**
-> "For security and simplicity. The **API Gateway** acts as a 'Bouncer': it centralizes JWT authentication and hides the complexity of the internal network. Postman never talks to the Inventory microservice directly; it always goes through the Gateway's port 8080."
->
-> **What is the real role of Eureka?**
-> "Eureka is not an orchestrator; it's a **Directory**. When we scale a service (e.g., we have 3 instances of `siga-sales`), Eureka knows the IPs of all three. The Gateway queries Eureka to know where to send the traffic, allowing the system to grow without manual IP configuration."
+> **What is Lambda Architecture?**
+> "It is the standard for handling massive data volumes. The **Speed Layer** gives us immediate business visibility, while the **Batch Layer** ensures historical reports are 100% accurate through background data cleansing processes."
 
 ---
-> **Un Soñador con poca RAM 🧑‍💻**
+> **Un Soñador con poca RAM 🧑~💻**

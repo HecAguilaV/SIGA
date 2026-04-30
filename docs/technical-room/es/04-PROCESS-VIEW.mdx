@@ -1,67 +1,63 @@
-# 04. Vista de Proceso (Flow & Transactions)
+# 04. Vista de Proceso (Flujos y Estados)
 
-La Vista de Proceso describe cómo fluye la información entre los microservicios para completar una transacción de negocio.
+Describe la dinámica del sistema: cómo interactúan los servicios y cómo cambian de estado las entidades.
 
 [🇺🇸 View English Version](../en/04-PROCESS-VIEW.mdx)
 
-## 1. Flujo de Venta y Sincronización de Inventario
-
-Este diagrama detalla la interacción desde que el cliente confirma la compra hasta que el stock se actualiza de forma segura.
+## 1. Diagrama de Secuencia: Registro de Venta
 
 ```mermaid
 sequenceDiagram
-    participant Web as WebApp (Svelte)
-    participant GT as API Gateway
-    participant Ventas as Siga-Sales
-    participant Inv as Siga-Inventory
+    autonumber
+    participant U as Usuario
+    participant G as API Gateway
+    participant S as Siga-Sales
+    participant I as Siga-Inventory
 
-    Web->>GT: POST /ventas/pago (JWT)
-    GT->>Ventas: Redirigir Solicitud
-    Ventas->>Ventas: Validar Carrito y Totales
-    Ventas->>Inv: Solicitar Reserva de Stock
-    
+    U->>G: POST /ventas/pago
+    G->>S: Redirección de Petición
+    S->>I: Validar y Reservar Stock
     alt Stock Disponible
-        Inv-->>Ventas: Reserva Exitosa
-        Ventas->>Ventas: Generar Boleta / Factura
-        Ventas->>Inv: Confirmar Despacho Stock
-        Ventas-->>Web: 201 Creado (Éxito)
-    else Stock Insuficiente
-        Inv-->>Ventas: Error de Disponibilidad
-        Ventas-->>Web: 400 Error (Sin Stock)
+        I-->>S: Reserva Exitosa
+        S->>S: Generar Boleta
+        S-->>G: 201 Creado
+        G-->>U: Confirmación de Éxito
+    else Sin Stock
+        I-->>S: Stock Insuficiente
+        S-->>G: 400 Petición Incorrecta
+        G-->>U: Error: Producto Agotado
     end
 ```
 
-## 2. Consistencia Distribuida (Patrón SAGA)
+## 2. Diagrama de Estados: Ciclo de Vida de una Venta
 
-SIGA utiliza una **SAGA basada en Orquestación** para procesos complejos que abarcan varios servicios.
+Este diagrama detalla la lógica de transición de estados del sistema.
 
 ```mermaid
-graph TD
-    Inicio((Inicio Transacción)) --> Validar[Validar Identidad]
-    Validar --> Suscribir[Crear Suscripción]
-    Suscribir --> Cobrar[Procesar Cobro Bancario]
-    
-    Cobrar -- Éxito --> Activar[Activar Servicio]
-    Activar --> Fin((Fin: Éxito))
-    
-    Cobrar -- Fallo --> Compensar[Compensación: Cancelar Suscripción]
-    Compensar --> Notificar[Notificar Error Usuario]
-    Notificar --> Error((Fin: Fallo))
+stateDiagram-v2
+    [*] --> BORRADOR: Usuario agrega productos
+    BORRADOR --> PENDIENTE_PAGO: Checkout iniciado
+    PENDIENTE_PAGO --> PAGADA: Confirmación de Pago
+    PENDIENTE_PAGO --> CANCELADA: Tiempo Agotado / Error
+    PAGADA --> ENTREGADA: Productos entregados
+    PAGADA --> REEMBOLSADA: Devolución solicitada
+    ENTREGADA --> [*]
+    CANCELADA --> [*]
+    REEMBOLSADA --> [*]
 
-    style Inicio fill:#0f172a,stroke:#38bdf8,color:#fff
-    style Fin fill:#0369a1,stroke:#38bdf8,color:#fff
-    style Error fill:#991b1b,stroke:#f87171,color:#fff
+    state PENDIENTE_PAGO {
+        [*] --> BloqueoLógico
+        BloqueoLógico --> [*]
+    }
+    note right of PENDIENTE_PAGO : El stock se reserva temporalmente.
 ```
 
 ---
 
 ## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
 
-> **¿Por qué evitamos el Spanglish en diagramas?**
-> "La documentación técnica de alto nivel debe ser coherente. Usar términos en un solo idioma (exceptuando estándares industriales como 'Gateway' o 'SAGA') facilita la comprensión para equipos internacionales y demuestra una disciplina editorial que es fundamental en proyectos de gran escala".
->
-> **¿Por qué Orquestación en la SAGA?**
-> "Elegimos orquestación (un director central) en lugar de coreografía (eventos sueltos) porque en un ERP la trazabilidad es lo más importante. Necesitamos saber exactamente en qué punto falló un cobro y asegurarnos de que la acción de compensación se ejecutó correctamente".
+> **¿Por qué usar un Diagrama de Estados?**
+> "La integridad transaccional no solo depende de la base de datos, sino de la coherencia del estado del objeto. Al definir estados claros como 'PENDIENTE_PAGO', permitimos que el sistema realice un **Bloqueo Lógico (Soft-lock)** del stock, evitando ventas duplicadas del mismo artículo".
 
 ---
 > **Un Soñador con poca RAM 🧑~💻**

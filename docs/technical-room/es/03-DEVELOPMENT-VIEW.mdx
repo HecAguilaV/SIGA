@@ -1,63 +1,82 @@
-# 03. Vista de Desarrollo (Monorepo & Components)
+# 03. Vista de Desarrollo (Monorepo y Componentes)
 
-La Vista de Desarrollo describe cómo se organiza el código fuente. SIGA utiliza un **Monorepo** para garantizar la integridad de los contratos entre el front y el back.
+Describe la organización del sistema desde la perspectiva de construcción, reflejando la jerarquía funcional real de los módulos.
 
 [🇺🇸 View English Version](../en/03-DEVELOPMENT-VIEW.mdx)
 
-## 1. Estructura del Monorepo (Single Source of Truth)
+## 1. Estructura Semántica del Monorepo (Gradle)
+
+A diferencia de un simple listado de carpetas, este diagrama muestra la relación lógica entre backends y sus respectivas interfaces.
 
 ```mermaid
 graph LR
-    Root((SIGA Root)) --> Services[services/]
-    Root --> Docs[docs/]
-    Root --> OpenSpec[openspec/]
+    Root((SIGA Proyecto)) --> Services[services/]
+    
+    subgraph Infra [<b>Infraestructura</b>]
+        S_GT[gateway]
+        S_REG[registry]
+    end
 
-    Services --> Backends[Backends]
-    Services --> Frontends[Frontends]
+    subgraph Core [<b>Servicios de Negocio</b>]
+        S_AUTH[auth]
+        S_INV[inventory]
+        S_SALES[sales]
+        S_AGENT[agent]
+        
+        subgraph Billing_System [<b>Ecosistema de Facturación</b>]
+            S_BILL[billing - Backend]
+            W_COMM[commercial - Frontend]
+        end
+    end
 
-    Backends --> Auth[siga-auth]
-    Backends --> Inv[siga-inventory]
-    Backends --> Sales[siga-sales]
-    Backends --> Agent[siga-agent]
+    subgraph UI [<b>Aplicaciones Cliente</b>]
+        W_WEB[webapp - Admin]
+        W_MOB[mobile - POS]
+        W_LAND[landing - Público]
+    end
 
-    Frontends --> WebApp[webapp-v2 / Admin]
-    Frontends --> Commercial[web-commercial]
-    Frontends --> Landing[landing-page]
+    subgraph Libs [<b>Librerías Compartidas</b>]
+        L_COM[common]
+    end
 
-    style Root fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
-    style Frontends fill:rgba(56, 189, 248, 0.1),stroke:#38bdf8
+    Services --> Infra & Core & UI & Libs
+    S_BILL --- W_COMM
+
+    %% Estilos Glass-Tech
+    style Services fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style Billing_System fill:#0369a110,stroke:#38bdf8,stroke-dasharray: 5 5
+    style Libs fill:#0369a120,stroke:#38bdf8,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
-## 2. Componentes y Capas Técnicas
+## 2. Diagrama de Componentes (Dependencias Internas)
 
-| Componente | Rol en el Ecosistema | Stack Principal |
-| :--- | :--- | :--- |
-| **Backends** | Microservicios transaccionales e IA. | Kotlin (Spring) / Python (FastAPI) |
-| **Frontends** | Interfaces de usuario responsivas. | SvelteKit / Tailwind CSS |
-| **Common** | Contratos y utilidades compartidas. | JARs compartidos / TS Definitions |
-
-## 3. Workflow de Integración (CI/CD)
+Este diagrama muestra cómo se reutiliza la lógica transversal mediante el módulo `common`.
 
 ```mermaid
-flowchart LR
-    Push[Git Push] --> Lint[Calidad Código]
-    Lint --> Test[Tests Unitarios]
-    Test --> Build[Docker Multi-arch]
-    Build --> Deploy[Staging / Prod]
+graph TD
+    Common[<b>siga-common</b><br/>DTOs, Seguridad, Excepciones]
+    
+    Auth[siga-auth] --> Common
+    Inv[siga-inventory] --> Common
+    Sales[siga-sales] --> Common
+    Billing[siga-billing] --> Common
+    
+    UI_Apps[Frontends] -.->|Contratos API| Common
 
-    style Push fill:#0f172a,stroke:#38bdf8,color:#fff
-    style Deploy fill:#0369a1,stroke:#38bdf8,color:#fff
+    %% Estilos Neon
+    style Common fill:#0369a1,stroke:#38bdf8,stroke-width:3px,color:#fff
+    style Auth fill:#0f172a,stroke:#7dd3fc,color:#fff
+    style Inv fill:#0f172a,stroke:#7dd3fc,color:#fff
+    style Sales fill:#0f172a,stroke:#7dd3fc,color:#fff
+    style Billing fill:#0f172a,stroke:#7dd3fc,color:#fff
 ```
 
 ---
 
 ## 🛡️ Defensa del Arquitecto (Tips para tu Capstone)
 
-> **¿Por qué incluimos las Webs de Marketing en el Repo?**
-> "Un producto SaaS como SIGA no es solo el Dashboard. Al incluir la **Web Comercial** y la **Landing** en el Monorepo, aseguramos que cualquier cambio en la marca o en los planes de precios se refleje de forma atómica en todo el ecosistema, manteniendo la coherencia visual y de negocio".
->
-> **¿Es la WebApp un microservicio?**
-> "Técnicamente, es un artefacto de frontend, pero en nuestra arquitectura la tratamos con la misma rigurosidad que un microservicio: tiene su propio Dockerfile, su propio pipeline de despliegue y consume contratos versionados del backend".
+> **¿Por qué agrupar 'commercial' con 'billing'?**
+> "Aunque en el monorepo son carpetas separadas, funcionalmente forman una unidad. `commercial` es la interfaz específica para la gestión tributaria y financiera que expone el microservicio de `billing`. Esta cohesión funcional es lo que permite que el sistema de facturación sea escalable e independiente del resto del POS".
 
 ---
-> **Un Soñador con poca RAM 🧑‍💻**
+> **Un Soñador con poca RAM 🧑~💻**

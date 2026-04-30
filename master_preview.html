@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+        });
+    </script>
+    <style>
+        body { background: #020617; color: #f1f5f9; font-family: 'Inter', sans-serif; padding: 40px; line-height: 1.6; }
+        .view-container { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 30px; margin-bottom: 50px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
+        h1 { color: #38bdf8; border-bottom: 2px solid #0369a1; padding-bottom: 10px; margin-top: 0; font-size: 1.8rem; }
+        h2 { color: #7dd3fc; margin-top: 35px; text-transform: uppercase; font-size: 1rem; letter-spacing: 1px; border-left: 3px solid #38bdf8; padding-left: 10px; }
+        .mermaid { background: #020617; padding: 20px; border-radius: 8px; border: 1px solid #334155; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h1>🏛️ SIGA Architectural Command Center (Semantic Sync)</h1>
+    <p>Previsualización 100% en Castellano Técnico. Estructura de Monorepo corregida semánticamente.</p>
+
+    <!-- 01. ESCENARIOS -->
+    <div class="view-container">
+        <h1>01. Escenarios</h1>
+        <div class="mermaid">
+graph TD
+    subgraph Actores ["Actores del Sistema"]
+        Admin[Administrador / Dueño]
+        Op[Operador de Caja]
+        Inv[Encargado de Inventario]
+        AI[Agente de IA]
+    end
+    subgraph Business ["Gestión de Negocio"]
+        UC1(Administrar Inventario)
+        UC2(Analizar Reportes de Ventas)
+        UC3(Configurar Permisos)
+    end
+    subgraph POS ["Operación POS"]
+        UC4(Registrar Venta / Boleta)
+        UC5(Apertura y Cierre de Turno)
+    end
+    subgraph AI_Layer ["Capacidades Agénticas"]
+        AI1(Comandos de Voz y Chat)
+        AI2(Búsqueda Semántica RAG)
+    end
+    Admin --> UC1 & UC2 & UC3
+    Op --> UC4 & UC5
+    Inv --> UC1
+    AI -- Intermediario --> AI1 & AI2
+    AI1 -.->|ejecuta| UC4
+    AI2 -.->|asiste| UC1
+    style Actores fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px,stroke-dasharray: 5 5
+    style Business fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style POS fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style AI_Layer fill:#0369a120,stroke:#38bdf8,stroke-width:3px
+        </div>
+    </div>
+
+    <!-- 02. LOGICA -->
+    <div class="view-container">
+        <h1>02. Lógica</h1>
+        <h2>A. Arquitectura Hexagonal</h2>
+        <div class="mermaid">
+graph TD
+    subgraph Entrada ["Adaptadores de Entrada"]
+        Rest[Controlador REST]
+        Kafka[Consumidor Kafka]
+    end
+    subgraph Core ["Dominio (Reglas de Negocio)"]
+        Service[Servicio de Aplicación]
+        Entity[Entidades de Negocio]
+    end
+    subgraph Salida ["Adaptadores de Salida"]
+        Jpa[Persistencia JPA]
+        Feign[Cliente Microservicios]
+    end
+    Rest & Kafka --> Service
+    Service --> Entity
+    Entity --> Jpa & Feign
+    style Core fill:#0369a120,stroke:#38bdf8,stroke-width:3px
+    style Entrada fill:#0ea5e90a,stroke:#38bdf8
+    style Salida fill:#0ea5e90a,stroke:#38bdf8
+        </div>
+        <h2>B. Diagrama de Clases (Dominio)</h2>
+        <div class="mermaid">
+classDiagram
+    direction LR
+    class Product { -UUID id -String sku -BigDecimal price +calcularImpuesto() }
+    class Sale { -UUID id -LocalDateTime timestamp +procesar() }
+    class SaleItem { -Integer quantity -BigDecimal subtotal }
+    class Stock { -Integer quantity -Integer threshold }
+    Sale "1" *-- "1..*" SaleItem : composición
+    SaleItem "0..*" --o "1" Product : referencia
+    Product "1" *-- "0..*" Stock : rastrea
+    style Product fill:#1e293b,stroke:#38bdf8,color:#fff
+    style Sale fill:#1e293b,stroke:#38bdf8,color:#fff
+        </div>
+        <h2>C. Diagrama Entidad-Relación (Postgres)</h2>
+        <div class="mermaid">
+erDiagram
+    PRODUCTS ||--o{ STOCKS : "tiene"
+    SALES ||--|{ SALE_ITEMS : "contiene"
+    PRODUCTS { uuid id PK string sku UK string name decimal base_price }
+    SALES { uuid id PK timestamp created_at decimal total_amount }
+    STOCKS { uuid id PK uuid product_id FK integer quantity }
+        </div>
+    </div>
+
+    <!-- 03. DESARROLLO -->
+    <div class="view-container">
+        <h1>03. Desarrollo</h1>
+        <h2>A. Estructura Semántica Monorepo</h2>
+        <div class="mermaid">
+graph LR
+    Root((SIGA Proyecto)) --> Services[services/]
+    
+    subgraph Infra ["Infraestructura"]
+        S_GT[gateway]
+        S_REG[registry]
+    end
+    subgraph Core_Services ["Servicios de Negocio"]
+        S_AUTH[auth]
+        S_INV[inventory]
+        S_SALES[sales]
+        S_AGENT[agent]
+        subgraph Billing_Ecosystem ["Sistema Facturación"]
+            S_BILL[billing - Backend]
+            W_COMM[commercial - Frontend]
+        end
+    end
+    subgraph UI_Apps ["Aplicaciones Cliente"]
+        W_WEB[webapp - Admin]
+        W_MOB[mobile - POS]
+        W_LAND[landing - Público]
+    end
+    subgraph Libs ["Librerías"]
+        L_COM[common]
+    end
+    Services --> Infra & Core_Services & UI_Apps & Libs
+    S_BILL --- W_COMM
+    style Services fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style Billing_Ecosystem fill:#0369a110,stroke:#38bdf8,stroke-dasharray: 5 5
+        </div>
+    </div>
+
+    <!-- 04. PROCESO -->
+    <div class="view-container">
+        <h1>04. Proceso</h1>
+        <h2>A. Diagrama de Secuencia (Venta POS)</h2>
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as Usuario
+    participant G as API Gateway
+    participant S as Siga-Sales
+    participant I as Siga-Inventory
+    U->>G: POST /ventas/pago
+    G->>S: Redirección de Petición
+    S->>I: Validar y Reservar Stock
+    alt Stock Disponible
+        I-->>S: Reserva Exitosa
+        S->>S: Generar Boleta
+        S-->>G: 201 Creado
+        G-->>U: Confirmación de Éxito
+    else Sin Stock
+        I-->>S: Stock Insuficiente
+        S-->>G: 400 Error
+        G-->>U: Error: Producto Agotado
+    end
+        </div>
+        <h2>B. Diagrama de Estados (Venta)</h2>
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> BORRADOR
+    BORRADOR --> PENDIENTE_PAGO: Checkout iniciado
+    PENDIENTE_PAGO --> PAGADA: Pago Confirmado
+    PENDIENTE_PAGO --> CANCELADA: Error
+    PAGADA --> ENTREGADA
+    ENTREGADA --> [*]
+    state PENDIENTE_PAGO {
+        [*] --> BloqueoLógico
+    }
+        </div>
+    </div>
+
+    <!-- 05. FISICA -->
+    <div class="view-container">
+        <h1>05. Física</h1>
+        <h2>A. Topología de Red Docker</h2>
+        <div class="mermaid">
+graph BT
+    subgraph Net ["Red Interna Docker"]
+        GT[API Gateway]
+        Eureka[Servidor Registro]
+        subgraph Cluster ["Clúster Microservicios"]
+            S1[siga-auth]
+            S2[siga-sales]
+            S3[siga-inventory]
+        end
+        DB[(PostgreSQL)]
+    end
+    User((Usuario)) -->|Puerto 8080| GT
+    GT --> Eureka
+    GT --> Cluster
+    Cluster --> DB
+    style Net fill:#0ea5e90a,stroke:#38bdf8,stroke-dasharray: 5 5
+    style Cluster fill:#0ea5e90a,stroke:#38bdf8
+        </div>
+        <h2>B. Arquitectura Lambda (Big Data)</h2>
+        <div class="mermaid">
+graph LR
+    Input[Eventos POS] --> Kafka{Kafka}
+    Kafka --> Speed[Capa Rápida: Redis]
+    Kafka --> Batch[Capa de Lote: S3/HDFS]
+    Speed --> UI[Dashboards Tiempo Real]
+    Batch --> UI
+    style Kafka fill:#0369a1,stroke:#38bdf8,color:#fff
+        </div>
+    </div>
+</body>
+</html>
