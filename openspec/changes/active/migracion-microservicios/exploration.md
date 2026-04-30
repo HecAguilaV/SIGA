@@ -8,7 +8,8 @@ Existen 13 entidades acopladas en el mismo paquete:
 Este diseño rompe los principios de alta cohesión y bajo acoplamiento necesarios para una arquitectura de microservicios.
 
 ### Affected Areas
-- Todo el módulo `services/backend/` deberá ser particionado.
+- [x] **Eliminación del Núcleo Monolítico**: El módulo `services/backend/` ha sido eliminado físicamente. El sistema es ahora 100% microservicios.
+- [ ] Todo el resto del particionamiento de servicios está en progreso.
 - A nivel de base de datos, el empaquetado actual asume relaciones foráneas (`@ManyToOne`, `@OneToMany`) directas entre tablas que, en microservicios, estarán en bases de datos separadas.
 
 ### Approaches (Estrategia de Partición Definitiva)

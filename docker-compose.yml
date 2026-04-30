@@ -1,23 +1,22 @@
 services:
 
   # ============================================================
-  # Database: PostgreSQL + PGVector
-  # Automatically initializes the 5 SIGA schemas
+  # Database: PostgreSQL + PGVector (Multi-DB Mode)
   # ============================================================
   siga-db:
     image: pgvector/pgvector:pg16
     container_name: siga-postgres
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "${DB_PORT}:5432"
     volumes:
       - siga-db-data:/var/lib/postgresql/data
-      - ./scripts/database/DB_SIGA_ENGLISH.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./scripts/db-init/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U siga_admin"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -25,8 +24,7 @@ services:
       - siga-net
 
   # ============================================================
-  # pgAdmin 4 (Web Interface for PostgreSQL)
-  # Access: http://localhost:5050
+  # Infrastructure: pgAdmin, Eureka, Gateway
   # ============================================================
   pgadmin:
     image: dpage/pgadmin4
@@ -42,41 +40,23 @@ services:
     networks:
       - siga-net
 
-  # ============================================================
-  # Eureka Server (Service Registry)
-  # ============================================================
   siga-eureka:
     image: hdaguila/siga-eureka:latest
     build:
       context: .
       dockerfile: ./services/registry/Dockerfile
     container_name: siga-eureka
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     ports:
       - "8761:8761"
     networks:
       - siga-net
 
-  # ============================================================
-  # API Gateway
-  # ============================================================
   siga-gateway:
     image: hdaguila/siga-gateway:latest
     build:
       context: .
       dockerfile: ./services/gateway/Dockerfile
     container_name: siga-gateway
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     ports:
       - "${GATEWAY_PORT}:8080"
     environment:
@@ -87,8 +67,7 @@ services:
       - siga-net
 
   # ============================================================
-  # Microservice: Auth (:8081)
-  # Schema: auth
+  # Core Microservices (Independent DBs)
   # ============================================================
   siga-auth:
     image: hdaguila/siga-auth:latest
@@ -96,17 +75,11 @@ services:
       context: .
       dockerfile: ./services/auth/Dockerfile
     container_name: siga-auth
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=auth
-      - SPRING_DATASOURCE_USERNAME=${DB_USER}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${AUTH_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${AUTH_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${AUTH_DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -115,27 +88,17 @@ services:
     networks:
       - siga-net
 
-  # ============================================================
-  # Microservice: Inventory (:8082)
-  # Schema: inventory
-  # ============================================================
   siga-inventory:
     image: hdaguila/siga-inventory:latest
     build:
       context: .
       dockerfile: ./services/inventory/Dockerfile
     container_name: siga-inventory
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=inventory
-      - SPRING_DATASOURCE_USERNAME=${DB_USER}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${INVENTORY_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${INVENTORY_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${INVENTORY_DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -144,27 +107,17 @@ services:
     networks:
       - siga-net
 
-  # ============================================================
-  # Microservice: Sales (:8083)
-  # Schema: sales
-  # ============================================================
   siga-sales:
     image: hdaguila/siga-sales:latest
     build:
       context: .
       dockerfile: ./services/sales/Dockerfile
     container_name: siga-sales
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=sales
-      - SPRING_DATASOURCE_USERNAME=${DB_USER}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${SALES_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${SALES_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${SALES_DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -175,27 +128,17 @@ services:
     networks:
       - siga-net
 
-  # ============================================================
-  # Microservice: Commercial/Billing (:8084)
-  # Schema: commercial
-  # ============================================================
   siga-billing:
     image: hdaguila/siga-billing:latest
     build:
       context: .
       dockerfile: ./services/billing/Dockerfile
     container_name: siga-billing
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${DB_NAME}?currentSchema=commercial
-      - SPRING_DATASOURCE_USERNAME=${DB_USER}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${BILLING_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${BILLING_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${BILLING_DB_PASSWORD}
     depends_on:
       siga-db:
         condition: service_healthy
@@ -204,26 +147,16 @@ services:
     networks:
       - siga-net
 
-  # ============================================================
-  # Microservice: AI Agent (:8000)
-  # Schema: agent
-  # ============================================================
   siga-agent:
     image: hdaguila/siga-agent:latest
     build:
       context: ./services/agent
       dockerfile: Dockerfile
     container_name: siga-agent
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - PORT=${AGENT_PORT}
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - DATABASE_URL=postgresql://${AGENT_DB_USER}:${AGENT_DB_PASSWORD}@siga-db:5432/${AGENT_DB_NAME}
     depends_on:
       siga-db:
         condition: service_healthy
