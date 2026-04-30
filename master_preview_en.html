@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SIGA - Master Architectural Sync (FULL CONSOLIDATED)</title>
+    <title>SIGA - Master Architectural Sync (EN)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
@@ -49,117 +49,117 @@
 
 <header>
     <h1>🏛️ SIGA Architectural Command Center</h1>
-    <p class="subtitle">Consolidación Total - Auditoría Senior de Infraestructura Distribuida</p>
+    <p class="subtitle">International Technical Audit - Distributed High Availability Infrastructure</p>
 </header>
 
-<!-- 01. ESCENARIOS -->
+<!-- 01. SCENARIOS -->
 <div class="view-container">
-    <h2>01. Escenarios de Negocio (Casos de Uso)</h2>
+    <h2>01. Business Scenarios (Value Streams)</h2>
     <div class="mermaid">
 graph TD
-    Admin["Administrador"] -->|Configura| DTE["Gestión DTE / Facturación"]
-    Op["Operador POS"] -->|Registra| Sale["Ventas y Turnos de Caja"]
-    Bod["Bodeguero"] -->|Gestiona| Inv["Ajustes de Existencias Real"]
-    AI["Agente de IA"] -->|Ejecuta| RAG["Consulta de Stock en Lenguaje Natural (RAG)"]
+    Admin["Administrator"] -->|Configures| DTE["Tax Document (DTE) / Billing Management"]
+    Op["POS Operator"] -->|Registers| Sale["Sales and Cash Shifts"]
+    Bod["Warehouse Manager"] -->|Manages| Inv["Real-time Stock Adjustments"]
+    AI["AI Agent"] -->|Executes| RAG["Natural Language Stock Query (RAG)"]
     </div>
 </div>
 
-<!-- 02. VISTA LÓGICA -->
+<!-- 02. LOGICAL VIEW -->
 <div class="view-container">
-    <h2>02. Vista Lógica (Distribución de Capas)</h2>
+    <h2>02. Logical View (Layer Distribution)</h2>
     <div class="mermaid">
 graph LR
-    subgraph UI ["Capa de Presentación"]
-        F1["Apps Frontend (Web/Mobile/Comm)"]
+    subgraph UI ["Presentation Layer"]
+        F1["Frontend Apps (Web/Mobile/Comm)"]
     end
-    subgraph Services ["Capa de Servicios de Negocio"]
-        B1["Microservicios Core (Distribuidos)"]
+    subgraph Services ["Business Services Layer"]
+        B1["Distributed Core Microservices"]
     end
-    subgraph Data ["Capa de Persistencia"]
-        D1["Databases Físicas Independientes"]
+    subgraph Data ["Persistence Layer"]
+        D1["Independent Physical Databases"]
     end
     F1 --> B1
     B1 --> D1
     </div>
 </div>
 
-<!-- 03. DESARROLLO / MONOREPO -->
+<!-- 03. DEVELOPMENT / MONOREPO -->
 <div class="view-container">
-    <h2>03. Vista de Desarrollo (Monorepo y Servicios)</h2>
+    <h2>03. Development View (Monorepo & Services)</h2>
     <div class="mermaid">
 graph LR
-    subgraph Project ["PROYECTO SIGA"]
+    subgraph Project ["SIGA PROJECT"]
         direction LR
-        subgraph Infra_Layer ["Infraestructura"]
+        subgraph Infra_Layer ["Infrastructure"]
             Reg["registry"]
             Gate["gateway"]
         end
-        subgraph Business_Layer ["Servicios de Negocio"]
+        subgraph Business_Layer ["Business Services"]
             Auth["auth"]
             Inventory["inventory"]
             Sales["sales"]
             Bill["billing"]
             Agent["agent"]
         end
-        subgraph App_Layer ["Aplicaciones / Apps"]
+        subgraph App_Layer ["Applications / Apps"]
             Comm["commercial"]
             Land["landing"]
             Web["webapp"]
-            Mob["mobile (Desarrollo Futuro)"]
+            Mob["mobile (Future Development)"]
         end
     end
     </div>
 </div>
 
-<!-- 04. PROCESO (SECUENCIA) -->
+<!-- 04. PROCESS (SEQUENCE) -->
 <div class="view-container">
-    <h2>04. Vista de Proceso (Flujo de Transacción)</h2>
+    <h2>04. Process View (Transaction Flow)</h2>
     <div class="mermaid">
 sequenceDiagram
-    participant U as Operador
+    participant U as Operator
     participant G as Gateway
-    participant S as Venta (Sales)
-    participant I as Inventario
+    participant S as Sales Service
+    participant I as Inventory
     participant B as Billing
     
-    U->>G: POST /ventas
-    G->>S: Crear Venta
-    S->>I: Validar Stock (UUID)
+    U->>G: POST /sales
+    G->>S: Create Sale
+    S->>I: Validate Stock (UUID)
     I-->>S: Stock OK
-    S->>B: Emitir Documento Tributario
-    B-->>S: Folio Asignado
-    S-->>U: 201 Creado (Transacción Exitosa)
+    S->>B: Emit Tax Document
+    B-->>S: Folio Assigned
+    S-->>U: 201 Created (Success)
     </div>
 </div>
 
-<!-- 05. ESTADO -->
+<!-- 05. STATE -->
 <div class="view-container">
-    <h2>05. Vista de Estado (Ciclo de Vida de Venta)</h2>
+    <h2>05. State View (Sale Lifecycle)</h2>
     <div class="mermaid">
 stateDiagram-v2
-    [*] --> PENDIENTE
-    PENDIENTE --> PAGADO : Confirmación de Pago
-    PAGADO --> FACTURADO : Generación de DTE
-    FACTURADO --> [*]
+    [*] --> PENDING
+    PENDIENTE --> PAID : Payment Confirmation
+    PAID --> INVOICED : Tax Document Generation
+    INVOICED --> [*]
     </div>
 </div>
 
-<!-- 06. ACTIVIDAD -->
+<!-- 06. ACTIVITY -->
 <div class="view-container">
-    <h2>06. Vista de Actividad (Control de Stock)</h2>
+    <h2>06. Activity View (Stock Control)</h2>
     <div class="mermaid">
 graph TD
-    A["Inicio Operación"] --> B{"Stock Bajo?"}
-    B -- Sí --> C["Generar Alerta Bodega"]
-    B -- No --> D["Registrar Movimiento"]
+    A["Operation Start"] --> B{"Low Stock?"}
+    B -- Yes --> C["Generate Warehouse Alert"]
+    B -- No --> D["Register Movement"]
     C --> D
-    D --> E["Fin"]
+    D --> E["End"]
     </div>
 </div>
 
-<!-- 07. CLASES UML -->
+<!-- 07. CLASS UML -->
 <div class="view-container">
-    <h2>07. Vista de Clases (Modelos de Dominio)</h2>
+    <h2>07. Class View (Domain Models)</h2>
     <div class="mermaid">
 classDiagram
     class User {
@@ -188,28 +188,28 @@ classDiagram
     </div>
 </div>
 
-<!-- 08. PAQUETES -->
+<!-- 08. PACKAGES -->
 <div class="view-container">
-    <h2>08. Vista de Paquetes (Arquitectura Spring Boot)</h2>
+    <h2>08. Package View (Spring Boot Architecture)</h2>
     <div class="mermaid">
 graph TD
-    subgraph Spring_Module ["Módulo Estándar SIGA"]
-        C["Controller (API Rest)"] --> S["Service (Lógica)"]
+    subgraph Spring_Module ["SIGA Standard Module"]
+        C["Controller (Rest API)"] --> S["Service (Logic)"]
         S --> R["Repository (JPA)"]
         R --> E["Entity (Persistence)"]
     end
     </div>
 </div>
 
-<!-- 09. CONTRATOS API -->
+<!-- 09. API CONTRACTS -->
 <div class="view-container">
-    <h2>09. Tabla Maestra de Puertos y Servicios</h2>
+    <h2>09. Master Table of Ports and Services</h2>
     <table>
         <thead>
             <tr>
-                <th>Servicio</th>
-                <th>Puerto</th>
-                <th>Base de Datos</th>
+                <th>Service</th>
+                <th>Port</th>
+                <th>Database</th>
             </tr>
         </thead>
         <tbody>
@@ -224,9 +224,9 @@ graph TD
     </table>
 </div>
 
-<!-- 10. TOPOLOGÍA DOCKER -->
+<!-- 10. DOCKER TOPOLOGY -->
 <div class="view-container">
-    <h2>10. Vista Física (Topología de Red Interna)</h2>
+    <h2>10. Physical View (Internal Network Topology)</h2>
     <div class="mermaid">
 graph TB
     Internet((Internet)) --> Gate["API Gateway"]
@@ -236,7 +236,7 @@ graph TB
     Gate --> Billing["Billing"]
     Gate --> Agent["Agent"]
     
-    subgraph Data_Cluster ["Capa de Datos"]
+    subgraph Data_Cluster ["Persistence Layer"]
         DB1[(siga_auth)]
         DB2[(siga_inventory)]
         DB3[(siga_sales)]
@@ -252,9 +252,9 @@ graph TB
     </div>
 </div>
 
-<!-- 11. PERSISTENCIA -->
+<!-- 11. PERSISTENCE -->
 <div class="view-container">
-    <h2>11. Mapa Maestro de Persistencia (27 Tablas)</h2>
+    <h2>11. Master Persistence Map (27 Tables)</h2>
     <div class="mermaid">
 classDiagram
     class siga_auth {
