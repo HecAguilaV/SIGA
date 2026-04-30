@@ -4,12 +4,13 @@ import com.siga.inventory.entity.Product
 import com.siga.inventory.repository.ProductRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 /**
  * Controller to manage products.
  */
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/inventory/products")
 class ProductController(
     private val productRepository: ProductRepository
 ) {
@@ -19,7 +20,7 @@ class ProductController(
     }
 
     @GetMapping("/{id}")
-    fun getProductById(@PathVariable id: Int): ResponseEntity<Product> {
+    fun getProductById(@PathVariable id: UUID): ResponseEntity<Product> {
         val product = productRepository.findById(id)
         return if (product.isPresent) {
             ResponseEntity.ok(product.get())
@@ -29,12 +30,12 @@ class ProductController(
     }
 
     @GetMapping("/company/{companyId}")
-    fun getProductsByCompany(@PathVariable companyId: Int): ResponseEntity<List<Product>> {
+    fun getProductsByCompany(@PathVariable companyId: UUID): ResponseEntity<List<Product>> {
         return ResponseEntity.ok(productRepository.findByCommercialUserId(companyId))
     }
 
     @GetMapping("/category/{categoryId}")
-    fun getProductsByCategory(@PathVariable categoryId: Int): ResponseEntity<List<Product>> {
+    fun getProductsByCategory(@PathVariable categoryId: UUID): ResponseEntity<List<Product>> {
         return ResponseEntity.ok(productRepository.findByCategoryId(categoryId))
     }
 
@@ -50,11 +51,11 @@ class ProductController(
 
     @PostMapping
     fun createProduct(@RequestBody product: Product): ResponseEntity<Product> {
-        return ResponseEntity.ok(productRepository.save(product))
+        return ResponseEntity.status(201).body(productRepository.save(product))
     }
 
     @PutMapping("/{id}")
-    fun updateProduct(@PathVariable id: Int, @RequestBody product: Product): ResponseEntity<Product> {
+    fun updateProduct(@PathVariable id: UUID, @RequestBody product: Product): ResponseEntity<Product> {
         return if (productRepository.existsById(id)) {
             product.id = id
             ResponseEntity.ok(productRepository.save(product))
@@ -64,7 +65,7 @@ class ProductController(
     }
 
     @DeleteMapping("/{id}")
-    fun deleteProduct(@PathVariable id: Int): ResponseEntity<Void> {
+    fun deleteProduct(@PathVariable id: UUID): ResponseEntity<Void> {
         return if (productRepository.existsById(id)) {
             productRepository.deleteById(id)
             ResponseEntity.noContent().build()

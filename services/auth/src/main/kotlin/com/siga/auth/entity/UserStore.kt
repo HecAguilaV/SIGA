@@ -3,14 +3,15 @@ package com.siga.auth.entity
 import jakarta.persistence.*
 import java.io.Serializable
 import java.time.Instant
+import java.util.UUID
 
 @Embeddable
 class UserStoreId(
     @Column(name = "user_id", nullable = false)
-    var userId: Int = 0,
+    var userId: UUID? = null,
 
     @Column(name = "store_id", nullable = false)
-    var storeId: Int = 0
+    var storeId: UUID? = null
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -18,7 +19,7 @@ class UserStoreId(
         return userId == other.userId && storeId == other.storeId
     }
 
-    override fun hashCode(): Int = 31 * userId.hashCode() + storeId.hashCode()
+    override fun hashCode(): Int = 31 * (userId?.hashCode() ?: 0) + (storeId?.hashCode() ?: 0)
 }
 
 @Entity

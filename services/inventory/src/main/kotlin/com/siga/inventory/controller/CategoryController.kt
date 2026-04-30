@@ -4,12 +4,13 @@ import com.siga.inventory.entity.Category
 import com.siga.inventory.repository.CategoryRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 /**
  * Controller to manage product categories.
  */
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/inventory/categories")
 class CategoryController(
     private val categoryRepository: CategoryRepository
 ) {
@@ -19,7 +20,7 @@ class CategoryController(
     }
 
     @GetMapping("/{id}")
-    fun getCategoryById(@PathVariable id: Int): ResponseEntity<Category> {
+    fun getCategoryById(@PathVariable id: UUID): ResponseEntity<Category> {
         val category = categoryRepository.findById(id)
         return if (category.isPresent) {
             ResponseEntity.ok(category.get())
@@ -28,16 +29,31 @@ class CategoryController(
         }
     }
 
+    @GetMapping("/company/{companyId}")
+    fun getCategoriesByCompany(@PathVariable companyId: UUID): ResponseEntity<List<Category>> {
+        return ResponseEntity.ok(categoryRepository.findByCommercialUserId(companyId))
+    }
+
     @PostMapping
     fun createCategory(@RequestBody category: Category): ResponseEntity<Category> {
-        return ResponseEntity.ok(categoryRepository.save(category))
+        return ResponseEntity.status(201).body(categoryRepository.save(category))
     }
 
     @PutMapping("/{id}")
-    fun updateCategory(@PathVariable id: Int, @RequestBody category: Category): ResponseEntity<Category> {
+    fun updateCategory(@PathVariable id: UUID, @RequestBody category: Category): ResponseEntity<Category> {
         return if (categoryRepository.existsById(id)) {
             category.id = id
             ResponseEntity.ok(categoryRepository.save(category))
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteCategory(@PathVariable id: UUID): ResponseEntity<Void> {
+        return if (categoryRepository.existsById(id)) {
+            categoryRepository.deleteById(id)
+            ResponseEntity.noContent().build()
         } else {
             ResponseEntity.notFound().build()
         }

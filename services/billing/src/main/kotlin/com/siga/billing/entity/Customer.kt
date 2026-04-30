@@ -2,6 +2,7 @@ package com.siga.billing.entity
 
 import jakarta.persistence.*
 import java.time.Instant
+import java.util.UUID
 
 /**
  * Entity representing a commercial user/company.
@@ -11,8 +12,8 @@ import java.time.Instant
 @Table(name = "customers", schema = "commercial")
 class Customer(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(nullable = false, unique = true, length = 255)
     var email: String,
@@ -51,7 +52,7 @@ class Customer(
     var role: String = "customer",
 
     @Column(name = "plan_id")
-    var planId: Int? = null,
+    var planId: UUID? = null,
 
     @Column(name = "created_at", nullable = false)
     var createdAt: Instant = Instant.now(),
@@ -59,13 +60,25 @@ class Customer(
     @Column(name = "updated_at", nullable = false)
     var updatedAt: Instant = Instant.now()
 ) {
+    @PrePersist
+    fun onPrePersist() {
+        val now = Instant.now()
+        if (createdAt == null) createdAt = now
+        updatedAt = now
+    }
+
+    @PreUpdate
+    fun onPreUpdate() {
+        updatedAt = Instant.now()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Customer) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "Customer(id=$id, email=$email, companyName=$companyName)"
 }

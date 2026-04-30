@@ -2,13 +2,14 @@ package com.siga.inventory.entity
 
 import jakarta.persistence.*
 import java.time.Instant
+import java.util.UUID
 
 @Entity
 @Table(name = "stores", schema = "inventory")
 class Store(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(nullable = false, length = 255)
     var name: String,
@@ -23,18 +24,23 @@ class Store(
     var isActive: Boolean = true,
 
     @Column(name = "commercial_user_id")
-    val commercialUserId: Int? = null,
+    var commercialUserId: UUID? = null,
 
-    @Column(name = "created_at", nullable = false)
-    val createdAt: Instant = Instant.now()
+    @Column(name = "created_at", nullable = false, updatable = false)
+    var createdAt: Instant? = null
 ) {
+    @PrePersist
+    fun onPrePersist() {
+        if (createdAt == null) createdAt = Instant.now()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Store) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "Store(id=$id, name=$name, city=$city)"
 }

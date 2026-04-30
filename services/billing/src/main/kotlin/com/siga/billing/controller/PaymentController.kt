@@ -4,12 +4,13 @@ import com.siga.billing.entity.Payment
 import com.siga.billing.repository.PaymentRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 /**
  * Controller to manage payments.
  */
 @RestController
-@RequestMapping("/api/billing/payments")
+@RequestMapping("/api/v1/billing/payments")
 class PaymentController(
     private val paymentRepository: PaymentRepository
 ) {
@@ -19,7 +20,7 @@ class PaymentController(
     }
 
     @GetMapping("/{id}")
-    fun getPaymentById(@PathVariable id: Int): ResponseEntity<Payment> {
+    fun getPaymentById(@PathVariable id: UUID): ResponseEntity<Payment> {
         val payment = paymentRepository.findById(id)
         return if (payment.isPresent) {
             ResponseEntity.ok(payment.get())
@@ -29,7 +30,7 @@ class PaymentController(
     }
 
     @GetMapping("/customer/{customerId}")
-    fun getPaymentsByCustomer(@PathVariable customerId: Int): ResponseEntity<List<Payment>> {
+    fun getPaymentsByCustomer(@PathVariable customerId: UUID): ResponseEntity<List<Payment>> {
         return ResponseEntity.ok(paymentRepository.findByCustomerId(customerId))
     }
 

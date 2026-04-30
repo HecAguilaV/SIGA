@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS inventory
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS INVENTORY
     driverClassName: org.h2.Driver
     username: sa
     password:
@@ -8,10 +8,12 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
+    show-sql: true
     properties:
       hibernate:
-        default_schema: PUBLIC
+        format_sql: true
+        default_schema: inventory
 
-eureka:
-  client:
-    enabled: false
+# Security bypass for integration tests
+jwt:
+  secret: test-secret-key-that-is-long-enough-for-hs256-algorithm-123456

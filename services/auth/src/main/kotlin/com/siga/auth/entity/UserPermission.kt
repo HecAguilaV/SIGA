@@ -3,11 +3,12 @@ package com.siga.auth.entity
 import jakarta.persistence.*
 import java.io.Serializable
 import java.time.Instant
+import java.util.UUID
 
 @Embeddable
 class UserPermissionId(
     @Column(name = "user_id", nullable = false)
-    var userId: Int = 0,
+    var userId: UUID? = null,
 
     @Column(name = "permission_id", nullable = false)
     var permissionId: Int = 0
@@ -18,7 +19,7 @@ class UserPermissionId(
         return userId == other.userId && permissionId == other.permissionId
     }
 
-    override fun hashCode(): Int = 31 * userId.hashCode() + permissionId.hashCode()
+    override fun hashCode(): Int = 31 * (userId?.hashCode() ?: 0) + permissionId.hashCode()
 }
 
 @Entity
@@ -31,7 +32,7 @@ class UserPermission(
     val assignedAt: Instant = Instant.now(),
 
     @Column(name = "assigned_by")
-    val assignedBy: Int? = null,
+    val assignedBy: UUID? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

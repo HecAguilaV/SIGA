@@ -43,6 +43,10 @@ captures/
 .env
 *.pem
 *.key
+keystore.properties
+local.properties
+CREDENTIALS.md
 
-# Gentle AI / SDD
+# Tools & SDD
+.tools/
 .atl/
