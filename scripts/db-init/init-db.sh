@@ -31,4 +31,14 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     GRANT ALL PRIVILEGES ON DATABASE siga_agent TO agent_user;
 EOSQL
 
+# 4. Create Schemas inside each database
+# We connect to each DB and create the required schema
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "siga_auth" <<-EOSQL
+    CREATE SCHEMA IF NOT EXISTS siga_saas AUTHORIZATION auth_user;
+EOSQL
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "siga_inventory" <<-EOSQL
+    CREATE SCHEMA IF NOT EXISTS inventory AUTHORIZATION inventory_user;
+EOSQL
+
 echo "✅ SIGA Databases and Users created successfully!"
