@@ -6,73 +6,62 @@
 
 *Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](README.en.md)*
 
-Bienvenido a **SIGA**, una solución tecnológica inteligente diseñada específicamente para **Pymes** (desde 1 a N sucursales). El núcleo operativo de SIGA es la **Gestión de Activos (Inventario)** impulsado por **Agentes de Inteligencia Artificial**.
+Bienvenido a **SIGA**, un ecosistema inteligente diseñado para la **Gestión de Activos e Inventarios** en Pymes multi-sucursal. A diferencia de un ERP tradicional, SIGA integra **Agentes de IA Operativos** que actúan como co-pilotos en la administración del negocio.
 
-Este proyecto es una **Arquitectura de Microservicios Multi-tenant alojada en un Monorepo**. Cada servicio opera dentro de su propio esquema de base de datos (`database-per-service`), asegurando aislamiento, resiliencia y escalabilidad bajo un modelo SaaS puro.
+Este repositorio es un **Monorepo de Microservicios** con arquitectura **Zero-Trust** y aislamiento de datos por esquema (**Database-per-service**).
 
-## Documentación Educativa
+---
 
-Dado el rápido avance técnico del proyecto con la ayuda de agentes de IA, hemos compilado un documento académico que detalla la estructura, flujo y diseño de arquitectura.
-> **[Leer el Diario de Aprendizaje (Learning Log)](docs/es/learning/LEARNING.md)**
-> **[Ver Arquitectura Modelo C4 (Nivel 1 y 2)](docs/es/architecture/C4_MODEL.md)**
+## 📚 Bóveda Documental (Simetría Bilingüe)
 
-## Arquitectura del Sistema (V2)
+Hemos establecido un estándar de **Espejo Semántico** para garantizar que la documentación esté siempre disponible y actualizada en ambos idiomas.
 
-SIGA está construido sobre un ecosistema de microservicios robusto (Java/Kotlin + Spring Boot):
+| Sección | 🇪🇸 Castellano (Nativo) | 🇺🇸 English (Mirror) |
+| :--- | :--- | :--- |
+| **Arquitectura** | [Modelo C4 L1/L2](docs/es/arquitectura/MODELO_C4.md) | [C4 Model L1/L2](docs/en/architecture/C4_MODEL.md) |
+| **Seguridad** | [Manifiesto de Seguridad](docs/es/security/MANIFIESTO_SEGURIDAD.md) | [Security Manifesto](docs/en/security/SECURITY_MANIFESTO.md) |
+| **Negocio** | [Reglas de Negocio Core](docs/es/arquitectura/REGLAS_NEGOCIO_CORE.md) | [Core Business Rules](docs/en/architecture/CORE_BUSINESS.md) |
+| **Testing/APIs** | [Colección Postman](docs/es/api/siga-apis.postman_collection.json) | [Postman Collection](docs/en/api/siga-apis.postman_collection.json) |
+| **Front-end** | [Pacto de Frontend](docs/es/arquitectura/PACTO_FRONTEND.md) | [Frontend Pact](docs/en/architecture/FRONTEND_PACT.md) |
 
-### Microservicios Core (Backend)
-- **Service Registry (`siga-eureka`)**: El corazón del descubrimiento de servicios.
-- **API Gateway (`siga-gateway`)**: El único punto de entrada público, responsable del enrutamiento.
-- **Auth Service (`siga-auth`)**: Emisión y validación de tokens corporativos JWT.
-- **Inventory Service (`siga-inventory`)**: El núcleo del sistema. Gestión de productos, categorías y stock por tienda.
-- **Sales Service (`siga-sales`)**: Módulo POS (Punto de Venta) diseñado para la deducción precisa de stock por sucursal.
-- **AI Agent (`siga-agent`)**: Motor de inteligencia operativa impulsado por **LangChain/Strands** y memoria vectorial en **PGVector**. Procesa analíticas y automatizaciones para cada Tenant.
-- **Billing Service (`siga-billing`)**: Gestión de transacciones comerciales y facturas.
 
-### Interfaces de Usuario
-- **Webapp V2 (`/services/webapp`)**: Consola de administración construida con **Svelte 5 / SvelteKit**. Cuenta con un sistema de diseño premium (*Void/Glassmorphism*).
-- **Mobile (`/services/mobile`)**: Aplicación para operadores en terreno (Android / Jetpack Compose).
-- **Commercial Portal (`/services/comercial`)**: Escaparate B2B y página de aterrizaje (Landing Page).
+---
 
-## Despliegue y Arranque Rápido
+## 🛠️ Stack Tecnológico (V2)
 
-Todo el backend está orquestado con Docker, y el ciclo de vida (CI/CD) está delegado en GitHub Actions para mantener el entorno de desarrollo ágil y libre de carga computacional excesiva.
+SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y la legalidad:
+
+- **Backend**: Java/Kotlin + Spring Boot 3.2.x (Arquitectura Hexagonal).
+- **IA**: Python + LangChain + PGVector (Memoria Semántica por Tenant).
+- **Frontend**: Svelte 5 (Webapp) & Jetpack Compose (Mobile).
+- **Persistencia**: PostgreSQL con aislamiento de esquemas y **UUID v4** como estándar de seudonimización.
+- **Seguridad**: JWT (Stateless) y cumplimiento estricto con la **Ley Chilena 21.719**.
+
+---
+
+## 🚀 Despegue Rápido
+
+El entorno está 100% dockerizado para un inicio inmediato.
 
 ```bash
-# 1. Levantar la infraestructura del backend (Base de datos y Microservicios desde Docker Hub)
+# 1. Levantar infraestructura completa (DB + Microservicios)
 docker-compose up -d
 
-# 2. Levantar el Frontend V2
+# 2. Iniciar Webapp de Administración
 cd services/webapp
-npm install
-npm run dev
+pnpm install && pnpm dev
 ```
 
-> **Acceso a la UI**: El frontend se expondrá en `http://localhost:5173`. Para demostraciones académicas, utilice: `admin@siga.cl` / `admin`.
+**Credenciales de Demo**: `admin@siga.cl` / `admin` (Tenant Alpha).
 
-## Gobernanza y Reglas de Desarrollo
+---
 
-Este proyecto aplica estrictas normas de ingeniería (Spec-Driven Development):
+## ⚖️ Gobernanza y Compliance
 
-- **Trazabilidad SDD**: Todos los cambios arquitectónicos deben originarse a partir de una `propuesta` aprobada y registrada en el sistema de memoria *Engram*.
-- **Evolución de Commits (Estándar Bilingüe)**: El proyecto inició con una política de commits estrictamente en español. Tras recibir feedback de desarrolladores Senior y alinearse con estándares internacionales de ingeniería, se ha evolucionado hacia un modelo de **Commits Bilingües**. Esto garantiza legibilidad local y compatibilidad con equipos globales.
-- **Seguridad y Privacidad**: Adopción de normas de privacidad requeridas por la **Ley Chilena 21.719** a través del módulo transversal de auditoría (`siga-common`).
-
-## Problemas Conocidos (En Desarrollo)
-
-- **Sincronización Eureka**: Tras el primer arranque, los servicios pueden tardar hasta 60 segundos en aparecer en el Gateway mientras se completan los registros en Eureka.
-
-## Requisitos y Acceso Remoto
-
-### Requisitos de Hardware
-Para un despliegue fluido del ecosistema completo (incluyendo los modelos de IA local):
-- **RAM Mínima**: 12GB (asignar al menos 8GB a Docker Desktop/Engine).
-- **Almacenamiento**: 15GB de espacio libre (debido al peso de las imágenes de IA).
-
-### Acceso Remoto y SSH
-SIGA está preparado para entornos de desarrollo remoto distribuido:
-- **SSH & Tailscale**: Se recomienda el uso de **Tailscale** para establecer un túnel seguro punto a punto entre la máquina de desarrollo y el servidor de despliegue.
-- **HTTPS Público (Tailscale Funnel)**: Para compartir el sistema con terceros sin abrir puertos, ejecute: `tailscale funnel 8080`. Esto generará una URL pública segura con certificado SSL automático.
+Este proyecto no solo es código, es una implementación legalmente responsable:
+- **Privacy by Design**: Cumplimiento del Art. 14 quáter de la Ley 21.719.
+- **SDD (Spec-Driven Development)**: Cada cambio es trazable y nace de una especificación técnica.
+- **Commits Bilingües**: Estándar internacional para equipos distribuidos.
 
 ---
 > Un Soñador con poca RAM 🧑‍💻

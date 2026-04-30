@@ -28,7 +28,7 @@ Responsable de la seguridad, identidad y multi-tenencia.
 
 | Tabla | Atributo | Tipo | Descripción |
 |-------|----------|------|-------------|
-| **users** | `id` | SERIAL (PK) | Identificador único |
+| **users** | `id` | UUID (PK) | Identificador único |
 | | `email` | VARCHAR(255) | Único, para login |
 | | `password_hash` | VARCHAR(255) | Hash BCrypt |
 | | `role` | ENUM | ADMIN, OPERATOR, OWNER |
