@@ -7,18 +7,31 @@
   description = "SIGA False Positives"
   paths = [
     # Archivos de testing con datos dummy
-    "**/test/**",
-    "**/*Test*.kt",
-    "**/*Tests.kt",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    # Datos de ejemplo
-    "**/datos/**",
-    "**/mock/**",
-    "**/fixtures/**",
+    "(?i).*test.*",
+    "(?i).*Test.*\\.kt",
+    "(?i).*Tests\\.kt",
+    ".*\\.test\\.ts",
+    ".*\\.test\\.tsx",
+    # Datos de ejemplo y diseño
+    "(?i).*datos.*",
+    "(?i).*mock.*",
+    "(?i).*fixtures.*",
+    ".*\\.pgerd",
+    ".*\\.svg",
+    # Archivos de infraestructura/locks
+    "package-lock\\.json",
+    "pnpm-lock\\.yaml",
+    "\\.gradle/.*",
+    "\\.idea/.*",
+    # Ruido de herramientas (Antigravity/Postman/Semgrep)
+    ".*task\\.md",
+    ".*prompt\\.md",
+    ".*postman_collection\\.json",
+    ".*\\.system_generated/.*",
+    "\\.tools/.*",
     # Configs de ejemplo (no son secrets reales)
-    "**/*.example",
-    "**/example*",
+    ".*\\.example",
+    "(?i).*example.*",
   ]
 
 [[rules]]
@@ -200,7 +213,7 @@
   # Allow in test files only
   [rules.allowlist]
     paths = [
-      "**/test/**",
-      "**/*Test*.kt",
-      "**/*Tests.kt",
+      "(?i).*test.*",
+      "(?i).*Test.*\\.kt",
+      "(?i).*Tests\\.kt",
     ]

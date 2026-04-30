@@ -161,6 +161,13 @@ rules:
     - Mantener tareas lo suficientemente pequeñas para completar en una sesión
     - Cada tarea de seguridad debe incluir test de verificación
 
+  # Reglas para implementación (apply)
+  apply:
+    - Seguir los patrones y convenciones de código existentes (Arquitectura Hexagonal).
+    - [SEC] USAR UUID para todas las claves primarias y foráneas (Ley 21.719).
+    - Implementar Auditoría (@PrePersist/@PreUpdate) en todas las entidades.
+    - Mantener consistencia bilingüe en referencias de usuario (commercialUserId).
+
   # Reglas para verificación (verify)
   verify:
     - Verificar cobertura de tests

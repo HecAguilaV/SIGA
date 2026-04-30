@@ -2,6 +2,7 @@ package com.siga.inventory.entity
 
 import jakarta.persistence.*
 import java.time.Instant
+import java.util.UUID
 
 @Entity
 @Table(
@@ -10,14 +11,14 @@ import java.time.Instant
 )
 class Stock(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(name = "product_id", nullable = false)
-    val productId: Int,
+    var productId: UUID,
 
     @Column(name = "store_id", nullable = false)
-    val storeId: Int,
+    var storeId: UUID,
 
     @Column(nullable = false)
     var quantity: Int = 0,
@@ -26,15 +27,21 @@ class Stock(
     var minimumQuantity: Int = 0,
 
     @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now()
+    var updatedAt: Instant? = null
 ) {
+    @PrePersist
+    @PreUpdate
+    fun onUpdate() {
+        updatedAt = Instant.now()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Stock) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "Stock(id=$id, productId=$productId, storeId=$storeId, quantity=$quantity)"
 }

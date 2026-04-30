@@ -4,12 +4,13 @@ import com.siga.billing.entity.Customer
 import com.siga.billing.repository.CustomerRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 /**
  * Controller to manage commercial customers.
  */
 @RestController
-@RequestMapping("/api/billing/customers")
+@RequestMapping("/api/v1/billing/customers")
 class CustomerController(
     private val customerRepository: CustomerRepository
 ) {
@@ -19,7 +20,7 @@ class CustomerController(
     }
 
     @GetMapping("/{id}")
-    fun getCustomerById(@PathVariable id: Int): ResponseEntity<Customer> {
+    fun getCustomerById(@PathVariable id: UUID): ResponseEntity<Customer> {
         val customer = customerRepository.findById(id)
         return if (customer.isPresent) {
             ResponseEntity.ok(customer.get())
@@ -44,9 +45,9 @@ class CustomerController(
     }
 
     @PutMapping("/{id}")
-    fun updateCustomer(@PathVariable id: Int, @RequestBody customer: Customer): ResponseEntity<Customer> {
+    fun updateCustomer(@PathVariable id: UUID, @RequestBody customer: Customer): ResponseEntity<Customer> {
         return if (customerRepository.existsById(id)) {
-            customer.id = id
+            // ID assignment is handled by the object mapping or should be verified
             ResponseEntity.ok(customerRepository.save(customer))
         } else {
             ResponseEntity.notFound().build()

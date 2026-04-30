@@ -3,6 +3,7 @@ package com.siga.billing.entity
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
+import java.util.UUID
 
 /**
  * Record of a payment made by the customer.
@@ -11,14 +12,14 @@ import java.time.Instant
 @Table(name = "payments", schema = "commercial")
 class Payment(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(name = "subscription_id", nullable = false)
-    var subscriptionId: Int,
+    var subscriptionId: UUID,
 
     @Column(name = "customer_id", nullable = false)
-    var customerId: Int,
+    var customerId: UUID,
 
     @Column(nullable = false, precision = 10, scale = 2)
     var amount: BigDecimal,
@@ -36,13 +37,18 @@ class Payment(
     @Column(name = "paid_at")
     var paidAt: Instant = Instant.now()
 ) {
+    @PrePersist
+    fun onPrePersist() {
+        if (paidAt == null) paidAt = Instant.now()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Payment) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "Payment(id=$id, amount=$amount, status=$status)"
 }

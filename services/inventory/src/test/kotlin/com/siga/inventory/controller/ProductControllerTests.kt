@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.util.UUID
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -24,15 +25,15 @@ class ProductControllerTests : DescribeSpec() {
         describe("ProductController Integration") {
 
             it("given no token when requesting products then should return 403 Forbidden") {
-                mockMvc.perform(get("/api/products"))
+                mockMvc.perform(get("/api/v1/inventory/products"))
                     .andExpect(status().isForbidden)
             }
 
             it("given mock user when requesting products then should return 200 OK") {
                 mockMvc.perform(
-                    get("/api/products")
+                    get("/api/v1/inventory/products")
                         .with(user("testuser"))
-                        .header("X-Tenant-Id", "50")
+                        .header("X-Tenant-Id", UUID.randomUUID().toString())
                 ).andExpect(status().isOk)
             }
         }
