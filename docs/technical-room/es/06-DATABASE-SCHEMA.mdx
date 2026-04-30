@@ -1,0 +1,96 @@
+# 06. Esquema de Base de Datos (Persistencia Distribuida)
+
+Describe la estructura de datos física y lógica de SIGA, organizada bajo el patrón de **Una Base de Datos por Servicio**.
+
+[🇺🇸 View English Version](../en/06-DATABASE-SCHEMA.mdx)
+
+## 1. Estrategia de Gestión (Flyway)
+
+En lugar de scripts manuales y centralizados, SIGA utiliza **Flyway** para el control de versiones de la base de datos.
+*   **Ubicación**: `src/main/resources/db/migration/` en cada microservicio.
+*   **Ejecución**: Automática al iniciar el servicio.
+*   **Visibilidad**: Las tablas se crean al arrancar el contenedor, permitiendo su inspección inmediata en pgAdmin.
+
+---
+
+## 2. Servicios sin Persistencia Física (Stateless)
+
+Los siguientes módulos **NO** requieren base de datos propia, ya que operan en memoria o actúan como enrutadores:
+*   **siga-registry (Eureka)**: Directorio dinámico de servicios (Service Discovery).
+*   **siga-gateway**: Enrutador de peticiones y balanceador de carga.
+
+---
+
+## 3. Diccionario de Datos por Servicio
+
+### A. Base de Datos: `siga_auth`
+Responsable de la seguridad, identidad y multi-tenencia.
+
+| Tabla | Atributo | Tipo | Descripción |
+|-------|----------|------|-------------|
+| **users** | `id` | SERIAL (PK) | Identificador único |
+| | `email` | VARCHAR(255) | Único, para login |
+| | `password_hash` | VARCHAR(255) | Hash BCrypt |
+| | `role` | ENUM | ADMIN, OPERATOR, OWNER |
+| | `tenant_id` | UUID (FK) | Relación con la empresa |
+| **tenants** | `id` | UUID (PK) | Identificador de la empresa (Tenant) |
+| | `name` | VARCHAR(100) | Nombre comercial |
+| | `plan` | ENUM | FREE, PRO, ENTERPRISE |
+
+### B. Base de Datos: `siga_inventory`
+Gestión de activos y existencias.
+
+| Tabla | Atributo | Tipo | Descripción |
+|-------|----------|------|-------------|
+| **products** | `id` | UUID (PK) | ID global del producto |
+| | `sku` | VARCHAR(50) | Código de stock único |
+| | `name` | VARCHAR(255) | Nombre descriptivo |
+| | `base_price` | DECIMAL | Precio sin impuestos |
+| | `tenant_id` | UUID | Discriminador multi-tenant |
+| **stocks** | `id` | UUID (PK) | Registro de inventario |
+| | `product_id` | UUID | Referencia lógica al producto |
+| | `quantity` | INTEGER | Cantidad actual |
+
+### C. Base de Datos: `siga_sales`
+Registro de transacciones POS en tiempo real.
+
+| Tabla | Atributo | Tipo | Descripción |
+|-------|----------|------|-------------|
+| **sales** | `id` | UUID (PK) | ID de la boleta/venta |
+| | `total` | DECIMAL | Monto final cobrado |
+| | `status` | ENUM | PENDIENTE, PAGADA, CANCELADA |
+| | `tenant_id` | UUID | Discriminador multi-tenant |
+| **sale_items** | `id` | SERIAL (PK) | Ítem de la venta |
+| | `sale_id` | UUID | Relación con la cabecera |
+| | `product_id` | UUID | **Referencia Lógica** a Inventario |
+
+### D. Base de Datos: `siga_billing`
+Gestión tributaria, facturación y DTEs.
+
+| Tabla | Atributo | Tipo | Descripción |
+|-------|----------|------|-------------|
+| **invoices** | `id` | UUID (PK) | ID legal de la factura/boleta |
+| | `sale_id` | UUID | Referencia a la transacción original |
+| | `tax_amount` | DECIMAL | Impuestos aplicados (IVA/otros) |
+| | `folio_number` | BIGINT | Número correlativo fiscal |
+| | `pdf_url` | VARCHAR(512) | Enlace al documento generado |
+
+### E. Base de Datos: `siga_agent`
+Memoria semántica y logs de capacidades agénticas.
+
+| Tabla | Atributo | Tipo | Descripción |
+|-------|----------|------|-------------|
+| **intent_logs** | `id` | UUID (PK) | Auditoría de comandos del Agente |
+| | `query` | TEXT | Transcripción de voz/texto |
+| | `intent_name` | VARCHAR(100) | Intención detectada (ej: CREATE_SALE) |
+| | `confidence` | FLOAT | Nivel de certeza de la IA |
+| **intent_permissions**| `id` | SERIAL (PK) | Configuración de permisos por plan |
+
+---
+
+## 4. Integridad Referencial Distribuida
+
+Al usar bases de datos físicas independientes, la integridad se mantiene mediante **IDs de Referencia (UUIDs)** y no mediante Claves Foráneas (FK) físicas del motor SQL. Esto garantiza que cada servicio pueda escalar y fallar de forma independiente.
+
+---
+> **Un Soñador con poca RAM 🧑~💻**
