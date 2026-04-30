@@ -1,67 +1,63 @@
-# 04. Process View (Flow & Transactions)
+# 04. Process View (Flow & States)
 
-The Process View describes how information flows between microservices to complete a business transaction.
+Describes system dynamics: how services interact and how entities change state.
 
 [🇪🇸 Ver versión en Español](../es/04-PROCESS-VIEW.mdx)
 
-## 1. Sales Flow and Inventory Synchronization
-
-This diagram details the interaction from the moment the customer confirms the purchase until the stock is safely updated.
+## 1. Sequence Diagram: Sale Registration
 
 ```mermaid
 sequenceDiagram
-    participant Web as WebApp (Svelte)
-    participant GT as API Gateway
-    participant Sales as Siga-Sales
-    participant Inv as Siga-Inventory
+    autonumber
+    participant U as User
+    participant G as API Gateway
+    participant S as Siga-Sales
+    participant I as Siga-Inventory
 
-    Web->>GT: POST /sales/checkout (JWT)
-    GT->>Sales: Forward Request
-    Sales->>Sales: Validate Cart and Totals
-    Sales->>Inv: Request Stock Reservation
-    
+    U->>G: POST /sales/payment
+    G->>S: Request Redirection
+    S->>I: Validate and Reserve Stock
     alt Stock Available
-        Inv-->>Sales: Successful Reservation
-        Sales->>Sales: Generate Invoice
-        Sales->>Inv: Confirm Stock Dispatch
-        Sales-->>Web: 201 Created (Success)
-    else Insufficient Stock
-        Inv-->>Sales: Availability Error
-        Sales-->>Web: 400 Error (Out of Stock)
+        I-->>S: Successful Reservation
+        S->>S: Generate Invoice
+        S-->>G: 201 Created
+        G-->>U: Success Confirmation
+    else Out of Stock
+        I-->>S: Insufficient Stock
+        S-->>G: 400 Bad Request
+        G-->>U: Error: Product Sold Out
     end
 ```
 
-## 2. Distributed Consistency (SAGA Pattern)
+## 2. State Diagram: Sale Lifecycle
 
-SIGA uses an **Orchestration-based SAGA** for complex processes that span multiple services.
+This diagram details the system's state transition logic.
 
 ```mermaid
-graph TD
-    Start((Start Transaction)) --> Validate[Validate Identity]
-    Validate --> Subscribe[Create Subscription]
-    Subscribe --> Charge[Process Bank Payment]
-    
-    Charge -- Success --> Activate[Activate Service]
-    Activate --> End((End: Success))
-    
-    Charge -- Failure --> Compensate[Compensate: Cancel Subscription]
-    Compensate --> Notify[Notify User Error]
-    Notify --> Fail((End: Failure))
+stateDiagram-v2
+    [*] --> DRAFT: User adds products
+    DRAFT --> PENDING_PAYMENT: Checkout initiated
+    PENDING_PAYMENT --> PAID: Payment Confirmation
+    PENDING_PAYMENT --> CANCELLED: Timeout / Error
+    PAID --> DELIVERED: Products delivered
+    PAID --> REFUNDED: Refund requested
+    DELIVERED --> [*]
+    CANCELLED --> [*]
+    REFUNDED --> [*]
 
-    style Start fill:#0f172a,stroke:#38bdf8,color:#fff
-    style End fill:#0369a1,stroke:#38bdf8,color:#fff
-    style Fail fill:#991b1b,stroke:#f87171,color:#fff
+    state PENDING_PAYMENT {
+        [*] --> LogicalLock
+        LogicalLock --> [*]
+    }
+    note right of PENDING_PAYMENT : Stock is temporarily reserved.
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why do we avoid Spanglish in diagrams?**
-> "High-level technical documentation must be consistent. Using terms in a single language (except for industrial standards like 'Gateway' or 'SAGA') facilitates understanding for international teams and demonstrates an editorial discipline that is fundamental in large-scale projects."
->
-> **Why Orchestration in the SAGA?**
-> "We chose orchestration (a central conductor) over choreography (loose events) because in an ERP, traceability is paramount. We need to know exactly at what point a charge failed and ensure that the compensating action was executed correctly."
+> **Why use a State Diagram?**
+> "Transactional integrity doesn't just depend on the database, but on object state coherence. By defining clear states like 'PENDING_PAYMENT', we allow the system to perform a **Logical Lock (Soft-lock)** on stock, preventing duplicate sales of the same item."
 
 ---
-> **Un Soñador con poca RAM 🧑‍💻**
+> **Un Soñador con poca RAM 🧑~💻**

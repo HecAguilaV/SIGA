@@ -1,92 +1,117 @@
-# 02. Logical View (Hexagonal & Data)
+# 02. Logical View (Design & Data)
 
-The Logical View focuses on the system's functional structure. In SIGA, we apply **Hexagonal Architecture (Ports and Adapters)** to decouple business rules from technical details.
+The Logical View describes the technical organization of the system, focusing on decoupling and data integrity.
 
 [🇪🇸 Ver versión en Español](../es/02-LOGICAL-VIEW.mdx)
 
-## 1. Detailed Hexagonal Architecture
+## 1. Hexagonal Architecture (Ports and Adapters)
+
+This pattern ensures that the core of SIGA remains independent of databases or frameworks.
 
 ```mermaid
 graph TD
-    subgraph "Inbound Adapters"
-        Web[RestController / API]
-        EventIn[Event Listener / Kafka]
+    subgraph Inbound [<b>Inbound Adapters</b>]
+        Rest[REST Controller]
+        Kafka[Kafka Consumer]
     end
 
-    subgraph "Input Port"
-        IService[InventoryService Interface]
+    subgraph Core [<b>Domain (Business Rules)</b>]
+        Service[Application Service]
+        Entity[Business Entities]
     end
 
-    subgraph "Domain (Core)"
-        Logic[Business Logic / Entities]
+    subgraph Outbound [<b>Outbound Adapters</b>]
+        Jpa[JPA Persistence Adapter]
+        Feign[Feign Microservices Client]
     end
 
-    subgraph "Output Port"
-        IRepo[InventoryRepository Interface]
-        IExt[ExternalClient Interface]
-    end
+    Rest & Kafka --> Service
+    Service --> Entity
+    Entity --> Jpa & Feign
 
-    subgraph "Outbound Adapters"
-        DB[Postgres Adapter]
-        Feign[FeignClient / Other Services]
-    end
-
-    Web --> IService
-    IService --> Logic
-    Logic --> IRepo
-    Logic --> IExt
-    IRepo --> DB
-    IExt --> Feign
-
-    style Logic fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
-    style Web fill:#0f172a,stroke:#38bdf8,color:#fff
-    style DB fill:#0f172a,stroke:#38bdf8,color:#fff
+    style Core fill:#0369a120,stroke:#38bdf8,stroke-width:3px
+    style Inbound fill:#0ea5e90a,stroke:#38bdf8
+    style Outbound fill:#0ea5e90a,stroke:#38bdf8
 ```
 
-## 2. Domain Class Diagram (Moderate Level)
+## 2. Domain Class Diagram (UML)
 
-This diagram shows the key relationships between the system's main entities.
+Representation of business objects and their structural relationships.
 
 ```mermaid
 classDiagram
+    direction LR
     class Product {
-        +UUID id
-        +String sku
-        +String name
-        +Decimal basePrice
-        +updateStock(qty)
-    }
-    class Sale {
-        +UUID id
-        +DateTime createdAt
-        +Decimal total
+        -UUID id
+        -String sku
+        -BigDecimal price
         +calculateTax()
     }
-    class Stock {
-        +UUID id
-        +Integer quantity
-        +UUID branchId
+    class Sale {
+        -UUID id
+        -LocalDateTime timestamp
+        +process()
     }
-    class User {
-        +UUID id
-        +String email
-        +Role role
+    class SaleItem {
+        -Integer quantity
+        -BigDecimal subtotal
+    }
+    class Stock {
+        -Integer quantity
+        -Integer threshold
     }
     
-    Product "1" -- "0..*" Stock : tracks
-    Sale "1" -- "1..*" Product : contains
-    User "1" -- "0..*" Sale : registers
+    Sale "1" *-- "1..*" SaleItem : composition
+    SaleItem "0..*" --o "1" Product : references
+    Product "1" *-- "0..*" Stock : tracks
+    
+    style Product fill:#1e293b,stroke:#38bdf8,color:#fff
+    style Sale fill:#1e293b,stroke:#38bdf8,color:#fff
+```
+
+## 3. Entity-Relationship Diagram (Persistence)
+
+Physical data mapping in the PostgreSQL database.
+
+```mermaid
+erDiagram
+    PRODUCTS ||--o{ STOCKS : "has"
+    PRODUCTS ||--o{ SALE_ITEMS : "included in"
+    SALES ||--|{ SALE_ITEMS : "contains"
+    USERS ||--o{ SALES : "registers"
+    ROLES ||--o{ USERS : "assigned to"
+
+    PRODUCTS {
+        uuid id PK
+        string sku UK
+        string name
+        decimal base_price
+    }
+    SALES {
+        uuid id PK
+        timestamp created_at
+        decimal total_amount
+        uuid user_id FK
+    }
+    SALE_ITEMS {
+        uuid id PK
+        uuid sale_id FK
+        uuid product_id FK
+        integer quantity
+    }
+    STOCKS {
+        uuid id PK
+        uuid product_id FK
+        integer quantity
+    }
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **RestController vs FeignClient?**
-> "They should not be confused. The **RestController** is an **INBOUND** adapter; it is the door we open for the world to speak to us. The **FeignClient** is an **OUTBOUND** adapter; it is the telephone we use to speak to other microservices."
->
-> **Why Domain Class Diagram?**
-> "Because the Domain is the only thing that should be stable over time. Databases change, frameworks die, but the relationship between a 'Sale' and a 'Product' is a business rule that remains, and that is what we capture in this diagram."
+> **Why separate Class from Entity (ER)?**
+> "The class diagram represents **Behavior** (Domain). The ER diagram represents **State** (Persistence). In SIGA, this ensures that a change in a SQL table doesn't necessarily break price calculation logic in Java."
 
 ---
 > **Un Soñador con poca RAM 🧑~💻**

@@ -1,6 +1,6 @@
 # 01. Scenarios View (The "+1" View)
 
-This view defines the critical use cases that validate SIGA's technical architecture. It serves as the bridge between business requirements and technology.
+This view defines the critical use cases that validate SIGA's technical architecture. It is the value contract between business and technology.
 
 [🇪🇸 Ver versión en Español](../es/01-SCENARIOS.mdx)
 
@@ -8,61 +8,53 @@ This view defines the critical use cases that validate SIGA's technical architec
 
 ```mermaid
 graph TD
-    subgraph Actors
+    subgraph Actors [<b>System Actors</b>]
         Admin[Administrator / Owner]
         Op[POS Operator]
         Inv[Inventory Manager]
         AI[AI Agent]
     end
 
-    subgraph "Business Management"
+    subgraph Business [<b>Business Management</b>]
         UC1(Manage Inventory)
         UC2(Analyze Sales Reports)
         UC3(Configure Employee Permissions)
     end
 
-    subgraph "POS Operation"
+    subgraph POS [<b>POS Operation</b>]
         UC4(Register Sale / Invoice)
         UC5(Shift Opening & Closing)
     end
 
-    subgraph "A2UI (Agentic UI)"
+    subgraph AI_Layer [<b>Agentic Capabilities</b>]
         AI1(Voice & Chat Commands)
-        AI2(Semantic Product Search)
+        AI2(RAG Semantic Search)
     end
 
-    Admin --> UC1
-    Admin --> UC2
-    Admin --> UC3
-    
-    Op --> UC4
-    Op --> UC5
-    
+    Admin --> UC1 & UC2 & UC3
+    Op --> UC4 & UC5
     Inv --> UC1
     
-    AI --> AI1
-    AI --> AI2
-    AI -.-> UC1
-    AI -.-> UC4
+    AI -- Proxy --> AI1 & AI2
+    AI1 -.->|executes| UC4
+    AI2 -.->|assists| UC1
 
-    %% Accessibility Styles (High Contrast)
-    style Admin fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style Op fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style Inv fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style AI fill:#0369a1,stroke:#38bdf8,stroke-width:4px,color:#fff
-    style AI1 fill:#1e293b,stroke:#7dd3fc,color:#fff
-    style AI2 fill:#1e293b,stroke:#7dd3fc,color:#fff
+    %% Glass-Tech Styles
+    style Actors fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px,stroke-dasharray: 5 5
+    style Business fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style POS fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style AI_Layer fill:#0369a120,stroke:#38bdf8,stroke-width:3px
+    
+    style Admin fill:#0f172a,stroke:#38bdf8,color:#fff
+    style AI fill:#0369a1,stroke:#38bdf8,stroke-width:3px,color:#fff
 ```
 
 ---
 
 ## 🛡️ Architect's Defense (Capstone Tips)
 
-> **Why a new actor for Inventory?**
-> "In an enterprise-grade system, Separation of Duties (SoD) is vital. While the Administrator has a strategic and permission-based focus, the Inventory Manager has granular and operational access to the supply chain, reducing the risk of fraud or administrative errors."
->
-> **How does the AI handle permissions?**
-> "It is essential to understand that the **AI Agent is not an autonomous actor with infinite permissions**. It functions under a **Proxy/Impersonation** pattern: the AI inherits the exact same permissions (Scopes) of the user who invokes it. If the POS Operator cannot delete a sale, the AI will not be able to do so either, ensuring the integrity of business rules."
+> **Why is the AI Agent a separate actor?**
+> "While technically a service, in the 4+1 model it is treated as an actor because it introduces a new form of interaction (A2UI - Agent-to-UI). However, its security is delegated: the AI acts as a **Proxy** for the human user, inheriting their granular permissions."
 
 ---
-> **Un Soñador con poca RAM 🧑‍💻**
+> **Un Soñador con poca RAM 🧑~💻**
