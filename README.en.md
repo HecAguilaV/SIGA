@@ -4,59 +4,64 @@
 
 # SIGA: Intelligent Asset Management System
 
-*Leer en otros idiomas: [Español](README.md).*
+*Read this in other languages: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](README.md)*
 
-Welcome to **SIGA**, an intelligent technological solution specifically designed for **SMEs** (from 1 to N locations). SIGA focuses on **Asset Management (Inventory)** as the business core, powered by operational **AI Agents**.
+Welcome to **SIGA**, an intelligent ecosystem designed for **Asset and Inventory Management** in multi-branch SMEs. Unlike traditional ERPs, SIGA integrates **Operational AI Agents** that act as co-pilots in business administration.
 
-The project is structured as a **Multi-tenant Microservices Architecture within a Monorepo**. Each service operates inside its own database schema (`database-per-service`), ensuring isolation, resilience, and scalability under a SaaS model.
+This repository is a **Microservices Monorepo** featuring **Zero-Trust** architecture and schema-level data isolation (**Database-per-service**).
 
-## Educational Documentation
+---
 
-Given the rapid technical advancement of the project with the help of AI agents, we have compiled an academic document detailing the structure, flow, and architecture design.
-> **[Read the Learning Journal (Spanish)](docs/es/learning/LEARNING.md)**
-> **[View C4 Architecture Model (Level 1 & 2)](docs/en/architecture/C4_MODEL.md)**
+## 📚 Documentation Vault (Bilingual Symmetry)
 
-## System Architecture (V2)
+We have established a **Semantic Mirroring** standard to ensure that documentation is always available and updated in both languages.
 
-SIGA is built on a robust microservices ecosystem (Java/Kotlin + Spring Boot):
+| Section | 🇪🇸 Spanish (Native) | 🇺🇸 English (Mirror) |
+| :--- | :--- | :--- |
+| **Architecture** | [C4 Model L1/L2](docs/es/arquitectura/MODELO_C4.md) | [C4 Model L1/L2](docs/en/architecture/C4_MODEL.md) |
+| **Security** | [Security Manifesto](docs/es/security/MANIFIESTO_SEGURIDAD.md) | [Security Manifesto](docs/en/security/SECURITY_MANIFESTO.md) |
+| **Business** | [Core Business Rules](docs/es/arquitectura/REGLAS_NEGOCIO_CORE.md) | [Core Business Rules](docs/en/architecture/CORE_BUSINESS.md) |
+| **Testing/APIs** | [Postman Collection](docs/es/api/siga-apis.postman_collection.json) | [Postman Collection](docs/en/api/siga-apis.postman_collection.json) |
+| **Front-end** | [Frontend Pact](docs/es/arquitectura/PACTO_FRONTEND.md) | [Frontend Pact](docs/en/architecture/FRONTEND_PACT.md) |
 
-### Core Microservices (Backend)
-- **Service Registry (`siga-eureka`)**: The heart of service discovery.
-- **API Gateway (`siga-gateway`)**: The single public entry point, responsible for routing and load balancing.
-- **Auth Service (`siga-auth`)**: Issue and validation of corporate JWT tokens.
-- **Inventory Service (`siga-inventory`)**: The system core. Management of products, categories, and stock per store.
-- **Sales Service (`siga-sales`)**: POS module designed to ensure precise and autonomous stock deduction per store.
-- **AI Agent (`siga-agent`)**: Operational intelligence engine. Assists users with analytics and CRUD executions.
-- **Billing Service (`siga-billing`)**: Management of commercial transactions and invoices.
 
-### User Interfaces
-- **Webapp V2 (`/services/webapp`)**: Administration console built with **Svelte 5 / SvelteKit**. Features a high-fidelity *Void/Glassmorphism* premium design system.
-- **Mobile (`/services/mobile`)**: Application for field operators (Android / Jetpack Compose).
-- **Commercial Portal (`/services/comercial`)**: B2B Storefront and Landing page.
+---
 
-## Deployment & Quick Start
+## 🛠️ Technology Stack (V2)
 
-The entire backend stack is orchestrated via Docker, and the lifecycle (CI/CD) is delegated to GitHub Actions to keep the development environment agile and free of excessive compute load.
+SIGA utilizes cutting-edge technologies to ensure performance and legal compliance:
+
+- **Backend**: Java/Kotlin + Spring Boot 3.2.x (Hexagonal Architecture).
+- **AI**: Python + LangChain + PGVector (Per-Tenant Semantic Memory).
+- **Frontend**: Svelte 5 (Webapp) & Jetpack Compose (Mobile).
+- **Persistence**: PostgreSQL with schema isolation and **UUID v4** as the pseudonymization standard.
+- **Security**: JWT (Stateless) and strict compliance with **Chilean Law 21.719**.
+
+---
+
+## 🚀 Quick Start
+
+The environment is 100% dockerized for an immediate start.
 
 ```bash
-# 1. Start backend infrastructure (Database and Microservices from Docker Hub)
+# 1. Spin up full infrastructure (DB + Microservices)
 docker-compose up -d
 
-# 2. Start the Premium V2 Frontend
+# 2. Start Admin Webapp
 cd services/webapp
-npm install
-npm run dev
+pnpm install && pnpm dev
 ```
 
-> **Quick Access UI**: The frontend will be exposed at `http://localhost:5173`. For quick academic demos, use: `admin@siga.cl` / `admin`.
+**Demo Credentials**: `admin@siga.cl` / `admin` (Tenant Alpha).
 
-## Governance Rules
+---
 
-This project applies strict engineering regulations (Spec-Driven Development):
+## ⚖️ Governance and Compliance
 
-- **SDD Traceability**: All architectural changes must originate from an approved `proposal` registered in the *Engram* memory system.
-- **Commits in Spanish**: All commit messages in the Git repository must be **STRICTLY in Spanish** (following the Conventional Commits format).
-- **Security & Privacy**: Adoption of privacy standards required by **Chilean Law 21.719** through the cross-cutting auditing module (`siga-common`).
+This project is not just code; it is a legally responsible implementation:
+- **Privacy by Design**: Compliance with Art. 14 quáter of Law 21.719.
+- **SDD (Spec-Driven Development)**: Every change is traceable and originates from a technical spec.
+- **Bilingual Commits**: International standard for distributed teams.
 
 ---
 > A Dreamer with little RAM 🧑‍💻

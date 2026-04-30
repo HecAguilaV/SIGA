@@ -108,5 +108,19 @@ sequenceDiagram
 El archivo `docker-compose.yml` permite levantar una réplica exacta del ecosistema en cualquier dispositivo de desarrollo.
 Descarga automáticamente las imágenes publicadas desde Docker Hub, inyecta las credenciales por variables de entorno y ejecuta una única base de datos PostgreSQL particionada lógicamente en esquemas.
 
+## 7. Privacidad y Cumplimiento Legal (Ley 21.719)
+
+SIGA se posiciona como una plataforma SaaS alineada con el nuevo marco legal de ciberseguridad en Chile:
+- **Privacidad desde el Diseño:** El aislamiento por esquemas y la arquitectura Zero-Trust no son accidentales, sino una respuesta técnica directa al **Art. 14 quáter** de la Ley 21.719.
+- **Seudonimización por Defecto:** La migración de IDs secuenciales (`Long`) a **UUID v4** garantiza que la exposición accidental de una clave primaria no revele el volumen de datos ni permita el escaneo (crawling) de registros de clientes, cumpliendo con el **Art. 14 quinquies**.
+- **Gobernanza del Agente IA:** El sistema garantiza que la IA herede los permisos del usuario, asegurando que las decisiones automatizadas respeten el marco de seguridad humana.
+
+## 8. El Estándar del "Espejo Semántico"
+
+La documentación técnica de SIGA sigue una regla de **Simetría Total** para evitar la deuda técnica informativa:
+- **Consistencia Idiomática:** Los archivos en los directorios de idioma deben tener nombres y contenidos coherentes con su lengua (ej: `REGLAS_NEGOCIO_CORE.md` en `/es/`). Esto reduce la carga cognitiva para desarrolladores bilingües.
+- **Robustez de Diagramas:** Se ha estandarizado el uso de formas de **Estadio (`([])`)** para etiquetas complejas en Mermaid, garantizando que los diagramas C4 se rendericen sin fallos de parseo en cualquier motor de visualización (VS Code, GitHub, Navegador).
+- **Contratos de Datos en Testing:** Las colecciones de Postman actúan como el primer punto de validación del contrato de datos, utilizando UUIDs reales para asegurar que los Mocks sean 100% compatibles con la persistencia distribuida.
+
 ---
 > Un Soñador con poca RAM 🧑‍💻

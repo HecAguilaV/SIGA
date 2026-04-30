@@ -1,16 +1,16 @@
 {
 	"info": {
 		"_postman_id": "42d22f25-86b2-4d51-93c4-ecab783421f5",
-		"name": "SIGA - APIs (ES)",
-		"description": "Colección de Postman para probar el API Gateway de SIGA. Valida ruteo, autenticación JWT y aislamiento de tenant mediante UUID.",
+		"name": "SIGA - APIs (EN)",
+		"description": "Postman Collection for testing the SIGA API Gateway. Validates routing, JWT authentication, and tenant isolation using UUID.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Servicio de Autenticación",
+			"name": "Auth Service",
 			"item": [
 				{
-					"name": "Generar Token Login",
+					"name": "Generate Login Token",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -39,17 +39,17 @@
 			]
 		},
 		{
-			"name": "Servicio de Inventario",
+			"name": "Inventory Service",
 			"item": [
 				{
-					"name": "Listar Productos (Con Tenant)",
+					"name": "List Products (With Tenant)",
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "X-Tenant-Id",
 								"value": "550e8400-e29b-41d4-a716-446655440000",
-								"description": "UUID obligatorio para aislamiento de datos"
+								"description": "Mandatory UUID for data isolation"
 							}
 						],
 						"url": {
@@ -68,10 +68,10 @@
 			]
 		},
 		{
-			"name": "Servicio de Ventas",
+			"name": "Sales Service",
 			"item": [
 				{
-					"name": "Registrar Venta",
+					"name": "Register Sale",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -86,7 +86,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"localId\": \"7e520000-81f5-4144-8848-000000000001\",\n  \"productos\": [\n    {\"sku\": \"PROD-001\", \"cantidad\": 2}\n  ]\n}"
+							"raw": "{\n  \"localId\": \"7e520000-81f5-4144-8848-000000000001\",\n  \"items\": [\n    {\"sku\": \"PROD-001\", \"quantity\": 2}\n  ]\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/sales/register",

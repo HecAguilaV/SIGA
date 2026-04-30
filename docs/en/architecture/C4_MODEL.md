@@ -61,7 +61,7 @@ flowchart TB
     classDef db fill:#2e6295,stroke:#1b3a58,color:#fff
     classDef infrastructure fill:#d3d3d3,stroke:#999999,color:#000
 
-    User(("Users<br>(Admin/POS)")):::actor
+    User(["Users - Admin/POS"]):::actor
     
     subgraph SIGA_System [SIGA Ecosystem]
         direction TB
@@ -86,7 +86,7 @@ flowchart TB
         end
         
         %% Database
-        DB[("Multi-tenant PostgreSQL<br>[Database]<br>Independent schemas per service")]:::db
+        DB[(PostgreSQL Multi-tenant)]:::db
     end
     
     %% User Interactions
