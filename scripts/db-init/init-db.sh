@@ -2,43 +2,56 @@
 set -e
 
 # ==============================================================================
-# SIGA - Database Initialization Script
+# SIGA - Database Initialization Script (Revised)
 # ==============================================================================
-# This script runs automatically on the first start of the PostgreSQL container.
-# It creates independent databases and users for each microservice.
+# This script creates independent databases, users, and SCHEMAS for each service.
+# CRITICAL: Schema names MUST match @Table(schema = "...") in Kotlin code.
 # ==============================================================================
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    -- 1. Create Databases
-    CREATE DATABASE siga_auth;
-    CREATE DATABASE siga_inventory;
-    CREATE DATABASE siga_sales;
-    CREATE DATABASE siga_billing;
-    CREATE DATABASE siga_agent;
+# Function to initialize a database, user, and schema, and execute its init SQL
+init_service_db() {
+    local db_name=$1
+    local user_name=$2
+    local user_pass=$3
+    local schema_name=$4
+    local sql_file="/docker-entrypoint-initdb.d/sql/${schema_name}_v1_init.sql"
 
-    -- 2. Create Dedicated Users
-    CREATE USER auth_user WITH PASSWORD 'auth_pass_2026';
-    CREATE USER inventory_user WITH PASSWORD 'inventory_pass_2026';
-    CREATE USER sales_user WITH PASSWORD 'sales_pass_2026';
-    CREATE USER billing_user WITH PASSWORD 'billing_pass_2026';
-    CREATE USER agent_user WITH PASSWORD 'agent_pass_2026';
-
-    -- 3. Grant Privileges
-    GRANT ALL PRIVILEGES ON DATABASE siga_auth TO auth_user;
-    GRANT ALL PRIVILEGES ON DATABASE siga_inventory TO inventory_user;
-    GRANT ALL PRIVILEGES ON DATABASE siga_sales TO sales_user;
-    GRANT ALL PRIVILEGES ON DATABASE siga_billing TO billing_user;
-    GRANT ALL PRIVILEGES ON DATABASE siga_agent TO agent_user;
+    echo "  - Creating DB: $db_name, User: $user_name, Schema: $schema_name"
+    
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        CREATE USER $user_name WITH PASSWORD '$user_pass';
+        CREATE DATABASE $db_name OWNER $user_name;
+        GRANT ALL PRIVILEGES ON DATABASE $db_name TO $user_name;
 EOSQL
 
-# 4. Create Schemas inside each database
-# We connect to each DB and create the required schema
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "siga_auth" <<-EOSQL
-    CREATE SCHEMA IF NOT EXISTS siga_saas AUTHORIZATION auth_user;
+    # Initialize Schema and Tables
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db_name" <<-EOSQL
+        CREATE SCHEMA IF NOT EXISTS $schema_name AUTHORIZATION $user_name;
+        ALTER USER $user_name SET search_path TO $schema_name, public;
 EOSQL
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "siga_inventory" <<-EOSQL
-    CREATE SCHEMA IF NOT EXISTS inventory AUTHORIZATION inventory_user;
-EOSQL
+    # Execute SQL Init File if it exists
+    if [ -f "$sql_file" ]; then
+        echo "    * Executing init script: $sql_file"
+        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db_name" -f "$sql_file"
+    else
+        echo "    ! No init script found at: $sql_file (skipping table creation)"
+    fi
+}
 
-echo "✅ SIGA Databases and Users created successfully!"
+# 1. Auth Service
+init_service_db "siga_auth" "auth_user" "auth_pass_2026" "auth"
+
+# 2. Billing Service (SaaS)
+init_service_db "siga_billing" "billing_user" "billing_pass_2026" "billing"
+
+# 3. Inventory Service
+init_service_db "siga_inventory" "inventory_user" "inventory_pass_2026" "inventory"
+
+# 4. Sales Service (POS)
+init_service_db "siga_sales" "sales_user" "sales_pass_2026" "sales"
+
+# 5. Agent Service (AI)
+init_service_db "siga_agent" "agent_user" "agent_pass_2026" "agent"
+
+echo "✅ SIGA Infrastructure Synchronized with Backup Scripts!"

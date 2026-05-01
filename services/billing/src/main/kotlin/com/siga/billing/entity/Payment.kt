@@ -9,7 +9,7 @@ import java.util.UUID
  * Record of a payment made by the customer.
  */
 @Entity
-@Table(name = "payments", schema = "commercial")
+@Table(name = "payments", schema = "billing")
 class Payment(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

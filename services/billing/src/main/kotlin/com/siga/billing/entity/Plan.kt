@@ -8,7 +8,7 @@ import java.util.UUID
  * SaaS subscription plan with operational limits.
  */
 @Entity
-@Table(name = "plans", schema = "commercial")
+@Table(name = "plans", schema = "billing")
 class Plan(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
