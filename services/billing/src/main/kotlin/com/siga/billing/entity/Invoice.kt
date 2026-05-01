@@ -9,7 +9,7 @@ import java.util.UUID
  * Invoice issued for a subscription purchase.
  */
 @Entity
-@Table(name = "invoices", schema = "commercial")
+@Table(name = "invoices", schema = "billing")
 class Invoice(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

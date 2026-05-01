@@ -1,35 +1,45 @@
-# OpenSpec: Estado de la Arquitectura SIGA (V3.0 - Hardening)
+# Estado de la Arquitectura - SIGA
 
-## Resumen del Sistema
-SIGA se encuentra en fase de blindaje de seguridad y cumplimiento de la **Ley 21.719**. Se ha iniciado la migración masiva de identificadores secuenciales (Int) a identificadores universales (**UUID**) para garantizar la seudonimización y el no-rastreo.
+**Última Actualización:** 2026-05-01
+**Estado:** Consolidado - Microservicios
 
-## Mapa de Ecosistema
+## 1. Modelo de Despliegue
+El sistema ha completado su transición de Monolito Modular a una arquitectura de **Microservicios Independientes**.
 
-### Backends (Microservicios Kotlin/Spring)
-- **Auth**: ✅ UUID Completo. Arnés de integración verde.
-- **Inventory**: ✅ UUID Completo. Arnés de integración verde.
-- **Sales**: 🔄 PENDIENTE. Siguiente objetivo de migración UUID.
-- **Billing**: ✅ UUID Completo & Arquitectura Hexagonal. Integración con PaymentGateway (Transbank Ficticio).
-- **Sales**: 🔄 PENDIENTE. Siguiente objetivo de migración UUID.
+### Componentes Core
+*   **siga-auth**: Gestión de identidad y permisos (SSO).
+*   **siga-billing**: Gestión de suscripciones y pagos del SaaS (Dominio Billing).
+*   **siga-inventory**: Control de stock y activos.
+*   **siga-sales**: POS y facturación interna de la Pyme (Dominio Sales).
+*   **siga-agent**: Inteligencia Artificial y búsqueda vectorial (pgvector).
 
-### Frontends (UI/UX)
-- **webapp**: La "estrella visual" del proyecto. Diseño premium y moderno.
-- **mobile**: Aplicación nativa/híbrida para acceso móvil.
-- **landing**: Sitio informativo y de captación.
-- **commercial**: Frontend Legacy. **Misión crítica**: Debe ser adaptado a la nueva arquitectura.
+### Frontends
+*   **landing**: Portal público de captación.
+*   **customer-portal**: Interfaz de gestión de cuenta y pagos para el dueño de la pyme.
+*   **admin-console**: (Backoffice) Herramienta interna para la administración de SIGA (Planes, métricas, soporte).
+*   **webapp**: Panel administrativo de la pyme.
+*   **mobile**: Aplicación de terreno.
 
-## Estrategia Commercial & Pagos
-El microservicio `commercial` gestionará las suscripciones, apoyándose en la orquestación hexagonal de `billing`.
-1. **Pasarela de Pagos**: Implementada como puerto (`PaymentGateway`) con adaptador ficticio.
-2. **Arquitectura Hexagonal**: Estándar consolidado para permitir el cambio a pasarelas reales (Transbank/SII) sin afectar el dominio.
+## 2. Estrategia de Persistencia
+Se aplica el principio de **Database per Service**. Cada microservicio es dueño absoluto de su base de datos.
 
-## Decisiones Técnicas Recientes
-1. **UUID Mandatory**: No se permiten IDs secuenciales en el nuevo esquema de persistencia.
-2. **Integration Harness**: Cada microservicio backend DEBE tener su clase `BaseIntegrationTest` con soporte multiesquema en H2.
-3. **Shift-Left Security**: Auditoría proactiva con Gitleaks y Semgrep tras cada hito.
-4. **Bilingual Mirroring**: Toda documentación estratégica debe existir en espejo (ES/EN).
+| Microservicio | Base de Datos | Esquema Principal |
+|---------------|---------------|-------------------|
+| siga-auth     | siga_auth     | auth              |
+| siga-billing  | siga_billing  | billing           |
+| siga-inventory| siga_inventory| inventory         |
+| siga-sales    | siga_sales    | sales             |
+| siga-agent    | siga_agent    | agent             |
 
-## Próximos Objetivos
-1. Migración UUID del microservicio `sales`.
-2. Integración de reglas del SII en el adaptador de `billing`.
-3. Sincronización de tipos UUID en los frontends (`webapp`, `commercial`).
+**Nota sobre Sales**: El microservicio de Sales gestiona sus propias facturas de venta bajo el esquema `sales`, independiente de la facturación del SaaS.
+
+## 3. Infraestructura
+*   **Service Discovery**: Netflix Eureka.
+*   **API Gateway**: Spring Cloud Gateway.
+*   **Event Broker**: **Apache Kafka** (Local) / **GCP Pub/Sub** (Cloud).
+*   **Contenerización**: Docker Compose con inicialización automatizada (`init-db.sh`).
+
+## 4. Patrones de Comunicación
+*   **Sincrónico**: REST API vía Gateway para operaciones de lectura y comandos críticos.
+*   **Asincrónico (SAGA)**: Coreografía de eventos vía Kafka para transacciones distribuidas (ej: Venta -> Stock).
+*   **Analítico**: Streaming de eventos hacia BigQuery/Vertex AI para ingesta Big Data.

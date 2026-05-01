@@ -9,7 +9,7 @@ import java.util.UUID
  * This is the SaaS customer who purchases a subscription.
  */
 @Entity
-@Table(name = "customers", schema = "commercial")
+@Table(name = "customers", schema = "billing")
 class Customer(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

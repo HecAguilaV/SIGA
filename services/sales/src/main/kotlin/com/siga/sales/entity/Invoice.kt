@@ -9,7 +9,7 @@ import java.time.Instant
  * Managed by the sales service for SaaS billing records.
  */
 @Entity
-@Table(name = "invoices", schema = "commercial")
+@Table(name = "invoices", schema = "billing")
 class Invoice(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

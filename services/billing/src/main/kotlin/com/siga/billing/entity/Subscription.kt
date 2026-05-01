@@ -8,7 +8,7 @@ import java.util.UUID
  * Active subscription of a customer to a plan.
  */
 @Entity
-@Table(name = "subscriptions", schema = "commercial")
+@Table(name = "subscriptions", schema = "billing")
 class Subscription(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

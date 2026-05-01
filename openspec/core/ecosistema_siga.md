@@ -5,20 +5,17 @@ SIGA nace para solucionar el desfase de inventario en terreno. No es un ERP de e
 
 ## 2. Componentes del Sistema
 
-###  SIGA-BACKEND (El Cerebro)
-- **Tecnología:** Kotlin + Spring Boot.
-- **Base de Datos:** PostgreSQL (PostGIS para geolocalización futura).
-- **Patrón:** Monolito Modular con soporte Multi-tenant estricto.
-- **IA:** Integración con Gemini para parsing de lenguaje natural y agentes.
+###  SIGA-SERVICES (El Ecosistema)
+- **Tecnología:** Kotlin + Spring Boot / Python (Agent).
+- **Base de Datos:** PostgreSQL Independientes (PostGIS y PGVector).
+- **Patrón:** Microservicios con soberanía de datos y comunicación vía Gateway.
+- **IA:** Agentes operativos con búsqueda vectorial descentralizada.
 
-###  SIGA-APP (La Herramienta)
-- **Tecnología:** Kotlin Multiplatform / Native.
-- **UX:** Online-first con persistencia local (Room) para trabajo en zonas de baja señal.
-- **Firma:** Diseño enfocado en rapidez de ingreso (Asistente de Voz/IA).
-
-###  SIGA-WEBAPP & WEBCOMERCIAL (La Gestión)
-- **Tecnología:** Svelte 5 / React.
-- **Función:** Registro de clientes, visualización de métricas avanzadas y administración centralizada.
+###  FRONTENDS (La Interfaz)
+- **Tecnología:** Svelte 5 / React / Kotlin Multiplatform.
+- **customer-portal:** Gestión de suscripción y entrada al ecosistema vía SSO.
+- **webapp:** Administración operativa de la pyme.
+- **mobile:** Herramienta de terreno para el Guerrero Multi-rol.
 
 ## 3. Principios Arquitectónicos
 - **SOLID:** Aplicado especialmente en la Separación de Responsabilidades.

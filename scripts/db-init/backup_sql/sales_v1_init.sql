@@ -65,3 +65,29 @@ CREATE TABLE IF NOT EXISTS pos_cart (
     user_id UUID NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS customers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tax_id VARCHAR(20) UNIQUE, -- RUT en Chile
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    address TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sale_documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    sale_id UUID NOT NULL UNIQUE,
+    customer_id UUID, -- Optional for Boletas, Mandatory for Facturas
+    type VARCHAR(20) NOT NULL, -- 'BOLETA' or 'FACTURA'
+    folio BIGINT NOT NULL,
+    total_amount NUMERIC(12, 2) NOT NULL,
+    tax_amount NUMERIC(12, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'EMITTED', -- 'EMITTED', 'ANNULLED', 'ERROR'
+    pdf_url TEXT,
+    xml_url TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_document_sale FOREIGN KEY (sale_id) REFERENCES sales (id) ON DELETE CASCADE,
+    CONSTRAINT fk_document_customer FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE SET NULL
+);

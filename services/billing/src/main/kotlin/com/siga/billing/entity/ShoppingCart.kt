@@ -8,7 +8,7 @@ import java.util.UUID
  * Shopping cart for plan selection.
  */
 @Entity
-@Table(name = "shopping_carts", schema = "commercial")
+@Table(name = "shopping_carts", schema = "billing")
 class ShoppingCart(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
