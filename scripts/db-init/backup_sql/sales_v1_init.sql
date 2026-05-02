@@ -91,3 +91,9 @@ CREATE TABLE IF NOT EXISTS sale_documents (
     CONSTRAINT fk_document_sale FOREIGN KEY (sale_id) REFERENCES sales (id) ON DELETE CASCADE,
     CONSTRAINT fk_document_customer FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS processed_events (
+    event_id UUID PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL,
+    processed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

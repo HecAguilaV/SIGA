@@ -3,19 +3,30 @@ package com.siga.sales.entity
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
+import java.util.UUID
 
+/**
+ * Represents a point-of-sale transaction in a store.
+ *
+ * A sale is created with status [SaleStatus.PENDING] and transitions to
+ * [SaleStatus.COMPLETED] or [SaleStatus.CANCELLED] based on the SAGA
+ * choreography with the Inventory service via Kafka events.
+ *
+ * @see SaleItem the line items of this sale
+ * @see SaleDocument the legal tax document generated for this sale
+ */
 @Entity
 @Table(name = "sales", schema = "sales")
 class Sale(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(name = "store_id", nullable = false)
-    val storeId: Int,
+    val storeId: UUID,
 
     @Column(name = "user_id")
-    val userId: Int? = null,
+    val userId: UUID? = null,
 
     @Column(name = "commercial_user_id")
     val commercialUserId: Int? = null,
@@ -28,7 +39,7 @@ class Sale(
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    var status: SaleStatus = SaleStatus.COMPLETED,
+    var status: SaleStatus = SaleStatus.PENDING,
 
     @Column(columnDefinition = "TEXT")
     var observations: String? = null
@@ -36,10 +47,10 @@ class Sale(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Sale) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "Sale(id=$id, storeId=$storeId, total=$total, status=$status)"
 }

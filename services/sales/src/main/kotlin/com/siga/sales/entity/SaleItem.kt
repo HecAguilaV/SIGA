@@ -2,19 +2,26 @@ package com.siga.sales.entity
 
 import jakarta.persistence.*
 import java.math.BigDecimal
+import java.util.UUID
 
+/**
+ * A line item within a [Sale].
+ *
+ * Each item references a product from the Inventory service by its UUID
+ * (logical reference — no FK across service boundaries).
+ */
 @Entity
 @Table(name = "sale_items", schema = "sales")
 class SaleItem(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(name = "sale_id", nullable = false)
-    val saleId: Int,
+    val saleId: UUID,
 
     @Column(name = "product_id", nullable = false)
-    val productId: Int,
+    val productId: UUID,
 
     @Column(nullable = false)
     val quantity: Int,
@@ -28,10 +35,10 @@ class SaleItem(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SaleItem) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "SaleItem(id=$id, saleId=$saleId, productId=$productId, quantity=$quantity)"
 }

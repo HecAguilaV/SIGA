@@ -73,8 +73,9 @@ flowchart TB
         %% Entrada
         Gateway["API Gateway<br>[Contenedor: Spring Cloud]<br>Enrutador único (Puerto 8080)"]:::container
         
-        %% Orquestación
+        %% Orquestación y Mensajería
         Eureka(("Service Registry<br>[Infra: Netflix Eureka]<br>Descubrimiento de servicios")):::infrastructure
+        Kafka(("Event Broker<br>[Infra: Apache Kafka]<br>Coreografía SAGA & Eventos")):::infrastructure
         
         %% Microservicios
         subgraph Microservicios [Core Backend]
@@ -112,6 +113,12 @@ flowchart TB
     Agent -.->|Se registra| Eureka
     Gateway -.->|Consulta ubicaciones| Eureka
     
+    %% Comunicación Asíncrona (SAGA)
+    Sales -- "Publica SALE_INITIATED<br>(Topic: sale-events)" --> Kafka
+    Kafka -- "Entrega evento" --> Inv
+    Inv -- "Publica STOCK_RESERVED<br>(Topic: stock-events)" --> Kafka
+    Kafka -- "Entrega respuesta" --> Sales
+
     %% Persistencia
     Auth -->|Lee/Escribe esquema: auth| DB
     Inv -->|Lee/Escribe esquema: inventory| DB
@@ -123,6 +130,7 @@ flowchart TB
 ### Decisiones Técnicas Clave (L2)
 - **API Gateway**: Mantiene los microservicios internos ocultos del internet público. Centraliza CORS y enrutamiento.
 - **Service Registry (Eureka)**: Permite escalar microservicios horizontalmente sin necesidad de balanceadores de carga físicos.
+- **Mensajería (Kafka)**: Implementa el patrón **SAGA (Coreografía)** para transacciones distribuidas. Garantiza que Sales e Inventory se mantengan desacoplados y resilientes ante fallos.
 - **Aislamiento de Datos**: Cada microservicio se conecta a un único servidor PostgreSQL, pero tiene su propio `esquema` restringido, garantizando que un servicio no pueda corromper los datos de otro de forma directa.
 
 ---

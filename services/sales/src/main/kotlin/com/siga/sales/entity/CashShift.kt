@@ -3,19 +3,26 @@ package com.siga.sales.entity
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
+import java.util.UUID
 
+/**
+ * Represents an open/closed cash register shift at a store.
+ *
+ * A shift tracks the opening and closing balances, allowing
+ * reconciliation of physical cash against recorded transactions.
+ */
 @Entity
 @Table(name = "cash_shifts", schema = "sales")
 class CashShift(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(name = "store_id", nullable = false)
-    val storeId: Int,
+    val storeId: UUID,
 
     @Column(name = "user_id", nullable = false)
-    val userId: Int,
+    val userId: UUID,
 
     @Column(name = "opened_at", nullable = false)
     val openedAt: Instant = Instant.now(),
@@ -23,14 +30,11 @@ class CashShift(
     @Column(name = "closed_at")
     var closedAt: Instant? = null,
 
-    @Column(name = "opening_balance", nullable = false, precision = 10, scale = 2)
-    val openingBalance: BigDecimal,
+    @Column(name = "initial_amount", nullable = false, precision = 10, scale = 2)
+    val initialAmount: BigDecimal,
 
-    @Column(name = "closing_balance", precision = 10, scale = 2)
-    var closingBalance: BigDecimal? = null,
-
-    @Column(name = "actual_balance", precision = 10, scale = 2)
-    var actualBalance: BigDecimal? = null,
+    @Column(name = "final_amount", precision = 10, scale = 2)
+    var finalAmount: BigDecimal? = null,
 
     @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
@@ -39,10 +43,10 @@ class CashShift(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CashShift) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "CashShift(id=$id, storeId=$storeId, userId=$userId, status=$status)"
 }
