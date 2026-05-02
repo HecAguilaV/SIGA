@@ -60,12 +60,15 @@ SIGA contemplates multiple interfaces that are currently in the initialization p
 
 ---
 
-## Governance and Compliance
+## ⚖️ Governance, Privacy, and Compliance (Law 21.719)
 
-This project is not just code; it is a legally responsible implementation:
-- **Privacy by Design**: Compliance with Art. 14 quáter of Law 21.719.
-- **SDD (Spec-Driven Development)**: Every change is traceable and originates from a technical spec.
-- **Bilingual Standard**: API documentation and contracts in mirror format (ES/EN) for international scalability.
+SIGA is not just code; it is a platform designed to be legally unassailable under Chilean data protection regulations:
+
+- **Privacy by Design (Art. 14 quáter)**: The architecture is shielded so that the service provider (SIGA Admin) **DOES NOT** have access to sensitive financial data, billing amounts, or granular details of SME customers.
+- **Zero-Knowledge Architecture**: We apply the "Blind to Data, Attuned to Flow" principle. We manage infrastructure and availability while respecting the absolute data sovereignty of each business.
+- **Pseudonymization (Art. 2, letter l)**: Mandatory use of **UUID v4** across all layers to prevent unauthorized traceability of natural persons.
+- **SDD (Spec-Driven Development)**: Every technical change stems from a specification, ensuring that security and privacy are functional requirements, not afterthoughts.
+- **Technical Bilingualism**: API documentation and contracts in mirror format (ES/EN) to ensure transparency and scalability.
 
 ---
 *SIGA - Intelligent Asset Management System*

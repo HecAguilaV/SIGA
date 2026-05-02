@@ -64,12 +64,15 @@ SIGA contempla múltiples interfaces que se encuentran actualmente en fase de in
 
 ---
 
-## Gobernanza y Cumplimiento
+## ⚖️ Gobernanza, Privacidad y Cumplimiento (Ley 21.719)
 
-Este proyecto no es solo código, es una implementación legalmente responsable:
-- **Privacy by Design**: Cumplimiento del Art. 14 quáter de la Ley 21.719.
-- **SDD (Spec-Driven Development)**: Cada cambio es trazable y nace de una especificación técnica.
-- **Estándar Bilingüe**: Documentación y contratos de API en espejo (ES/EN) para escalabilidad internacional.
+SIGA no es solo código; es una plataforma diseñada para ser legalmente inexpugnable bajo la normativa chilena de protección de datos:
+
+- **Privacidad por Diseño (Art. 14 quáter)**: La arquitectura está blindada para que el proveedor del servicio (SIGA Admin) **NO** tenga acceso a datos financieros sensibles, montos de facturación ni detalles granulares de los clientes de las Pymes.
+- **Zero-Knowledge Architecture**: Aplicamos el principio de "Ceguera al Dato, Atención al Flujo". Gestionamos la infraestructura y la disponibilidad, pero respetamos la soberanía absoluta de los datos de cada negocio.
+- **Seudonimización (Art. 2, letra l)**: Uso mandatorio de **UUID v4** en todas las capas para evitar la trazabilidad no autorizada de personas naturales.
+- **SDD (Spec-Driven Development)**: Cada cambio técnico nace de una especificación, asegurando que la seguridad y la privacidad sean requisitos funcionales, no añadidos posteriores.
+- **Bilingüismo Técnico**: Documentación y contratos de API en espejo (ES/EN) para asegurar transparencia y escalabilidad.
 
 ---
 *SIGA - Sistema Inteligente de Gestión de Activos*
