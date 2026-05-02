@@ -190,5 +190,20 @@ Es común ver confusión en por qué mezclamos idiomas. En SIGA, la regla es cla
 - **Razón**: Los commits son la bitácora humana. Usamos español para mantener una comunicación fluida con los stakeholders locales y asegurar que la intención detrás de cada cambio sea inequívoca para el equipo actual.
 - **Filosofía**: "Code for the machine (Global), commit for the team (Local)."
 
+## 14. Privacidad Financiera y "Zero-Knowledge" Architecture
+
+Una de las decisiones más críticas de SIGA es la implementación del principio de **Ceguera al Dato Financiero** para el administrador de la plataforma.
+
+### La Decisión: Zero-Knowledge por Diseño
+A diferencia de otros SaaS que recolectan métricas de facturación para "Business Intelligence" propio, SIGA ha decidido **NO** permitir que el Administrador Master vea montos económicos ni detalles de transacciones de las Pymes.
+
+- **Justificación**: Cumplimiento extremo del **Art. 3, letra c (Proporcionalidad)** de la Ley 21.719. El administrador no necesita saber cuánto factura una Pyme para garantizar que el sistema sea estable.
+- **Implementación Técnica**: Las métricas del `admin-portal` se limitan al **throughput de eventos** (cantidad de mensajes procesados por segundo) y a la salud de la infraestructura, sin decodificar el contenido económico de los payloads.
+
+### Rechazo del Catálogo Maestro
+Se descartó la idea de una gestión centralizada de catálogos para evitar pasar de un modelo de **Servicio Proactivo** a uno **Reactivo**.
+- **Fundamento**: La soberanía del inventario reside exclusivamente en la Pyme. SIGA no interfiere en la definición de productos, lo que asegura que el sistema sea un facilitador tecnológico puro y no un administrador de contenido ajeno.
+- **Resultado**: Reducción drástica del riesgo legal y aumento de la confianza del cliente al garantizar que SIGA no tiene "ojos" sobre su estrategia de precios o volumen de stock crítico.
+
 ---
 > Un Soñador con poca RAM 🧑‍💻
