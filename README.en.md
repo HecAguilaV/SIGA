@@ -70,6 +70,10 @@ SIGA is not just code; it is a platform designed to be legally unassailable unde
 - **SDD (Spec-Driven Development)**: Every technical change stems from a specification, ensuring that security and privacy are functional requirements, not afterthoughts.
 - **Technical Bilingualism**: API documentation and contracts in mirror format (ES/EN) to ensure transparency and scalability.
 
+## License
+
+This project is the private property of **Héctor Aguila**. All rights reserved. The code is provided exclusively for technical review and audit compliance purposes under Law 21.719. See the [LICENSE](LICENSE) file for more details.
+
 ---
 Héctor Aguila
 `> Un Soñador con Poca RAM 👨🏻‍💻`

@@ -70,6 +70,10 @@ SIGA no es solo código; es una plataforma diseñada para ser legalmente inexpug
 - **SDD (Spec-Driven Development)**: Cada cambio técnico nace de una especificación, asegurando que la seguridad y la privacidad sean requisitos funcionales, no añadidos posteriores.
 - **Bilingüismo Técnico**: Documentación y contratos de API en espejo (ES/EN) para asegurar transparencia y escalabilidad.
 
+## Licencia
+
+Este proyecto es propiedad privada de **Héctor Aguila**. Todos los derechos están reservados. El código se proporciona exclusivamente para fines de revisión técnica y cumplimiento de auditoría bajo la Ley 21.719. Consulte el archivo [LICENSE](LICENSE) para más detalles.
+
 ---
 Héctor Aguila
 `> Un Soñador con Poca RAM 👨🏻‍💻`
