@@ -2,19 +2,27 @@ package com.siga.inventory.entity
 
 import jakarta.persistence.*
 import java.time.Instant
+import java.util.UUID
 
+/**
+ * Records a stock quantity change (Kardex entry).
+ *
+ * Every stock mutation — whether from a sale, manual adjustment,
+ * transfer, or receiving — creates a Movement for full traceability.
+ * The previous and new quantities allow auditing the exact delta.
+ */
 @Entity
 @Table(name = "movements", schema = "inventory")
 class Movement(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(name = "product_id", nullable = false)
-    val productId: Int,
+    val productId: UUID,
 
     @Column(name = "store_id", nullable = false)
-    val storeId: Int,
+    val storeId: UUID,
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
@@ -30,10 +38,10 @@ class Movement(
     val newQuantity: Int,
 
     @Column(name = "user_id")
-    val userId: Int? = null,
+    val userId: UUID? = null,
 
     @Column(name = "sale_id")
-    val saleId: Int? = null,
+    val saleId: UUID? = null,
 
     @Column(columnDefinition = "TEXT")
     val observations: String? = null,
@@ -44,10 +52,10 @@ class Movement(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Movement) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "Movement(id=$id, type=$type, productId=$productId, quantity=$quantity)"
 }

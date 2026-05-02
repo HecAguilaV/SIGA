@@ -41,6 +41,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("com.auth0:java-jwt:4.4.0")
+
+    // Kafka para SAGA (comunicación asíncrona con Sales)
+    implementation("org.springframework.kafka:spring-kafka")
     
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -59,6 +62,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:5.8.0")
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
     testRuntimeOnly("com.h2database:h2")
 }
 

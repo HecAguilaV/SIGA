@@ -1,14 +1,12 @@
 package com.siga.sales.repository
 
-import com.siga.sales.entity.SaleItem
+import com.siga.sales.entity.ProcessedEvent
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
 /**
- * Repository for sale items.
+ * Repository for idempotency tracking of processed Kafka events.
  */
 @Repository
-interface SaleItemRepository : JpaRepository<SaleItem, UUID> {
-    fun findBySaleId(saleId: UUID): List<SaleItem>
-}
+interface ProcessedEventRepository : JpaRepository<ProcessedEvent, UUID>

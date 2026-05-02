@@ -3,28 +3,36 @@ package com.siga.sales.entity
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
+import java.util.UUID
 
+/**
+ * Records a payment transaction within a [CashShift].
+ *
+ * Each POS transaction links a [Sale] to a [PaymentMethod] and tracks
+ * the amount paid. Multiple transactions can exist per sale
+ * (e.g., split payments).
+ */
 @Entity
 @Table(name = "pos_transactions", schema = "sales")
 class PosTransaction(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID? = null,
 
     @Column(name = "sale_id", nullable = false)
-    val saleId: Int,
+    val saleId: UUID,
 
-    @Column(name = "cash_shift_id", nullable = false)
-    val cashShiftId: Int,
+    @Column(name = "shift_id", nullable = false)
+    val shiftId: UUID,
 
     @Column(name = "payment_method_id", nullable = false)
-    val paymentMethodId: Int,
+    val paymentMethodId: UUID,
 
     @Column(nullable = false, precision = 10, scale = 2)
     val amount: BigDecimal,
 
-    @Column(precision = 10, scale = 2)
-    val change: BigDecimal? = null,
+    @Column(name = "last_4_digits", length = 4)
+    val last4Digits: String? = null,
 
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now(),
@@ -36,10 +44,10 @@ class PosTransaction(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is PosTransaction) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "PosTransaction(id=$id, saleId=$saleId, amount=$amount, status=$status)"
 }

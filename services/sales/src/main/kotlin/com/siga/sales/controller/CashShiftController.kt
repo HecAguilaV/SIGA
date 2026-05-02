@@ -4,12 +4,13 @@ import com.siga.sales.entity.CashShift
 import com.siga.sales.repository.CashShiftRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 /**
  * Controller to manage cash shifts.
  */
 @RestController
-@RequestMapping("/api/cash-shifts")
+@RequestMapping("/api/v1/sales/cash-shifts")
 class CashShiftController(
     private val cashShiftRepository: CashShiftRepository
 ) {
@@ -19,7 +20,7 @@ class CashShiftController(
     }
 
     @GetMapping("/{id}")
-    fun getShiftById(@PathVariable id: Int): ResponseEntity<CashShift> {
+    fun getShiftById(@PathVariable id: UUID): ResponseEntity<CashShift> {
         val shift = cashShiftRepository.findById(id)
         return if (shift.isPresent) {
             ResponseEntity.ok(shift.get())
@@ -29,12 +30,12 @@ class CashShiftController(
     }
 
     @GetMapping("/store/{storeId}")
-    fun getShiftsByStore(@PathVariable storeId: Int): ResponseEntity<List<CashShift>> {
+    fun getShiftsByStore(@PathVariable storeId: UUID): ResponseEntity<List<CashShift>> {
         return ResponseEntity.ok(cashShiftRepository.findByStoreId(storeId))
     }
 
     @GetMapping("/user/{userId}/open")
-    fun getOpenShiftByUser(@PathVariable userId: Int): ResponseEntity<CashShift> {
+    fun getOpenShiftByUser(@PathVariable userId: UUID): ResponseEntity<CashShift> {
         val shift = cashShiftRepository.findByUserId(userId)
         return if (shift != null) {
             ResponseEntity.ok(shift)
@@ -49,7 +50,7 @@ class CashShiftController(
     }
 
     @PutMapping("/{id}")
-    fun updateShift(@PathVariable id: Int, @RequestBody shift: CashShift): ResponseEntity<CashShift> {
+    fun updateShift(@PathVariable id: UUID, @RequestBody shift: CashShift): ResponseEntity<CashShift> {
         return if (cashShiftRepository.existsById(id)) {
             shift.id = id
             ResponseEntity.ok(cashShiftRepository.save(shift))

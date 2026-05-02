@@ -1,15 +1,16 @@
-package com.siga.inventory
+package com.siga.sales
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import com.siga.sales.event.SaleEventProducer
 
 /**
- * Base class for Integration Tests in SIGA Inventory Service.
- * Provides MockMvc and common testing infrastructure.
+ * Base class for Integration Tests in SIGA Sales Service.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -22,6 +23,6 @@ abstract class BaseIntegrationTest {
     @Autowired
     protected lateinit var objectMapper: ObjectMapper
 
-    @org.springframework.boot.test.mock.mockito.MockBean
-    protected lateinit var stockEventProducer: com.siga.inventory.event.StockEventProducer
+    @MockBean
+    protected lateinit var saleEventProducer: SaleEventProducer
 }

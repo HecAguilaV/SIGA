@@ -16,6 +16,22 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: sales
 
+  # Kafka — SAGA choreography with Inventory service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: siga-sales
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.siga.sales.event,com.siga.inventory.event
+
 eureka:
   client:
     service-url:

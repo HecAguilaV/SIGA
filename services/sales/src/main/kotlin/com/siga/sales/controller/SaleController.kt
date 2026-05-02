@@ -5,12 +5,13 @@ import com.siga.sales.entity.SaleStatus
 import com.siga.sales.repository.SaleRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 /**
  * Controller to manage sales.
  */
 @RestController
-@RequestMapping("/api/sales")
+@RequestMapping("/api/v1/sales")
 class SaleController(
     private val saleRepository: SaleRepository
 ) {
@@ -20,7 +21,7 @@ class SaleController(
     }
 
     @GetMapping("/{id}")
-    fun getSaleById(@PathVariable id: Int): ResponseEntity<Sale> {
+    fun getSaleById(@PathVariable id: UUID): ResponseEntity<Sale> {
         val sale = saleRepository.findById(id)
         return if (sale.isPresent) {
             ResponseEntity.ok(sale.get())
@@ -30,12 +31,12 @@ class SaleController(
     }
 
     @GetMapping("/store/{storeId}")
-    fun getSalesByStore(@PathVariable storeId: Int): ResponseEntity<List<Sale>> {
+    fun getSalesByStore(@PathVariable storeId: UUID): ResponseEntity<List<Sale>> {
         return ResponseEntity.ok(saleRepository.findByStoreId(storeId))
     }
 
     @GetMapping("/user/{userId}")
-    fun getSalesByUser(@PathVariable userId: Int): ResponseEntity<List<Sale>> {
+    fun getSalesByUser(@PathVariable userId: UUID): ResponseEntity<List<Sale>> {
         return ResponseEntity.ok(saleRepository.findByUserId(userId))
     }
 
@@ -55,7 +56,7 @@ class SaleController(
     }
 
     @PutMapping("/{id}")
-    fun updateSale(@PathVariable id: Int, @RequestBody sale: Sale): ResponseEntity<Sale> {
+    fun updateSale(@PathVariable id: UUID, @RequestBody sale: Sale): ResponseEntity<Sale> {
         return if (saleRepository.existsById(id)) {
             sale.id = id
             ResponseEntity.ok(saleRepository.save(sale))

@@ -76,3 +76,9 @@ CREATE TABLE IF NOT EXISTS alerts (
     CONSTRAINT fk_alert_product FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
     CONSTRAINT fk_alert_store FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS processed_events (
+    event_id UUID PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL,
+    processed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
