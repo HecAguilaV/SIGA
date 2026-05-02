@@ -11,7 +11,7 @@ La arquitectura de SIGA no es generada al azar; es **dirigida por visión humana
 
 ## 2. Protocolo de Git y Commits
 
-*   **Idioma**: Todos los mensajes de commit deben escribirse **obligatoriamente en español**.
+*   **Idioma y Orden**: Los mensajes de commit deben ser bilingües siguiendo estrictamente el orden: `<English> / <Español>`.
 *   **Formato**: Usar *Conventional Commits* (ej: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`).
 *   **Autorización de Push**: **PROHIBIDO** realizar un `git push` sin la autorización explícita del Arquitecto. Los cambios se proponen, se confirman localmente y se suben solo cuando el Líder da la señal.
 

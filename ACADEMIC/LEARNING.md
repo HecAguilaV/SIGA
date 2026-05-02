@@ -183,11 +183,9 @@ Aunque hoy usamos una instancia de PostgreSQL particionada por esquemas, el dise
 
 Es común ver confusión en por qué mezclamos idiomas. En SIGA, la regla es clara:
 
-### Inglés para el "Código y Specs"
-- **Razón**: El ecosistema global de desarrollo (Stack Overflow, documentación oficial, librerías) habla inglés. Programar en inglés elimina la fricción de traducir términos técnicos (ej: `invoice` vs `factura`) y asegura que el código sea comprensible para cualquier desarrollador en el mundo.
-
-### Español para los "Commits y Negocio"
-- **Razón**: Los commits son la bitácora humana. Usamos español para mantener una comunicación fluida con los stakeholders locales y asegurar que la intención detrás de cada cambio sea inequívoca para el equipo actual.
+### Inglés primero, Español después (Estándar de Commits)
+- **Regla de Oro**: Todo mensaje de commit debe seguir el formato bilingüe: `<English Summary> / <Resumen en Español>`.
+- **Razón**: El prefijo técnico (`feat:`, `fix:`) ya es en inglés. Empezar en inglés mantiene la coherencia sintáctica global, mientras que el español garantiza la comprensión detallada del equipo local.
 - **Filosofía**: "Code for the machine (Global), commit for the team (Local)."
 
 ## 14. Privacidad Financiera y "Zero-Knowledge" Architecture
