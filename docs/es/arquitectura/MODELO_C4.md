@@ -134,4 +134,4 @@ flowchart TB
 - **Aislamiento de Datos**: Cada microservicio se conecta a un único servidor PostgreSQL, pero tiene su propio `esquema` restringido, garantizando que un servicio no pueda corromper los datos de otro de forma directa.
 
 ---
-> Un Soñador con poca RAM 🧑‍💻
+`> Un Soñador con poca RAM 🧑‍💻

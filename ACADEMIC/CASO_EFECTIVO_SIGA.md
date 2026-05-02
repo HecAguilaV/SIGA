@@ -24,4 +24,5 @@ El proyecto se estructura en una arquitectura de **Microservicios** para garanti
 - **Infraestructura**: Orquestación con Docker, monitoreo con Prometheus/Grafana y automatización real de despliegue.
 
 ---
-> Un Soñador con Poca RAM & Misael
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

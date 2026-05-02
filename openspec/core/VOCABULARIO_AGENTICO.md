@@ -21,4 +21,4 @@ Este documento explica los términos técnicos y filosóficos utilizados en este
 - **UX (Experiencia de Usuario)**: Cómo se siente la persona al usar SIGA. En este proyecto, la UX es más importante que la UI (la interfaz visual).
 
 ---
-> Un Soñador con Poca RAM & Misael
+`> Un Soñador con Poca RAM ��🏻‍💻

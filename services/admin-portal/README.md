@@ -11,7 +11,7 @@ Proporcionar una visión global del sistema, gestión de inquilinos (tenants), m
 - **Analíticas de Carga**: Volumen de transacciones procesadas (sin acceso a montos económicos).
 - **Gobernanza de Auditoría**: Supervisión de accesos de alto nivel (vía `siga-common`) para garantizar la integridad del sistema.
 
-## ⚖️ Cumplimiento Legal y Privacidad (Ley 21.719)
+## Cumplimiento Legal y Privacidad (Ley 21.719)
 Este portal está diseñado bajo el principio de **Privacidad por Diseño (Privacy by Design)**:
 - **Zero-Knowledge Architecture**: El administrador de la plataforma **NO** tiene visibilidad sobre los montos financieros, detalles de clientes finales, ni niveles de stock de las Pymes.
 - **Soberanía de Datos**: Cada Pyme es dueña absoluta de su base de datos. El Backoffice solo gestiona la "capacidad" y "disponibilidad" del servicio.
@@ -22,7 +22,7 @@ Este portal está diseñado bajo el principio de **Privacidad por Diseño (Priva
 - **Consumo de APIs**: Se comunica exclusivamente a través del `siga-gateway`.
 - **Autenticación**: Integración con `siga-auth` mediante roles de `ADMIN_MASTER`.
 
-## ⛓️ Interrelaciones (Flujos Técnicos)
+## Interrelaciones (Flujos Técnicos)
 
 El Admin Portal no tiene base de datos de negocio propia; consume datos de los microservicios a través del `siga-gateway`.
 
@@ -46,5 +46,7 @@ El Admin Portal no tiene base de datos de negocio propia; consume datos de los m
 - **Ejemplo Claro**: Ante una auditoría por la Ley 21.719, el administrador busca quién modificó el precio de un producto X en la Pyme Y.
   - *Detrás de escena*: El portal consulta los logs centralizados filtrando por `entity_type: PRODUCT`.
 
+
 ---
-> "La torre de control de SIGA."
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

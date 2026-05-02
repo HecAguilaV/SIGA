@@ -27,4 +27,5 @@ Este protocolo precede a cualquier estándar técnico o estético. La métrica d
 *   **Screaming Architecture**: El código y la estructura de carpetas deben gritar de qué trata el negocio (Gestión de Activos), no qué frameworks usa.
 
 ---
-> **Un Soñador con poca RAM 🧑‍💻**
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

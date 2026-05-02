@@ -132,7 +132,7 @@ const MigrationPage = () => {
                         fontStyle: 'italic',
                         color: '#90e0ef'
                     }}>
-                        "No gestiones tu inventario, gestiona tu tiempo." - {`> Un Soñador con Poca RAM 👨🏻‍💻`}
+                        "No gestiones tu inventario, gestiona tu tiempo." - {``> Un Soñador con Poca RAM 👨🏻‍💻``}
                     </div>
                 </div>
             </div>

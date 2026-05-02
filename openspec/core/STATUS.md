@@ -32,4 +32,5 @@ Este documento refleja la realidad técnica y el progreso de la migración al **
 
 ---
 *Actualizado: 29 de abril de 2026*
-> **Un Soñador con poca RAM 🧑‍💻**
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

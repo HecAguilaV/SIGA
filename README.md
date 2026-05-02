@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
-</p>
-
 # SIGA: Sistema Inteligente de Gestión de Activos
 
 *Read this in other languages: [English](README.en.md)*
@@ -64,7 +60,7 @@ SIGA contempla múltiples interfaces que se encuentran actualmente en fase de in
 
 ---
 
-## ⚖️ Gobernanza, Privacidad y Cumplimiento (Ley 21.719)
+## Gobernanza, Privacidad y Cumplimiento (Ley 21.719)
 
 SIGA no es solo código; es una plataforma diseñada para ser legalmente inexpugnable bajo la normativa chilena de protección de datos:
 
@@ -75,4 +71,5 @@ SIGA no es solo código; es una plataforma diseñada para ser legalmente inexpug
 - **Bilingüismo Técnico**: Documentación y contratos de API en espejo (ES/EN) para asegurar transparencia y escalabilidad.
 
 ---
-*SIGA - Sistema Inteligente de Gestión de Activos*
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`
