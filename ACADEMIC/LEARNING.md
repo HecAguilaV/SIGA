@@ -123,4 +123,79 @@ La documentación técnica de SIGA sigue una regla de **Simetría Total** para e
 - **Contratos de Datos en Testing:** Las colecciones de Postman actúan como el primer punto de validación del contrato de datos, utilizando UUIDs reales para asegurar que los Mocks sean 100% compatibles con la persistencia distribuida.
 
 ---
+
+## 9. Transacciones Distribuidas: Patrón SAGA (Coreografía)
+
+La migración a microservicios rompe la "unidad atómica" de la base de datos. En SIGA, una **Venta** involucra dos dominios: `Sales` (el cobro) e `Inventory` (el stock).
+
+### El Desafío: El Problema de las Dos Armadas
+Si `Sales` falla después de que `Inventory` descontó stock, o viceversa, terminamos con datos inconsistentes. Como no podemos usar *Two-Phase Commit (2PC)* por su alto acoplamiento y falta de escalabilidad, implementamos **SAGA**.
+
+### ¿Por qué SAGA por Coreografía?
+En lugar de un orquestador central (que sería un punto único de falla), usamos **Coreografía basada en Eventos**:
+1. Cada servicio publica un evento cuando termina su parte.
+2. Los otros servicios escuchan y reaccionan.
+- **Justificación**: Máximo desacoplamiento. `Sales` no sabe cómo `Inventory` descuenta el stock; solo sabe que debe esperar un evento de respuesta.
+
+### Apache Kafka: El Sistema Nervioso
+Elegimos Kafka sobre RabbitMQ por su **Persistencia (Log-based)** y **Capacidad de Replay**:
+- Si el microservicio de Inventario cae, los eventos de venta no se pierden; quedan en el topic hasta que el servicio vuelva y los procese.
+- Esto garantiza **Consistencia Eventual**, un pilar de los sistemas distribuidos modernos.
+
+### Idempotencia: La Regla de Oro
+En sistemas de mensajería, un mensaje puede llegar **más de una vez** (entrega *at-least-once*).
+- **Decisión**: Implementamos una tabla `processed_events` en cada servicio.
+- **Fundamento**: Antes de descontar stock, el servicio consulta si ya procesó ese `eventId`. Si sí, lo ignora. Esto evita errores críticos como cobrar dos veces o descontar stock duplicado.
+
+### Transacciones Compensatorias
+Si el stock es insuficiente, `Inventory` emite `STOCK_FAILED`. `Sales` reacciona cancelando la venta.
+- **Aprendizaje**: En SAGA, no hay "Rollback" tradicional; hay "Compensación". Debemos escribir código que deshaga lógicamente lo que se hizo previamente.
+
+## 10. Evolución del Toolchain: El "Hard-Pinning" de Versiones
+
+Durante la implementación, nos enfrentamos a una incompatibilidad entre el parser de versiones de **Kotlin 1.9.22** y **Java 25 (Preview)**.
+
+### Decisión Técnica: Retroceder para Avanzar
+Forzamos el uso de **JDK 21 (LTS)** mediante `gradle.properties`.
+- **¿Por qué JDK 21?**: Es la versión de Soporte a Largo Plazo (LTS) actual. Garantiza estabilidad, soporte de la comunidad y compatibilidad total con el ecosistema de Spring Boot 3.2.x.
+- **Fundamento**: En producción, la novedad (Java 25) nunca debe comprometer la estabilidad del proceso de construcción (Build). "Bleeding edge" es para experimentos; LTS es para negocios.
+
+## 11. Evolución del Repositorio: De la Dispersión a la Cohesión
+
+SIGA no nació así. Ha pasado por una metamorfosis arquitectónica:
+
+### El Pasado: Monolito Multirepo
+- **Problema**: Cada servicio en un repo distinto generaba "Infierno de Dependencias". Si cambiabas algo en `Common`, tenías que actualizar, pushear y pullear en 5 repos más.
+- **Resultado**: Lentitud y pérdida de visión global.
+
+### El Presente: Microservicios en Monorepo
+- **Solución**: Agrupar todo el ecosistema bajo un mismo control de versiones pero manteniendo el desacoplamiento en tiempo de ejecución.
+- **Ventaja de Defensa**: "Utilizamos un Monorepo para facilitar la consistencia transaccional del equipo (IA y humano) y asegurar que las pruebas de integración (SAGA) se validen contra versiones exactas de cada servicio en un solo paso de CI/CD."
+
+## 12. Soberanía de Datos: De Esquemas a DBs Independientes
+
+Aunque hoy usamos una instancia de PostgreSQL particionada por esquemas, el diseño es **DB-Agnostic**.
+
+- **¿Por qué este cambio?**: En un monolito, las tablas se cruzan con `JOINs`. En microservicios, el cruce de datos está PROHIBIDO a nivel de DB.
+- **Fundamento**: Cada microservicio es dueño de su esquema. Si mañana el servicio de Inventario necesita escalar masivamente, podemos mover su esquema a su propio servidor físico sin tocar una sola línea de código de los otros servicios. Esto es **Escalabilidad Elástica**.
+
+## 13. Estrategia Bilingüe: El Estándar de la Industria
+
+Es común ver confusión en por qué mezclamos idiomas. En SIGA, la regla es clara:
+
+### Inglés para el "Código y Specs"
+- **Razón**: El ecosistema global de desarrollo (Stack Overflow, documentación oficial, librerías) habla inglés. Programar en inglés elimina la fricción de traducir términos técnicos (ej: `invoice` vs `factura`) y asegura que el código sea comprensible para cualquier desarrollador en el mundo.
+
+### Español para los "Commits y Negocio"
+- **Razón**: Los commits son la bitácora humana. Usamos español para mantener una comunicación fluida con los stakeholders locales y asegurar que la intención detrás de cada cambio sea inequívoca para el equipo actual.
+- **Filosofía**: "Code for the machine (Global), commit for the team (Local)."
+
+## 14. El Valor de este Documento (The Hidden Treasure)
+
+Este archivo en `ACADEMIC/LEARNING.md` es el **Mapa del Tesoro**. 
+- Para un **Profesor**: Demuestra autocrítica, profundidad técnica y capacidad de justificar decisiones de diseño (no solo picar código).
+- Para un **Estudiante**: Sirve como guía de "Patrones de Batalla" reales, no solo teoría de libro.
+- Para **Mí (Defensa)**: Es mi guion. Aquí están las respuestas a los "incendios" que apagamos (como el de Java 25) y los cimientos de por qué SIGA es una solución de grado producción.
+
+---
 > Un Soñador con poca RAM 🧑‍💻
