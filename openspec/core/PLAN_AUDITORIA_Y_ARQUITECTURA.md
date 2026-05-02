@@ -31,4 +31,4 @@ Dividiremos la lógica actual en servicios independientes y blindados:
 3.  Implementación del primer Pipeline de CI/CD.
 
 ---
-> Un Soñador con Poca RAM & Misael
+`> Un Soñador con Poca RAM ��🏻‍💻

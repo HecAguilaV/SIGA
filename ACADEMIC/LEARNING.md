@@ -206,4 +206,5 @@ Se descartó la idea de una gestión centralizada de catálogos para evitar pasa
 - **Resultado**: Reducción drástica del riesgo legal y aumento de la confianza del cliente al garantizar que SIGA no tiene "ojos" sobre su estrategia de precios o volumen de stock crítico.
 
 ---
-> Un Soñador con poca RAM 🧑‍💻
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

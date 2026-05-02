@@ -24,4 +24,4 @@ La prioridad absoluta es la **Capa Humana**. La tecnología es el medio, pero el
 - [x] Planificación de la Arquitectura Limpia.
 
 ---
-> Un Soñador con Poca RAM & Misael
+`> Un Soñador con Poca RAM ��🏻‍💻

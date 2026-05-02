@@ -60,7 +60,7 @@ SIGA contemplates multiple interfaces that are currently in the initialization p
 
 ---
 
-## ⚖️ Governance, Privacy, and Compliance (Law 21.719)
+## Governance, Privacy, and Compliance (Law 21.719)
 
 SIGA is not just code; it is a platform designed to be legally unassailable under Chilean data protection regulations:
 
@@ -71,4 +71,5 @@ SIGA is not just code; it is a platform designed to be legally unassailable unde
 - **Technical Bilingualism**: API documentation and contracts in mirror format (ES/EN) to ensure transparency and scalability.
 
 ---
-*SIGA - Intelligent Asset Management System*
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

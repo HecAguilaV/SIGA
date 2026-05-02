@@ -20,4 +20,4 @@ El monorepo debe contener única y exclusivamente documentación **útil, accion
 4. Fase **Limpieza (Cirugía)**: Tras la aprobación, ejecutar las eliminaciones y consolidaciones, manteniendo la firma oficial e identidad sin emojis genéricos.
 
 ---
-> Un Soñador con Poca RAM & Misael
+`> Un Soñador con Poca RAM ��🏻‍💻

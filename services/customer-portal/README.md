@@ -1,36 +1,16 @@
-<p align="center">
-  <img src="../../docs/brand/Logo_SIGA.png" alt="Logo SIGA" width="220" />
-</p>
-
-<h1 align="center">SIGA - Portal Comercial</h1>
-
-<p align="center">
-  <strong>Sistema Inteligente de Gestión de Activos</strong><br/>
-  Portal comercial y gestión de suscripciones para planes SaaS
-</p>
-
-<hr />
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Coraz%C3%B3n_de-SIGA-00B4D8?style=for-the-badge&labelColor=03045E" />
-  <img src="https://img.shields.io/badge/Visi%C3%B3n-Que_el_emprendedor_nunca_se_detenga-80FFDB?style=for-the-badge&labelColor=03045E" />
-</p>
-
 # SIGA - Portal Comercial
 
-**Sistema Inteligente de Gestión de Activos**  
-*Más que un software, una declaración de intenciones.*
+**Sistema Inteligente de Gestión de Activos**
+Portal comercial y gestión de suscripciones para planes SaaS
 
->  **Live Demo:** [https://siga-webcomercial.vercel.app](https://siga-webcomercial.vercel.app)
+**Live Demo:** [https://siga-webcomercial.vercel.app](https://siga-webcomercial.vercel.app)
 
 ---
 
-##  Filosofía del Proyecto
-
-> **"No gestiones tu inventario, gestiona tu tiempo."**
+## Filosofía del Proyecto
 
 SIGA nace de una problemática real: la parálisis operativa que sufren las PYMES.
-Nuestra misión no es solo registrar productos, es **reducir la fricción operativa** traduciendo la intención del negocio en acciones automáticas.
+Nuestra misión no es solo registrar productos, es reducir la fricción operativa traduciendo la intención del negocio en acciones automáticas.
 
 ### Pilares
 1.  **Menos Fricción:** Interfaces intuitivas que no requieren manuales.
@@ -39,7 +19,7 @@ Nuestra misión no es solo registrar productos, es **reducir la fricción operat
 
 ---
 
-##  Identidad Visual y Experiencia (New Look 2025)
+## Identidad Visual y Experiencia
 
 Hemos migrado de una interfaz genérica a una identidad propia y premium:
 
@@ -584,7 +564,5 @@ La interfaz de Karma se abrirá en tu navegador mostrando todos los tests con su
 Este proyecto es la base de SIGA.
 
 ---
-
-## Autor
-
-> Un Soñador con Poca RAM  & Misael
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

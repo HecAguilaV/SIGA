@@ -35,4 +35,4 @@ Conservaremos en el backend solo lo que le pertenece estrictamente a su arquitec
 Pasaremos de **41 archivos confusos a menos de 5 documentos técnicos sólidos**. El backend dejará de ser el "basurero documental" de los otros equipos y volverá a ser simplemente el motor lógico de SIGA.
 
 ---
-> Un Soñador con Poca RAM  & Misael
+`> Un Soñador con Poca RAM  & Misael

@@ -37,7 +37,7 @@ export default function Footer() {
 
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50">
           <div>© 2025 SIGA Inc. Todos los derechos reservados.</div>
-          <div> > Un Soñador con Poca RAM 👨🏻‍💻</div>
+          <div> `> Un Soñador con Poca RAM 👨🏻‍💻`</div>
         </div>
       </div>
     </footer>

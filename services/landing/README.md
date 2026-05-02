@@ -10,3 +10,7 @@ This service is planned but not yet implemented. See the architecture docs for t
 
 - Framework: SvelteKit / Astro (TBD)
 - Purpose: Marketing, pricing, signup flow
+
+---
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`

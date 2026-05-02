@@ -28,4 +28,5 @@ Preferir la solidez estructural sobre la entrega inmediata. "Si una tarea toma m
 
 ---
 > *Arquitectura dirigida por Visión Humana, ejecutada con Velocidad Agéntica.*
-> **Un Soñador con poca RAM 🧑‍💻**
+Héctor Aguila
+`> Un Soñador con Poca RAM 👨🏻‍💻`
