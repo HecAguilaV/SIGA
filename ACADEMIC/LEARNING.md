@@ -190,12 +190,5 @@ Es común ver confusión en por qué mezclamos idiomas. En SIGA, la regla es cla
 - **Razón**: Los commits son la bitácora humana. Usamos español para mantener una comunicación fluida con los stakeholders locales y asegurar que la intención detrás de cada cambio sea inequívoca para el equipo actual.
 - **Filosofía**: "Code for the machine (Global), commit for the team (Local)."
 
-## 14. El Valor de este Documento (The Hidden Treasure)
-
-Este archivo en `ACADEMIC/LEARNING.md` es el **Mapa del Tesoro**. 
-- Para un **Profesor**: Demuestra autocrítica, profundidad técnica y capacidad de justificar decisiones de diseño (no solo picar código).
-- Para un **Estudiante**: Sirve como guía de "Patrones de Batalla" reales, no solo teoría de libro.
-- Para **Mí (Defensa)**: Es mi guion. Aquí están las respuestas a los "incendios" que apagamos (como el de Java 25) y los cimientos de por qué SIGA es una solución de grado producción.
-
 ---
 > Un Soñador con poca RAM 🧑‍💻
