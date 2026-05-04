@@ -4,7 +4,7 @@ Este servicio gestiona la identidad, seguridad y control de acceso centralizado 
 
 ## Stack Tecnológico
 - **Lenguaje**: Kotlin
-- **Framework**: Spring Boot 3.2.x
+- **Framework**: Spring Boot 4.0.6
 - **Seguridad**: Spring Security + JWT
 - **BD**: PostgreSQL (Esquema: `auth`)
 
@@ -19,7 +19,7 @@ Este servicio gestiona la identidad, seguridad y control de acceso centralizado 
 - **Service Registry**: Se registra en `siga-registry` (Eureka).
 
 ## Arquitectura
-- [x] Hexagonal
+- [ ] Hexagonal (Pendiente de refactorización)
 - [x] UUID v4 (Ley 21.719)
 - [ ] SAGA (No requerido actualmente)
 
