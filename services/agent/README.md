@@ -5,8 +5,8 @@ Servicio de Inteligencia Artificial para asistencia contextual y análisis de da
 ## Stack Tecnológico
 - **Lenguaje**: Python 3.11+
 - **Framework**: FastAPI
-- **LLM**: LangChain / OpenAI
-- **Vector DB**: ChromaDB / Pinecone (Propuesta)
+- **LLM**: LangChain / OpenAI / Strands
+- **Vector DB**: PGVector (PostgreSQL) - Para ingestión Big Data futura
 
 ## APIs & Contratos
 - **Asistente**: `POST /api/v1/agent/chat`
