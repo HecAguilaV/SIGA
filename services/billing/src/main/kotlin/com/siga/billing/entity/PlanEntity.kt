@@ -5,11 +5,11 @@ import java.math.BigDecimal
 import java.util.UUID
 
 /**
- * SaaS subscription plan with operational limits.
+ * JPA Entity for Subscription Plans.
  */
 @Entity
 @Table(name = "plans", schema = "billing")
-class Plan(
+class PlanEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -43,11 +43,11 @@ class Plan(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Plan) return false
+        if (other !is PlanEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "Plan(id=$id, name=$name, monthlyPrice=$monthlyPrice)"
+    override fun toString(): String = "PlanEntity(id=$id, name=$name, monthlyPrice=$monthlyPrice)"
 }

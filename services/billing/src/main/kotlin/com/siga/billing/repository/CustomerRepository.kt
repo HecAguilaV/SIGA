@@ -1,15 +1,14 @@
 package com.siga.billing.repository
 
-import com.siga.billing.entity.Customer
+import com.siga.billing.entity.CustomerEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.util.UUID
 
 /**
- * Repository for commercial customers.
+ * Spring Data JPA Repository for Customer.
+ * This is an infrastructure detail, used by CustomerJpaAdapter.
  */
 @Repository
-interface CustomerRepository : JpaRepository<Customer, UUID> {
-    fun findByEmail(email: String): Customer?
-    fun existsByEmail(email: String): Boolean
+interface CustomerRepository : JpaRepository<CustomerEntity, java.util.UUID> {
+    fun findByEmail(email: String): CustomerEntity?
 }

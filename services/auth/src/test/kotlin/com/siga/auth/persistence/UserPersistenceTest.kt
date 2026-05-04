@@ -23,7 +23,8 @@ class UserPersistenceTest : BaseIntegrationTest() {
                 "lastName": "User UUID",
                 "email": "test_uuid@siga.cl",
                 "passwordHash": "Password123!",
-                "role": "ADMINISTRATOR"
+                "role": "ADMINISTRATOR",
+                "isActive": true
             }
         """.trimIndent()
 
@@ -31,6 +32,7 @@ class UserPersistenceTest : BaseIntegrationTest() {
             .with(csrf())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(userJson))
+            .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").exists())
             // This is the "killer" assertion: checks if it's a valid UUID string

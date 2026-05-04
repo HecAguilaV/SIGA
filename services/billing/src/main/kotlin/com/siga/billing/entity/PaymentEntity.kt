@@ -6,11 +6,12 @@ import java.time.Instant
 import java.util.UUID
 
 /**
- * Record of a payment made by the customer.
+ * JPA Entity for Payment.
+ * Infrastructure detail. Use Payment (Domain Model) in business logic.
  */
 @Entity
 @Table(name = "payments", schema = "billing")
-class Payment(
+class PaymentEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -44,18 +45,15 @@ class Payment(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Payment) return false
+        if (other !is PaymentEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "Payment(id=$id, amount=$amount, status=$status)"
+    override fun toString(): String = "PaymentEntity(id=$id, amount=$amount, status=$status)"
 }
 
-/**
- * Payment statuses.
- */
 enum class PaymentStatus {
     PENDING, COMPLETED, FAILED, REFUNDED
 }

@@ -1,17 +1,18 @@
 package com.siga.billing.repository
 
-import com.siga.billing.entity.Payment
+import com.siga.billing.entity.PaymentEntity
 import com.siga.billing.entity.PaymentStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
 /**
- * Repository for payments.
+ * Spring Data JPA Repository for Payment.
+ * Used by PaymentJpaAdapter.
  */
 @Repository
-interface PaymentRepository : JpaRepository<Payment, UUID> {
-    fun findByCustomerId(customerId: UUID): List<Payment>
-    fun findBySubscriptionId(subscriptionId: UUID): List<Payment>
-    fun findByStatus(status: PaymentStatus): List<Payment>
+interface PaymentRepository : JpaRepository<PaymentEntity, UUID> {
+    fun findByCustomerId(customerId: UUID): List<PaymentEntity>
+    fun findBySubscriptionId(subscriptionId: UUID): List<PaymentEntity>
+    fun findByStatus(status: PaymentStatus): List<PaymentEntity>
 }

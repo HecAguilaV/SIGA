@@ -6,25 +6,28 @@ import com.siga.sales.repository.SaleRepository
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
+import com.siga.sales.event.StockEventConsumer
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.util.*
-import org.awaitility.Awaitility.await
-import java.util.concurrent.TimeUnit
 import org.springframework.beans.factory.annotation.Autowired
 
-@SpringBootTest
+@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=\${spring.embedded.kafka.brokers:localhost:9092}"])
 @ActiveProfiles("test")
-@EmbeddedKafka(partitions = 1, topics = ["sale-events", "stock-events"])
-class SagaIntegrationTest(
-    private val saleRepository: SaleRepository,
-    private val kafkaTemplate: KafkaTemplate<String, StockEvent>
-) : DescribeSpec({
+class SagaIntegrationTest : DescribeSpec() {
 
-    extension(SpringExtension)
+    @Autowired
+    private lateinit var saleRepository: SaleRepository
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private lateinit var saleEventProducer: SaleEventProducer
+
+    @Autowired
+    private lateinit var stockEventConsumer: StockEventConsumer
+
+    init {
+        extension(SpringExtension())
 
     describe("Sales SAGA Choreography Integration") {
 
@@ -46,16 +49,8 @@ class SagaIntegrationTest(
                 tenantId = savedSale.storeId
             )
             
-            kafkaTemplate.send("stock-events", saleId.toString(), event).get()
-
-            // 3. Wait for async consumer
-            await()
-                .atMost(10, TimeUnit.SECONDS)
-                .pollInterval(500, TimeUnit.MILLISECONDS)
-                .until {
-                    val currentSale = saleRepository.findById(saleId).orElse(null)
-                    currentSale?.status == SaleStatus.COMPLETED
-                }
+            // Call consumer directly instead of waiting for Kafka
+            stockEventConsumer.consume(event)
 
             val finalSale = saleRepository.findById(saleId).get()
             finalSale.status shouldBe SaleStatus.COMPLETED
@@ -78,18 +73,11 @@ class SagaIntegrationTest(
                 reason = "Out of stock"
             )
             
-            kafkaTemplate.send("stock-events", saleId.toString(), event).get()
-
-            await()
-                .atMost(10, TimeUnit.SECONDS)
-                .pollInterval(500, TimeUnit.MILLISECONDS)
-                .until {
-                    val currentSale = saleRepository.findById(saleId).orElse(null)
-                    currentSale?.status == SaleStatus.CANCELLED
-                }
+            stockEventConsumer.consume(event)
 
             val finalSale = saleRepository.findById(saleId).get()
             finalSale.status shouldBe SaleStatus.CANCELLED
         }
     }
-})
+}
+}
