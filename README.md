@@ -27,7 +27,7 @@ Hemos establecido un estándar de Espejo Semántico para garantizar que la docum
 
 SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumplimiento legal:
 
-- **Backend**: Java/Kotlin + Spring Boot 3.2.x. Implementación estricta de Arquitectura Hexagonal y Disciplina TDD.
+- **Backend**: Kotlin + Spring Boot 4.0.6. Implementación estricta de Arquitectura Hexagonal (Gold Standard) y Disciplina TDD.
 - **IA**: Python + LangChain + PGVector (Memoria Semántica por Tenant).
 - **Frontend**: Svelte 5 (Webapp) y Jetpack Compose (Mobile).
 - **Persistencia**: PostgreSQL con aislamiento de esquemas y UUID v4 como estándar único de identidad y seudonimización.
@@ -50,13 +50,15 @@ docker-compose up -d
 
 ## Ecosistema Frontend (En Desarrollo)
 
-SIGA contempla múltiples interfaces que se encuentran actualmente en fase de inicialización:
+SIGA contempla múltiples interfaces organizadas bajo el directorio `apps/` para una clara separación de concerns:
 
-- **Webapp (Administración)**: Localizada en `services/webapp`. Basada en Svelte 5.
-- **Landing Page**: Localizada en `services/landing`.
-- **Mobile App**: Localizada en `services/mobile`. Basada en Jetpack Compose.
+- **Webapp (Administración)**: Localizada en `apps/webapp`. Basada en Svelte 5.
+- **Página de Inicio (Landing)**: Localizada en `apps/landing`.
+- **Portal de Clientes**: Localizada en `apps/customer-portal`.
+- **Portal de Administración**: Localizada en `apps/admin-portal`.
+- **Mobile App**: Localizada en `apps/mobile`. Basada en Jetpack Compose.
 
-*Nota: Estos servicios se integrarán con el núcleo bilingüe de microservicios en las próximas fases del proyecto.*
+*Nota: Los frontends son consumidores de los microservicios ubicados en `services/`.*
 
 ---
 

@@ -27,7 +27,7 @@ We have established a Semantic Mirroring standard to ensure that documentation i
 
 SIGA utilizes cutting-edge technologies to ensure performance and legal compliance:
 
-- **Backend**: Java/Kotlin + Spring Boot 3.2.x. Strict implementation of Hexagonal Architecture and TDD Discipline.
+- **Backend**: Kotlin + Spring Boot 4.0.6. Strict implementation of Gold Standard Hexagonal Architecture and TDD Discipline.
 - **AI**: Python + LangChain + PGVector (Per-Tenant Semantic Memory).
 - **Frontend**: Svelte 5 (Webapp) and Jetpack Compose (Mobile).
 - **Persistence**: PostgreSQL with schema isolation and UUID v4 as the unique standard for identity and pseudonymization.
@@ -50,13 +50,15 @@ docker-compose up -d
 
 ## Frontend Ecosystem (Under Development)
 
-SIGA contemplates multiple interfaces that are currently in the initialization phase:
+SIGA contemplates multiple interfaces organized under the `apps/` directory for clear separation of concerns:
 
-- **Webapp (Administration)**: Located in `services/webapp`. Based on Svelte 5.
-- **Landing Page**: Located in `services/landing`.
-- **Mobile App**: Located in `services/mobile`. Based on Jetpack Compose.
+- **Webapp (Administration)**: Located in `apps/webapp`. Based on Svelte 5.
+- **Landing Page**: Located in `apps/landing`.
+- **Customer Portal**: Located in `apps/customer-portal`.
+- **Admin Portal**: Located in `apps/admin-portal`.
+- **Mobile App**: Located in `apps/mobile`. Based on Jetpack Compose.
 
-*Note: These services will be integrated with the bilingual microservices core in the next project phases.*
+*Note: The frontends consume the microservices located in `services/`.*
 
 ---
 
