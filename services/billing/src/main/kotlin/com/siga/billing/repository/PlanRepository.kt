@@ -1,15 +1,16 @@
 package com.siga.billing.repository
 
-import com.siga.billing.entity.Plan
+import com.siga.billing.entity.PlanEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
 /**
- * Repository for subscription plans.
+ * Spring Data JPA Repository for Plan.
+ * Used by PlanJpaAdapter.
  */
 @Repository
-interface PlanRepository : JpaRepository<Plan, UUID> {
-    fun findByName(name: String): Plan?
-    fun findByIsActiveTrue(): List<Plan>
+interface PlanRepository : JpaRepository<PlanEntity, UUID> {
+    fun findByName(name: String): PlanEntity?
+    fun findByIsActiveTrue(): List<PlanEntity>
 }

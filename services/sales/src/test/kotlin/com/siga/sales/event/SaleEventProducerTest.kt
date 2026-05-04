@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
  */
 class SaleEventProducerTest : DescribeSpec({
 
-    val kafkaTemplate = mockk<KafkaTemplate<String, SaleEvent>>()
+    val kafkaTemplate = mockk<KafkaTemplate<String, Any>>()
     val producer = SaleEventProducer(kafkaTemplate)
 
     beforeEach {

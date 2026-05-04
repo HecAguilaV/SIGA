@@ -5,12 +5,12 @@ import java.time.Instant
 import java.util.UUID
 
 /**
- * Entity representing a commercial user/company.
- * This is the SaaS customer who purchases a subscription.
+ * JPA Entity for Customer.
+ * This is an infrastructure detail. Use Customer (Domain Model) in business logic.
  */
 @Entity
 @Table(name = "customers", schema = "billing")
-class Customer(
+class CustomerEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -74,11 +74,11 @@ class Customer(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Customer) return false
+        if (other !is CustomerEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "Customer(id=$id, email=$email, companyName=$companyName)"
+    override fun toString(): String = "CustomerEntity(id=$id, email=$email, companyName=$companyName)"
 }

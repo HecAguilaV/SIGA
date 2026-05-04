@@ -1,8 +1,8 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.spring") version "1.9.22"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.spring") version "2.2.0"
     id("io.spring.dependency-management") version "1.1.7"
     `java-library`
 }
@@ -16,7 +16,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:3.2.0")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.6")
     }
 }
 
@@ -29,19 +29,19 @@ dependencies {
     
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     
-    // Jackson para serialización JSON de los logs
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    // Jackson para serialización JSON de los logs y Kotlin
+    api("com.fasterxml.jackson.module:jackson-module-kotlin")
     
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "21"
-        freeCompilerArgs = listOf("-Xjsr305=strict")
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        freeCompilerArgs.add("-Xjsr305=strict")
     }
 }
 

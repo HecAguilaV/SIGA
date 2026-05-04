@@ -14,17 +14,30 @@ import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.util.*
 
-@SpringBootTest
+@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=\${spring.embedded.kafka.brokers}"])
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 1, topics = ["sale-events", "stock-events"])
-class SaleEventConsumerIntegrationTest(
-    private val productRepository: ProductRepository,
-    private val stockRepository: StockRepository,
-    private val movementRepository: MovementRepository,
-    private val saleEventConsumer: SaleEventConsumer
-) : DescribeSpec({
+class SaleEventConsumerIntegrationTest : DescribeSpec() {
 
-    describe("SaleEventConsumer Integration (SAGA Step 2)") {
+    @org.springframework.beans.factory.annotation.Autowired
+    private lateinit var productRepository: ProductRepository
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private lateinit var stockRepository: StockRepository
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private lateinit var stockEventProducer: StockEventProducer
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private lateinit var movementRepository: MovementRepository
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private lateinit var saleEventConsumer: SaleEventConsumer
+
+    init {
+        extension(io.kotest.extensions.spring.SpringExtension())
+
+        describe("SaleEventConsumer Integration (SAGA Step 2)") {
 
         it("should reserve stock and record movement on SALE_INITIATED") {
             val tenantId = UUID.randomUUID()
@@ -57,4 +70,5 @@ class SaleEventConsumerIntegrationTest(
             movements[0].quantity shouldBe 4
         }
     }
-})
+}
+}

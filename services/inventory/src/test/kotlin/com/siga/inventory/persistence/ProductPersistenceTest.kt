@@ -20,14 +20,17 @@ class ProductPersistenceTest : BaseIntegrationTest() {
                 "name": "Laptop Pro 16",
                 "description": "High performance laptop",
                 "unitPrice": 1500.00,
-                "barcode": "LAP-001"
+                "barcode": "LAP-001",
+                "isActive": true
             }
         """.trimIndent()
 
         mockMvc.perform(post("/api/v1/inventory/products")
+            .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
             .with(csrf())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(productJson))
+            .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").isString) // Here we expect UUID string
             .andExpect(jsonPath("$.name").value("Laptop Pro 16"))

@@ -5,11 +5,12 @@ import java.time.Instant
 import java.util.UUID
 
 /**
- * Active subscription of a customer to a plan.
+ * JPA Entity for Subscription.
+ * Infrastructure detail. Use Subscription (Domain Model) in business logic.
  */
 @Entity
 @Table(name = "subscriptions", schema = "billing")
-class Subscription(
+class SubscriptionEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -51,25 +52,19 @@ class Subscription(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Subscription) return false
+        if (other !is SubscriptionEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "Subscription(id=$id, status=$status, period=$period)"
+    override fun toString(): String = "SubscriptionEntity(id=$id, status=$status, period=$period)"
 }
 
-/**
- * Billing period types.
- */
 enum class BillingPeriod {
     MONTHLY, ANNUAL
 }
 
-/**
- * Possible subscription statuses.
- */
 enum class SubscriptionStatus {
     ACTIVE, SUSPENDED, CANCELLED, EXPIRED
 }

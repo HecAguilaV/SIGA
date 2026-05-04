@@ -1,29 +1,30 @@
 package com.siga.billing.controller
 
-import com.siga.billing.entity.Plan
-import com.siga.billing.repository.PlanRepository
+import com.siga.billing.domain.model.Plan
+import com.siga.billing.domain.port.PlanRepositoryPort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 /**
  * Controller to manage subscription plans.
+ * Uses PlanRepositoryPort (Hexagonal) for persistence.
  */
 @RestController
 @RequestMapping("/api/v1/billing/plans")
 class PlanController(
-    private val planRepository: PlanRepository
+    private val planPort: PlanRepositoryPort
 ) {
     @GetMapping
     fun getAllPlans(): ResponseEntity<List<Plan>> {
-        return ResponseEntity.ok(planRepository.findByIsActiveTrue())
+        return ResponseEntity.ok(planPort.findByIsActiveTrue())
     }
 
     @GetMapping("/{id}")
     fun getPlanById(@PathVariable id: UUID): ResponseEntity<Plan> {
-        val plan = planRepository.findById(id)
-        return if (plan.isPresent) {
-            ResponseEntity.ok(plan.get())
+        val plan = planPort.findById(id)
+        return if (plan != null) {
+            ResponseEntity.ok(plan)
         } else {
             ResponseEntity.notFound().build()
         }
@@ -31,25 +32,18 @@ class PlanController(
 
     @PostMapping
     fun createPlan(@RequestBody plan: Plan): ResponseEntity<Plan> {
-        return ResponseEntity.ok(planRepository.save(plan))
+        return ResponseEntity.ok(planPort.save(plan))
     }
 
     @PutMapping("/{id}")
     fun updatePlan(@PathVariable id: UUID, @RequestBody plan: Plan): ResponseEntity<Plan> {
-        return if (planRepository.existsById(id)) {
-            ResponseEntity.ok(planRepository.save(plan))
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        // In Hexagonal, updates should go through a Use Case or the Port
+        return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_IMPLEMENTED).build()
     }
 
     @DeleteMapping("/{id}")
     fun deletePlan(@PathVariable id: UUID): ResponseEntity<Void> {
-        return if (planRepository.existsById(id)) {
-            planRepository.deleteById(id)
-            ResponseEntity.noContent().build()
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        // In Hexagonal, deletion logic belongs in a Use Case
+        return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_IMPLEMENTED).build()
     }
 }

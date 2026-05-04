@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 class SaleEventProducer(
-    private val kafkaTemplate: KafkaTemplate<String, SaleEvent>
+    private val kafkaTemplate: KafkaTemplate<String, Any>
 ) {
     private val log = LoggerFactory.getLogger(SaleEventProducer::class.java)
 

@@ -3,7 +3,7 @@ package com.siga.inventory.controller
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.extensions.spring.SpringExtension
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
@@ -16,12 +16,15 @@ import java.util.UUID
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class ProductControllerTests : DescribeSpec() {
-    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private lateinit var stockEventProducer: com.siga.inventory.event.StockEventProducer
+
     init {
+        extension(SpringExtension())
         describe("ProductController Integration") {
 
             it("given no token when requesting products then should return 403 Forbidden") {
