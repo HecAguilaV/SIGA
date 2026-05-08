@@ -5,6 +5,7 @@ import com.siga.sales.domain.port.PaymentMethodRepositoryPort
 import com.siga.sales.entity.PaymentMethodEntity
 import com.siga.sales.infrastructure.mapper.PaymentMethodMapper
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 /**
  * JPA Adapter for PaymentMethod.

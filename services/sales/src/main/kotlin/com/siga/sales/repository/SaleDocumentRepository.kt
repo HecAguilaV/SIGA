@@ -1,15 +1,15 @@
 package com.siga.sales.repository
 
-import com.siga.sales.entity.SaleDocument
+import com.siga.sales.entity.SaleDocumentEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
 /**
- * Repository for sale documents (boletas and facturas).
+ * Repository for sale documents (JPA).
  */
 @Repository
-interface SaleDocumentRepository : JpaRepository<SaleDocument, UUID> {
-    fun findBySaleId(saleId: UUID): SaleDocument?
-    fun findByCustomerId(customerId: UUID): List<SaleDocument>
+interface SaleDocumentRepository : JpaRepository<SaleDocumentEntity, UUID> {
+    fun findBySaleId(saleId: UUID): SaleDocumentEntity?
+    fun findByCustomerId(customerId: UUID): List<SaleDocumentEntity>
 }

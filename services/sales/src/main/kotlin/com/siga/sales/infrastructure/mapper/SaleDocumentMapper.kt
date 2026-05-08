@@ -1,7 +1,10 @@
 package com.siga.sales.infrastructure.mapper
 
 import com.siga.sales.domain.model.SaleDocument
+import com.siga.sales.domain.model.DocumentType
+import com.siga.sales.domain.model.DocumentStatus
 import com.siga.sales.entity.SaleDocumentEntity
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 /**

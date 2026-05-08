@@ -5,6 +5,7 @@ import com.siga.sales.domain.port.CashShiftRepositoryPort
 import com.siga.sales.entity.CashShiftEntity
 import com.siga.sales.infrastructure.mapper.CashShiftMapper
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 /**
  * JPA Adapter for CashShift.
@@ -22,6 +23,10 @@ class CashShiftJpaAdapter(
     override fun save(shift: CashShift): CashShift {
         val entity = cashShiftMapper.toEntity(shift)
         return cashShiftMapper.toDomain(cashShiftRepository.save(entity))
+    }
+
+    override fun findAll(): List<CashShift> {
+        return cashShiftRepository.findAll().map { cashShiftMapper.toDomain(it) }
     }
 
     override fun findByStoreId(storeId: UUID): List<CashShift> {

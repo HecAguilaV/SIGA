@@ -2,6 +2,7 @@ package com.siga.sales.infrastructure.mapper
 
 import com.siga.sales.domain.model.PaymentMethod
 import com.siga.sales.entity.PaymentMethodEntity
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 /**

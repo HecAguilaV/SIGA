@@ -1,10 +1,12 @@
 package com.siga.sales.infrastructure.adapter
 
 import com.siga.sales.domain.model.Sale
+import com.siga.sales.domain.model.SaleStatus
 import com.siga.sales.domain.port.SaleRepositoryPort
 import com.siga.sales.entity.SaleEntity
 import com.siga.sales.infrastructure.mapper.SaleMapper
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 /**
  * JPA Adapter for Sale.
@@ -25,6 +27,10 @@ class SaleJpaAdapter(
         return saleMapper.toDomain(saleRepository.save(entity))
     }
 
+    override fun findAll(): List<Sale> {
+        return saleRepository.findAll().map { saleMapper.toDomain(it) }
+    }
+
     override fun findByStoreId(storeId: UUID): List<Sale> {
         return saleRepository.findByStoreId(storeId).map { saleMapper.toDomain(it) }
     }
@@ -33,7 +39,7 @@ class SaleJpaAdapter(
         return saleRepository.findByUserId(userId).map { saleMapper.toDomain(it) }
     }
 
-    override fun findByStatus(status: com.siga.sales.domain.model.SaleStatus): List<Sale> {
+    override fun findByStatus(status: SaleStatus): List<Sale> {
         return saleRepository.findByStatus(status).map { saleMapper.toDomain(it) }
     }
 }
