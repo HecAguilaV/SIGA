@@ -30,7 +30,8 @@ class CustomerMapper {
             name = domain.name,
             email = domain.email,
             phone = domain.phone,
-            address = domain.address
+            address = domain.address,
+            createdAt = domain.createdAt
         )
     }
 }

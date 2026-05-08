@@ -43,9 +43,10 @@ class SaleEventConsumerIntegrationTest : DescribeSpec() {
             val tenantId = UUID.randomUUID()
             val product = productRepository.save(
                 Product(
-                    name = "Test Product", 
-                    barcode = "TEST-001", 
-                    unitPrice = BigDecimal("10.00"), 
+                    id = UUID.randomUUID(),
+                    name = "Test Product",
+                    barcode = "TEST-001",
+                    unitPrice = BigDecimal("10.00"),
                     categoryId = UUID.randomUUID()
                 )
             )

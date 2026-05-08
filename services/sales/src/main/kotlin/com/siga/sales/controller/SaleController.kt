@@ -55,8 +55,8 @@ class SaleController(
     }
 
     @PostMapping
-    fun createSale(@RequestBody sale: Sale, @RequestBody items: List<SaleItem>): ResponseEntity<Sale> {
-        val savedSale = createSaleUseCase.createSale(sale, items)
+    fun createSale(@RequestBody request: CreateSaleRequest): ResponseEntity<Sale> {
+        val savedSale = createSaleUseCase.createSale(request.sale, request.items)
         return ResponseEntity.ok(savedSale)
     }
 

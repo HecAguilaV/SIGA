@@ -31,6 +31,7 @@ class SaleMapper {
             storeId = domain.storeId,
             userId = domain.userId,
             commercialUserId = domain.commercialUserId,
+            createdAt = domain.createdAt,
             total = domain.total,
             status = domain.status,
             observations = domain.observations

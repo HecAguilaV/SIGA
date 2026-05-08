@@ -1,34 +1,39 @@
 package com.siga.inventory.event
 
-import com.siga.inventory.entity.Movement
-import com.siga.inventory.entity.MovementType
-import com.siga.inventory.entity.ProcessedEvent
-import com.siga.inventory.entity.Stock
-import com.siga.inventory.repository.MovementRepository
+import com.siga.inventory.application.usecase.ReserveStockUseCase
+import com.siga.inventory.domain.model.Movement
+import com.siga.inventory.domain.model.MovementType
+import com.siga.inventory.domain.model.Stock
+import com.siga.inventory.domain.port.MovementRepositoryPort
+import com.siga.inventory.domain.port.ProcessedEventRepositoryPort
+import com.siga.inventory.domain.port.StockRepositoryPort
 import com.siga.inventory.repository.ProcessedEventRepository
-import com.siga.inventory.repository.StockRepository
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.shouldBe
 import io.mockk.*
 import java.util.UUID
 
 /**
  * Unit tests for [SaleEventConsumer] — SAGA step 2.
  * Verifies stock reservation logic, compensation, and idempotency.
+ *
+ * WHY PORTS: The consumer now delegates to [ReserveStockUseCase], which
+ * depends on domain ports (not JPA repos). We mock the ports to test
+ * the full flow: Kafka event → Use Case → Port calls.
  */
 class SaleEventConsumerTest : DescribeSpec({
 
-    val stockRepository = mockk<StockRepository>()
-    val movementRepository = mockk<MovementRepository>()
-    val processedEventRepository = mockk<ProcessedEventRepository>()
+    val stockPort = mockk<StockRepositoryPort>()
+    val movementPort = mockk<MovementRepositoryPort>()
+    val processedEventPort = mockk<ProcessedEventRepositoryPort>()
     val stockEventProducer = mockk<StockEventProducer>()
-    val consumer = SaleEventConsumer(
-        stockRepository, movementRepository, processedEventRepository, stockEventProducer
-    )
+
+    val useCase = ReserveStockUseCase(stockPort, movementPort, processedEventPort, stockEventProducer)
+    val processedEventRepo = mockk<ProcessedEventRepository>()
+    val consumer = SaleEventConsumer(useCase, processedEventRepo)
 
     beforeEach {
         clearAllMocks()
-        every { processedEventRepository.save(any()) } answers { firstArg() }
+        every { processedEventPort.save(any(), any()) } just Runs
     }
 
     describe("SaleEventConsumer — SALE_INITIATED") {
@@ -51,16 +56,15 @@ class SaleEventConsumerTest : DescribeSpec({
                 items = listOf(SaleItemEvent(productId = productId, quantity = 3))
             )
 
-            every { processedEventRepository.existsById(any()) } returns false
-            every { stockRepository.findByProductIdAndStoreId(productId, tenantId) } returns stock
-            every { stockRepository.save(any()) } answers { firstArg() }
-            every { movementRepository.save(any()) } answers { firstArg() }
+            every { processedEventPort.existsById(any()) } returns false
+            every { stockPort.findByProductIdAndStoreId(productId, tenantId) } returns stock
+            every { stockPort.save(any()) } answers { firstArg() }
+            every { movementPort.save(any()) } answers { firstArg() }
             every { stockEventProducer.publish(any()) } just Runs
 
             consumer.consume(event)
 
-            stock.quantity shouldBe 7
-            verify { stockRepository.save(stock) }
+            verify { stockPort.save(match { it.quantity == 7 && it.productId == productId }) }
             verify {
                 stockEventProducer.publish(match {
                     it.eventType == StockEventType.STOCK_RESERVED && it.saleId == saleId
@@ -85,14 +89,13 @@ class SaleEventConsumerTest : DescribeSpec({
                 items = listOf(SaleItemEvent(productId = productId, quantity = 5))
             )
 
-            every { processedEventRepository.existsById(any()) } returns false
-            every { stockRepository.findByProductIdAndStoreId(productId, tenantId) } returns stock
+            every { processedEventPort.existsById(any()) } returns false
+            every { stockPort.findByProductIdAndStoreId(productId, tenantId) } returns stock
             every { stockEventProducer.publish(any()) } just Runs
 
             consumer.consume(event)
 
-            stock.quantity shouldBe 1 // Not modified
-            verify(exactly = 0) { stockRepository.save(any()) }
+            verify(exactly = 0) { stockPort.save(any()) }
             verify {
                 stockEventProducer.publish(match {
                     it.eventType == StockEventType.STOCK_FAILED
@@ -111,8 +114,8 @@ class SaleEventConsumerTest : DescribeSpec({
                 items = listOf(SaleItemEvent(productId = productId, quantity = 1))
             )
 
-            every { processedEventRepository.existsById(any()) } returns false
-            every { stockRepository.findByProductIdAndStoreId(productId, tenantId) } returns null
+            every { processedEventPort.existsById(any()) } returns false
+            every { stockPort.findByProductIdAndStoreId(productId, tenantId) } returns null
             every { stockEventProducer.publish(any()) } just Runs
 
             consumer.consume(event)
@@ -137,11 +140,11 @@ class SaleEventConsumerTest : DescribeSpec({
                 tenantId = UUID.randomUUID()
             )
 
-            every { processedEventRepository.existsById(eventId) } returns true
+            every { processedEventPort.existsById(eventId) } returns true
 
             consumer.consume(event)
 
-            verify(exactly = 0) { stockRepository.findByProductIdAndStoreId(any(), any()) }
+            verify(exactly = 0) { stockPort.findByProductIdAndStoreId(any(), any()) }
             verify(exactly = 0) { stockEventProducer.publish(any()) }
         }
     }
@@ -154,14 +157,17 @@ class SaleEventConsumerTest : DescribeSpec({
             val storeId = UUID.randomUUID()
 
             val movement = Movement(
+                id = UUID.randomUUID(),
                 productId = productId,
                 storeId = storeId,
                 type = MovementType.SALE,
                 quantity = 3,
                 previousQuantity = 10,
                 newQuantity = 7,
-                saleId = saleId
-            ).apply { id = UUID.randomUUID() }
+                userId = null,
+                saleId = saleId,
+                observations = null
+            )
 
             val stock = Stock(
                 productId = productId,
@@ -175,18 +181,17 @@ class SaleEventConsumerTest : DescribeSpec({
                 tenantId = storeId
             )
 
-            every { processedEventRepository.existsById(any()) } returns false
-            every { movementRepository.findBySaleId(saleId) } returns listOf(movement)
-            every { stockRepository.findByProductIdAndStoreId(productId, storeId) } returns stock
-            every { stockRepository.save(any()) } answers { firstArg() }
-            every { movementRepository.save(any()) } answers { firstArg() }
+            every { processedEventPort.existsById(any()) } returns false
+            every { movementPort.findBySaleId(saleId) } returns listOf(movement)
+            every { stockPort.findByProductIdAndStoreId(productId, storeId) } returns stock
+            every { stockPort.save(any()) } answers { firstArg() }
+            every { movementPort.save(any()) } answers { firstArg() }
 
             consumer.consume(event)
 
-            stock.quantity shouldBe 10 // Restored
-            verify { stockRepository.save(stock) }
+            verify { stockPort.save(match { it.quantity == 10 }) }
             verify {
-                movementRepository.save(match {
+                movementPort.save(match {
                     it.type == MovementType.ADJUSTMENT &&
                     it.observations!!.contains("COMPENSATE")
                 })

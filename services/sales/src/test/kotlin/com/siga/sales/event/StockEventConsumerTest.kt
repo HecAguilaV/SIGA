@@ -1,25 +1,27 @@
 package com.siga.sales.event
 
+import com.siga.sales.domain.model.Sale
+import com.siga.sales.domain.model.SaleStatus
+import com.siga.sales.domain.port.SaleRepositoryPort
 import com.siga.sales.entity.ProcessedEvent
-import com.siga.sales.entity.Sale
-import com.siga.sales.entity.SaleStatus
 import com.siga.sales.repository.ProcessedEventRepository
-import com.siga.sales.repository.SaleRepository
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import java.math.BigDecimal
-import java.util.*
+import java.time.Instant
+import java.util.UUID
 
 /**
  * Unit tests for [StockEventConsumer] — SAGA step 3.
- * Verifies that Sales correctly processes stock response events.
+ * Verifies that Sales correctly processes stock response events
+ * through the hexagonal ports.
  */
 class StockEventConsumerTest : DescribeSpec({
 
-    val saleRepository = mockk<SaleRepository>()
+    val saleRepositoryPort = mockk<SaleRepositoryPort>()
     val processedEventRepository = mockk<ProcessedEventRepository>()
-    val consumer = StockEventConsumer(saleRepository, processedEventRepository)
+    val consumer = StockEventConsumer(saleRepositoryPort, processedEventRepository)
 
     beforeEach {
         clearAllMocks()
@@ -27,14 +29,19 @@ class StockEventConsumerTest : DescribeSpec({
 
     describe("StockEventConsumer") {
 
-        it("given_stock_reserved_when_sale_pending_then_confirm_sale") {
+        it("given_stock_reserved_when_sale_pending_then_complete_sale") {
             val saleId = UUID.randomUUID()
             val eventId = UUID.randomUUID()
             val sale = Sale(
+                id = saleId,
                 storeId = UUID.randomUUID(),
+                userId = UUID.randomUUID(),
+                commercialUserId = null,
+                createdAt = Instant.now(),
                 total = BigDecimal("100.00"),
-                status = SaleStatus.PENDING
-            ).apply { id = saleId }
+                status = SaleStatus.PENDING,
+                observations = null
+            )
 
             val event = StockEvent(
                 eventId = eventId,
@@ -44,14 +51,18 @@ class StockEventConsumerTest : DescribeSpec({
             )
 
             every { processedEventRepository.existsById(eventId) } returns false
-            every { saleRepository.findById(saleId) } returns Optional.of(sale)
-            every { saleRepository.save(any()) } answers { firstArg() }
+            every { saleRepositoryPort.findById(saleId) } returns sale
+            every { saleRepositoryPort.save(any()) } answers { firstArg() }
             every { processedEventRepository.save(any()) } answers { firstArg() }
 
             consumer.consume(event)
 
-            sale.status shouldBe SaleStatus.COMPLETED
-            verify { saleRepository.save(sale) }
+            // Sale must be saved with COMPLETED status
+            val slot = slot<Sale>()
+            verify { saleRepositoryPort.save(capture(slot)) }
+            slot.captured.status shouldBe SaleStatus.COMPLETED
+
+            // Event must be marked as processed
             verify { processedEventRepository.save(match { it.eventId == eventId }) }
         }
 
@@ -59,36 +70,46 @@ class StockEventConsumerTest : DescribeSpec({
             val saleId = UUID.randomUUID()
             val eventId = UUID.randomUUID()
             val sale = Sale(
+                id = saleId,
                 storeId = UUID.randomUUID(),
-                total = BigDecimal("50.00"),
-                status = SaleStatus.PENDING
-            ).apply { id = saleId }
+                userId = UUID.randomUUID(),
+                commercialUserId = null,
+                createdAt = Instant.now(),
+                total = BigDecimal("100.00"),
+                status = SaleStatus.PENDING,
+                observations = null
+            )
 
             val event = StockEvent(
                 eventId = eventId,
                 eventType = StockEventType.STOCK_FAILED,
                 saleId = saleId,
                 tenantId = UUID.randomUUID(),
-                reason = "Insufficient stock for product X"
+                reason = "Insufficient stock"
             )
 
             every { processedEventRepository.existsById(eventId) } returns false
-            every { saleRepository.findById(saleId) } returns Optional.of(sale)
-            every { saleRepository.save(any()) } answers { firstArg() }
+            every { saleRepositoryPort.findById(saleId) } returns sale
+            every { saleRepositoryPort.save(any()) } answers { firstArg() }
             every { processedEventRepository.save(any()) } answers { firstArg() }
 
             consumer.consume(event)
 
-            sale.status shouldBe SaleStatus.CANCELLED
-            verify { saleRepository.save(sale) }
+            val slot = slot<Sale>()
+            verify { saleRepositoryPort.save(capture(slot)) }
+            slot.captured.status shouldBe SaleStatus.CANCELLED
+
+            verify { processedEventRepository.save(match { it.eventId == eventId }) }
         }
 
-        it("given_duplicate_event_when_consumed_then_skip_processing") {
+        it("given_duplicate_event_when_already_processed_then_skip") {
+            val saleId = UUID.randomUUID()
             val eventId = UUID.randomUUID()
+
             val event = StockEvent(
                 eventId = eventId,
                 eventType = StockEventType.STOCK_RESERVED,
-                saleId = UUID.randomUUID(),
+                saleId = saleId,
                 tenantId = UUID.randomUUID()
             )
 
@@ -96,32 +117,57 @@ class StockEventConsumerTest : DescribeSpec({
 
             consumer.consume(event)
 
-            verify(exactly = 0) { saleRepository.findById(any()) }
-            verify(exactly = 0) { saleRepository.save(any()) }
+            verify(exactly = 0) { saleRepositoryPort.findById(any()) }
+            verify(exactly = 0) { saleRepositoryPort.save(any()) }
+            verify(exactly = 0) { processedEventRepository.save(any()) }
         }
 
-        it("given_stock_reserved_when_sale_already_completed_then_skip") {
+        it("given_event_when_sale_not_found_then_skip") {
             val saleId = UUID.randomUUID()
-            val sale = Sale(
-                storeId = UUID.randomUUID(),
-                total = BigDecimal("100.00"),
-                status = SaleStatus.COMPLETED
-            ).apply { id = saleId }
+            val eventId = UUID.randomUUID()
 
             val event = StockEvent(
-                eventId = UUID.randomUUID(),
+                eventId = eventId,
                 eventType = StockEventType.STOCK_RESERVED,
                 saleId = saleId,
                 tenantId = UUID.randomUUID()
             )
 
-            every { processedEventRepository.existsById(any()) } returns false
-            every { saleRepository.findById(saleId) } returns Optional.of(sale)
+            every { processedEventRepository.existsById(eventId) } returns false
+            every { saleRepositoryPort.findById(saleId) } returns null
 
             consumer.consume(event)
 
-            sale.status shouldBe SaleStatus.COMPLETED
-            verify(exactly = 0) { saleRepository.save(any()) }
+            verify(exactly = 0) { saleRepositoryPort.save(any()) }
+        }
+
+        it("given_stock_reserved_when_sale_already_completed_then_skip") {
+            val saleId = UUID.randomUUID()
+            val eventId = UUID.randomUUID()
+            val sale = Sale(
+                id = saleId,
+                storeId = UUID.randomUUID(),
+                userId = UUID.randomUUID(),
+                commercialUserId = null,
+                createdAt = Instant.now(),
+                total = BigDecimal("100.00"),
+                status = SaleStatus.COMPLETED,
+                observations = null
+            )
+
+            val event = StockEvent(
+                eventId = eventId,
+                eventType = StockEventType.STOCK_RESERVED,
+                saleId = saleId,
+                tenantId = UUID.randomUUID()
+            )
+
+            every { processedEventRepository.existsById(eventId) } returns false
+            every { saleRepositoryPort.findById(saleId) } returns sale
+
+            consumer.consume(event)
+
+            verify(exactly = 0) { saleRepositoryPort.save(any()) }
         }
     }
 })

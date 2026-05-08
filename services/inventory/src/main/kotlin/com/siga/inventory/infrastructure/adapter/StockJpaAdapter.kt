@@ -10,6 +10,11 @@ import java.util.UUID
 
 /**
  * JPA Adapter for Stock persistence.
+ *
+ * WHY FETCH-AND-UPDATE: The domain [Stock] model has no `id` field (it identifies
+ * stock by `productId + storeId`). When updating, we must fetch the existing entity
+ * to preserve its ID and `updatedAt`, otherwise JPA would attempt an INSERT instead
+ * of an UPDATE, causing constraint violations.
  */
 @Component
 class StockJpaAdapter(
@@ -22,8 +27,14 @@ class StockJpaAdapter(
     }
 
     override fun save(stock: Stock): Stock {
-        val entity = StockMapper.toEntity(stock)
-        // This is simplified; in reality, you'd fetch by ID for updates
+        val existingEntity = stockRepository.findByProductIdAndStoreId(stock.productId, stock.storeId)
+        val entity = if (existingEntity != null) {
+            // Update existing row — preserve ID and updatedAt
+            existingEntity.quantity = stock.quantity
+            existingEntity
+        } else {
+            StockMapper.toEntity(stock)
+        }
         val savedEntity = stockRepository.save(entity)
         return StockMapper.toDomain(savedEntity)
     }

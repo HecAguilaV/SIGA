@@ -40,7 +40,8 @@ class SaleDocumentMapper {
             taxAmount = domain.taxAmount,
             status = domain.status,
             pdfUrl = domain.pdfUrl,
-            xmlUrl = domain.xmlUrl
+            xmlUrl = domain.xmlUrl,
+            createdAt = domain.createdAt
         )
     }
 }

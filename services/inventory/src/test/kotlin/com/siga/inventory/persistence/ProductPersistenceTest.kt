@@ -9,18 +9,21 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.math.BigDecimal
+import java.util.UUID
 
 class ProductPersistenceTest : BaseIntegrationTest() {
 
     @Test
     @WithMockUser(roles = ["ADMIN"])
     fun `should create a product and return UUID`() {
+        val barcode = "PERSISTENCE-${UUID.randomUUID().toString().substring(0, 8)}"
         val productJson = """
             {
+                "id": "${UUID.randomUUID()}",
                 "name": "Laptop Pro 16",
                 "description": "High performance laptop",
                 "unitPrice": 1500.00,
-                "barcode": "LAP-001",
+                "barcode": "$barcode",
                 "isActive": true
             }
         """.trimIndent()

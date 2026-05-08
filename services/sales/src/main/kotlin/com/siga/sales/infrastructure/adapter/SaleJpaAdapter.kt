@@ -3,7 +3,6 @@ package com.siga.sales.infrastructure.adapter
 import com.siga.sales.domain.model.Sale
 import com.siga.sales.domain.model.SaleStatus
 import com.siga.sales.domain.port.SaleRepositoryPort
-import com.siga.sales.entity.SaleEntity
 import com.siga.sales.infrastructure.mapper.SaleMapper
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -11,6 +10,10 @@ import java.util.UUID
 /**
  * JPA Adapter for Sale.
  * Implements the domain port using Spring Data JPA.
+ *
+ * Uses the same pattern as other adapters in the project
+ * (billing, inventory) — delegates persistence to Spring Data's
+ * built-in transaction management via [save] on the repository.
  */
 @Component
 class SaleJpaAdapter(
@@ -24,7 +27,8 @@ class SaleJpaAdapter(
 
     override fun save(sale: Sale): Sale {
         val entity = saleMapper.toEntity(sale)
-        return saleMapper.toDomain(saleRepository.save(entity))
+        val saved = saleRepository.save(entity)
+        return saleMapper.toDomain(saved)
     }
 
     override fun findAll(): List<Sale> {
