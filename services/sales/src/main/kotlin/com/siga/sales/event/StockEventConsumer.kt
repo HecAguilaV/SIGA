@@ -1,9 +1,9 @@
 package com.siga.sales.event
 
+import com.siga.sales.domain.model.SaleStatus
+import com.siga.sales.domain.port.SaleRepositoryPort
 import com.siga.sales.entity.ProcessedEvent
-import com.siga.sales.entity.SaleStatus
 import com.siga.sales.repository.ProcessedEventRepository
-import com.siga.sales.repository.SaleRepository
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Component
 class StockEventConsumer(
-    private val saleRepository: SaleRepository,
+    private val saleRepositoryPort: SaleRepositoryPort,
     private val processedEventRepository: ProcessedEventRepository
 ) {
     private val log = LoggerFactory.getLogger(StockEventConsumer::class.java)
@@ -42,7 +42,7 @@ class StockEventConsumer(
             return
         }
 
-        val sale = saleRepository.findById(event.saleId).orElse(null)
+        val sale = saleRepositoryPort.findById(event.saleId)
         if (sale == null) {
             log.error("Sale not found for id={}, discarding event", event.saleId)
             return
@@ -55,16 +55,17 @@ class StockEventConsumer(
 
         when (event.eventType) {
             StockEventType.STOCK_RESERVED -> {
-                sale.status = SaleStatus.COMPLETED
+                val updatedSale = sale.copy(status = SaleStatus.COMPLETED)
+                saleRepositoryPort.save(updatedSale)
                 log.info("Sale {} confirmed — stock reserved", sale.id)
             }
             StockEventType.STOCK_FAILED -> {
-                sale.status = SaleStatus.CANCELLED
+                val updatedSale = sale.copy(status = SaleStatus.CANCELLED)
+                saleRepositoryPort.save(updatedSale)
                 log.info("Sale {} cancelled — stock failed: {}", sale.id, event.reason)
             }
         }
 
-        saleRepository.save(sale)
         processedEventRepository.save(
             ProcessedEvent(eventId = event.eventId, eventType = event.eventType.name)
         )
