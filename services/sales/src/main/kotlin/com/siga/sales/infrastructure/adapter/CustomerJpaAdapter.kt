@@ -5,6 +5,7 @@ import com.siga.sales.domain.port.CustomerRepositoryPort
 import com.siga.sales.entity.CustomerEntity
 import com.siga.sales.infrastructure.mapper.CustomerMapper
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 /**
  * JPA Adapter for Customer.

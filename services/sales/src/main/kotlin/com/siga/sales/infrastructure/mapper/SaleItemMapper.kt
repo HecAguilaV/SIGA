@@ -2,6 +2,7 @@ package com.siga.sales.infrastructure.mapper
 
 import com.siga.sales.domain.model.SaleItem
 import com.siga.sales.entity.SaleItemEntity
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 /**

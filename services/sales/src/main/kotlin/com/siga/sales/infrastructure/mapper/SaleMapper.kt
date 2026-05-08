@@ -3,7 +3,7 @@ package com.siga.sales.infrastructure.mapper
 import com.siga.sales.domain.model.Sale
 import com.siga.sales.domain.model.SaleStatus
 import com.siga.sales.entity.SaleEntity
-import java.time.Instant
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 /**

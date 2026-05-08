@@ -2,6 +2,7 @@ package com.siga.sales.infrastructure.mapper
 
 import com.siga.sales.domain.model.CashShift
 import com.siga.sales.entity.CashShiftEntity
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 /**

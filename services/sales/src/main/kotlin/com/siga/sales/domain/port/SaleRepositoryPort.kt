@@ -11,6 +11,7 @@ import java.util.UUID
 interface SaleRepositoryPort {
     fun findById(id: UUID): Sale?
     fun save(sale: Sale): Sale
+    fun findAll(): List<Sale>
     fun findByStoreId(storeId: UUID): List<Sale>
     fun findByUserId(userId: UUID): List<Sale>
     fun findByStatus(status: SaleStatus): List<Sale>

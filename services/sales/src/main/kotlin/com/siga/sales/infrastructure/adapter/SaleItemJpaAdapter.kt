@@ -5,6 +5,7 @@ import com.siga.sales.domain.port.SaleItemRepositoryPort
 import com.siga.sales.entity.SaleItemEntity
 import com.siga.sales.infrastructure.mapper.SaleItemMapper
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 /**
  * JPA Adapter for SaleItem.

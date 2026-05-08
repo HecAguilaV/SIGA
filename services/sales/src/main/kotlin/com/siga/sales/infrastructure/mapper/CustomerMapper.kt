@@ -2,7 +2,7 @@ package com.siga.sales.infrastructure.mapper
 
 import com.siga.sales.domain.model.Customer
 import com.siga.sales.entity.CustomerEntity
-import java.time.Instant
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 /**
