@@ -1,28 +1,29 @@
 package com.siga.auth.controller
 
-import com.siga.auth.entity.Customer
-import com.siga.auth.repository.CustomerRepository
+import com.siga.auth.application.usecase.ManageCustomerUseCase
+import com.siga.auth.domain.model.Customer
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 /**
  * Controller to manage customers (business owners).
+ * Now uses ManageCustomerUseCase (hexagonal) instead of directly injecting CustomerRepository.
  */
 @RestController
 @RequestMapping("/api/auth/customers")
 class CustomerController(
-    private val customerRepository: CustomerRepository
+    private val manageCustomerUseCase: ManageCustomerUseCase
 ) {
     @GetMapping
     fun getAllCustomers(): ResponseEntity<List<Customer>> {
-        return ResponseEntity.ok(customerRepository.findAll())
+        return ResponseEntity.ok(manageCustomerUseCase.findAll())
     }
 
     @GetMapping("/{id}")
     fun getCustomerById(@PathVariable id: Int): ResponseEntity<Customer> {
-        val customer = customerRepository.findById(id)
-        return if (customer.isPresent) {
-            ResponseEntity.ok(customer.get())
+        val customer = manageCustomerUseCase.findById(id)
+        return if (customer != null) {
+            ResponseEntity.ok(customer)
         } else {
             ResponseEntity.notFound().build()
         }
@@ -30,7 +31,7 @@ class CustomerController(
 
     @GetMapping("/email/{email}")
     fun getCustomerByEmail(@PathVariable email: String): ResponseEntity<Customer> {
-        val customer = customerRepository.findByEmail(email)
+        val customer = manageCustomerUseCase.findByEmail(email)
         return if (customer != null) {
             ResponseEntity.ok(customer)
         } else {
@@ -40,15 +41,14 @@ class CustomerController(
 
     @PostMapping
     fun createCustomer(@RequestBody customer: Customer): ResponseEntity<Customer> {
-        return ResponseEntity.ok(customerRepository.save(customer))
+        return ResponseEntity.ok(manageCustomerUseCase.create(customer))
     }
 
     @PutMapping("/{id}")
     fun updateCustomer(@PathVariable id: Int, @RequestBody customer: Customer): ResponseEntity<Customer> {
-        return if (customerRepository.existsById(id)) {
-            customer.id = id
-            ResponseEntity.ok(customerRepository.save(customer))
-        } else {
+        return try {
+            ResponseEntity.ok(manageCustomerUseCase.update(id, customer))
+        } catch (e: IllegalArgumentException) {
             ResponseEntity.notFound().build()
         }
     }
