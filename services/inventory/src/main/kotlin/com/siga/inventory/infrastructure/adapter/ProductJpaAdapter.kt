@@ -2,7 +2,7 @@ package com.siga.inventory.infrastructure.adapter
 
 import com.siga.inventory.domain.model.Product
 import com.siga.inventory.domain.port.ProductRepositoryPort
-import com.siga.inventory.entity.ProductEntity
+import com.siga.inventory.entity.Product as ProductEntity
 import com.siga.inventory.infrastructure.mapper.ProductMapper
 import com.siga.inventory.repository.ProductRepository
 import org.springframework.stereotype.Component

@@ -9,6 +9,7 @@ import com.siga.inventory.domain.port.ProcessedEventRepositoryPort
 import com.siga.inventory.event.StockEvent
 import com.siga.inventory.event.StockEventType
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 
 /**
  * Application Use Case: Orchestrates stock reservation for a Sale (SAGA Step 2).
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory
  * WHY SAGA: This implements the "Reservation" pattern. It attempts an all-or-nothing
  * deduction. If any item fails, it emits STOCK_FAILED.
  */
+@Service
 class ReserveStockUseCase(
     private val stockPort: StockRepositoryPort,
     private val movementPort: MovementRepositoryPort,
@@ -37,7 +39,7 @@ class ReserveStockUseCase(
         saleId: java.util.UUID,
         tenantId: java.util.UUID,
         userId: java.util.UUID?,
-        items: List<com.siga.inventory.event.SaleItem>
+        items: List<com.siga.inventory.event.SaleItemEvent>
     ): Boolean {
         // 1. Idempotency Check
         if (processedEventPort.existsById(eventId)) {

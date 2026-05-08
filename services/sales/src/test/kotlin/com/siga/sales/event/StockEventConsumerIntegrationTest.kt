@@ -1,0 +1,194 @@
+package com.siga.sales.event
+
+import com.siga.sales.domain.model.Sale
+import com.siga.sales.domain.model.SaleStatus
+import com.siga.sales.domain.port.SaleRepositoryPort
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.extensions.spring.SpringExtension
+import io.kotest.matchers.shouldBe
+import org.apache.kafka.common.serialization.StringSerializer
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.kafka.core.DefaultKafkaProducerFactory
+import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.support.serializer.JsonSerializer
+import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.kafka.test.EmbeddedKafkaBroker
+import org.springframework.test.context.ActiveProfiles
+import java.math.BigDecimal
+import java.time.Instant
+import java.util.UUID
+
+/**
+ * Integration test for [StockEventConsumer] with a real embedded Kafka broker.
+ *
+ * Verifies the full SAGA step 3 roundtrip:
+ * 1. A PENDING sale is persisted in H2
+ * 2. A StockEvent is published to the real Kafka topic
+ * 3. StockEventConsumer receives it via @KafkaListener
+ * 4. The sale status is updated to COMPLETED/CANCELLED
+ *
+ * No Docker required — uses @EmbeddedKafka from spring-kafka-test.
+ */
+@SpringBootTest
+@EmbeddedKafka(
+    topics = ["stock-events"],
+    partitions = 1
+)
+@ActiveProfiles("test")
+class StockEventConsumerIntegrationTest : DescribeSpec() {
+
+    @Autowired
+    private lateinit var saleRepositoryPort: SaleRepositoryPort
+
+    @Autowired
+    private lateinit var kafkaTemplate: KafkaTemplate<String, Any>
+
+    /**
+     * Test configuration that creates a KafkaTemplate wired to the embedded broker.
+     */
+    @TestConfiguration
+    class KafkaTestConfig {
+        @Bean
+        fun kafkaTemplate(broker: EmbeddedKafkaBroker): KafkaTemplate<String, Any> {
+            val producerProps = HashMap<String, Any>()
+            producerProps["bootstrap.servers"] = broker.brokersAsString
+            producerProps["key.serializer"] = StringSerializer::class.java
+            producerProps["value.serializer"] = JsonSerializer::class.java
+            producerProps["spring.json.add.type.headers"] = false
+            val producerFactory = DefaultKafkaProducerFactory<String, Any>(producerProps)
+            return KafkaTemplate(producerFactory)
+        }
+    }
+
+    init {
+        extension(SpringExtension())
+
+        describe("StockEventConsumer with real Kafka broker") {
+
+            it("given_pending_sale_when_stock_reserved_event_on_kafka_then_sale_becomes_completed") {
+                // ─── setup: create a PENDING sale ───
+                val sale = Sale(
+                    id = UUID.randomUUID(),
+                    storeId = UUID.randomUUID(),
+                    userId = UUID.randomUUID(),
+                    commercialUserId = null,
+                    createdAt = Instant.now(),
+                    total = BigDecimal("1500.00"),
+                    status = SaleStatus.PENDING,
+                    observations = "Kafka integration test"
+                )
+                saleRepositoryPort.save(sale)
+
+                // ─── act: publish StockEvent to real Kafka topic ───
+                val stockEvent = StockEvent(
+                    eventId = UUID.randomUUID(),
+                    eventType = StockEventType.STOCK_RESERVED,
+                    saleId = sale.id,
+                    tenantId = sale.storeId,
+                    reason = null
+                )
+                kafkaTemplate.send("stock-events", sale.id.toString(), stockEvent)
+
+                // ─── wait for async consumption (poll with timeout) ───
+                var updatedSale: Sale? = null
+                val deadline = System.currentTimeMillis() + 10_000
+                while (System.currentTimeMillis() < deadline) {
+                    updatedSale = saleRepositoryPort.findById(sale.id)
+                    if (updatedSale?.status == SaleStatus.COMPLETED) break
+                    Thread.sleep(500)
+                }
+                updatedSale?.status shouldBe SaleStatus.COMPLETED
+            }
+
+            it("given_pending_sale_when_stock_failed_event_on_kafka_then_sale_becomes_cancelled") {
+                // ─── setup ───
+                val sale = Sale(
+                    id = UUID.randomUUID(),
+                    storeId = UUID.randomUUID(),
+                    userId = UUID.randomUUID(),
+                    commercialUserId = null,
+                    createdAt = Instant.now(),
+                    total = BigDecimal("800.00"),
+                    status = SaleStatus.PENDING,
+                    observations = "Kafka integration test - fail"
+                )
+                saleRepositoryPort.save(sale)
+
+                // ─── act ───
+                val stockEvent = StockEvent(
+                    eventId = UUID.randomUUID(),
+                    eventType = StockEventType.STOCK_FAILED,
+                    saleId = sale.id,
+                    tenantId = sale.storeId,
+                    reason = "Insufficient stock"
+                )
+                kafkaTemplate.send("stock-events", sale.id.toString(), stockEvent)
+
+                // ─── verify ───
+                var updatedSale: Sale? = null
+                val deadline = System.currentTimeMillis() + 10_000
+                while (System.currentTimeMillis() < deadline) {
+                    updatedSale = saleRepositoryPort.findById(sale.id)
+                    if (updatedSale?.status == SaleStatus.CANCELLED) break
+                    Thread.sleep(500)
+                }
+                updatedSale?.status shouldBe SaleStatus.CANCELLED
+            }
+
+            it("given_duplicate_event_when_already_processed_then_sale_status_unchanged") {
+                // ─── setup ───
+                val eventId = UUID.randomUUID()
+                val sale = Sale(
+                    id = UUID.randomUUID(),
+                    storeId = UUID.randomUUID(),
+                    userId = UUID.randomUUID(),
+                    commercialUserId = null,
+                    createdAt = Instant.now(),
+                    total = BigDecimal("2000.00"),
+                    status = SaleStatus.PENDING,
+                    observations = "Kafka dupe test"
+                )
+                saleRepositoryPort.save(sale)
+
+                // First event — should complete the sale
+                val firstEvent = StockEvent(
+                    eventId = eventId,
+                    eventType = StockEventType.STOCK_RESERVED,
+                    saleId = sale.id,
+                    tenantId = sale.storeId
+                )
+                kafkaTemplate.send("stock-events", sale.id.toString(), firstEvent)
+
+                // Wait for first event to process
+                var updatedSale: Sale? = null
+                val deadline = System.currentTimeMillis() + 10_000
+                while (System.currentTimeMillis() < deadline) {
+                    updatedSale = saleRepositoryPort.findById(sale.id)
+                    if (updatedSale?.status == SaleStatus.COMPLETED) break
+                    Thread.sleep(500)
+                }
+                updatedSale?.status shouldBe SaleStatus.COMPLETED
+
+                // Second event with same eventId — should be skipped (idempotency)
+                val secondEvent = StockEvent(
+                    eventId = eventId,
+                    eventType = StockEventType.STOCK_FAILED,
+                    saleId = sale.id,
+                    tenantId = sale.storeId,
+                    reason = "Should be ignored"
+                )
+                kafkaTemplate.send("stock-events", sale.id.toString(), secondEvent)
+
+                // Wait for second event to be consumed (or skipped)
+                Thread.sleep(3000)
+
+                // Status must still be COMPLETED (not CANCELLED)
+                val finalSale = saleRepositoryPort.findById(sale.id)
+                finalSale?.status shouldBe SaleStatus.COMPLETED
+            }
+        }
+    }
+}

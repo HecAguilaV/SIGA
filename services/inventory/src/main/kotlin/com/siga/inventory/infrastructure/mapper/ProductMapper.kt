@@ -1,7 +1,7 @@
 package com.siga.inventory.infrastructure.mapper
 
 import com.siga.inventory.domain.model.Product
-import com.siga.inventory.entity.ProductEntity
+import com.siga.inventory.entity.Product as ProductEntity
 
 /**
  * Maps between Domain Model (Pure) and JPA Entity (Infrastructure).
@@ -34,7 +34,9 @@ object ProductMapper {
             barcode = model.barcode,
             unitPrice = model.unitPrice,
             isActive = model.isActive,
-            commercialUserId = model.commercialUserId
+            commercialUserId = model.commercialUserId,
+            createdAt = model.createdAt,
+            updatedAt = model.updatedAt
         )
     }
 }

@@ -29,7 +29,10 @@ class CashShiftMapper {
             id = if (domain.id == UUID.fromString("00000000-0000-0000-0000-000000000000")) null else domain.id,
             storeId = domain.storeId,
             userId = domain.userId,
+            openedAt = domain.openedAt,
+            closedAt = domain.closedAt,
             initialAmount = domain.initialAmount,
+            finalAmount = domain.finalAmount,
             status = domain.status
         )
     }
