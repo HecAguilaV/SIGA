@@ -1,16 +1,16 @@
 # Estado de la Arquitectura - SIGA
 
-**Última Actualización:** 2026-05-03
-**Estado:** En Transición (Refactorización a Hexagonal)
+**Última Actualización:** 2026-05-08
+**Estado:** Hexagonal Completo (100% microservicios migrados)
 
 ## 1. Modelo de Despliegue
-El sistema ha completado su transición de Monolito Modular a una arquitectura de **Microservicios Independientes**.
+El sistema ha completado su transición de Monolito Modular a una arquitectura de **Microservicios Independientes con Hexagonal Architecture**.
 
 ### Componentes Core
-*   **siga-auth**: Gestión de identidad y permisos (SSO).
-*   **siga-billing**: Gestión de suscripciones y pagos del SaaS (Dominio Billing).
-*   **siga-inventory**: Control de stock y activos.
-*   **siga-sales**: POS y facturación interna de la Pyme (Dominio Sales).
+*   **siga-auth**: Gestión de identidad y permisos (SSO). ✅ Hexagonal
+*   **siga-billing**: Gestión de suscripciones y pagos del SaaS (Dominio Billing). ✅ Hexagonal
+*   **siga-inventory**: Control de stock y activos. ✅ Hexagonal
+*   **siga-sales**: POS y facturación interna de la Pyme (Dominio Sales). ✅ Hexagonal
 *   **siga-agent**: Inteligencia Artificial y búsqueda vectorial (pgvector).
 
 ### Frontends
@@ -44,16 +44,33 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 *   **Asincrónico (SAGA)**: Coreografía de eventos vía Kafka para transacciones distribuidas (ej: Venta -> Stock).
 *   **Analítico**: Streaming de eventos hacia BigQuery/Vertex AI para ingesta Big Data.
 
-## 5. Patrón Interno (SDR - Software Design Reality)
-**ADVERTENCIA**: El estado actual del código presenta un **Alto Acoplamiento** (Coupled Layered Architecture).
-*   **Dominio Anémico**: Las entidades de negocio están acopladas a JPA y se usan como DTOs.
-*   **Lógica en Adaptadores**: La lógica de negocio vive en los Controllers y Consumers de Kafka.
+## 5. Patrón Interno (Hexagonal Architecture - Implementado)
+✅ **Completado**: Todos los microservicios core (auth, billing, inventory, sales) siguen **Arquitectura Hexagonal (Ports & Adapters)**.
+*   **Dominio Puro**: Modelos de negocio en `domain/model/` sin dependencias JPA/Spring.
+*   **Puertos**: Interfaces en `domain/port/` que definen contratos de persistencia.
+*   **Adaptadores**: Implementaciones JPA en `infrastructure/adapter/` con mappers Entity ↔ Domain.
+*   **Casos de Uso**: Lógica de aplicación en `application/usecase/` con validación.
+*   **Controladores**: Capa de entrada HTTP que inyecta casos de uso (no repositorios).
 
-## 6. Hoja de Ruta de Calidad (Transición Hexagonal)
-Se ha tomado la decisión estratégica de migrar hacia **Arquitectura Hexagonal (Ports & Adapters)** para garantizar:
-1.  **Independencia del Framework**: Spring Boot debe ser un detalle de infraestructura.
-2.  **Testeabilidad**: Lógica de negocio testeable sin contexto de Spring.
-3.  **Escalabilidad Lambda**: Modelos de dominio puros listos para procesamiento de Big Data.
+## 6. Calidad y Cobertura de Tests
 
-*Ver [ARCHITECTURE_RECOVERY_PLAN.md](ARCHITECTURE_RECOVERY_PLAN.md) para detalles de implementación.*
+### Cobertura por Servicio (Mayo 2026)
+| Servicio | Tests Unitarios | Tests Adaptadores | Tests Integración HTTP | Total |
+|----------|----------------|-------------------|----------------------|-------|
+| auth     | 19             | 29                | 13                   | 61    |
+| billing  | 7              | 22                | 4                    | 33    |
+| inventory| 12             | 25                | 10                   | 47    |
+| sales    | 30             | 55                | 18                   | 103   |
+
+### Infraestructura de Tests
+- **H2** para tests de adaptadores y persistencia (rápido, sin Docker)
+- **MockMvc** para tests de integración HTTP
+- **Embedded Kafka** para tests de eventos SAGA
+- **Flyway**: Activado en producción (`ddl-auto: validate`), deshabilitado en tests (H2 + `create-drop`)
+- **Convención**: Tests en cada servicio replican el patrón hexagonal: adapter tests → use case tests → integration tests
+
+### Patrón de Commits
+- **Rama actual**: `migracion-microservicios`
+- **Formato**: Conventional Commits en español e inglés (bilingüe)
+- **No PRs**: Commits directos a la rama en uso
 
