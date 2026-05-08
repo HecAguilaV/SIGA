@@ -20,7 +20,6 @@ import java.util.UUID
 @Table(name = "sales", schema = "sales")
 class SaleEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(name = "store_id", nullable = false)

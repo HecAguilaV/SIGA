@@ -11,7 +11,6 @@ import java.util.UUID
 @Table(name = "plans", schema = "billing")
 class PlanEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(nullable = false, unique = true, length = 100)

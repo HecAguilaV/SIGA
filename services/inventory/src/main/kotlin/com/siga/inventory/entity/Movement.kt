@@ -15,7 +15,6 @@ import java.util.UUID
 @Table(name = "movements", schema = "inventory")
 class Movement(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(name = "product_id", nullable = false)
