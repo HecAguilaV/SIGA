@@ -77,13 +77,13 @@ flowchart TB
         Eureka(("Service Registry<br>[Infra: Netflix Eureka]<br>Descubrimiento de servicios")):::infrastructure
         Kafka(("Event Broker<br>[Infra: Apache Kafka]<br>Coreografía SAGA & Eventos")):::infrastructure
         
-        %% Microservicios
-        subgraph Microservicios [Core Backend]
-            Auth["siga-auth<br>[Spring Boot]"]:::container
-            Inv["siga-inventory<br>[Spring Boot]"]:::container
-            Sales["siga-sales<br>[Spring Boot]"]:::container
-            Bill["siga-billing<br>[Spring Boot]"]:::container
-            Agent["siga-agent<br>[Python/LangChain]"]:::container
+        %% Microservicios (Hexagonal Architecture)
+        subgraph Microservicios [Core Backend - Hexagonal]
+            Auth["siga-auth<br>[Spring Boot]"]
+            Inv["siga-inventory<br>[Spring Boot<br>🔺 Hexagonal"]
+            Sales["siga-sales<br>[Spring Boot<br>🔺 Hexagonal"]
+            Bill["siga-billing<br>[Spring Boot<br>🔺 Hexagonal"]
+            Agent["siga-agent<br>[Python/LangChain]"]
         end
         
         %% Base de datos

@@ -76,13 +76,13 @@ flowchart TB
         %% Orchestration
         Eureka(("Service Registry<br>[Infra: Netflix Eureka]<br>Service Discovery")):::infrastructure
         
-        %% Microservices
-        subgraph Microservicios [Core Backend]
-            Auth["siga-auth<br>[Spring Boot]"]:::container
-            Inv["siga-inventory<br>[Spring Boot]"]:::container
-            Sales["siga-sales<br>[Spring Boot]"]:::container
-            Bill["siga-billing<br>[Spring Boot]"]:::container
-            Agent["siga-agent<br>[Python/LangChain]"]:::container
+        %% Microservices (Hexagonal Architecture)
+        subgraph Microservices [Core Backend - Hexagonal]
+            Auth["siga-auth<br>[Spring Boot]"]
+            Inv["siga-inventory<br>[Spring Boot<br>🔺 Hexagonal]"]
+            Sales["siga-sales<br>[Spring Boot<br>🔺 Hexagonal]"]
+            Bill["siga-billing<br>[Spring Boot<br>🔺 Hexagonal]"]
+            Agent["siga-agent<br>[Python/LangChain]"]
         end
         
         %% Database

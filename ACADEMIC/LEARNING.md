@@ -21,15 +21,41 @@ El enfoque orientado a servicios desacoplados asegura la escalabilidad bajo el m
 
 Dentro de cada microservicio, el código sigue el patrón de Arquitectura Hexagonal.
 
+**Estado actual (2026-05-08):**
+- ✅ **Billing:** Migrado a Hexagonal
+- ✅ **Inventory:** Migrado a Hexagonal  
+- ✅ **Sales:** Migrado a Hexagonal (completado hoy 2026-05-08)
+
 ### Estructura de Capas
 La premisa de esta arquitectura es **aislar la lógica de dominio** de los detalles de infraestructura o de entrada/salida.
 
+**Paquetes estándar (ej. `com.siga.sales`):**
+```
+src/main/kotlin/com/siga/sales/
+├── domain/
+│   ├── model/      (entidades puras, data classes, sin JPA)
+│   └── port/       (interfaces, Puertos)
+├── application/
+│   └── usecase/    (Casos de Uso, orquestación)
+├── infrastructure/
+│   ├── adapter/    (JPA implementations, Kafka, Feign)
+│   └── mapper/     (Entity ↔ Domain)
+├── entity/         (JPA entities, *Entity.kt)
+├── repository/      (JPA repositories)
+├── controller/      (HTTP handlers, usan use cases)
+├── event/          (Kafka events, SAGA pattern)
+└── client/         (Feign clients)
+```
+
 1. **Dominio (Domain):** Entidades de negocio puras y reglas del sistema. No conoce a la base de datos ni a Spring Boot.
+   - Ejemplo: `Sale.kt`, `Customer.kt` (en `domain/model/`)
 2. **Aplicación (Application):** Casos de uso. Orquesta el flujo de negocio llamando a las entidades y utilizando los Puertos.
+   - Ejemplo: `CreateSaleUseCase.kt`, `ManageCashShiftUseCase.kt`
 3. **Puertos (Ports):** Interfaces que definen cómo el sistema se comunica con el exterior (Entrada/Input y Salida/Output).
+   - Ejemplo: `SaleRepositoryPort.kt`, `SaleItemRepositoryPort.kt`
 4. **Adaptadores (Adapters):** Implementaciones tecnológicas de los puertos.
-   - *Adaptadores de Entrada:* Controladores REST (Spring Web).
-   - *Adaptadores de Salida:* Repositorios de base de datos (Spring Data JPA) o clientes REST a otros microservicios.
+   - *Adaptadores de Entrada:* Controladores REST (Spring Web) → usan Casos de Uso.
+   - *Adaptadores de Salida:* Repositorios JPA (`*JpaAdapter.kt`), Kafka (`SaleEventProducer.kt`), Feign (`InventoryClient.kt`).
 
 ## 3. Módulo de Kernel Compartido (siga-common)
 
@@ -46,15 +72,17 @@ Su propósito es manejar problemas transversales (cross-cutting concerns) sin ac
 ### Topología del Sistema
 El siguiente diagrama muestra el flujo de comunicación y el aislamiento de datos.
 
+**Estado: 2026-05-08** ✅ Billing, Inventory y Sales migrados a Hexagonal Architecture.
+
 ```mermaid
 graph TD
     Client[Cliente / Frontend] -->|REST / JWT| Gateway(siga-gateway: Puerta de Entrada)
     
     subgraph Microservicios [Dominio de Negocio]
         Auth(siga-auth)
-        Inventory(siga-inventory)
-        Sales(siga-sales)
-        Billing(siga-billing)
+        Inventory(siga-inventory)["siga-inventory\n🔺 Hexagonal"]
+        Sales(siga-sales)["siga-sales\n🔺 Hexagonal"]
+        Billing(siga-billing)["siga-billing\n🔺 Hexagonal"]
         Agent(siga-agent: AI)
     end
     
@@ -70,7 +98,7 @@ graph TD
     Registry -.->|Registro| Sales
     Registry -.->|Registro| Billing
     Registry -.->|Registro| Agent
-
+    
     DB[(PostgreSQL)]
     
     Auth -->|Esquema: auth| DB
@@ -79,6 +107,28 @@ graph TD
     Billing -->|Esquema: commercial| DB
     Agent -->|Esquema: agent| DB
 ```
+
+### Estructura Interna de Microservicios (Hexagonal)
+Ejemplo para Sales (igual para Billing/Inventory):
+
+```mermaid
+graph TD
+    Controller[Controller\nREST Input] -->|Use Cases| UseCase[Application/usecase\nCasos de Uso]
+    
+    UseCase -->|Domain Ports| Domain[Domain\nmodel/ + port/]
+    
+    Domain -->|Interfaces| Adapters[Infrastructure\nadapter/ + mapper/]
+    
+    Adapters -->|JPA| DB[(PostgreSQL\nEsquema: sales)]
+    
+    Adapters -.->|Kafka| Kafka[Eventos SAGA]
+    Adapters -.->|Feign| Inventory[siga-inventory]
+```
+
+**Leyenda**:
+- 🔺 = Hexagonal Architecture completada
+- Controller → UseCase → Domain → Adapters (flujo limpio)
+- Eventos Kafka y Feign clients son Adapters de infraestructura
 
 ## 5. Integración y Despliegue Continuo (CI/CD)
 
