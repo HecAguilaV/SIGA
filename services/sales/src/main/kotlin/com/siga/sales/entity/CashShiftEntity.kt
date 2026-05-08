@@ -1,19 +1,20 @@
 package com.siga.sales.entity
 
+import com.siga.sales.domain.model.ShiftStatus
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
 /**
+ * JPA Entity for CashShift.
  * Represents an open/closed cash register shift at a store.
  *
- * A shift tracks the opening and closing balances, allowing
- * reconciliation of physical cash against recorded transactions.
+ * @see com.siga.sales.domain.model.CashShift the domain model
  */
 @Entity
 @Table(name = "cash_shifts", schema = "sales")
-class CashShift(
+class CashShiftEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -42,11 +43,11 @@ class CashShift(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is CashShift) return false
+        if (other !is CashShiftEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "CashShift(id=$id, storeId=$storeId, userId=$userId, status=$status)"
+    override fun toString(): String = "CashShiftEntity(id=$id, storeId=$storeId, userId=$userId, status=$status)"
 }

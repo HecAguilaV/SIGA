@@ -6,14 +6,14 @@ import java.time.Instant
 import java.util.UUID
 
 /**
+ * JPA Entity for PosCart.
  * Temporary cart item at the point of sale.
  *
- * Holds items before a [Sale] is finalized. Once the sale is created,
- * cart items are converted to [SaleItem] entries and the cart is cleared.
+ * @see com.siga.sales.domain.model.PosCart the domain model
  */
 @Entity
 @Table(name = "pos_cart", schema = "sales")
-class PosCart(
+class PosCartEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -41,11 +41,11 @@ class PosCart(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is PosCart) return false
+        if (other !is PosCartEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "PosCart(id=$id, productId=$productId, quantity=$quantity)"
+    override fun toString(): String = "PosCartEntity(id=$id, productId=$productId, quantity=$quantity)"
 }

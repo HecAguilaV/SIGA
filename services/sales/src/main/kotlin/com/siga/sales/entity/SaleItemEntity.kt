@@ -5,14 +5,17 @@ import java.math.BigDecimal
 import java.util.UUID
 
 /**
- * A line item within a [Sale].
+ * JPA Entity for SaleItem.
+ * A line item within a sale.
  *
  * Each item references a product from the Inventory service by its UUID
  * (logical reference — no FK across service boundaries).
+ *
+ * @see com.siga.sales.domain.model.SaleItem the domain model
  */
 @Entity
 @Table(name = "sale_items", schema = "sales")
-class SaleItem(
+class SaleItemEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -34,11 +37,11 @@ class SaleItem(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is SaleItem) return false
+        if (other !is SaleItemEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "SaleItem(id=$id, saleId=$saleId, productId=$productId, quantity=$quantity)"
+    override fun toString(): String = "SaleItemEntity(id=$id, saleId=$saleId, productId=$productId, quantity=$quantity)"
 }

@@ -1,23 +1,24 @@
 package com.siga.sales.entity
 
+import com.siga.sales.domain.model.SaleStatus
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
 /**
+ * JPA Entity for Sale.
  * Represents a point-of-sale transaction in a store.
  *
- * A sale is created with status [SaleStatus.PENDING] and transitions to
- * [SaleStatus.COMPLETED] or [SaleStatus.CANCELLED] based on the SAGA
+ * A sale is created with status PENDING and transitions to
+ * COMPLETED or CANCELLED based on the SAGA
  * choreography with the Inventory service via Kafka events.
  *
- * @see SaleItem the line items of this sale
- * @see SaleDocument the legal tax document generated for this sale
+ * @see com.siga.sales.domain.model.Sale the domain model
  */
 @Entity
 @Table(name = "sales", schema = "sales")
-class Sale(
+class SaleEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -46,11 +47,11 @@ class Sale(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is Sale) return false
+        if (other !is SaleEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "Sale(id=$id, storeId=$storeId, total=$total, status=$status)"
+    override fun toString(): String = "SaleEntity(id=$id, storeId=$storeId, total=$total, status=$status)"
 }

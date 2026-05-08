@@ -1,23 +1,21 @@
 package com.siga.sales.entity
 
+import com.siga.sales.domain.model.DocumentStatus
+import com.siga.sales.domain.model.DocumentType
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
 /**
+ * JPA Entity for SaleDocument.
  * Legal document issued for a sale (Boleta or Factura).
  *
- * Represents the tax document that Chilean law requires for every commercial
- * transaction. Boletas are for end consumers; Facturas are for businesses
- * and require a customer reference.
- *
- * @see Sale the sale associated with this document
- * @see Customer optional customer reference (mandatory for Facturas)
+ * @see com.siga.sales.domain.model.SaleDocument the domain model
  */
 @Entity
 @Table(name = "sale_documents", schema = "sales")
-class SaleDocument(
+class SaleDocumentEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -56,11 +54,11 @@ class SaleDocument(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is SaleDocument) return false
+        if (other !is SaleDocumentEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "SaleDocument(id=$id, type=$type, folio=$folio, status=$status)"
+    override fun toString(): String = "SaleDocumentEntity(id=$id, type=$type, folio=$folio, status=$status)"
 }
