@@ -18,7 +18,6 @@ import java.util.UUID
 @Table(name = "customers", schema = "sales")
 class CustomerEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(name = "tax_id", unique = true, length = 20)

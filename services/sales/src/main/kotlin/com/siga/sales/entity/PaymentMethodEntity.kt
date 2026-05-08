@@ -13,7 +13,6 @@ import java.util.UUID
 @Table(name = "payment_methods", schema = "sales")
 class PaymentMethodEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(nullable = false, unique = true, length = 50)

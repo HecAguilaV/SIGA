@@ -16,7 +16,6 @@ import java.util.UUID
 @Table(name = "cash_shifts", schema = "sales")
 class CashShiftEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(name = "store_id", nullable = false)
