@@ -50,8 +50,8 @@ class ManageSubscriptionUseCaseTest {
         )
 
         // Mock Port behavior: return the same subscription when saved
-        `when`(subscriptionPort.save(any())).thenReturn(subscription)
-        `when`(paymentPort.save(any())).thenReturn(
+        `when`(subscriptionPort.save(anyObject())).thenReturn(subscription)
+        `when`(paymentPort.save(anyObject())).thenReturn(
             com.siga.billing.domain.model.Payment(
                 id = UUID.randomUUID(),
                 subscriptionId = subscriptionId,
@@ -63,13 +63,13 @@ class ManageSubscriptionUseCaseTest {
                 paidAt = java.time.Instant.now()
             )
         )
-        `when`(paymentGateway.processPayment(any())).thenReturn(expectedResponse)
+        `when`(paymentGateway.processPayment(anyObject())).thenReturn(expectedResponse)
 
         val (savedSubscription, response) = useCase.createSubscriptionWithPayment(subscription, amount)
 
         assertTrue(response.success)
         assertEquals(subscriptionId, savedSubscription.id)
-        verify(subscriptionPort, times(1)).save(any())
-        verify(paymentPort, times(1)).save(any())
+        verify(subscriptionPort, times(1)).save(anyObject())
+        verify(paymentPort, times(1)).save(anyObject())
     }
 }

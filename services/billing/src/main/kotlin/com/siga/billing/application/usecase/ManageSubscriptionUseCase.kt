@@ -14,6 +14,7 @@ import java.util.UUID
  * Application Use Case: Orchestrates subscription management logic.
  * This is the "Application Layer" in Hexagonal Architecture.
  */
+@org.springframework.stereotype.Service
 class ManageSubscriptionUseCase(
     private val subscriptionPort: SubscriptionRepositoryPort,
     private val paymentPort: PaymentRepositoryPort,
