@@ -18,6 +18,7 @@ class CustomerPersistenceTest @Autowired constructor(
     @Test
     fun `given new customer entity when save then id should be UUID`() {
         val customer = CustomerEntity(
+            id = UUID.randomUUID(),
             email = "test@siga.com",
             passwordHash = "hashed",
             name = "Test Customer",
