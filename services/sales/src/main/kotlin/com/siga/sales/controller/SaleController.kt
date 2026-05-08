@@ -1,30 +1,34 @@
 package com.siga.sales.controller
 
-import com.siga.sales.entity.Sale
-import com.siga.sales.entity.SaleStatus
-import com.siga.sales.repository.SaleRepository
+import com.siga.sales.application.usecase.CreateSaleUseCase
+import com.siga.sales.domain.model.Sale
+import com.siga.sales.domain.model.SaleItem
+import com.siga.sales.domain.model.SaleStatus
+import com.siga.sales.domain.port.SaleRepositoryPort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 /**
  * Controller to manage sales.
+ * Uses CreateSaleUseCase for business logic.
  */
 @RestController
 @RequestMapping("/api/v1/sales")
 class SaleController(
-    private val saleRepository: SaleRepository
+    private val saleRepositoryPort: SaleRepositoryPort,
+    private val createSaleUseCase: CreateSaleUseCase
 ) {
     @GetMapping
     fun getAllSales(): ResponseEntity<List<Sale>> {
-        return ResponseEntity.ok(saleRepository.findAll())
+        return ResponseEntity.ok(saleRepositoryPort.findAll())
     }
 
     @GetMapping("/{id}")
     fun getSaleById(@PathVariable id: UUID): ResponseEntity<Sale> {
-        val sale = saleRepository.findById(id)
-        return if (sale.isPresent) {
-            ResponseEntity.ok(sale.get())
+        val sale = saleRepositoryPort.findById(id)
+        return if (sale != null) {
+            ResponseEntity.ok(sale)
         } else {
             ResponseEntity.notFound().build()
         }
@@ -32,34 +36,40 @@ class SaleController(
 
     @GetMapping("/store/{storeId}")
     fun getSalesByStore(@PathVariable storeId: UUID): ResponseEntity<List<Sale>> {
-        return ResponseEntity.ok(saleRepository.findByStoreId(storeId))
+        return ResponseEntity.ok(saleRepositoryPort.findByStoreId(storeId))
     }
 
     @GetMapping("/user/{userId}")
     fun getSalesByUser(@PathVariable userId: UUID): ResponseEntity<List<Sale>> {
-        return ResponseEntity.ok(saleRepository.findByUserId(userId))
+        return ResponseEntity.ok(saleRepositoryPort.findByUserId(userId))
     }
 
     @GetMapping("/status/{status}")
     fun getSalesByStatus(@PathVariable status: String): ResponseEntity<List<Sale>> {
         return try {
             val saleStatus = SaleStatus.valueOf(status.uppercase())
-            ResponseEntity.ok(saleRepository.findByStatus(saleStatus))
+            ResponseEntity.ok(saleRepositoryPort.findByStatus(saleStatus))
         } catch (e: IllegalArgumentException) {
             ResponseEntity.badRequest().build()
         }
     }
 
     @PostMapping
-    fun createSale(@RequestBody sale: Sale): ResponseEntity<Sale> {
-        return ResponseEntity.ok(saleRepository.save(sale))
+    fun createSale(@RequestBody sale: Sale, @RequestBody items: List<SaleItem>): ResponseEntity<Sale> {
+        val savedSale = createSaleUseCase.createSale(sale, items)
+        return ResponseEntity.ok(savedSale)
     }
 
     @PutMapping("/{id}")
     fun updateSale(@PathVariable id: UUID, @RequestBody sale: Sale): ResponseEntity<Sale> {
-        return if (saleRepository.existsById(id)) {
-            sale.id = id
-            ResponseEntity.ok(saleRepository.save(sale))
+        val existing = saleRepositoryPort.findById(id)
+        return if (existing != null) {
+            val updatedSale = existing.copy(
+                total = sale.total,
+                status = sale.status,
+                observations = sale.observations
+            )
+            ResponseEntity.ok(saleRepositoryPort.save(updatedSale))
         } else {
             ResponseEntity.notFound().build()
         }
