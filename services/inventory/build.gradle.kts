@@ -50,7 +50,11 @@ dependencies {
     
     // PostgreSQL (version managed by Spring Boot BOM)
     implementation("org.postgresql:postgresql")
-    
+
+    // Flyway for database migrations
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
+
     // Swagger / OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
     
