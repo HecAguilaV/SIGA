@@ -4,13 +4,14 @@ import jakarta.persistence.*
 import java.util.UUID
 
 /**
+ * JPA Entity for PaymentMethod.
  * Available payment method for POS transactions.
  *
- * Examples: Efectivo, Tarjeta Débito, Tarjeta Crédito, Transferencia.
+ * @see com.siga.sales.domain.model.PaymentMethod the domain model
  */
 @Entity
 @Table(name = "payment_methods", schema = "sales")
-class PaymentMethod(
+class PaymentMethodEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
@@ -23,11 +24,11 @@ class PaymentMethod(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is PaymentMethod) return false
+        if (other !is PaymentMethodEntity) return false
         return id != null && id == other.id
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
-    override fun toString(): String = "PaymentMethod(id=$id, name=$name)"
+    override fun toString(): String = "PaymentMethodEntity(id=$id, name=$name)"
 }
