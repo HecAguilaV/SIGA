@@ -184,10 +184,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${BILLING_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${BILLING_DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${BILLING_DB_PASSWORD}
+      - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
     depends_on:
       siga-db:
         condition: service_healthy
       siga-eureka:
+        condition: service_started
+      siga-kafka:
         condition: service_started
     networks:
       - siga-net

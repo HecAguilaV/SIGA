@@ -51,8 +51,8 @@ dependencies {
     // PostgreSQL (version managed by Spring Boot BOM)
     implementation("org.postgresql:postgresql")
 
-    // Flyway for database migrations
-    implementation("org.flywaydb:flyway-core")
+    // Flyway for database migrations (SB 4.x: use starter for auto-config + postgresql module)
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
 
     // Swagger / OpenAPI

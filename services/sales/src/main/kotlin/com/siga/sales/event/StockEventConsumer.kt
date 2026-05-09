@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional
  * Consumes stock response events from the Inventory service (SAGA step 3).
  *
  * Listens on the `stock-events` topic. When stock is reserved, the sale
- * transitions to COMPLETED. When stock fails, the sale is CANCELLED
+ * transitions to COMPLETED and a [SaleCompletedEvent] is emitted so Billing
+ * can generate the invoice. When stock fails, the sale is CANCELLED
  * (compensating transaction).
  *
  * Idempotent: each event is processed at most once via [ProcessedEvent] check.
@@ -21,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class StockEventConsumer(
     private val saleRepositoryPort: SaleRepositoryPort,
-    private val processedEventRepository: ProcessedEventRepository
+    private val processedEventRepository: ProcessedEventRepository,
+    private val saleCompletedEventProducer: SaleCompletedEventProducer
 ) {
     private val log = LoggerFactory.getLogger(StockEventConsumer::class.java)
 
@@ -58,6 +60,17 @@ class StockEventConsumer(
                 val updatedSale = sale.copy(status = SaleStatus.COMPLETED)
                 saleRepositoryPort.save(updatedSale)
                 log.info("Sale {} confirmed — stock reserved", sale.id)
+
+                // SAGA step 4: notify Billing to generate sale invoice
+                saleCompletedEventProducer.publish(
+                    SaleCompletedEvent(
+                        saleId = sale.id,
+                        storeId = sale.storeId,
+                        userId = sale.userId,
+                        total = sale.total
+                    )
+                )
+                log.info("SaleCompletedEvent emitted for sale={}", sale.id)
             }
             StockEventType.STOCK_FAILED -> {
                 val updatedSale = sale.copy(status = SaleStatus.CANCELLED)
