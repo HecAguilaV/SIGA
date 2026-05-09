@@ -11,7 +11,6 @@ import java.util.UUID
 @Table(name = "shopping_carts", schema = "billing")
 class ShoppingCart(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(name = "customer_id", nullable = false)

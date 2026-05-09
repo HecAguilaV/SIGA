@@ -8,7 +8,6 @@ import java.util.UUID
 @Table(name = "users", schema = "auth")
 class User(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(nullable = false, unique = true, length = 255)

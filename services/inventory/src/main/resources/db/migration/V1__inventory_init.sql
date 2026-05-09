@@ -1,5 +1,6 @@
 -- SIGA - Inventory Service Initialization (Flyway V1)
 -- Fragmented from monolithic script - 2026-04-30
+-- Updated: commercial_user_id INTEGER → UUID to match domain models, added processed_events
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -7,7 +8,7 @@ CREATE TABLE IF NOT EXISTS categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    commercial_user_id INTEGER NOT NULL,
+    commercial_user_id UUID NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_categories_name_commercial UNIQUE (name, commercial_user_id)
@@ -18,7 +19,7 @@ CREATE TABLE IF NOT EXISTS stores (
     name VARCHAR(100) NOT NULL,
     address TEXT,
     city VARCHAR(100),
-    commercial_user_id INTEGER NOT NULL,
+    commercial_user_id UUID NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -30,7 +31,7 @@ CREATE TABLE IF NOT EXISTS products (
     category_id UUID,
     barcode VARCHAR(50) UNIQUE,
     unit_price NUMERIC(10, 2),
-    commercial_user_id INTEGER NOT NULL,
+    commercial_user_id UUID NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -75,4 +76,10 @@ CREATE TABLE IF NOT EXISTS alerts (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_alert_product FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
     CONSTRAINT fk_alert_store FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS processed_events (
+    event_id UUID PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL,
+    processed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

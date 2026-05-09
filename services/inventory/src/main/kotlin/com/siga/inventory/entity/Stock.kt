@@ -11,7 +11,6 @@ import java.util.UUID
 )
 class Stock(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(name = "product_id", nullable = false)
