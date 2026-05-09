@@ -2,13 +2,13 @@ package com.siga.auth.entity
 
 import jakarta.persistence.*
 import java.time.Instant
+import java.util.UUID
 
 @Entity
 @Table(name = "permissions", schema = "auth")
 class Permission(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    val id: UUID? = null,
 
     @Column(nullable = false, unique = true, length = 50)
     var code: String,
@@ -31,10 +31,10 @@ class Permission(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Permission) return false
-        return id != 0 && id == other.id
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String = "Permission(id=$id, code=$code)"
 }

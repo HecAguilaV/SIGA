@@ -5,6 +5,7 @@ import com.siga.auth.domain.port.PermissionRepositoryPort
 import com.siga.auth.infrastructure.mapper.PermissionMapper
 import com.siga.auth.repository.PermissionRepository
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 /**
  * JPA Adapter implementing PermissionRepositoryPort.
@@ -15,7 +16,7 @@ class PermissionJpaAdapter(
     private val permissionRepository: PermissionRepository
 ) : PermissionRepositoryPort {
 
-    override fun findById(id: Int): Permission? {
+    override fun findById(id: UUID): Permission? {
         return permissionRepository.findById(id).map { PermissionMapper.toDomain(it) }.orElse(null)
     }
 

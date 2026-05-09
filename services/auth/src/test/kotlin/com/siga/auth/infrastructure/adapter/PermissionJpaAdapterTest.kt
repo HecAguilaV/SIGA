@@ -11,7 +11,7 @@ import java.util.*
 /**
  * Integration test for [PermissionJpaAdapter].
  * Verifies Permission persistence through the hexagonal port with H2.
- * Uses Int ID (IDENTITY strategy).
+ * Uses UUID ID (DB-generated via default).
  */
 @SpringBootTest
 @ActiveProfiles("test")
@@ -43,7 +43,7 @@ class PermissionJpaAdapterTest @Autowired constructor(
 
     @Test
     fun `findById returns null when permission does not exist`() {
-        val found = adapter.findById(999999)
+        val found = adapter.findById(UUID.randomUUID())
         assertNull(found)
     }
 

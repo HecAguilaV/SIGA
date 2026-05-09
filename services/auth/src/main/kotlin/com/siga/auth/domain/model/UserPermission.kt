@@ -9,7 +9,7 @@ import java.util.UUID
  */
 data class UserPermission(
     val userId: UUID,
-    val permissionId: Int,
+    val permissionId: UUID,
     val assignedAt: Instant,
     val assignedBy: UUID? = null
 )
