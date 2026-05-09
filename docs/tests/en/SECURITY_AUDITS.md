@@ -1,5 +1,7 @@
 # Security Audits
 
+*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../es/AUDITORIAS_SEGURIDAD.md)*
+
 SIGA uses a proactive "Shift-Left Security" approach to detect vulnerabilities before they reach production.
 
 ## Gitleaks: Secrets Scanning

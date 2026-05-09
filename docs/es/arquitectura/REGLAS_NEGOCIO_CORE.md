@@ -1,5 +1,7 @@
 # Manifiesto Core SIGA
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/architecture/CORE_BUSINESS.md)*
+
 ## 1. Visión y Propósito
 SIGA (Sistema de Inteligencia y Gestión de Activos) es una solución tecnológica diseñada específicamente para PYMES que operan con uno o varios locales. A diferencia de un sistema administrativo tradicional, SIGA es un **Ecosistema Inteligente** donde la IA es un operador activo.
 

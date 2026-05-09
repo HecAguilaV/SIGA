@@ -1,5 +1,7 @@
 # A2UI Protocol — Agent ↔ Webapp Contract
 
+*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../../es/arquitectura/PROTOCOLO_A2UI.md)*
+
 > **Version:** 1.0
 > **Date:** 2026-04-23
 > **Purpose:** Define the "language" between the Agent and the Webapp

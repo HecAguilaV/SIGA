@@ -1,15 +1,17 @@
 # SIGA Landing
 
-Public landing page for the SIGA SaaS platform.
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
 
-## Status: Scaffold
+Página de aterrizaje pública para la plataforma SaaS SIGA.
 
-This service is planned but not yet implemented. See the architecture docs for the frontend strategy.
+## Estado: Scaffold
 
-## Tech Stack (Planned)
+Este servicio está planificado pero aún no implementado. Consulta los docs de arquitectura para la estrategia frontend.
+
+## Stack Tecnológico (Planificado)
 
 - Framework: SvelteKit / Astro (TBD)
-- Purpose: Marketing, pricing, signup flow
+- Propósito: Marketing, precios, flujo de registro
 
 ---
 Héctor Aguila

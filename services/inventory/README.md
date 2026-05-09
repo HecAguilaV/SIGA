@@ -1,10 +1,12 @@
 # Inventory Service (siga-inventory)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Gestión centralizada de stock, productos y movimientos de almacén (Kardex).
 
 ## Stack Tecnológico
 - **Lenguaje**: Kotlin
-- **Framework**: Spring Boot 3.2.x
+- **Framework**: Spring Boot 4.0.6
 - **Mensajería**: Apache Kafka (SAGA Coreografía)
 - **BD**: PostgreSQL (Esquema: `inventory`)
 

@@ -1,5 +1,7 @@
 # SIGA: Quality and Testing Strategy
 
+*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../es/README.md)*
+
 This directory contains the strategic documentation for SIGA system testing. Our objective is to ensure security, stability, and compliance with **Law 21.719 (Data Pseudonymization)** through a bilingual and professional approach.
 
 ## Quality Philosophy

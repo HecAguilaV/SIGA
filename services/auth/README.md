@@ -1,5 +1,7 @@
 # Auth Service (siga-auth)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Este servicio gestiona la identidad, seguridad y control de acceso centralizado de la plataforma **SIGA**.
 
 ## Stack Tecnológico

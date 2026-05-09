@@ -1,5 +1,7 @@
 # Admin Portal (Backoffice)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Este servicio es la interfaz de administración central para los propietarios y operadores de la plataforma **SIGA**.
 
 ## Propósito

@@ -1,5 +1,7 @@
 # Shared Kernel (siga-common)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Biblioteca compartida de utilidades y configuraciones transversales (Cross-cutting concerns).
 
 ## Contenido

@@ -1,5 +1,7 @@
 # Gateway (siga-gateway)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Punto de entrada único (API Gateway) para todo el tráfico de la plataforma.
 
 ## Stack Tecnológico

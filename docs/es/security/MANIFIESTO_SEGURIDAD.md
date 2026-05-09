@@ -1,5 +1,7 @@
 # Manifiesto de Seguridad SIGA
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/security/SECURITY_MANIFESTO.md)*
+
 ## 1. Visión de Seguridad
 SIGA se rige bajo el principio de **Confianza Cero (Zero-Trust)**. Ninguna petición es de confianza por defecto, ya sea interna o externa. La seguridad no es una capa superficial, sino la base estructural de nuestra arquitectura distribuida.
 

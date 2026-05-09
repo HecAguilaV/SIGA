@@ -1,5 +1,7 @@
 # SIGA WebApp (Sistema Operativo)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 **El corazón operativo del ecosistema SIGA.**  
 Gestión de inventario, ventas y toma de decisiones potenciada por IA.
 

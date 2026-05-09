@@ -1,5 +1,7 @@
 # Sistema de Diseño SIGA
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/architecture/DESIGN.md)*
+
 ## 1. Tema Visual y Atmósfera
 - **Concepto:** "Precisión Técnica Inspirada en Linear"
 - **Vibe:** Ultra-minimalista, preciso, dashboard de alta densidad, centrado en el desarrollador.

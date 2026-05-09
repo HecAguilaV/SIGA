@@ -1,5 +1,7 @@
 # Auditorías de Seguridad
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../en/SECURITY_AUDITS.md)*
+
 SIGA utiliza un enfoque proactivo de "Desplazamiento a la Izquierda" (Shift-Left Security) para detectar vulnerabilidades antes de que lleguen a producción.
 
 ## Gitleaks: Escaneo de Secretos

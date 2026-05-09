@@ -1,5 +1,7 @@
 # SIGA Security Manifesto
 
+*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../../es/security/MANIFIESTO_SEGURIDAD.md)*
+
 ## 1. Security Vision
 SIGA operates under the **Zero-Trust** principle. No request is trusted by default, whether internal or external. Security is not a surface layer but the structural foundation of our distributed architecture.
 

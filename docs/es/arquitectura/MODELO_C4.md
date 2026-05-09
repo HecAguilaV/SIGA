@@ -118,19 +118,21 @@ flowchart TB
     Kafka -- "Entrega evento" --> Inv
     Inv -- "Publica STOCK_RESERVED<br>(Topic: stock-events)" --> Kafka
     Kafka -- "Entrega respuesta" --> Sales
+    Sales -- "Publica SALE_COMPLETED<br>(Topic: sale-completed)" --> Kafka
+    Kafka -- "Entrega evento" --> Bill
 
     %% Persistencia
     Auth -->|Lee/Escribe esquema: auth| DB
     Inv -->|Lee/Escribe esquema: inventory| DB
     Sales -->|Lee/Escribe esquema: sales| DB
-    Bill -->|Lee/Escribe esquema: commercial| DB
+    Bill -->|Lee/Escribe esquema: billing| DB
     Agent -->|Búsqueda Vectorial esquema: agent| DB
 ```
 
 ### Decisiones Técnicas Clave (L2)
 - **API Gateway**: Mantiene los microservicios internos ocultos del internet público. Centraliza CORS y enrutamiento.
 - **Service Registry (Eureka)**: Permite escalar microservicios horizontalmente sin necesidad de balanceadores de carga físicos.
-- **Mensajería (Kafka)**: Implementa el patrón **SAGA (Coreografía)** para transacciones distribuidas. Garantiza que Sales e Inventory se mantengan desacoplados y resilientes ante fallos.
+- **Mensajería (Kafka)**: Implementa el patrón **SAGA (Coreografía)** para transacciones distribuidas. Sales orquesta la reserva de stock con Inventory y, al confirmarse, publica un evento para que Billing genere la factura de venta (`SaleInvoice`).
 - **Aislamiento de Datos**: Cada microservicio se conecta a un único servidor PostgreSQL, pero tiene su propio `esquema` restringido, garantizando que un servicio no pueda corromper los datos de otro de forma directa.
 
 ---

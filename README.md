@@ -28,6 +28,7 @@ Hemos establecido un estándar de Espejo Semántico para garantizar que la docum
 SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumplimiento legal:
 
 - **Backend**: Kotlin + Spring Boot 4.0.6. Implementación estricta de Arquitectura Hexagonal (Gold Standard) y Disciplina TDD.
+- **Mensajería**: Apache Kafka (SAGA Coreografía) para transacciones distribuidas entre microservicios.
 - **IA**: Python + LangChain + PGVector (Memoria Semántica por Tenant).
 - **Frontend**: Svelte 5 (Webapp) y Jetpack Compose (Mobile).
 - **Persistencia**: PostgreSQL con aislamiento de esquemas y UUID v4 como estándar único de identidad y seudonimización.

@@ -1,5 +1,7 @@
 # Arnés de Pruebas de Integración
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../en/INTEGRATION_HARNESS.md)*
+
 Este documento detalla la infraestructura creada para validar los microservicios de SIGA, centrándose en la transición a **UUID** y la seguridad.
 
 ## Microservicios Cubiertos

@@ -1,5 +1,7 @@
 # Agent Service (siga-agent)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Servicio de Inteligencia Artificial para asistencia contextual y análisis de datos.
 
 ## Stack Tecnológico

@@ -1,5 +1,7 @@
 # Sales Service (siga-sales)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Orquestador de ventas, transacciones de punto de venta (POS) y documentos tributarios.
 
 ## Stack Tecnológico
@@ -8,6 +10,17 @@ Orquestador de ventas, transacciones de punto de venta (POS) y documentos tribut
 - **Mensajería**: Apache Kafka (SAGA Coreografía)
 - **BD**: PostgreSQL (Esquema: `sales`)
 - **Service Discovery**: Eureka Client
+
+## SAGA — Flujo de Eventos
+
+| Paso | Evento / Topic | Origen → Destino | Estado |
+|------|----------------|------------------|--------|
+| 1 | `sale-events` → Kafka | Sales → Inventory (reservar stock) | ✅ |
+| 2 | `stock-events` → Kafka | Inventory → Sales (resultado reserva) | ✅ |
+| 3 | `sale-completed` → Kafka | Sales → Billing (generar factura) | ✅ |
+
+**Produce**: `SaleCompletedEvent` al topic `sale-completed` luego de confirmar stock reservado.
+**Consume**: `StockEvent` del topic `stock-events` (respuesta de Inventory).
 
 ## Arquitectura
 - [x] **Hexagonal Architecture** — Domain/Application/Infrastructure/Controller layers
