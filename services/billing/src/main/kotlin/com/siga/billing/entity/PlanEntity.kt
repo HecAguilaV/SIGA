@@ -34,7 +34,7 @@ class PlanEntity(
     @Column(name = "yearly_price", precision = 10, scale = 2)
     var yearlyPrice: BigDecimal? = null,
 
-    @Column(name = "display_order", nullable = false)
+    @Column(name = "sort_order", nullable = false)
     var displayOrder: Int = 0,
 
     @Column(name = "is_active", nullable = false)

@@ -7,7 +7,7 @@ import java.time.Instant
 /**
  * Mapper between Permission JPA entity and Permission domain model.
  * Handles:
- * - Int? ↔ Int conversion for IDENTITY PK (0 means new entity)
+ * - UUID? ↔ UUID? (null-safe, DB generates UUID via default)
  * - Instant? ↔ Instant for createdAt with fallback to Instant.now()
  */
 object PermissionMapper {
@@ -26,7 +26,7 @@ object PermissionMapper {
 
     fun toEntity(domain: DomainPermission): PermissionEntity {
         return PermissionEntity(
-            id = domain.id ?: 0,
+            id = domain.id,
             code = domain.code,
             name = domain.name,
             description = domain.description,

@@ -11,7 +11,7 @@ class UserPermissionId(
     var userId: UUID? = null,
 
     @Column(name = "permission_id", nullable = false)
-    var permissionId: Int = 0
+    var permissionId: UUID? = null
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

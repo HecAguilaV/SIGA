@@ -1,21 +1,23 @@
 package com.siga.sales.config
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
-import org.springframework.kafka.core.ConsumerFactory
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.*
 import org.springframework.kafka.support.serializer.JsonDeserializer
+import org.springframework.kafka.support.serializer.JsonSerializer
 
 /**
  * Kafka configuration for the Sales service.
  *
- * Manually configures the consumer factory and listener container
- * factory since Spring Boot 4.x no longer includes Kafka
+ * Manually configures the consumer and producer factories, listener container
+ * factory, and KafkaTemplate since Spring Boot 4.x no longer includes Kafka
  * auto-configuration in [spring-boot-autoconfigure].
  *
  * Uses [@Value] to read properties from `application.yml` / `application-*.yml`.
@@ -35,6 +37,8 @@ class KafkaConfig(
     @Value("\${spring.kafka.consumer.properties.spring.json.trusted.packages:com.siga.sales.event}")
     private val trustedPackages: String
 ) {
+
+    // ── Consumer config ───────────────────────────────────────────
 
     @Bean
     fun consumerFactory(): ConsumerFactory<String, Any> {
@@ -56,5 +60,23 @@ class KafkaConfig(
         val factory = ConcurrentKafkaListenerContainerFactory<String, Any>()
         factory.setConsumerFactory(consumerFactory)
         return factory
+    }
+
+    // ── Producer config ───────────────────────────────────────────
+
+    @Bean
+    fun producerFactory(): ProducerFactory<String, Any> {
+        val props = mapOf<String, Any>(
+            ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
+            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java,
+            JsonSerializer.ADD_TYPE_INFO_HEADERS to false
+        )
+        return DefaultKafkaProducerFactory(props)
+    }
+
+    @Bean
+    fun kafkaTemplate(producerFactory: ProducerFactory<String, Any>): KafkaTemplate<String, Any> {
+        return KafkaTemplate(producerFactory)
     }
 }
