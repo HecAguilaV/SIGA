@@ -1,5 +1,6 @@
 -- SIGA - Auth Service Initialization (Flyway V1)
 -- Fragmented from monolithic script - 2026-04-30
+-- Updated: added customers table for business owner registration
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -28,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100),
     role VARCHAR(20) NOT NULL,
-    commercial_user_id INTEGER, -- Reference to Billing Customer ID
+    commercial_user_id INTEGER, -- Logical reference to Billing Customer ID
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -50,4 +51,24 @@ CREATE TABLE IF NOT EXISTS user_stores (
     assigned_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, store_id),
     CONSTRAINT fk_user_store_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- Customers (business owners / tenants)
+CREATE TABLE IF NOT EXISTS customers (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100),
+    tax_id VARCHAR(20),
+    phone VARCHAR(20),
+    company_name VARCHAR(255),
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    is_on_trial BOOLEAN NOT NULL DEFAULT false,
+    trial_start_at TIMESTAMPTZ,
+    trial_end_at TIMESTAMPTZ,
+    role VARCHAR(20) NOT NULL DEFAULT 'customer',
+    plan_id INTEGER,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
