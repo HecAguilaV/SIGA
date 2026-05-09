@@ -3,6 +3,8 @@
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+SET search_path TO sales;
+
 CREATE TABLE IF NOT EXISTS payment_methods (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(50) NOT NULL UNIQUE,

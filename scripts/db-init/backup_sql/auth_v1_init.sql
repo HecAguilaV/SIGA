@@ -4,6 +4,8 @@
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+SET search_path TO auth;
+
 CREATE TABLE IF NOT EXISTS permissions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     code VARCHAR(50) NOT NULL UNIQUE,

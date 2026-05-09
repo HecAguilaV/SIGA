@@ -4,6 +4,8 @@
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+SET search_path TO billing;
+
 CREATE TABLE IF NOT EXISTS plans (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL UNIQUE,
