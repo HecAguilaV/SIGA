@@ -1,6 +1,6 @@
 # C4 Architecture Model - SIGA
 
-*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../../es/architecture/C4_MODEL.md)*
+*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../../es/arquitectura/MODELO_C4.md)*
 
 This document describes the architecture of the **Intelligent Asset Management System (SIGA)** using the **C4 Model** standard. We focus on the strategic levels (Context and Containers) to provide a clear vision for both business and engineering stakeholders.
 
@@ -73,8 +73,9 @@ flowchart TB
         %% Entry point
         Gateway["API Gateway<br>[Container: Spring Cloud]<br>Single Router (Port 8080)"]:::container
         
-        %% Orchestration
-        Eureka(("Service Registry<br>[Infra: Netflix Eureka]<br>Service Discovery")):::infrastructure
+        %% Orchestration & Messaging
+        Eureka(("Service Registry<br>[Infra: Netflix Eureka]<br>Service Discovery"))
+        Kafka(("Event Broker<br>[Infra: Apache Kafka]<br>SAGA Choreography & Events")):::infrastructure:::infrastructure
         
         %% Microservices (Hexagonal Architecture)
         subgraph Microservices [Core Backend - Hexagonal]
@@ -112,17 +113,26 @@ flowchart TB
     Agent -.->|Registers| Eureka
     Gateway -.->|Queries locations| Eureka
     
+    %% Async Communication (SAGA)
+    Sales -- "Publishes SALE_INITIATED<br>(Topic: sale-events)" --> Kafka
+    Kafka -- "Delivers event" --> Inv
+    Inv -- "Publishes STOCK_RESERVED<br>(Topic: stock-events)" --> Kafka
+    Kafka -- "Delivers response" --> Sales
+    Sales -- "Publishes SALE_COMPLETED<br>(Topic: sale-completed)" --> Kafka
+    Kafka -- "Delivers event" --> Bill
+
     %% Persistence
     Auth -->|Reads/Writes schema: auth| DB
     Inv -->|Reads/Writes schema: inventory| DB
     Sales -->|Reads/Writes schema: sales| DB
-    Bill -->|Reads/Writes schema: commercial| DB
+    Bill -->|Reads/Writes schema: billing| DB
     Agent -->|Vector Search schema: agent| DB
 ```
 
 ### Key Technical Decisions (L2)
 - **API Gateway**: Keeps internal microservices hidden from the public internet. Centralizes CORS and routing.
 - **Service Registry (Eureka)**: Allows horizontal scaling of microservices without the need for physical load balancers.
+- **Messaging (Kafka)**: Implements the **SAGA (Choreography)** pattern for distributed transactions. Sales orchestrates stock reservation with Inventory and, once confirmed, publishes an event for Billing to generate the sales invoice (`SaleInvoice`).
 - **Data Isolation**: Each microservice connects to a single PostgreSQL server but has its own restricted `schema`, ensuring that one service cannot directly corrupt another's data.
 
 ---

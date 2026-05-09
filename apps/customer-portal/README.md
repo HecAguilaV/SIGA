@@ -1,5 +1,7 @@
 # SIGA - Portal Comercial
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 **Sistema Inteligente de Gestión de Activos**
 Portal comercial y gestión de suscripciones para planes SaaS
 

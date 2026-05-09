@@ -1,5 +1,7 @@
 # Service Registry (siga-registry)
 
+*Read this in other languages: [![English](README.en.md)](README.en.md)*
+
 Servidor de descubrimiento de servicios para el ecosistema de microservicios.
 
 ## Stack Tecnológico

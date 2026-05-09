@@ -1,5 +1,7 @@
 # SIGA - Referencia Maestra de Arquitectura de Persistencia
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../en/PERSISTENCE_ARCHITECTURE.md)*
+
 Este documento sirve como la referencia técnica definitiva para el sistema de persistencia distribuida del proyecto SIGA. Detalla la transición de un esquema monolítico a una **Arquitectura Distribuida de Alta Disponibilidad** con aislamiento físico de datos.
 
 ## 1. Pilares Arquitectónicos
@@ -77,6 +79,8 @@ Cada microservicio core gestiona su propia base de datos PostgreSQL independient
 | **invoices** | Registros de facturas por suscripción | `id (UUID)`, `invoice_number`, `customer_id (UUID)`, `plan_id (UUID)`, `price_uf`, `price_clp`, `status` |
 | **payments** | Transacciones de pago | `id (UUID)`, `subscription_id (UUID)`, `customer_id (UUID)`, `amount`, `status`, `reference` |
 | **shopping_carts** | Carrito de selección de plan previo al checkout | `id (UUID)`, `customer_id (UUID)`, `plan_id (UUID)`, `billing_period` |
+| **sale_invoices** | Facturas de venta generadas por SAGA (Sales → Billing) | `id (UUID)`, `sale_id (UUID, ref. lógica a Sales)`, `store_id (UUID)`, `user_id (UUID)`, `total (DECIMAL)`, `status (VARCHAR)`, `created_at`, `updated_at` |
+| **processed_events** | Guardia de idempotencia para eventos Kafka | `event_id (UUID) PK`, `event_type`, `processed_at` |
 
 ### E. siga_agent (schema: `agent`)
 

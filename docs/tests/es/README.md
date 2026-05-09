@@ -1,5 +1,7 @@
 # SIGA: Calidad y Estrategia de Pruebas
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../en/README.md)*
+
 Este directorio contiene la documentación estratégica de las pruebas del sistema SIGA. Nuestro objetivo es garantizar la seguridad, la estabilidad y el cumplimiento de la **Ley 21.719 (Seudonimización de datos)** mediante un enfoque bilingüe y profesional.
 
 ## Filosofía de Calidad

@@ -1,5 +1,7 @@
 # Arquitectura Frontend y Pacto de Repositorio SIGA
 
+*Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/architecture/FRONTEND_PACT.md)*
+
 ## Estado: ESTIPULADO Y DEFINIDO
 **Fecha:** 21 de Abril, 2026
 **Nivel de Arquitectura:** Ecosistema de Microservicios Profesional

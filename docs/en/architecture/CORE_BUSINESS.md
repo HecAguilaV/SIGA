@@ -1,5 +1,7 @@
 # SIGA Core Manifesto
 
+*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../../es/arquitectura/REGLAS_NEGOCIO_CORE.md)*
+
 ## 1. Vision and Purpose
 SIGA (Intelligence and Asset Management System) is a technological solution designed specifically for SMEs operating with one or multiple branches. Unlike a traditional administrative system, SIGA is an **Intelligent Ecosystem** where AI is an active operator.
 
