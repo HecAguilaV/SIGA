@@ -51,3 +51,23 @@ CREATE TABLE IF NOT EXISTS user_stores (
     PRIMARY KEY (user_id, store_id),
     CONSTRAINT fk_user_store_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- Customers (business owners / tenants)
+CREATE TABLE IF NOT EXISTS customers (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100),
+    tax_id VARCHAR(20),
+    phone VARCHAR(20),
+    company_name VARCHAR(255),
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    is_on_trial BOOLEAN NOT NULL DEFAULT false,
+    trial_start_at TIMESTAMPTZ,
+    trial_end_at TIMESTAMPTZ,
+    role VARCHAR(20) NOT NULL DEFAULT 'customer',
+    plan_id INTEGER,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

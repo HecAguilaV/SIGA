@@ -15,7 +15,6 @@ import java.util.UUID
 @Table(name = "pos_cart", schema = "sales")
 class PosCartEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(name = "sale_id")

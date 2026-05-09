@@ -14,7 +14,6 @@ import java.util.UUID
 @Table(name = "alerts", schema = "inventory")
 class Alert(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(nullable = false, length = 30)

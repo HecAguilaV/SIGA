@@ -8,7 +8,6 @@ import java.util.UUID
 @Table(name = "stores", schema = "inventory")
 class Store(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
     @Column(nullable = false, length = 255)
