@@ -576,6 +576,110 @@ class UserServiceTest : DescribeSpec({
 
 ---
 
+### BehaviorSpec
+
+Kotest provides `BehaviorSpec` as a first-class spec style that maps directly to Given-When-Then (GWT) notation. Unlike `DescribeSpec` (nested `describe`-`it` blocks), `BehaviorSpec` uses `given`-`` `When` ``-`then` chains — identical to GWT scenario structure.
+
+#### Import
+
+```kotlin
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.assertions.throwables.shouldThrow
+```
+
+#### Template
+
+```kotlin
+package com.siga.bdd.auth
+
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.shouldBe
+
+class LoginBehaviorSpec : BehaviorSpec({
+
+    given("a registered user") {
+        `When`("logging in with valid credentials") {
+            then("should return a JWT token") {
+                pending { }
+            }
+            then("should set a session cookie") {
+                pending { }
+            }
+        }
+    }
+
+    given("a registered user") {
+        `When`("logging in with wrong password") {
+            then("should return 401 Unauthorized") {
+                pending { }
+            }
+        }
+    }
+
+    given("an unregistered email") {
+        `When`("attempting to log in") {
+            then("should return 404 Not Found") {
+                pending { }
+            }
+        }
+    }
+})
+```
+
+#### File naming convention
+
+```
+openspec/changes/{change-name}/specs/{domain}/{Feature}BehaviorSpec.kts
+```
+
+Generated stubs live in `openspec/` alongside spec markdown, NOT in the source test tree. This signals they are scaffolded stubs, not hand-written tests.
+
+#### GWT markdown → BehaviorSpec mapping
+
+| GWT in spec | BehaviorSpec code |
+|-------------|-------------------|
+| `- GIVEN {precondition}` | `given("{precondition}") {` |
+| `- WHEN {action}` | `` `When`("{action}") { `` |
+| `- THEN {outcome}` | `then("{outcome}") { pending { } }` |
+| `- AND {outcome}` | `then("{outcome}") { pending { } }` (also `pending { }`) |
+
+> **Note:** `` `When` `` is backtick-quoted because `When` is a Kotlin soft keyword. Kotest exposes it as a valid DSL function when quoted.
+
+#### Coexistence with DescribeSpec
+
+`BehaviorSpec` and `DescribeSpec` live in the **same project, same test suite, same Gradle module**. They are both Kotest spec styles — no additional configuration or dependency is needed:
+
+| Spec style | Use case | Structure |
+|-----------|----------|-----------|
+| `DescribeSpec` | Unit tests with nested contexts | `describe` → `it` |
+| `BehaviorSpec` | BDD scenarios mirroring GWT specs | `given` → `` `When` `` → `then` |
+
+Both run under `kotest-runner-junit5`. A project can mix freely:
+
+```kotlin
+// Unit test — DescribeSpec
+class UserServiceTest : DescribeSpec({
+    describe("create") {
+        it("should return user when data is valid") { ... }
+    }
+})
+
+// BDD scenario — BehaviorSpec
+class LoginBehaviorSpec : BehaviorSpec({
+    given("valid credentials") {
+        `When`("logging in") {
+            then("should succeed") { pending { } }
+        }
+    }
+})
+```
+
+There is no need to convert existing `DescribeSpec` tests. `BehaviorSpec` is purely additive — new scenarios go in `BehaviorSpec`, existing unit tests stay in `DescribeSpec`.
+
+---
+
 ## Testing en Svelte
 
 ### Setup (vitest.config.ts)
