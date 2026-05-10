@@ -51,6 +51,9 @@ dependencies {
     // JWT
     implementation("com.auth0:java-jwt:4.4.0")
     
+    // Mail
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+
     // Health checks
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
