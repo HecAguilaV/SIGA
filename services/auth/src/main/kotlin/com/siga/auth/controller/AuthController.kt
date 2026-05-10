@@ -28,8 +28,14 @@ class AuthController(
             ResponseEntity.status(HttpStatus.CREATED)
                 .body(mapOf("status" to "pending"))
         } catch (e: IllegalArgumentException) {
-            ResponseEntity.badRequest()
-                .body(mapOf("error" to (e.message ?: "Invalid request")))
+            val message = e.message ?: "Invalid request"
+            if (message.startsWith("Email already exists")) {
+                ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(mapOf("error" to message))
+            } else {
+                ResponseEntity.badRequest()
+                    .body(mapOf("error" to message))
+            }
         }
     }
 

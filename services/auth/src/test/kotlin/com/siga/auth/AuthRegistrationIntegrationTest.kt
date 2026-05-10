@@ -91,7 +91,7 @@ class AuthRegistrationIntegrationTest @Autowired constructor(
     }
 
     @Test
-    fun `register with duplicate email returns 400`() {
+    fun `register with duplicate email returns 409`() {
         val email = "duplicate_reg_${UUID.randomUUID()}@test.com"
         val requestBody = """
             {
@@ -116,7 +116,7 @@ class AuthRegistrationIntegrationTest @Autowired constructor(
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         )
-            .andExpect(status().isBadRequest)
+            .andExpect(status().isConflict)
             .andExpect(jsonPath("$.error").value("Email already exists: $email"))
     }
 
