@@ -24,6 +24,11 @@ class CustomerJpaAdapter(
         return CustomerMapper.toDomain(entity)
     }
 
+    override fun findByVerificationToken(token: String): Customer? {
+        val entity = customerRepository.findByVerificationToken(token) ?: return null
+        return CustomerMapper.toDomain(entity)
+    }
+
     override fun existsByEmail(email: String): Boolean = customerRepository.existsByEmail(email)
 
     override fun findAll(): List<Customer> = customerRepository.findAll().map { CustomerMapper.toDomain(it) }

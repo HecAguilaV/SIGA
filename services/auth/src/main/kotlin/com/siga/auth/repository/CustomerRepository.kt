@@ -10,5 +10,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CustomerRepository : JpaRepository<Customer, Int> {
     fun findByEmail(email: String): Customer?
+    fun findByVerificationToken(token: String): Customer?
     fun existsByEmail(email: String): Boolean
 }
