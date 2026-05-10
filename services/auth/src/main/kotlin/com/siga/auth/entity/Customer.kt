@@ -34,6 +34,16 @@ class Customer(
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean = true,
 
+    @Column(name = "email_verified", nullable = false)
+    var emailVerified: Boolean = false,
+
+    @Column(name = "verification_token", length = 255)
+    var verificationToken: String? = null,
+
+    @Column(name = "verification_token_expires_at")
+    var verificationTokenExpiresAt: Instant? = null,
+
+
     @Column(name = "is_on_trial", nullable = false)
     var isOnTrial: Boolean = false,
 
