@@ -34,6 +34,9 @@ dependencies {
     // Swagger / OpenAPI (WebFlux variant para Gateway reactivo)
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.3")
     
+    // Health checks
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     

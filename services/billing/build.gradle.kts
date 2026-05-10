@@ -47,6 +47,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
 
+    // Health checks
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     // Kafka para SAGA (consumo de eventos de Sales)
     implementation("org.springframework.kafka:spring-kafka")
 
