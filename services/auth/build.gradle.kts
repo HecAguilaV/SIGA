@@ -51,6 +51,9 @@ dependencies {
     // JWT
     implementation("com.auth0:java-jwt:4.4.0")
     
+    // Health checks
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     // Swagger / OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
     
