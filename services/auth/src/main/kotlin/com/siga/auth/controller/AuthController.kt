@@ -1,5 +1,6 @@
 package com.siga.auth.controller
 
+import com.siga.auth.application.usecase.LoginUseCase
 import com.siga.auth.application.usecase.RegisterCustomerUseCase
 import com.siga.auth.application.usecase.VerifyCustomerUseCase
 import org.springframework.http.HttpStatus
@@ -7,13 +8,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 /**
- * Controller for authentication flows: registration and email verification.
+ * Controller for authentication flows: registration, email verification, and login.
  */
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
     private val registerCustomerUseCase: RegisterCustomerUseCase,
-    private val verifyCustomerUseCase: VerifyCustomerUseCase
+    private val verifyCustomerUseCase: VerifyCustomerUseCase,
+    private val loginUseCase: LoginUseCase
 ) {
 
     @PostMapping("/register")
@@ -52,6 +54,28 @@ class AuthController(
                 .body(mapOf("error" to "Verification token has expired"))
         }
     }
+
+    @PostMapping("/login")
+    fun login(@RequestBody request: LoginRequest): ResponseEntity<Map<String, Any>> {
+        return try {
+            val result = loginUseCase.login(request.email, request.password)
+            ResponseEntity.ok(
+                mapOf(
+                    "token" to result.token,
+                    "email" to result.email,
+                    "tenantId" to (result.tenantId ?: "null"),
+                    "role" to result.role,
+                    "principalType" to result.principalType
+                )
+            )
+        } catch (e: IllegalStateException) {
+            ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(mapOf("error" to (e.message ?: "Account is not active")))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(mapOf("error" to "Invalid credentials"))
+        }
+    }
 }
 
 /**
@@ -62,4 +86,12 @@ data class RegisterRequest(
     val password: String,
     val name: String,
     val companyName: String
+)
+
+/**
+ * Request DTO for login.
+ */
+data class LoginRequest(
+    val email: String,
+    val password: String
 )

@@ -40,15 +40,15 @@ Chain strategy: size-exception
 
 ## Phase 2: Security & JWT
 
-- [ ] 2.1 Write test: `JwtService.generateToken()` includes `principalType` claim
-- [ ] 2.2 Write test: `JwtService.verify()` validates token signature and expiry
-- [ ] 2.3 Modify `security/JwtService.kt` — add `verify()` method, update `generateToken()` to include `principalType`, `tenantId`, `rol`
-- [ ] 2.4 Write test: `JwtAuthFilter` sets SecurityContext for valid token
-- [ ] 2.5 Write test: `JwtAuthFilter` rejects invalid/expired tokens
-- [ ] 2.6 Create `security/JwtAuthFilter.kt` — OncePerRequestFilter for JWT validation
-- [ ] 2.7 Write test: Public endpoints (`/register`, `/verify`, `/login`, `/actuator/health`) accessible without auth
-- [ ] 2.8 Write test: Protected endpoints require valid JWT
-- [ ] 2.9 Create `security/SecurityConfig.kt` — SecurityFilterChain with permitAll paths and JWT filter
+- [x] 2.1 Write test: `JwtService.generateToken()` includes `principalType` claim
+- [x] 2.2 Write test: `JwtService.verify()` validates token signature and expiry
+- [x] 2.3 Modify `security/JwtService.kt` — add `verify()` method, update `generateToken()` to include `principalType`, `tenantId`, `rol`
+- [x] 2.4 Write test: `JwtAuthFilter` sets SecurityContext for valid token
+- [x] 2.5 Write test: `JwtAuthFilter` rejects invalid/expired tokens
+- [x] 2.6 Create `security/JwtAuthFilter.kt` — OncePerRequestFilter for JWT validation
+- [x] 2.7 Write test: Public endpoints (`/register`, `/verify`, `/login`, `/actuator/health`) accessible without auth
+- [x] 2.8 Write test: Protected endpoints require valid JWT
+- [x] 2.9 Create `security/SecurityConfig.kt` — SecurityFilterChain with permitAll paths and JWT filter
 
 ## Phase 3: User Repository Extensions
 
@@ -73,18 +73,18 @@ Chain strategy: size-exception
 - [ ] 4.8 Create `application/usecase/VerifyEmailUseCase.kt` — implement all scenarios
 
 ### LoginUseCase
-- [ ] 4.9 Write test: Active Customer with valid credentials returns JWT with `principalType=customer`
-- [ ] 4.10 Write test: User with valid credentials returns JWT with `principalType=user`
-- [ ] 4.11 Write test: Inactive Customer returns 403 Forbidden
-- [ ] 4.12 Write test: Wrong password returns 401 Unauthorized (no principal disclosure)
-- [ ] 4.13 Write test: No matching principal returns 401 Unauthorized
-- [ ] 4.14 Create `application/usecase/LoginUseCase.kt` — implement dual lookup (Customer→User)
+- [x] 4.9 Write test: Active Customer with valid credentials returns JWT with `principalType=customer`
+- [x] 4.10 Write test: User with valid credentials returns JWT with `principalType=user`
+- [x] 4.11 Write test: Inactive Customer returns 403 Forbidden
+- [x] 4.12 Write test: Wrong password returns 401 Unauthorized (no principal disclosure)
+- [x] 4.13 Write test: No matching principal returns 401 Unauthorized
+- [x] 4.14 Create `application/usecase/LoginUseCase.kt` — implement dual lookup (Customer→User)
 
 ## Phase 5: Adapters & Controllers
 
-- [ ] 5.1 Create `infrastructure/adapter/GmailSmtpAdapter.kt` — implement `EmailSenderPort` using `JavaMailSender`
-- [ ] 5.2 Write integration test: `POST /api/v1/auth/register` → `GET /api/v1/auth/verify` → `POST /api/v1/auth/login` full flow
-- [ ] 5.3 Create `controller/AuthController.kt` — register, verify, login endpoints
+- [x] 5.1 Create `infrastructure/adapter/EmailSenderService.kt` — implement `EmailSenderPort` using `JavaMailSender` (log mode fallback)
+- [x] 5.2 Write integration test: `POST /api/v1/auth/register` → `GET /api/v1/auth/verify` → `POST /api/v1/auth/login` full flow
+- [x] 5.3 Create `controller/AuthController.kt` — register, verify, login endpoints
 - [ ] 5.4 Write test: `GET /api/v1/auth/users` returns only users with `customerId` from JWT
 - [ ] 5.5 Write test: `POST /api/v1/auth/users` auto-sets `customerId` from JWT
 - [ ] 5.6 Write test: Non-Customer principal (User) gets 403 for User CRUD
