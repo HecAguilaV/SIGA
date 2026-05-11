@@ -29,6 +29,10 @@ class PermissionJpaAdapter(
 
     override fun save(permission: Permission): Permission {
         val entity = PermissionMapper.toEntity(permission)
+        // Auto-generate UUID when id is null (tests pass null, expecting DB generation)
+        if (entity.id == null) {
+            entity.id = UUID.randomUUID()
+        }
         val saved = permissionRepository.save(entity)
         return PermissionMapper.toDomain(saved)
     }

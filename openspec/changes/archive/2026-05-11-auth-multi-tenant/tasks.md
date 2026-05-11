@@ -26,17 +26,17 @@ Chain strategy: size-exception
 
 ## Phase 1: Foundation (Database + Models + Config)
 
-- [ ] 1.1 Write test: Verify Flyway migration applies cleanly to H2
-- [ ] 1.2 Create `db/migration/V2__auth_multi_tenant.sql` (add verification columns to customers, customerId to users)
-- [ ] 1.3 Modify `domain/model/Customer.kt` — add `verificationToken`, `verificationTokenExpiresAt`, `emailVerified`
-- [ ] 1.4 Modify `entity/Customer.kt` — add matching JPA columns
-- [ ] 1.5 Modify `infrastructure/mapper/CustomerMapper.kt` — map new fields bidirectionally
-- [ ] 1.6 Modify `domain/model/User.kt` — add `customerId: Int?`
-- [ ] 1.7 Modify `entity/User.kt` — add `customer_id` column
-- [ ] 1.8 Modify `infrastructure/mapper/UserMapper.kt` — map `customerId`
-- [ ] 1.9 Modify `build.gradle.kts` — add `spring-boot-starter-mail` dependency
+- [x] 1.1 Write test: Verify Flyway migration applies cleanly to H2
+- [x] 1.2 Create `db/migration/V2__auth_multi_tenant.sql` (add verification columns to customers, customerId to users)
+- [x] 1.3 Modify `domain/model/Customer.kt` — add `verificationToken`, `verificationTokenExpiresAt`, `emailVerified`
+- [x] 1.4 Modify `entity/Customer.kt` — add matching JPA columns
+- [x] 1.5 Modify `infrastructure/mapper/CustomerMapper.kt` — map new fields bidirectionally
+- [x] 1.6 Modify `domain/model/User.kt` — add `customerId: Int?`
+- [x] 1.7 Modify `entity/User.kt` — add `customer_id` column
+- [x] 1.8 Modify `infrastructure/mapper/UserMapper.kt` — map `customerId`
+- [x] 1.9 Modify `build.gradle.kts` — add `spring-boot-starter-mail` dependency
 - [ ] 1.10 Modify `application.yml` — add Gmail SMTP config
-- [ ] 1.11 Create `domain/port/EmailSenderPort.kt` — hexagonal interface for email sending
+- [x] 1.11 Create `domain/port/EmailSenderPort.kt` — hexagonal interface for email sending
 
 ## Phase 2: Security & JWT
 
@@ -52,25 +52,25 @@ Chain strategy: size-exception
 
 ## Phase 3: User Repository Extensions
 
-- [ ] 3.1 Modify `domain/port/UserRepositoryPort.kt` — add `findByCustomerId(customerId: Int): List<User>`
-- [ ] 3.2 Modify `repository/UserRepository.kt` — add Spring Data method `findByCustomerId`
-- [ ] 3.3 Modify `infrastructure/adapter/UserJpaAdapter.kt` — implement `findByCustomerId`
-- [ ] 3.4 Write test: `ManageUserUseCase.findByCustomerId()` returns only tenant users
-- [ ] 3.5 Modify `application/usecase/ManageUserUseCase.kt` — add `findByCustomerId` method
+- [x] 3.1 Modify `domain/port/UserRepositoryPort.kt` — add `findByCustomerId(customerId: Int): List<User>`
+- [x] 3.2 Modify `repository/UserRepository.kt` — add Spring Data method `findByCustomerId`
+- [x] 3.3 Modify `infrastructure/adapter/UserJpaAdapter.kt` — implement `findByCustomerId`
+- [x] 3.4 Write test: `ManageUserUseCase.findByCustomerId()` returns only tenant users
+- [x] 3.5 Modify `application/usecase/ManageUserUseCase.kt` — add `findByCustomerId` method
 
 ## Phase 4: Core Use Cases (TDD: RED→GREEN)
 
 ### RegisterCustomerUseCase
-- [ ] 4.1 Write test: Valid registration creates pending Customer with hashed password + verification token
-- [ ] 4.2 Write test: Duplicate email returns 409 Conflict
-- [ ] 4.3 Write test: Missing fields returns 400 Bad Request
-- [ ] 4.4 Create `application/usecase/RegisterCustomerUseCase.kt` — implement all scenarios
+- [x] 4.1 Write test: Valid registration creates pending Customer with hashed password + verification token
+- [x] 4.2 Write test: Duplicate email returns 409 Conflict
+- [x] 4.3 Write test: Missing fields returns 400 Bad Request
+- [x] 4.4 Create `application/usecase/RegisterCustomerUseCase.kt` — implement all scenarios
 
 ### VerifyEmailUseCase
-- [ ] 4.5 Write test: Valid token activates Customer (`isActive=true`)
-- [ ] 4.6 Write test: Expired token (>24h) returns 410 Gone
-- [ ] 4.7 Write test: Invalid token returns 404 Not Found
-- [ ] 4.8 Create `application/usecase/VerifyEmailUseCase.kt` — implement all scenarios
+- [x] 4.5 Write test: Valid token activates Customer (`isActive=true`)
+- [x] 4.6 Write test: Expired token (>24h) returns 410 Gone
+- [x] 4.7 Write test: Invalid token returns 404 Not Found
+- [x] 4.8 Create `application/usecase/VerifyCustomerUseCase.kt` — implement all scenarios
 
 ### LoginUseCase
 - [x] 4.9 Write test: Active Customer with valid credentials returns JWT with `principalType=customer`
@@ -85,7 +85,7 @@ Chain strategy: size-exception
 - [x] 5.1 Create `infrastructure/adapter/EmailSenderService.kt` — implement `EmailSenderPort` using `JavaMailSender` (log mode fallback)
 - [x] 5.2 Write integration test: `POST /api/v1/auth/register` → `GET /api/v1/auth/verify` → `POST /api/v1/auth/login` full flow
 - [x] 5.3 Create `controller/AuthController.kt` — register, verify, login endpoints
-- [ ] 5.4 Write test: `GET /api/v1/auth/users` returns only users with `customerId` from JWT
-- [ ] 5.5 Write test: `POST /api/v1/auth/users` auto-sets `customerId` from JWT
-- [ ] 5.6 Write test: Non-Customer principal (User) gets 403 for User CRUD
-- [ ] 5.7 Modify `controller/UserController.kt` — add auth check, scope all CRUD by JWT `customerId`
+- [x] 5.4 Write test: `GET /api/v1/auth/users` returns only users with `customerId` from JWT
+- [x] 5.5 Write test: `POST /api/v1/auth/users` auto-sets `customerId` from JWT
+- [x] 5.6 Write test: Non-Customer principal (User) gets 403 for User CRUD
+- [x] 5.7 Modify `controller/UserController.kt` — add auth check, scope all CRUD by JWT `customerId`

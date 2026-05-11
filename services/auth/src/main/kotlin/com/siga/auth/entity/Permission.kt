@@ -8,7 +8,7 @@ import java.util.UUID
 @Table(name = "permissions", schema = "auth")
 class Permission(
     @Id
-    val id: UUID? = null,
+    var id: UUID? = null,
 
     @Column(nullable = false, unique = true, length = 50)
     var code: String,

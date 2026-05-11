@@ -199,6 +199,34 @@ class ManageUserUseCaseTest {
     }
 
     @Test
+    fun `findByCustomerId returns only users for given customer`() {
+        val customerId = 1
+        val tenantUsers = listOf(
+            User(id = UUID.randomUUID(), email = "u1@test.com", passwordHash = "h", firstName = "U1", role = UserRole.OPERATOR, customerId = customerId),
+            User(id = UUID.randomUUID(), email = "u2@test.com", passwordHash = "h", firstName = "U2", role = UserRole.CASHIER, customerId = customerId)
+        )
+
+        `when`(userRepositoryPort.findByCustomerId(customerId)).thenReturn(tenantUsers)
+
+        val result = useCase.findByCustomerId(customerId)
+
+        assertEquals(tenantUsers, result)
+        verify(userRepositoryPort, times(1)).findByCustomerId(customerId)
+    }
+
+    @Test
+    fun `findByCustomerId returns empty list for customer with no users`() {
+        val customerId = 99
+
+        `when`(userRepositoryPort.findByCustomerId(customerId)).thenReturn(emptyList())
+
+        val result = useCase.findByCustomerId(customerId)
+
+        assertTrue(result.isEmpty())
+        verify(userRepositoryPort, times(1)).findByCustomerId(customerId)
+    }
+
+    @Test
     fun `findByEmail delegates to port`() {
         val email = "delegate@test.com"
         val user = User(

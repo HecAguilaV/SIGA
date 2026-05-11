@@ -25,12 +25,20 @@ class UserJpaAdapter(
         return UserMapper.toDomain(entity)
     }
 
+    override fun findByCustomerId(customerId: Int): List<User> {
+        return userRepository.findByCustomerId(customerId).map { UserMapper.toDomain(it) }
+    }
+
     override fun existsByEmail(email: String): Boolean = userRepository.existsByEmail(email)
 
     override fun findAll(): List<User> = userRepository.findAll().map { UserMapper.toDomain(it) }
 
     override fun save(user: User): User {
         val entity = UserMapper.toEntity(user)
+        // Auto-generate UUID when id is null (used by ManageUserUseCase.create())
+        if (entity.id == null) {
+            entity.id = UUID.randomUUID()
+        }
         val saved = userRepository.save(entity)
         return UserMapper.toDomain(saved)
     }

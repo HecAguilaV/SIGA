@@ -24,6 +24,7 @@ object UserMapper {
                 EntityUserRole.CASHIER -> DomainUserRole.CASHIER
             },
             commercialUserId = entity.commercialUserId,
+            customerId = entity.customerId,
             isActive = entity.isActive,
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
@@ -43,6 +44,7 @@ object UserMapper {
                 DomainUserRole.CASHIER -> EntityUserRole.CASHIER
             },
             commercialUserId = domain.commercialUserId,
+            customerId = domain.customerId,
             isActive = domain.isActive,
             createdAt = domain.createdAt,
             updatedAt = domain.updatedAt

@@ -20,6 +20,8 @@ class ManageUserUseCase(
 
     fun findAll(): List<User> = userRepositoryPort.findAll()
 
+    fun findByCustomerId(customerId: Int): List<User> = userRepositoryPort.findByCustomerId(customerId)
+
     fun create(user: User): User {
         require(user.email.isNotBlank()) { "Email must not be blank" }
         require(user.passwordHash.isNotBlank()) { "Password hash must not be blank" }

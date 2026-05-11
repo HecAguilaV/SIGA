@@ -9,6 +9,7 @@ import java.util.UUID
 interface UserRepositoryPort {
     fun findById(id: UUID): User?
     fun findByEmail(email: String): User?
+    fun findByCustomerId(customerId: Int): List<User>
     fun existsByEmail(email: String): Boolean
     fun findAll(): List<User>
     fun save(user: User): User
