@@ -164,4 +164,128 @@ class AuthRegistrationIntegrationTest @Autowired constructor(
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").isArray)
     }
+
+    @Test
+    fun `register then verify then login full flow`() {
+        val email = "full_flow_${UUID.randomUUID()}@test.com"
+        val password = "Pass123!"
+
+        // Step 1: Register
+        mockMvc.perform(
+            post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"email": "$email", "password": "$password", "name": "Full Flow", "companyName": "Flow Corp"}
+                """.trimIndent())
+        )
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.status").value("pending"))
+
+        // Step 2: Get the verification token from database
+        val customer = customerRepositoryPort.findByEmail(email)!!
+        val token = customer.verificationToken
+        assertNotNull(token)
+        assertFalse(customer.isActive)
+        assertFalse(customer.emailVerified)
+
+        // Step 3: Verify email
+        mockMvc.perform(
+            get("/api/v1/auth/verify")
+                .param("token", token!!)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.status").value("verified"))
+
+        // Step 4: Verify customer is now active
+        val verified = customerRepositoryPort.findByEmail(email)
+        assertNotNull(verified)
+        assertTrue(verified!!.isActive)
+        assertTrue(verified.emailVerified)
+        assertNull(verified.verificationToken)
+        assertNull(verified.verificationTokenExpiresAt)
+
+        // Step 5: Login with valid credentials
+        mockMvc.perform(
+            post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"email": "$email", "password": "$password"}""")
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.token").exists())
+            .andExpect(jsonPath("$.email").value(email))
+            .andExpect(jsonPath("$.principalType").value("customer"))
+            .andExpect(jsonPath("$.tenantId").exists())
+            .andExpect(jsonPath("$.role").value("customer"))
+    }
+
+    @Test
+    fun `login with wrong password after verification returns 401`() {
+        val email = "wrong_pass_${UUID.randomUUID()}@test.com"
+        val password = "CorrectPass123!"
+
+        // Register
+        mockMvc.perform(
+            post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"email": "$email", "password": "$password", "name": "Wrong Pass", "companyName": "Test"}
+                """.trimIndent())
+        )
+            .andExpect(status().isCreated)
+
+        // Verify email first to activate the customer
+        val customer = customerRepositoryPort.findByEmail(email)!!
+        val token = customer.verificationToken
+        assertNotNull(token)
+        mockMvc.perform(
+            get("/api/v1/auth/verify")
+                .param("token", token!!)
+        )
+            .andExpect(status().isOk)
+
+        // Try login with wrong password on active account
+        mockMvc.perform(
+            post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"email": "$email", "password": "WrongPass456!"}""")
+        )
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.error").value("Invalid credentials"))
+    }
+
+    @Test
+    fun `login with non-existent email returns 401`() {
+        mockMvc.perform(
+            post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"email": "nonexistent_${UUID.randomUUID()}@test.com", "password": "anyPassword"}""")
+        )
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.error").value("Invalid credentials"))
+    }
+
+    @Test
+    fun `login with unverified customer returns 403`() {
+        val email = "unverified_${UUID.randomUUID()}@test.com"
+        val password = "Pass123!"
+
+        // Register (creates inactive customer)
+        mockMvc.perform(
+            post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"email": "$email", "password": "$password", "name": "Unverified", "companyName": "Test"}
+                """.trimIndent())
+        )
+            .andExpect(status().isCreated)
+
+        // Try login without verifying
+        mockMvc.perform(
+            post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"email": "$email", "password": "$password"}""")
+        )
+            .andExpect(status().isForbidden)
+            .andExpect(jsonPath("$.error").value("Account is not active"))
+    }
 }
