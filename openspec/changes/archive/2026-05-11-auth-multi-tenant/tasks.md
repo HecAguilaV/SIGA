@@ -35,7 +35,7 @@ Chain strategy: size-exception
 - [x] 1.7 Modify `entity/User.kt` — add `customer_id` column
 - [x] 1.8 Modify `infrastructure/mapper/UserMapper.kt` — map `customerId`
 - [x] 1.9 Modify `build.gradle.kts` — add `spring-boot-starter-mail` dependency
-- [ ] 1.10 Modify `application.yml` — add Gmail SMTP config
+- [x] 1.10 Create `application-prod.yml` — add Gmail SMTP config (profile: prod)
 - [x] 1.11 Create `domain/port/EmailSenderPort.kt` — hexagonal interface for email sending
 
 ## Phase 2: Security & JWT
