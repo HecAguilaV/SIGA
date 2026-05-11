@@ -23,7 +23,8 @@ async def lifespan(app: FastAPI):
     await eureka_client.init_async(
         eureka_server=EUREKA_SERVER,
         app_name="siga-agent",
-        instance_port=APP_PORT
+        instance_port=APP_PORT,
+        instance_host="siga-agent"
     )
     # Initialize PGVector Database
     await db.connect()

@@ -57,6 +57,8 @@ spring:
             - Path=/api/agent/**
 
 eureka:
+  instance:
+    hostname: siga-gateway
   client:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://siga-eureka:8761/eureka/}
