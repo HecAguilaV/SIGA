@@ -1,6 +1,6 @@
 # Estado del Ecosistema SIGA (Brain Sync)
 
-Este documento refleja la realidad técnica y el progreso de la migración al **29 de abril de 2026**.
+Este documento refleja la realidad técnica y el progreso de la migración al **11 de mayo de 2026**.
 
 ## 1. Mapa de Servicios y Puertos
 
@@ -8,7 +8,7 @@ Este documento refleja la realidad técnica y el progreso de la migración al **
 | :--- | :--- | :--- | :--- | :--- |
 | `siga-eureka` | 8761 | — | ✅ Estable | Service Registry operando. |
 | `siga-gateway` | 8080 | — | ✅ Estable | Ruteo, JWT y CORS funcional. |
-| `siga-auth` | 8081 | `siga_auth` | ✅ Estable | Usuarios, roles y permisos. |
+| `siga-auth` | 8081 | `siga_auth` | ✅ Estable | Autenticación completa: register, verify, login dual (Customer+User), JWT, CRUD multi-tenant — 126 tests. |
 | `siga-inventory` | 8082 | `siga_inventario` | ✅ Estable | Corazón del stock multi-tenant. |
 | `siga-sales` | 8083 | `siga_ventas` | ✅ Estable | POS y transacciones. |
 | `siga-billing` | 8084 | `siga_comercial` | 🔄 En desarrollo | Gestión comercial y pagos. |
@@ -26,11 +26,12 @@ Este documento refleja la realidad técnica y el progreso de la migración al **
 
 ## 3. Próximos Pasos Estratégicos
 
+*   ✅ **Autenticación Multi-Tenant Completa**: Register, verify, login dual (Customer+User), JWT, y CRUD de usuarios con alcance por tenant — 126 tests, 0 fallos.
 *   **Integración A2UI**: Conectar la interfaz de chat con las herramientas CRUD del backend.
 *   **Permisos Dinámicos**: Implementar la lógica para que los dueños de Pyme autogestionen permisos.
 *   **Documentación MDX**: Activar el Technical Room interactivo.
 
 ---
-*Actualizado: 29 de abril de 2026*
+*Actualizado: 11 de mayo de 2026*
 Héctor Aguila
 `> Un Soñador con Poca RAM 👨🏻‍💻`

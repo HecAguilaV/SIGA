@@ -1,6 +1,6 @@
 # Estado de la Arquitectura - SIGA
 
-**Última Actualización:** 2026-05-08
+**Última Actualización:** 2026-05-11
 **Estado:** Hexagonal Completo (100% microservicios migrados)
 
 ## 1. Modelo de Despliegue
@@ -57,7 +57,7 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 ### Cobertura por Servicio (Mayo 2026)
 | Servicio | Tests Unitarios | Tests Adaptadores | Tests Integración HTTP | Total |
 |----------|----------------|-------------------|----------------------|-------|
-| auth     | 19             | 29                | 13                   | 61    |
+| auth     | 59             | 29                | 38                   | 126   |
 | billing  | 7              | 22                | 4                    | 33    |
 | inventory| 12             | 25                | 10                   | 47    |
 | sales    | 30             | 55                | 18                   | 103   |
@@ -67,6 +67,7 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 - **MockMvc** para tests de integración HTTP
 - **Embedded Kafka** para tests de eventos SAGA
 - **Flyway**: Activado en producción (`ddl-auto: validate`), deshabilitado en tests (H2 + `create-drop`)
+- **Auth**: Flujos completos de autenticación implementados: register, email verification, dual-principal login (Customer/User), JWT (generate+verify+filter), SecurityConfig (permitAll + JWT chain), tenant-scoped User CRUD — 126 tests, 0 failures. Jerarquía de tenants clara: Dueño ≠ User, Customer con control inherente, Users con permisos granulares.
 - **Convención**: Tests en cada servicio replican el patrón hexagonal: adapter tests → use case tests → integration tests
 
 ### Patrón de Commits

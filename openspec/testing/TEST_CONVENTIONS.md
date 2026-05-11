@@ -429,6 +429,43 @@ describe("Edge cases") {
 }
 ```
 
+### 5. UUID Auto-Generation Pattern
+
+> **Problema**: H2 no auto-genera UUIDs igual que PostgreSQL. Tests de adaptadores JPA fallan porque el UUID es `null` al persistir.
+
+> **Solución**: El adaptador genera el UUID antes de delegar al repositorio JPA. Esto mantiene el dominio puro (sin anotaciones JPA) y los tests verdes en H2.
+
+```kotlin
+class UserJpaAdapter(
+    private val userJpaRepository: UserJpaRepository,
+    private val userMapper: UserMapper
+) : UserPort {
+
+    override fun save(user: User): User {
+        val entity = userMapper.toEntity(user)
+
+        // ⚠️ H2 no auto-genera UUID como PostgreSQL.
+        //    El adaptador se encarga de la generación antes de persistir.
+        if (entity.id == null) {
+            entity.id = UUID.randomUUID()
+        }
+
+        val saved = userJpaRepository.save(entity)
+        return userMapper.toDomain(saved)
+    }
+
+    override fun findById(id: UUID): User? {
+        return userJpaRepository.findById(id)
+            .map { userMapper.toDomain(it) }
+            .orElse(null)
+    }
+}
+```
+
+**Por qué funciona**: El dominio nunca depende de cómo se generan los IDs. El adaptador es el punto único donde se resuelve la diferencia entre H2 (tests) y PostgreSQL (producción). Si en el futuro cambias la estrategia de generación de UUID, solo tocas el adaptador.
+
+**Cuándo usarlo**: Siempre que uses UUIDs como identificadores en una entidad hexagonal con tests de adaptadores contra H2.
+
 ---
 
 ## Testing en Kotlin
