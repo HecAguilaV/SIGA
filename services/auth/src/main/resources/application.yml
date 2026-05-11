@@ -21,6 +21,8 @@ spring:
         default_schema: auth
 
 eureka:
+  instance:
+    hostname: siga-auth
   client:
     service-url:
       defaultZone: ${EUREKA_URL:-http://localhost:8761/eureka/}
