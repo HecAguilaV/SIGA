@@ -39,15 +39,28 @@ class JwtAuthFilter(
             val decoded = jwtService.verify(token)
             val email = decoded.subject
             val role = decoded.getClaim("rol").asString()
+            val principalType = decoded.getClaim("principalType").asString() ?: ""
 
             val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
+
+            // Store JWT claims in authentication details for controller access
+            val details = mutableMapOf<String, Any?>()
+            details["email"] = email ?: ""
+            details["rol"] = role ?: ""
+            details["principalType"] = principalType
+            val tenantIdClaim = decoded.getClaim("tenantId")
+            if (!tenantIdClaim.isMissing) {
+                details["tenantId"] = tenantIdClaim.asInt()
+            }
+
             val authentication = UsernamePasswordAuthenticationToken(
                 email,
                 null,
                 authorities
-            )
+            ).apply { this.details = details }
+
             SecurityContextHolder.getContext().authentication = authentication
-            log.debug("Authenticated user: $email with role: $role")
+            log.debug("Authenticated user: $email with role: $role, principalType: $principalType")
         } catch (e: Exception) {
             log.debug("Failed to validate JWT token: ${e.message}")
             SecurityContextHolder.clearContext()

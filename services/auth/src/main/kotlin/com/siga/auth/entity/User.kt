@@ -29,6 +29,9 @@ class User(
     @Column(name = "commercial_user_id")
     val commercialUserId: Int? = null,
 
+    @Column(name = "customer_id")
+    var customerId: Int? = null,
+
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean = true,
 

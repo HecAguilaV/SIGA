@@ -15,6 +15,7 @@ data class User(
     val lastName: String? = null,
     val role: UserRole,
     val commercialUserId: Int? = null,
+    val customerId: Int? = null,
     val isActive: Boolean = true,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
