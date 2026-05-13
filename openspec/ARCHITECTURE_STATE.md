@@ -1,6 +1,6 @@
 # Estado de la Arquitectura - SIGA
 
-**Última Actualización:** 2026-05-11
+**Última Actualización:** 2026-05-12
 **Estado:** Hexagonal Completo (100% microservicios migrados)
 
 ## 1. Modelo de Despliegue
@@ -35,9 +35,9 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 
 ## 3. Infraestructura
 *   **Service Discovery**: Netflix Eureka.
-*   **API Gateway**: Spring Cloud Gateway.
+*   **API Gateway**: Spring Cloud Gateway con RewritePath (mapeo `/api/*` → `/api/v1/*`), Eureka discovery locator deshabilitado.
 *   **Event Broker**: **Apache Kafka** (Local) / **GCP Pub/Sub** (Cloud).
-*   **Contenerización**: Docker Compose con inicialización automatizada (`init-db.sh`).
+*   **Contenerización**: Docker Compose con inicialización automatizada (`init-db.sh` crea schemas + usuarios; Flyway gestiona el DDL como única fuente de verdad).
 
 ## 4. Patrones de Comunicación
 *   **Sincrónico**: REST API vía Gateway para operaciones de lectura y comandos críticos.
@@ -66,8 +66,8 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 - **H2** para tests de adaptadores y persistencia (rápido, sin Docker)
 - **MockMvc** para tests de integración HTTP
 - **Embedded Kafka** para tests de eventos SAGA
-- **Flyway**: Activado en producción (`ddl-auto: validate`), deshabilitado en tests (H2 + `create-drop`)
-- **Auth**: Flujos completos de autenticación implementados: register, email verification, dual-principal login (Customer/User), JWT (generate+verify+filter), SecurityConfig (permitAll + JWT chain), tenant-scoped User CRUD — 126 tests, 0 failures. Jerarquía de tenants clara: Dueño ≠ User, Customer con control inherente, Users con permisos granulares.
+- **Flyway**: Activado en producción (`ddl-auto: validate`), deshabilitado en tests (H2 + `create-drop`). V1 migrations son responsables de crear schemas (`CREATE SCHEMA IF NOT EXISTS`) y usar `schema.table` explícito.
+- **Auth**: Flujos completos de autenticación implementados: register, email verification, dual-principal login (Customer/User), JWT (generate+verify+filter + @PostConstruct validateSecret), SecurityConfig (permitAll + JWT chain), tenant-scoped User CRUD — 131 tests, 0 failures. Jerarquía de tenants clara: Dueño ≠ User, Customer con control inherente, Users con permisos granulares.
 - **Convención**: Tests en cada servicio replican el patrón hexagonal: adapter tests → use case tests → integration tests
 
 ### Patrón de Commits

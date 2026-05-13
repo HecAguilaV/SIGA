@@ -253,7 +253,7 @@ Costo operativo. En un VPS de desarrollo, tener 5 servidores de BD consume mucha
 - Su propio usuario de base de datos
 - Su propio esquema dentro de esa base de datos
 
-El script `init-db.sh` en `scripts/db-init/` es el que orquesta esta creación al levantar el contenedor. Cuando el proyecto crezca y tengamos presupuesto, migramos a instancias de base de datos independientes por servicio.
+El script `init-db.sh` crea los schemas y usuarios al levantar el contenedor, pero **Flyway es la única fuente de verdad para el DDL** (las migraciones V1 crean schemas con `CREATE SCHEMA IF NOT EXISTS` y usan `schema.table` explícito). Cuando el proyecto crezca y tengamos presupuesto, migramos a instancias de base de datos independientes por servicio.
 
 **¿Por qué Docker y no desplegar nativo?**
 
