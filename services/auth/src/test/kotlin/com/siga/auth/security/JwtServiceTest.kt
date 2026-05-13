@@ -142,4 +142,52 @@ class JwtServiceTest {
         assertEquals("customer", claims["principalType"])
         assertNull(claims["tenantId"])
     }
+
+    // Tests for validateSecret() @PostConstruct validation
+    @Test
+    fun `validateSecret passes for valid secure secret`() {
+        val validSecret = "my-valid-256bit-secret-key-that-is-really-long-and-secure-1234567890"
+        val service = JwtService(validSecret)
+        // Should not throw
+        service.validateSecret()
+    }
+
+    @Test
+    fun `validateSecret throws for blank secret`() {
+        val blankService = JwtService("")
+        val exception = assertThrows<IllegalArgumentException> {
+            blankService.validateSecret()
+        }
+        assertTrue(exception.message?.contains("must not be empty") == true)
+    }
+
+    @Test
+    fun `validateSecret throws for super-secret-key placeholder`() {
+        val insecureService = JwtService("super-secret-key-too-long-to-be-secure")
+        val exception = assertThrows<IllegalArgumentException> {
+            insecureService.validateSecret()
+        }
+        assertTrue(exception.message?.contains("super-secret-key") == true ||
+                   exception.message?.contains("insecure placeholder") == true)
+    }
+
+    @Test
+    fun `validateSecret throws for default-secret-key placeholder`() {
+        val insecureService = JwtService("default-secret-key-too-long-to-be-secure-probably-123456")
+        val exception = assertThrows<IllegalArgumentException> {
+            insecureService.validateSecret()
+        }
+        assertTrue(exception.message?.contains("default-secret-key") == true ||
+                   exception.message?.contains("insecure placeholder") == true)
+    }
+
+    @Test
+    fun `validateSecret throws for changeme placeholder`() {
+        val insecureService = JwtService("changeme")
+        val exception = assertThrows<IllegalArgumentException> {
+            insecureService.validateSecret()
+        }
+        assertTrue(exception.message?.contains("changeme") == true ||
+                   exception.message?.contains("insecure placeholder") == true)
+    }
 }

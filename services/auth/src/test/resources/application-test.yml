@@ -17,3 +17,6 @@ spring:
 eureka:
   client:
     enabled: false
+
+jwt:
+  secret: test-secret-key-for-unit-testing-purposes-only-12345-abcdef

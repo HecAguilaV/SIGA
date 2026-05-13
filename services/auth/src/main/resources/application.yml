@@ -28,4 +28,4 @@ eureka:
       defaultZone: ${EUREKA_URL:-http://localhost:8761/eureka/}
 
 jwt:
-  secret: ${JWT_SECRET:-super-secret-key-too-long-to-be-secure-enough-probably-123456}
+  secret: ${JWT_SECRET}
