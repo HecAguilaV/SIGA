@@ -1,10 +1,13 @@
 -- SIGA - AI Agent Service Initialization (Flyway V1)
 -- Fragmented from monolithic script - 2026-04-30
 
+CREATE SCHEMA IF NOT EXISTS agent;
+SET search_path TO agent;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "vector"; -- Essential for semantic search
 
-CREATE TABLE IF NOT EXISTS conversations (
+CREATE TABLE IF NOT EXISTS agent.conversations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tenant_id UUID NOT NULL, -- Logical reference to Auth Tenant
     user_id UUID NOT NULL, -- Logical reference to Auth User
@@ -15,7 +18,7 @@ CREATE TABLE IF NOT EXISTS conversations (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS documents (
+CREATE TABLE IF NOT EXISTS agent.documents (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
@@ -25,7 +28,7 @@ CREATE TABLE IF NOT EXISTS documents (
     indexed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS intent_logs (
+CREATE TABLE IF NOT EXISTS agent.intent_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tenant_id UUID NOT NULL,
     user_id UUID NOT NULL,
@@ -36,7 +39,7 @@ CREATE TABLE IF NOT EXISTS intent_logs (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS intent_permissions (
+CREATE TABLE IF NOT EXISTS agent.intent_permissions (
     id SERIAL PRIMARY KEY,
     plan_name VARCHAR(20) NOT NULL,
     intent VARCHAR(50) NOT NULL,
@@ -45,7 +48,7 @@ CREATE TABLE IF NOT EXISTS intent_permissions (
     CONSTRAINT uq_intent_plan UNIQUE (plan_name, intent)
 );
 
-CREATE TABLE IF NOT EXISTS pending_actions (
+CREATE TABLE IF NOT EXISTS agent.pending_actions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tenant_id UUID NOT NULL,
     user_id UUID NOT NULL,
