@@ -1,22 +1,17 @@
-# ⛔️ [DEPRECADO] SIGA Landing
+# Landing — SIGA
 
-> **Este frontend queda oficialmente deprecado desde el 12/05/2026.**
-> El stack frontend unificado de SIGA es **SvelteKit 5**.
-> Este código se mantiene como referencia histórica únicamente.
+**Estado**: Por hacer 📋
+**Stack**: SvelteKit 5 + TypeScript + pnpm (build estático con `adapter-static`)
+**Para quién**: Público general
+**Propósito**: Página de marketing — presentar SIGA, precios, contacto
 
-*Read this in other languages: [![English](README.en.md)](README.en.md)*
+## Funcionalidades pendientes
+- Hero section con propuesta de valor
+- Precios y planes
+- Características y beneficios
+- Formulario de contacto
+- SEO y Open Graph
 
-Página de aterrizaje pública para la plataforma SaaS SIGA.
-
-## Estado: Scaffold
-
-Este servicio está planificado pero aún no implementado. Consulta los docs de arquitectura para la estrategia frontend.
-
-## Stack Tecnológico (Planificado)
-
-- Framework: SvelteKit / Astro (TBD)
-- Propósito: Marketing, precios, flujo de registro
-
----
-Héctor Aguila
-`> Un Soñador con Poca RAM 👨🏻‍💻`
+## Stack compartido
+- `packages/ui-kit` — design system (solo tokens CSS + componentes atómicos)
+- Build estático para máximo rendimiento

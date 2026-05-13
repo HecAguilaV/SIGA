@@ -1,10 +1,9 @@
-# ⛔️ [DEPRECADO] SIGA Mobile
+# Mobile — SIGA
 
-> **Este frontend queda oficialmente deprecado desde el 12/05/2026.**
-> El stack frontend unificado de SIGA es **SvelteKit 5** (adaptable a mobile con Capacitor/Tauri).
-> Este directorio contiene solo artifacts pre-built mantenidos como referencia histórica.
+**Estado**: Terminado ✅
+**Stack**: (app nativa)
+**Para quién**: Operadores de terreno
+**Propósito**: App móvil para operaciones en terreno
 
----
-
-Héctor Aguila
-`> Un Soñador con Poca RAM 👨🏻‍💻`
+> ⚠️ **NO TOCAR**. Esta app está terminada y en producción.
+> No forma parte del nuevo ecosistema SvelteKit.
