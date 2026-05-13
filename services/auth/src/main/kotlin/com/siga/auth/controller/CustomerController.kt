@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
  * Now uses ManageCustomerUseCase (hexagonal) instead of directly injecting CustomerRepository.
  */
 @RestController
-@RequestMapping("/api/auth/customers")
+@RequestMapping("/api/v1/auth/customers")
 class CustomerController(
     private val manageCustomerUseCase: ManageCustomerUseCase
 ) {

@@ -72,8 +72,8 @@ class SecurityConfigIntegrationTest @Autowired constructor(
 
     @Test
     fun `existing customer endpoint is accessible without authentication`() {
-        // /api/auth/customers/** is in permitAll for backward compatibility
-        mockMvc.perform(get("/api/auth/customers"))
+        // /api/v1/auth/customers/** is accessible without auth
+        mockMvc.perform(get("/api/v1/auth/customers"))
             .andExpect(status().isOk)
     }
 

@@ -139,7 +139,7 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
             .andExpect(status().isNotFound)
     }
 
-    // ===== Customer Endpoints (/api/auth/customers) =====
+    // ===== Customer Endpoints (/api/v1/auth/customers) =====
 
     @Test
     fun `POST api auth customers creates a customer and returns 200`() {
@@ -156,7 +156,7 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
         val requestJson = objectMapper.writeValueAsString(customer)
 
         mockMvc.perform(
-            post("/api/auth/customers")
+            post("/api/v1/auth/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson)
         )
@@ -179,12 +179,12 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
         )
         val createJson = objectMapper.writeValueAsString(customer)
         mockMvc.perform(
-            post("/api/auth/customers")
+            post("/api/v1/auth/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createJson)
         ).andExpect(status().isOk)
 
-        mockMvc.perform(get("/api/auth/customers"))
+        mockMvc.perform(get("/api/v1/auth/customers"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").isArray)
     }
@@ -203,7 +203,7 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
         val createJson = objectMapper.writeValueAsString(customerToCreate)
 
         val createResult = mockMvc.perform(
-            post("/api/auth/customers")
+            post("/api/v1/auth/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createJson)
         )
@@ -213,7 +213,7 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
         val createdCustomer = objectMapper.readTree(createResult.response.contentAsString)
         val customerId = createdCustomer.get("id").asInt()
 
-        mockMvc.perform(get("/api/auth/customers/{id}", customerId))
+        mockMvc.perform(get("/api/v1/auth/customers/{id}", customerId))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(customerId))
             .andExpect(jsonPath("$.name").value("CustomerGetById"))
@@ -222,7 +222,7 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
 
     @Test
     fun `GET api auth customers id returns 404 for non-existent id`() {
-        mockMvc.perform(get("/api/auth/customers/{id}", 999999))
+        mockMvc.perform(get("/api/v1/auth/customers/{id}", 999999))
             .andExpect(status().isNotFound)
     }
 
@@ -238,12 +238,12 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
         )
         val createJson = objectMapper.writeValueAsString(customer)
         mockMvc.perform(
-            post("/api/auth/customers")
+            post("/api/v1/auth/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createJson)
         ).andExpect(status().isOk)
 
-        mockMvc.perform(get("/api/auth/customers/email/{email}", email))
+        mockMvc.perform(get("/api/v1/auth/customers/email/{email}", email))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.email").value(email))
             .andExpect(jsonPath("$.name").value("CustGetByEmail"))

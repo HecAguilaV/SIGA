@@ -151,8 +151,8 @@ class AuthRegistrationIntegrationTest @Autowired constructor(
 
     @Test
     fun `existing customer endpoints remain accessible`() {
-        // Verify that the original CustomerController at /api/auth/customers still works
-        mockMvc.perform(get("/api/auth/customers"))
+        // Verify that CustomerController at /api/v1/auth/customers still works
+        mockMvc.perform(get("/api/v1/auth/customers"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").isArray)
     }
