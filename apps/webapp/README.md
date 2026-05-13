@@ -1,4 +1,8 @@
-# SIGA WebApp (Sistema Operativo)
+# ⏳ [LEGACY ACTIVO] SIGA WebApp (Sistema Operativo)
+
+> **Base para el nuevo frontend unificado (12/05/2026).**
+> Este código es la base SvelteKit sobre la que se construirá el nuevo frontend unificado de SIGA.
+> Se mantiene activo durante la transición hasta que el nuevo frontend lo reemplace.
 
 *Read this in other languages: [![English](README.en.md)](README.en.md)*
 
