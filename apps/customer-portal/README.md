@@ -1,4 +1,8 @@
-# SIGA - Portal Comercial
+# ⛔️ [DEPRECADO] SIGA - Portal Comercial
+
+> **Este frontend queda oficialmente deprecado desde el 12/05/2026.**
+> No se desarrollarán nuevas funcionalidades aquí. El stack frontend unificado de SIGA es **SvelteKit 5**.
+> Este código se mantiene como referencia histórica únicamente.
 
 *Read this in other languages: [![English](README.en.md)](README.en.md)*
 

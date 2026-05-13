@@ -13,12 +13,16 @@ El sistema ha completado su transición de Monolito Modular a una arquitectura d
 *   **siga-sales**: POS y facturación interna de la Pyme (Dominio Sales). ✅ Hexagonal
 *   **siga-agent**: Inteligencia Artificial y búsqueda vectorial (pgvector).
 
-### Frontends
-*   **landing**: Portal público de captación.
-*   **customer-portal**: Interfaz de gestión de cuenta y pagos para el dueño de la pyme.
-*   **admin-console**: (Backoffice) Herramienta interna para la administración de SIGA (Planes, métricas, soporte).
-*   **webapp**: Panel administrativo de la pyme.
-*   **mobile**: Aplicación de terreno.
+### Frontends — Legacy Deprecado
+> **Decisión (12/05/2026)**: Todos los frontends existentes en `apps/` son declarados **legacy deprecado**. El stack frontend unificado será **SvelteKit 5**, que funciona como BFF nativo (server-side data composition). La webapp SvelteKit existente (`apps/webapp`) es la base sobre la que se construirá el nuevo frontend unificado. Los demás (customer-portal React, landing, admin-portal, mobile) quedan congelados como referencia.
+
+| Frontend | Stack | Estado |
+|----------|-------|--------|
+| `apps/webapp` | SvelteKit 5 | ⏳ Legacy activo (base para el nuevo frontend) |
+| `apps/customer-portal` | React + Vite | 🧊 Legacy congelado — no desarrollar |
+| `apps/landing` | HTML estático | 🧊 Legacy congelado — no desarrollar |
+| `apps/admin-portal` | Vacío | 🧊 Legacy congelado — no desarrollar |
+| `apps/mobile` | Pre-built | 🧊 Legacy congelado — no desarrollar |
 
 ## 2. Estrategia de Persistencia
 Se aplica el principio de **Database per Service**. Cada microservicio es dueño absoluto de su base de datos.

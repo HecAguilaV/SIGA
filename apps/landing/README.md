@@ -1,4 +1,8 @@
-# SIGA Landing
+# ⛔️ [DEPRECADO] SIGA Landing
+
+> **Este frontend queda oficialmente deprecado desde el 12/05/2026.**
+> El stack frontend unificado de SIGA es **SvelteKit 5**.
+> Este código se mantiene como referencia histórica únicamente.
 
 *Read this in other languages: [![English](README.en.md)](README.en.md)*
 
