@@ -2,6 +2,8 @@
 -- Fragmented from monolithic script - 2026-04-30
 -- Updated: migrated SERIAL/INTEGER PKs and FKs to UUID to match domain models
 
+CREATE SCHEMA IF NOT EXISTS billing;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS billing.plans (
