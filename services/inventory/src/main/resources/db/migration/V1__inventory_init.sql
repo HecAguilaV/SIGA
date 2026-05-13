@@ -2,9 +2,12 @@
 -- Fragmented from monolithic script - 2026-04-30
 -- Updated: commercial_user_id INTEGER → UUID to match domain models, added processed_events
 
+CREATE SCHEMA IF NOT EXISTS inventory;
+SET search_path TO inventory;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS inventory.categories (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -14,7 +17,7 @@ CREATE TABLE IF NOT EXISTS categories (
     CONSTRAINT uq_categories_name_commercial UNIQUE (name, commercial_user_id)
 );
 
-CREATE TABLE IF NOT EXISTS stores (
+CREATE TABLE IF NOT EXISTS inventory.stores (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
     address TEXT,
@@ -24,7 +27,7 @@ CREATE TABLE IF NOT EXISTS stores (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS inventory.products (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -35,10 +38,10 @@ CREATE TABLE IF NOT EXISTS products (
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE SET NULL
+    CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES inventory.categories (id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS stock (
+CREATE TABLE IF NOT EXISTS inventory.stock (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     product_id UUID NOT NULL,
     store_id UUID NOT NULL,
@@ -46,11 +49,11 @@ CREATE TABLE IF NOT EXISTS stock (
     minimum_quantity INTEGER NOT NULL DEFAULT 0,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_stock_product_store UNIQUE (product_id, store_id),
-    CONSTRAINT fk_stock_product FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
-    CONSTRAINT fk_stock_store FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE CASCADE
+    CONSTRAINT fk_stock_product FOREIGN KEY (product_id) REFERENCES inventory.products (id) ON DELETE CASCADE,
+    CONSTRAINT fk_stock_store FOREIGN KEY (store_id) REFERENCES inventory.stores (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS movements (
+CREATE TABLE IF NOT EXISTS inventory.movements (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     product_id UUID NOT NULL,
     store_id UUID NOT NULL,
@@ -62,11 +65,11 @@ CREATE TABLE IF NOT EXISTS movements (
     sale_id UUID, -- Logical reference to Sales Transaction
     observations TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_movement_product FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
-    CONSTRAINT fk_movement_store FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE CASCADE
+    CONSTRAINT fk_movement_product FOREIGN KEY (product_id) REFERENCES inventory.products (id) ON DELETE CASCADE,
+    CONSTRAINT fk_movement_store FOREIGN KEY (store_id) REFERENCES inventory.stores (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS alerts (
+CREATE TABLE IF NOT EXISTS inventory.alerts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     type VARCHAR(30) NOT NULL,
     product_id UUID,
@@ -74,11 +77,11 @@ CREATE TABLE IF NOT EXISTS alerts (
     message TEXT NOT NULL,
     is_read BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_alert_product FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
-    CONSTRAINT fk_alert_store FOREIGN KEY (store_id) REFERENCES stores (id) ON DELETE CASCADE
+    CONSTRAINT fk_alert_product FOREIGN KEY (product_id) REFERENCES inventory.products (id) ON DELETE CASCADE,
+    CONSTRAINT fk_alert_store FOREIGN KEY (store_id) REFERENCES inventory.stores (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS processed_events (
+CREATE TABLE IF NOT EXISTS inventory.processed_events (
     event_id UUID PRIMARY KEY,
     event_type VARCHAR(50) NOT NULL,
     processed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP

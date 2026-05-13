@@ -8,13 +8,14 @@ set -e
 # CRITICAL: Schema names MUST match @Table(schema = "...") in Kotlin code.
 # ==============================================================================
 
-# Function to initialize a database, user, and schema, and execute its init SQL
+# Function to initialize a database, user, and schema (DDL handled by Flyway)
 init_service_db() {
     local db_name=$1
     local user_name=$2
     local user_pass=$3
     local schema_name=$4
-    local sql_file="/docker-entrypoint-initdb.d/sql/${schema_name}_v1_init.sql"
+    # DDL SQL file path: /docker-entrypoint-initdb.d/sql/${schema_name}_v1_init.sql
+    # Not executed here anymore — Flyway migrations own all DDL.
 
     echo "  - Creating DB: $db_name, User: $user_name, Schema: $schema_name"
     
@@ -24,19 +25,18 @@ init_service_db() {
         GRANT ALL PRIVILEGES ON DATABASE $db_name TO $user_name;
 EOSQL
 
-    # Initialize Schema and Tables
+    # Initialize Schema (Flyway manages DDL now - see V1 migrations)
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db_name" <<-EOSQL
         CREATE SCHEMA IF NOT EXISTS $schema_name AUTHORIZATION $user_name;
         ALTER USER $user_name SET search_path TO $schema_name, public;
 EOSQL
 
-    # Execute SQL Init File if it exists
-    if [ -f "$sql_file" ]; then
-        echo "    * Executing init script: $sql_file"
-        psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db_name" -f "$sql_file"
-    else
-        echo "    ! No init script found at: $sql_file (skipping table creation)"
-    fi
+    # NOTA: La ejecución de DDL (CREATE TABLE, etc.) ya no se hace aquí.
+    # Flyway gestiona todo el esquema a través de las migraciones V1__*.sql.
+    #
+    # SQL file path kept for reference only (Flyway handles DDL now):
+    # local sql_file="/docker-entrypoint-initdb.d/sql/${schema_name}_v1_init.sql"
+    # if [ -f "$sql_file" ]; then ...
 }
 
 # 1. Auth Service
