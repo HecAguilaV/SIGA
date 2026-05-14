@@ -59,10 +59,9 @@
 		</div>
 	{/snippet}
 
-	{#snippet content()}
+	{#snippet children()}
 		<form
 			method="POST"
-			action="?/login"
 			use:enhance={() => {
 				submitting = true;
 				return async ({ update }) => {

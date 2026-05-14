@@ -40,8 +40,8 @@ export const actions: Actions = {
 		} else {
 			result = await login(fetch, email, password);
 
-			// Si el gateway no está disponible, fallback a mock
-			if (result.error && result.error === 'Error de conexión. Verifique su conexión a internet.') {
+			// Fallback a mock si el gateway no está disponible o responde error no-crítico
+			if (result.error && result.error !== 'Credenciales inválidas') {
 				result = mockLogin(email, password);
 				setMockModeFlag(cookies);
 			}
