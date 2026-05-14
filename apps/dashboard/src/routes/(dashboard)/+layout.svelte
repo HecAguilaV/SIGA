@@ -2,12 +2,16 @@
 	import '../../app.css';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import Header from '$lib/components/layout/Header.svelte';
+	import ContextualAssistant from '$lib/components/a2ui/ContextualAssistant.svelte';
+	import { page } from '$app/stores';
 	import type { LayoutData } from './$types';
 
 	let { children, data }: {
 		children?: import('svelte').Snippet;
 		data: LayoutData;
 	} = $props();
+
+	const currentRoute = $derived($page.url.pathname);
 </script>
 
 <svelte:head>
@@ -25,7 +29,10 @@
 </div>
 
 {#if data.user}
-	<!-- ContextualAssistant placeholder — will be implemented in Phase 3 -->
+	<ContextualAssistant
+		mode="operator"
+		currentRoute={currentRoute}
+	/>
 {/if}
 
 <style>
