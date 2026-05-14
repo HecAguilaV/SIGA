@@ -3,6 +3,9 @@
 	import type { PageData } from './$types';
 	import Card from '@siga/ui-kit/Card.svelte';
 	import Badge from '@siga/ui-kit/Badge.svelte';
+	import ChartWrapper from '$lib/components/charts/ChartWrapper.svelte';
+	import InsightPanel from '$lib/components/dashboard/InsightPanel.svelte';
+	import AnomalyList from '$lib/components/dashboard/AnomalyList.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -17,8 +20,55 @@
 	const insights = $derived((data.insights ?? []) as any[]);
 	const lowStock = $derived((data.lowStock ?? []) as any[]);
 	const anomalies = $derived((data.anomalies ?? []) as any[]);
+	const trends = $derived((data.trends ?? []) as any[]);
 	const dashboardError = $derived(data.error as string | null);
 	const userName = $derived(data.user?.name ?? 'Usuario');
+
+	// Chart-ready trend data
+	const trendData = $derived({
+		labels: trends.map((t: { date: string }) => t.date) ?? [],
+		datasets: [
+			{
+				label: 'Valor',
+				data: trends.map((t: { value: number }) => t.value) ?? [],
+				borderColor: '#4f46e5',
+				backgroundColor: 'rgba(79, 70, 229, 0.1)',
+				fill: true,
+				tension: 0.4
+			}
+		]
+	});
+
+	const trendOptions = $derived({
+		plugins: {
+			legend: { display: false }
+		},
+		scales: {
+			x: { grid: { display: false } },
+			y: {
+				beginAtZero: true,
+				grid: { color: 'rgba(0,0,0,0.05)' }
+			}
+		}
+	});
+
+	// Derive insights para InsightPanel desde data de anomalías
+	const insightFindings = $derived(
+		anomalies.length > 0
+			? [
+					{
+						id: 'stock-insight',
+						title: lowStock.length > 0 ? 'Stock Bajo Detectado' : 'Stock Normal',
+						description:
+							lowStock.length > 0
+								? `${lowStock.length} producto${lowStock.length !== 1 ? 's' : ''} con stock por debajo del mínimo`
+								: 'Todos los productos tienen stock suficiente',
+						type: lowStock.length > 0 ? ('warning' as const) : ('positive' as const),
+						context: lowStock.length > 0 ? 'Revisar pedidos de reposición' : 'Sin acciones requeridas'
+					}
+				]
+			: []
+	);
 </script>
 
 <svelte:head>
@@ -61,6 +111,36 @@
 		{/each}
 	</div>
 
+	<!-- Trend Chart (7 días) -->
+	{#if trends.length > 0}
+		<div class="trend-section">
+			<Card variant="default" padding="md">
+				{#snippet header()}
+					<h2 class="panel-title">Tendencia de 7 Días</h2>
+				{/snippet}
+				{#snippet children()}
+					<div class="trend-chart-container">
+						<ChartWrapper type="line" data={trendData} options={trendOptions} />
+					</div>
+				{/snippet}
+			</Card>
+		</div>
+	{/if}
+
+	<!-- Insight Panel -->
+	{#if insightFindings.length > 0}
+		<div class="insight-section">
+			<Card variant="default" padding="md">
+				{#snippet header()}
+					<h2 class="panel-title">Hallazgos</h2>
+				{/snippet}
+				{#snippet children()}
+					<InsightPanel insights={insightFindings} title="" />
+				{/snippet}
+			</Card>
+		</div>
+	{/if}
+
 	<div class="dashboard-grid">
 		<!-- Low Stock Panel -->
 		<Card variant="default" padding="md">
@@ -96,20 +176,7 @@
 				<h2 class="panel-title">Anomalías Detectadas</h2>
 			{/snippet}
 			{#snippet children()}
-				{#if anomalies.length === 0}
-					<p class="panel-empty">Sin anomalías recientes</p>
-				{:else}
-					<div class="anomaly-list">
-						{#each anomalies as anomaly (anomaly.id)}
-							<div class="anomaly-item">
-								<span class="anomaly-severity">
-									{anomaly.severity === 'critical' || anomaly.severity === 'high' ? '🔴' : '🟡'}
-								</span>
-								<p class="anomaly-message">{anomaly.message}</p>
-							</div>
-						{/each}
-					</div>
-				{/if}
+				<AnomalyList anomalies={anomalies} title="" />
 			{/snippet}
 		</Card>
 	</div>
@@ -179,6 +246,16 @@
 	.kpi-title {
 		font-size: var(--font-size-sm);
 		color: var(--color-text-muted);
+	}
+
+	.trend-section,
+	.insight-section {
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.trend-chart-container {
+		height: 300px;
+		width: 100%;
 	}
 
 	.dashboard-grid {
@@ -265,31 +342,5 @@
 
 	.stock-min {
 		color: var(--color-text-muted);
-	}
-
-	.anomaly-list {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-sm);
-	}
-
-	.anomaly-item {
-		display: flex;
-		align-items: flex-start;
-		gap: var(--spacing-sm);
-		padding: var(--spacing-sm);
-		border-radius: var(--radius-md);
-		background: var(--color-bg-alt);
-	}
-
-	.anomaly-severity {
-		font-size: 1rem;
-		flex-shrink: 0;
-	}
-
-	.anomaly-message {
-		font-size: var(--font-size-sm);
-		color: var(--color-text);
-		line-height: 1.4;
 	}
 </style>
