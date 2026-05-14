@@ -60,11 +60,11 @@ export async function logout(
  * setSessionCookies — Setea las cookies httpOnly access + refresh.
  */
 export function setSessionCookies(
-	event: RequestEvent,
+	cookies: RequestEvent['cookies'],
 	accessToken: string,
 	refreshToken: string
 ): void {
-	event.cookies.set('siga_token', accessToken, {
+	cookies.set('siga_token', accessToken, {
 		path: '/',
 		httpOnly: true,
 		secure: true,
@@ -72,7 +72,7 @@ export function setSessionCookies(
 		maxAge: 60 * 15 // 15 minutos
 	});
 
-	event.cookies.set('siga_refresh', refreshToken, {
+	cookies.set('siga_refresh', refreshToken, {
 		path: '/api/auth/refresh',
 		httpOnly: true,
 		secure: true,
