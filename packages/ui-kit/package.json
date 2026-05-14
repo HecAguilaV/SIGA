@@ -1,0 +1,19 @@
+{
+  "name": "@siga/ui-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "svelte": "./index.ts",
+  "exports": {
+    ".": {
+      "svelte": "./index.ts",
+      "types": "./index.ts",
+      "default": "./index.ts"
+    },
+    "./*": {
+      "svelte": "./*.svelte",
+      "types": "./*.svelte",
+      "default": "./*.svelte"
+    }
+  }
+}

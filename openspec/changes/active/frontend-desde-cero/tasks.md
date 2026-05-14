@@ -43,18 +43,18 @@ Chain strategy: size-exception
 
 ## Phase 2: Core CRUDs
 
-- **T-12** Dashboard — `(dashboard)/+page.server.ts` (loadDashboard, compone insights gateway, partial fallback, polling 60s) + `+page.svelte` (KPIs, skeleton, stock bajo, anomalías)
-- **T-13** Layout shell — `(dashboard)/+layout.svelte` (Sidebar+Header+slot+ContextualAssistant) + `+layout.server.ts` (session verify)
-- **T-14** `Sidebar.svelte` — NavItem[], collapsed, active highlight, UserMenu (logout)
-- **T-15** `Header.svelte` + `Breadcrumb.svelte` + `ThemeToggle.svelte` + `A11yToolbar.svelte` (rescatado legacy)
-- **T-16** `CrudTable.svelte` genérico — ColumnDef[], data, paginación server-side, loading/empty slots
-- **T-17** `SearchBar.svelte` — debounce 300ms, URL query param sync
-- **T-18** `CrudForm.svelte` genérico + `ConfirmDelete.svelte` — FieldDef[], validación cliente+servidor, focus trap
-- **T-19** Products CRUD — `routes/products/` (list, create, edit, delete) con load functions + actions
-- **T-20** Stores CRUD — `routes/stores/` (mismo patrón)
-- **T-21** Categories CRUD — `routes/categories/` (mismo patrón)
-- **T-22** Users CRUD — `routes/users/` (mismo patrón, filtro por tenant)
-- **T-23** Tests F2 — `CrudTable.test.ts`, `CrudForm.test.ts`, `SearchBar.test.ts`, `Modal.test.ts`, `products.load.test.ts`, `dashboard.load.test.ts`, `crud-products.spec.ts` (Playwright), `Modal.test.ts` (focus trap)
+- [x] **T-12** Move packages/frontend/ → apps/dashboard/ + extract ui-kit + shared
+- [x] **T-13** Layout shell — `(dashboard)/+layout.svelte` (Sidebar+Header+slot+ContextualAssistant) + `+layout.server.ts` (session verify + role guards)
+- [x] **T-14** `Sidebar.svelte` — NavItem[], collapsed, active highlight, UserMenu (logout), role-aware hiding
+- [x] **T-15** `Header.svelte` + `Breadcrumb.svelte` + `ThemeToggle.svelte` + `A11yToolbar.svelte` (rescatado legacy)
+- [x] **T-16** `CrudTable.svelte` genérico — ColumnDef[], data, paginación server-side, loading/empty slots
+- [x] **T-17** `SearchBar.svelte` — debounce 300ms, URL query param sync
+- [x] **T-18** `CrudForm.svelte` genérico + `ConfirmDelete.svelte` — FieldDef[], validación cliente+servidor
+- [x] **T-19** Products CRUD — `routes/products/` (list, create, edit, delete) con load functions + actions + mock fallback
+- [x] **T-20** Stores CRUD — `routes/stores/` (mismo patrón)
+- [x] **T-21** Categories CRUD — `routes/categories/` (mismo patrón)
+- [x] **T-22** Users CRUD — `routes/users/` (mismo patrón, filtro por tenant)
+- [x] **T-23** Tests F2 — `CrudTable.test.ts`, `CrudForm.test.ts`, `Sidebar.test.ts`, `products.load.test.ts`, `dashboard.load.test.ts`, `crud-products.spec.ts` (Playwright)
 
 ## Phase 3: A2UI Streaming
 
