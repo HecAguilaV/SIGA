@@ -58,11 +58,11 @@ Chain strategy: size-exception
 
 ## Phase 3: A2UI Streaming
 
-- **T-24** SSE proxy — `routes/assistant/+server.ts` GET /api/chat/stream, ReadableStream pipe desde siga-agent, transformación eventos SSE (chunk/done/error/tool)
-- **T-25** Chat store (`chat.svelte.ts`) — `$state messages[]`, status idle|connecting|streaming|error, send(), reconnect() con backoff, abortController
-- **T-26** Chat components — `ChatBubble.svelte` (roles, streaming indicator), `ChatInput.svelte` (debounce spam, Enter), `ToolIndicator.svelte` (pulse anim), `AssistantFab.svelte` (online/offline badge)
-- **T-27** `ContextualAssistant.svelte` — FAB global en dashboard layout, modo analyst/operator, reconexión 1s/2s/4s, timeout 60s
-- **T-28** Tests F3 — `chat.test.ts` (store transitions), `ChatBubble.test.ts`, `chat.load.test.ts` (SSE mock), `chat.spec.ts` (Playwright E2E)
+- [x] **T-24** SSE proxy — `routes/assistant/+server.ts` GET /api/chat/stream, ReadableStream pipe desde siga-agent, transformación eventos SSE (chunk/done/error/tool)
+- [x] **T-25** Chat store (`chat.svelte.ts`) — `$state messages[]`, status idle|connecting|streaming|error, send(), reconnect() con backoff, abortController
+- [x] **T-26** Chat components — `ChatBubble.svelte` (roles, streaming indicator), `ChatInput.svelte` (debounce spam, Enter), `ToolIndicator.svelte` (pulse anim), `AssistantFab.svelte` (online/offline badge)
+- [x] **T-27** `ContextualAssistant.svelte` — FAB global en dashboard layout, modo analyst/operator, reconexión 1s/2s/4s, timeout 60s
+- [x] **T-28** Tests F3 — `chat.test.ts` (store transitions), `ChatBubble.test.ts`, `chat.load.test.ts` (SSE mock)
 
 ## Phase 4: Insights & Analytics
 
