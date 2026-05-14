@@ -1,20 +1,23 @@
 # POS — SIGA
 
-**Estado**: Por hacer 📋
-**Stack**: SvelteKit 5 + TypeScript + pnpm
-**Para quién**: Cajeros
-**Propósito**: Punto de Venta — registrar ventas rápido, interfaz ágil
+**ESTADO**: 🗄️ **Deprecado** — Unificado en `apps/dashboard/`
 
-## Funcionalidades pendientes
-- Catálogo de productos con búsqueda rápida
-- Carrito de compras
-- Múltiples métodos de pago
-- Ticket / comprobante
-- Cierre de turno
-- Offline-first (opcional)
+Este directorio es un relicto de la arquitectura anterior donde cada frontend era una app separada.
 
-## Stack compartido
-- `packages/ui-kit` — design system
-- `packages/shared` — types y validators
+## Arquitectura actual
+
+Todo converge en **`apps/dashboard/`** — un único frontend SvelteKit 5 con **dual-mode**:
+
+| Modo | Qué ofrece |
+|------|-----------|
+| 🏛️ **Clásico** | Dashboard, CRUDs, Analytics — navegación fija por rutas |
+| 🤖 **Agentivo (A2UI)** | El agente compone la UI dinámicamente vía protocolo A2UI de Google |
+
+El POS (Punto de Venta) se accede desde `apps/dashboard/` en modo clásico o agentivo. La interfaz rápida para cajeros es candidata natural para una vista A2UI optimizada.
+
+## Stack
+
+- `apps/dashboard/` — SvelteKit 5 + TypeScript + pnpm
+- `packages/ui-kit/` — Design system compartido
+- `packages/shared/` — Types y validators
 - Gateway `:8080` para API
-- Posible integración con hardware (impresora térmica, lector código barras)

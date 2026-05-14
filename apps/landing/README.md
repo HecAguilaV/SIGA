@@ -1,17 +1,23 @@
 # Landing — SIGA
 
-**Estado**: Por hacer 📋
-**Stack**: SvelteKit 5 + TypeScript + pnpm (build estático con `adapter-static`)
-**Para quién**: Público general
-**Propósito**: Página de marketing — presentar SIGA, precios, contacto
+**ESTADO**: 🗄️ **Deprecado** — Unificado en `apps/dashboard/`
 
-## Funcionalidades pendientes
-- Hero section con propuesta de valor
-- Precios y planes
-- Características y beneficios
-- Formulario de contacto
-- SEO y Open Graph
+Este directorio es un relicto de la arquitectura anterior donde cada frontend era una app separada.
 
-## Stack compartido
-- `packages/ui-kit` — design system (solo tokens CSS + componentes atómicos)
-- Build estático para máximo rendimiento
+## Arquitectura actual
+
+Todo converge en **`apps/dashboard/`** — un único frontend SvelteKit 5 con **dual-mode**:
+
+| Modo | Qué ofrece |
+|------|-----------|
+| 🏛️ **Clásico** | Dashboard, CRUDs, Analytics — navegación fija por rutas |
+| 🤖 **Agentivo (A2UI)** | El agente compone la UI dinámicamente vía protocolo A2UI de Google |
+
+La landing page y contenido público puede servirse desde el dashboard o como build estático independiente si se necesita máxima velocidad.
+
+## Stack
+
+- `apps/dashboard/` — SvelteKit 5 + TypeScript + pnpm
+- `packages/ui-kit/` — Design system compartido
+- `packages/shared/` — Types y validators
+- Gateway `:8080` para API
