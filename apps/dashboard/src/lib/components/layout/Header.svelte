@@ -2,6 +2,10 @@
 	import Breadcrumb from './Breadcrumb.svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import A11yToolbar from './A11yToolbar.svelte';
+	import AhorremosTiempoButton from '$lib/components/a2ui/AhorremosTiempoButton.svelte';
+	import { page } from '$app/stores';
+
+	const currentRoute = $derived($page.url.pathname);
 </script>
 
 <header class="app-header">
@@ -10,6 +14,7 @@
 	</div>
 	<div class="header-right">
 		<A11yToolbar />
+		<AhorremosTiempoButton currentRoute={currentRoute} />
 		<ThemeToggle />
 	</div>
 </header>

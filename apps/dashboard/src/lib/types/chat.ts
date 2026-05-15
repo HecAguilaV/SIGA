@@ -5,6 +5,8 @@
  * eventos SSE del agente, y llamadas a herramientas.
  */
 
+import type { A2UINode } from './a2ui';
+
 /** Mensaje individual en la conversación */
 export interface ChatMessage {
 	id: string;
@@ -19,13 +21,19 @@ export type ChatStatus = 'idle' | 'connecting' | 'streaming' | 'error';
 
 /** Evento SSE recibido desde el proxy del agente */
 export interface SSEEvent {
-	type: 'chunk' | 'done' | 'error' | 'tool';
+	type: 'chunk' | 'done' | 'error' | 'tool' | 'a2ui' | 'update' | 'patch';
 	content?: string;
 	done?: boolean;
 	code?: string;
 	message?: string;
 	name?: string;
 	status?: 'running' | 'done' | 'error';
+	// A2UI event payloads
+	tree?: A2UINode;
+	action?: 'replace' | 'append';
+	nodeId?: string;
+	props?: Record<string, unknown>;
+	children?: A2UINode[];
 }
 
 /** Llamada a herramienta notificada por el agente */

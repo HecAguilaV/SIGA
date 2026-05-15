@@ -458,6 +458,224 @@ Flujo de datos típico (CRUD):
 
 ---
 
+## A2UI Protocol Integration
+
+### Dual-Mode Architecture
+
+```
+┌──────────────────────────────────────────────┐
+│              SIGA WebApp                       │
+│                                                 │
+│  ┌──────────────┐   ┌──────────────────────┐  │
+│  │ MODO CLÁSICO │   │  MODO AGENTIVO A2UI  │  │
+│  │              │   │                      │  │
+│  │ load fns     │   │ A2UIRenderer.svelte  │  │
+│  │ rutas fijas  │   │ mapea type→component │  │
+│  │ polling 60s  │   │ árbol reactivo       │  │
+│  └──────┬───────┘   └─────────┬────────────┘  │
+│         │                     │                │
+│         └──────┬──────────────┘                │
+│                ▼                               │
+│  ┌──────────────────────────────┐             │
+│  │  Catálogo de Componentes     │             │
+│  │  (Card, Button, CrudTable,   │             │
+│  │   ChartWrapper, Insight, etc)│             │
+│  └──────────────────────────────┘             │
+│                                                 │
+│  ┌──────────────────────────────┐             │
+│  │  SSE (extendido)             │             │
+│  │  {type:"text"} → burbuja     │             │
+│  │  {type:"a2ui"} → renderer    │             │
+│  │  {type:"update"} → parche    │             │
+│  └──────────────────────────────┘             │
+└──────────────────────────────────────────────┘
+```
+
+### A2UI Component Catalog
+
+| A2UI Type | Componente | Props |
+|-----------|-----------|-------|
+| card | Card.svelte | variant, padding, header, children, footer |
+| button | Button.svelte | variant, size, loading, disabled |
+| input | Input.svelte | type, label, error, placeholder |
+| crud-table | CrudTable.svelte | columns, data, total, page, actions |
+| crud-form | CrudForm.svelte | fields, onSubmit, initialValues, mode |
+| chart | ChartWrapper.svelte | type, data, options, loading, height |
+| insight-panel | InsightPanel.svelte | insights, variant |
+| anomaly-list | AnomalyList.svelte | anomalies, emptyMessage |
+| search-bar | SearchBar.svelte | value, placeholder, onSearch |
+| badge | Badge.svelte | variant, children |
+| modal | Modal.svelte | open, title, onClose |
+| spinner | Spinner.svelte | size, variant |
+| skeleton | Skeleton.svelte | variant |
+| container | — (div wrapper) | layout, gap, direction |
+
+### A2UI Renderer Design
+
+```
+A2UIRenderer.svelte:
+  Props: tree: A2UINode | A2UINode[]
+  State: expandedNodes: Map<string, any> (reactivo)
+
+  Función renderNode(node):
+    match node.type:
+      "card" → <Card {...node.props}><renderNode children/></Card>
+      "button" → <Button {...node.props} />
+      "chart" → <ChartWrapper {...node.props} />
+      ...
+
+  Manejo de actualizaciones:
+    - Si llega evento "a2ui" con tree completo → reemplazar
+    - Si llega evento "update" con nodeId + props → merge parcial
+    - Si llega evento "patch" con nodeId + children → reemplazar children
+```
+
+### SSE Protocol Extension
+
+```typescript
+// Eventos SSE actuales (F3) + extensiones A2UI
+type SSEEvent =
+  | { type: "chunk"; content: string; done: false }
+  | { type: "done"; content: string; done: true }
+  | { type: "error"; code: string; message: string }
+  | { type: "tool"; name: string; status: "running" | "done" | "error" }
+  // NUEVOS:
+  | { type: "a2ui"; tree: A2UINode; action: "replace" | "append" }
+  | { type: "update"; nodeId: string; props: Record<string, unknown> }
+  | { type: "patch"; nodeId: string; children: A2UINode[] }
+```
+
+### Mode Transition Flow
+
+```
+1. Usuario en dashboard clásico
+2. Click "Ahorremos tiempo: SIGA" (en Header o FAB)
+3. isA2UIMode = true (store reactivo)
+4. ContextualAssistant se expande
+5. Contenido principal pasa a A2UIRenderer
+6. Se envía mensaje al agente con contexto actual
+7. Agente responde con payload A2UI
+8. Renderizador muestra UI generativa
+9. Usuario conversa y la UI se reshapea dinámicamente
+```
+
+### A2UI State Store
+
+```typescript
+// src/lib/stores/a2ui.svelte.ts
+let mode = $state<'classic' | 'a2ui'>('classic');
+let tree = $state<A2UINode | null>(null);
+let selectedNodeId = $state<string | null>(null);
+
+function enterAgentiveMode(context: { route: string; data?: unknown }): void { ... }
+function exitAgentiveMode(): void { ... }
+function updateTree(node: A2UINode, action: 'replace' | 'append'): void { ... }
+function patchNode(nodeId: string, props: Record<string, unknown>): void { ... }
+```
+
+### Component Tree (actualización)
+
+Agregar bajo el dashboard layout:
+
+```
+├── A2UIRenderer (solo en modo agentivo)
+│   └── [árbol dinámico mapeado del payload A2UI]
+├── Botón "Ahorremos tiempo" (Header o FAB global)
+```
+
+### Responsive Design (A2UI)
+
+El diseño responsive es **fundacional**, no un afterthought. Tres breakpoints:
+
+| Breakpoint | Viewport | Layout A2UI | Chat |
+|------------|----------|-------------|------|
+| **Mobile** | < 768px | Stack vertical 1 columna. Cards full-width. Container hints `stack`. | Bottom sheet anclado abajo. FAB minimizado. |
+| **Tablet** | 768-1024px | Grilla 2 columnas. Sidebar colapsable. Container hints `grid columns: 2`. | Sidebar colapsable a derecha, o FAB. |
+| **Desktop** | > 1024px | Grilla 3-4 columnas. Container hints `grid columns: {desktop: 3|4}`. | Flotante (FAB expandible), posición default derecha. |
+
+#### A2UI Layout Hints (payload del agente)
+
+El agente puede sugerir layout, pero el renderizador siempre adapta al viewport:
+
+```json
+{
+  "type": "container",
+  "props": {
+    "layout": "grid",
+    "columns": { "desktop": 3, "tablet": 2, "mobile": 1 },
+    "gap": "md"
+  },
+  "children": [
+    { "type": "insight-panel", "props": { ... } },
+    { "type": "chart", "props": { ... } },
+    { "type": "anomaly-list", "props": { ... } }
+  ]
+}
+```
+
+#### Mobile-specific behavior
+
+- **ContextualAssistant** se transforma en bottom sheet con handle de drag. Ocupa ~60% de la pantalla al abrirse, cubre 100% en foco (input activo).
+- **Touch targets**: todos los botones, links y elementos interactivos A2UI respetan mínimo 44x44px (WCAG 2.1 SC 2.5.8).
+- **Swipe gestures**: las cards A2UI pueden swipearse horizontalmente en contenedores `scroll-x`.
+- **Pull-to-refresh**: en el árbol A2UI, pull-to-refresh reenvía el último mensaje al agente.
+- **Keyboard avoidance**: cuando el teclado virtual está abierto, el bottom sheet del chat se achica automáticamente.
+
+#### Tablet-specific behavior
+
+- **Sidebar colapsable**: el chat puede mostrarse como sidebar derecha (350px) colapsable a icono.
+- **Split view**: en horizontal (1024px), la UI agentiva muestra 2 columnas + sidebar opcional.
+- **Drag & drop**: en tablets, el usuario puede reorganizar cards A2UI con drag (ideal para iPads con Stage Manager).
+
+#### CSS Strategy
+
+```css
+/* Ya existe en app.css via CSS custom properties + media queries.
+   Extender para A2UI: */
+
+/* A2UI container responsive grid */
+.a2ui-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+  .a2ui-grid {
+    grid-template-columns: 1fr;
+  }
+  .a2ui-chat {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 60vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    z-index: var(--z-drawer);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .a2ui-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+```
+
+El renderizador A2UI aplica clases según `layout` hint + viewport. Nunca fuerza un layout que no entre en la pantalla.
+
+### Testing
+
+Agregar los siguientes archivos de test:
+
+| Test | Archivo | Qué cubre |
+|------|---------|-----------|
+| Unit: A2UIRenderer | `tests/unit/components/a2ui/A2UIRenderer.test.ts` | Renderiza payloads A2UI, mapeo type→component, actualizaciones replace/update/patch |
+| Unit: A2UI Store | `tests/unit/stores/a2ui.test.ts` | Mode transitions (classic↔a2ui), tree updates, patching |
+| Integration: SSE A2UI | `tests/integration/bff/a2ui.stream.test.ts` | SSE con payloads A2UI, transformación de eventos, manejo de errores |
+
+---
+
 ## Testing Architecture
 
 ### Vitest (Unit + Integration)

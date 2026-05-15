@@ -23,6 +23,7 @@ Chain strategy: size-exception
 | F2 | ~10 | Dashboard + 4 CRUDs operativos |
 | F3 | ~5 | Chat A2UI streaming en vivo |
 | F4 | ~4 | Analytics con gráficos |
+| 3.5 (A2UI) | ~7 | A2UI Protocol — dual-mode, renderer, transición |
 | F5 | ~2 | Legacy deprecado |
 
 ---
@@ -66,32 +67,49 @@ Chain strategy: size-exception
 
 ## Phase 4: Insights & Analytics
 
-- **T-29** Chart wrappers — `ChartWrapper.svelte` (genérico bar/line/pie/doughnut) + `ChartContainer.svelte` (resize observer, skeleton), Chart.js lazy load rescatado
-- **T-30** Analytics page — `routes/analytics/+page.server.ts` (loadAnalytics) + `+page.svelte` (gráficos + InsightPanel)
-- **T-31** Dashboard extendido — InsightPanel (hallazgos), AnomalyList, ChartWrapper tendencia 7 días
-- **T-32** Tests F4 — `ChartWrapper.test.ts`, `analytics.load.test.ts`, `accessibility.spec.ts` (axe-core AA en login/dashboard/products)
+- [x] **T-29** Chart wrappers — `ChartWrapper.svelte` (genérico bar/line/pie/doughnut) + `ChartContainer.svelte` (resize observer, skeleton), Chart.js lazy load rescatado
+- [x] **T-30** Analytics page — `routes/analytics/+page.server.ts` (loadAnalytics) + `+page.svelte` (gráficos + InsightPanel)
+- [x] **T-31** Dashboard extendido — InsightPanel (hallazgos), AnomalyList, ChartWrapper tendencia 7 días
+- [x] **T-32** Tests F4 — `ChartWrapper.test.ts`, `analytics.load.test.ts`, `InsightPanel.test.ts`, `AnomalyList.test.ts`
 
-## Phase 5: Legacy Burial
+## Phase 3.5: A2UI Protocol Integration
 
-- **T-33** Deprecation notices — `NOTICE.md` + banner "DEPRECATED" en README de cada `apps/*`
-- **T-34** CI/CD cleanup — Workflows legacy desactivados, CI apunta a `packages/frontend/`, limpiar referencias en docs
-- **T-35** Archive legacy — Mover `apps/webapp`, `admin-portal`, `customer-portal`, `mobile`, `landing` a `archived/` con cross-ref al nuevo frontend
+- [x] **T-A2UI-01** A2UIRenderer.svelte + A2UINodeRenderer.svelte — Renderizador genérico que mapea type→component del catálogo. Soporte para replace/append vía store. Props: `tree: A2UINode | A2UINode[]`. RESPONSIVE: soporta layout hints grid/stack/sidebar. Adaptación automática al viewport con 3 breakpoints. 11 tests.
+- [x] **T-A2UI-02** Component catalog registry — `A2UI_COMPONENT_MAP` + `getComponent()` lookup. 13 tipos registrados: card, button, input, crud-table, crud-form, chart, insight-panel, anomaly-list, search-bar, badge, modal, spinner, skeleton. Container se maneja internamente en A2UINodeRenderer.
+- [x] **T-A2UI-03** SSE extension — `chat.svelte.ts` extendido con handlers para eventos `a2ui`/`update`/`patch`. `SSEEvent` type extendido con campos A2UI. 4 tests unitarios.
+- [x] **T-A2UI-04** A2UI state store (`a2ui.svelte.ts`) — mode (`classic`|`a2ui`), tree reactivo, enterAgentiveMode/exitAgentiveMode/updateTree/patchNode/patchChildren/updateLayout. Singleton. 18 tests.
+- [x] **T-A2UI-05** AhorremosTiempoButton.svelte + integración en Header — Botón en Header (junto a A11yToolbar). On click: activa modo agentivo, envía mensaje al agente con contexto de ruta. Modo clásico: "Ahorremos tiempo ✨". Modo agentivo: "Volver al modo clásico ←". RESPONSIVE: en mobile se muestra solo icono.
+- [x] **T-A2UI-06** Dual-mode dashboard layout — `+layout.svelte` con detección de `a2ui.isAgentive`. Modo clásico: slot visible, A2UI oculto. Modo agentivo: slot oculto (mantiene estado via CSS opacity/pointer-events), A2UIRenderer visible con árbol del store. Transición CSS suave.
+- [x] **T-A2UI-07** Tests A2UI — 39 tests total (18 store + 11 renderer + 4 SSE events + 6 integration). Verifican: render payloads, mapeo type→component, empty/fallback states, layout hints, mode transitions, tree update/patch/replace/append, SSE event processing.
+
+## Phase 5: Legacy Burial ✅ (completada)
+
+> Los 6 frontends legacy (`apps/webapp`, `admin-portal`, `customer-portal`, `landing`, `mobile`, `pos`) ya fueron eliminados. Solo existen README.md shells declarando deprecación. El nuevo frontend en `apps/dashboard/` es el único activo.
+
+- [x] **T-33** Deprecation notices — README.md en cada `apps/*` legacy
+- [x] **T-34** Legacy frontends eliminados — `apps/webapp`, `admin-portal`, `customer-portal`, `landing`, `mobile`, `pos` contienen solo README.md
+- [ ] **T-36** CI/CD audit — Verificar que los workflows de CI apunten a `apps/dashboard/` y no referencien legacy
+- [ ] **T-37** pnpm workspaces — Confirmar que `pnpm-workspace.yaml` solo incluya `apps/dashboard/`
 
 ---
 
 ## Dependencias entre tareas
 
 ```
-F1 completa → F2 (layout depende de auth, tokens)
-F2 completa → F3 (chat layout depende de dashboard layout)
-F2 completa → F4 (analytics usa CrudTable+ChartWrapper)
-F1..F4 completas → F5 (no archivar hasta migración completa)
+F1 → F2 → F4 → 3.5-A2UI → F5-cleanup
+        ↘ F3 ↗
 ```
+
+- F1, F2, F3, F4 completas ✅
+- F5-legacy (limpieza de código): ✅ completada
+- F5-cleanup (CI/CD + workspaces): pendiente, no bloqueante
+- **Phase 3.5 A2UI**: próxima a implementar
 
 ## Entregable mínimo viable por fase
 
-- **Post-F1**: Login funcional + design system visible + navegación protegida — el usuario puede loguearse y ver la UI
-- **Post-F2**: Dashboard con KPIs reales + CRUD products operativo — el usuario puede gestionar su negocio
-- **Post-F3**: Chat A2UI funcional en todas las rutas — el usuario conversa con siga-agent
-- **Post-F4**: Analytics con gráficos + dashboard enriquecido — visibilidad completa del negocio
-- **Post-F5**: Zero legacy en CI/CD — solo el nuevo frontend importa
+- **Post-F1**: Login funcional + design system visible + navegación protegida — el usuario puede loguearse y ver la UI ✅
+- **Post-F2**: Dashboard con KPIs reales + CRUD products operativo — el usuario puede gestionar su negocio ✅
+- **Post-F3**: Chat A2UI funcional en todas las rutas — el usuario conversa con siga-agent ✅
+- **Post-F4**: Analytics con gráficos + dashboard enriquecido — visibilidad completa del negocio ✅
+- **Post-A2UI (3.5)**: Dual-mode funcional — el usuario navega en clásico o salta a agentivo con un click. El agente compone UI dinámicamente vía A2UI.
+- **Post-F5-cleanup**: Zero referencias legacy en CI/CD y workspaces

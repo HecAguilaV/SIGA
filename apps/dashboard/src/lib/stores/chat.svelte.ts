@@ -9,6 +9,7 @@
  */
 
 import type { ChatMessage, ChatStatus, SSEEvent, ToolCall, ReconnectConfig } from '$lib/types/chat';
+import { a2ui } from '$lib/stores/a2ui.svelte';
 
 /** Genera un ID único para cada mensaje */
 let messageIdCounter = 0;
@@ -253,6 +254,24 @@ class ChatStore {
 						...this.toolCalls.filter((t) => t.name !== event.name),
 						toolCall
 					];
+				}
+				break;
+			}
+			case 'a2ui': {
+				if (event.tree && event.action) {
+					a2ui.updateTree(event.tree, event.action);
+				}
+				break;
+			}
+			case 'update': {
+				if (event.nodeId && event.props) {
+					a2ui.patchNode(event.nodeId, event.props);
+				}
+				break;
+			}
+			case 'patch': {
+				if (event.nodeId && event.children) {
+					a2ui.patchChildren(event.nodeId, event.children);
 				}
 				break;
 			}
