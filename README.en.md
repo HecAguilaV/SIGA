@@ -10,7 +10,7 @@ This repository is a Microservices Monorepo featuring Zero-Trust architecture an
 
 ## Documentation Vault (Bilingual Symmetry)
 
-We have established a Semantic Mirroring standard to ensure that documentation is always available and updated in both languages.
+A Semantic Mirroring standard has been established to ensure that documentation is always available and updated in both languages.
 
 | Section | Spanish (Native) | English (Mirror) |
 | :--- | :--- | :--- |
@@ -29,7 +29,7 @@ SIGA utilizes cutting-edge technologies to ensure performance and legal complian
 
 - **Backend**: Kotlin + Spring Boot 4.0.6. Strict implementation of Gold Standard Hexagonal Architecture and TDD Discipline.
 - **AI**: Python + LangChain + PGVector (Per-Tenant Semantic Memory).
-- **Frontend**: Svelte 5 (Webapp) and Jetpack Compose (Mobile).
+- **Frontend**: SvelteKit 5 (Unified dashboard under `apps/dashboard`).
 - **Persistence**: PostgreSQL with schema isolation and UUID v4 as the unique standard for identity and pseudonymization.
 - **Security**: JWT (Stateless) and rigorous compliance with Chilean Law 21.719.
 
@@ -48,17 +48,13 @@ docker-compose up -d
 
 ---
 
-## Frontend Ecosystem (Under Development)
+## Frontend Ecosystem — SvelteKit Unified
 
-SIGA contemplates multiple interfaces organized under the `apps/` directory for clear separation of concerns:
+SIGA converges into a unified SvelteKit 5 frontend under `apps/dashboard`, acting as a native BFF (Backend For Frontend) with server-side data composition:
 
-- **Webapp (Administration)**: Located in `apps/webapp`. Based on Svelte 5.
-- **Landing Page**: Located in `apps/landing`.
-- **Customer Portal**: Located in `apps/customer-portal`.
-- **Admin Portal**: Located in `apps/admin-portal`.
-- **Mobile App**: Located in `apps/mobile`. Based on Jetpack Compose.
+- **Dashboard**: Located in `apps/dashboard`. Unifies the administration, landing, customer portal, and admin portal interfaces into a single SvelteKit 5 application.
 
-*Note: The frontends consume the microservices located in `services/`.*
+*Note: Legacy frontends in `apps/` (webapp, landing, customer-portal, admin-portal, mobile) were declared legacy deprecated as of May 2026. The dashboard is the new unified frontend. All frontends consume the microservices located in `services/` through the API Gateway.*
 
 ---
 
@@ -67,7 +63,7 @@ SIGA contemplates multiple interfaces organized under the `apps/` directory for 
 SIGA is not just code; it is a platform designed to be legally unassailable under Chilean data protection regulations:
 
 - **Privacy by Design (Art. 14 quáter)**: The architecture is shielded so that the service provider (SIGA Admin) **DOES NOT** have access to sensitive financial data, billing amounts, or granular details of SME customers.
-- **Zero-Knowledge Architecture**: We apply the "Blind to Data, Attuned to Flow" principle. We manage infrastructure and availability while respecting the absolute data sovereignty of each business.
+- **Zero-Knowledge Architecture**: The platform applies the "Blind to Data, Attuned to Flow" principle. It manages infrastructure and availability while respecting the absolute data sovereignty of each business.
 - **Pseudonymization (Art. 2, letter l)**: Mandatory use of **UUID v4** across all layers to prevent unauthorized traceability of natural persons.
 - **SDD (Spec-Driven Development)**: Every technical change stems from a specification, ensuring that security and privacy are functional requirements, not afterthoughts.
 - **Technical Bilingualism**: API documentation and contracts in mirror format (ES/EN) to ensure transparency and scalability.

@@ -3,7 +3,7 @@
 *Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/security/SECURITY_MANIFESTO.md)*
 
 ## 1. Visión de Seguridad
-SIGA se rige bajo el principio de **Confianza Cero (Zero-Trust)**. Ninguna petición es de confianza por defecto, ya sea interna o externa. La seguridad no es una capa superficial, sino la base estructural de nuestra arquitectura distribuida.
+SIGA se rige bajo el principio de **Confianza Cero (Zero-Trust)**. Ninguna petición es de confianza por defecto, ya sea interna o externa. La seguridad no es una capa superficial, sino la base estructural de la arquitectura distribuida.
 
 ## 2. Marco Legal y Cumplimiento (Ley 21.719)
 Este sistema ha sido diseñado para cumplir con la **Ley 21.719 (Ley Marco de Ciberseguridad y Protección de Datos Personales)** de Chile. Implementamos los siguientes artículos de forma técnica:

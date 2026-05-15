@@ -774,13 +774,12 @@ El nombre no es casual. SIGA es un imperativo: *sigue avanzando, sigue construye
 
 **La moneda de SIGA es el tiempo.** Cada hora ahorrada a una PYME es una hora que alguien recupera para estar con su familia, para descansar, para no trasnochar anotando stock en papeles.
 
-SIGA hoy es un backend sólido con autenticación completa, arquitectura hexagonal, 126 tests pasando, y cero deuda técnica crítica. Pero esto es solo el cimiento. Lo que falta:
+SIGA hoy es un backend sólido con autenticación completa, arquitectura hexagonal, más de 300 tests entre todos los servicios, y cero deuda técnica crítica. Pero esto es solo el cimiento. Lo que falta:
 
 - **Slice 4**: Endpoints de gestión de permisos (R5 del spec)
-- **Frontend**: Webapp (Svelte) + Customer Portal + Admin Console — en escritorio, en el teléfono como web responsive, y eventualmente como app nativa (Android, iOS, iPadOS)
+- **Frontend Unificado (SvelteKit 5)**: Dashboard bajo `apps/dashboard` como interfaz única que reemplaza los frontends legacy deprecados (webapp, customer-portal, landing, admin-portal, mobile)
 - **Despliegue AWS**: VPC, ECR, ECS
 - **Agentes IA**: La evolución lógica del chatbot con codificación detrás
-- **Mobile App**: Aplicación de terreno para el operador orquesta
 
 Pero esto no termina acá. SIGA es un proyecto vivo. Este documento se actualizará con cada iteración.
 

@@ -2,7 +2,7 @@
 
 *Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/architecture/C4_MODEL.md)*
 
-Este documento describe la arquitectura del **Sistema Inteligente de Gestión de Activos (SIGA)** utilizando el estándar del **Modelo C4**. Nos enfocamos en los niveles estratégicos (Contexto y Contenedores) para proporcionar una visión clara tanto para el negocio como para la ingeniería.
+Este documento describe la arquitectura del **Sistema Inteligente de Gestión de Activos (SIGA)** utilizando el estándar del **Modelo C4**. El enfoque se centra en los niveles estratégicos (Contexto y Contenedores) para proporcionar una visión clara tanto para el negocio como para la ingeniería.
 
 ---
 

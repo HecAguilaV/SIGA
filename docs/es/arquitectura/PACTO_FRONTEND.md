@@ -23,9 +23,9 @@ Cada aplicación frontend es independiente en su lógica de negocio pero consume
 
 | Frontend | Tecnología | Patrón | Alcance de Lógica |
 | :--- | :--- | :--- | :--- |
-| **Comercial** | React | MVVM + Capa de Servicio | Auth, Facturación, Planes, Pagos. |
-| **Webapp** | Svelte 5 | Observer + Stores | Dashboard Admin, Inventario, Ventas, Agente IA. |
-| **Landing** | Svelte/HTML | Minimalista | Tracking, Contenido Estático, Conversión. |
+| **Dashboard** | SvelteKit 5 | Observer + Stores + BFF | Dashboard Admin, Inventario, Ventas, Agente IA, Landing, Portales. |
+
+> **Nota (Mayo 2026)**: Los frontends legacy (webapp, landing, customer-portal React, admin-portal, mobile) fueron declarados legacy deprecado. El dashboard SvelteKit unifica todas las interfaces.
 
 ---
 
