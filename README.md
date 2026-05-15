@@ -10,7 +10,7 @@ Este repositorio es un Monorepo de Microservicios con arquitectura Zero-Trust y 
 
 ## Bóveda Documental (Simetría Bilingüe)
 
-Hemos establecido un estándar de Espejo Semántico para garantizar que la documentación esté siempre disponible y actualizada en ambos idiomas.
+Se ha establecido un estándar de Espejo Semántico para garantizar que la documentación esté siempre disponible y actualizada en ambos idiomas.
 
 | Sección | Castellano (Nativo) | English (Mirror) |
 | :--- | :--- | :--- |
@@ -23,14 +23,14 @@ Hemos establecido un estándar de Espejo Semántico para garantizar que la docum
 
 ---
 
-## Stack Tecnológico (V2)
+## Stack Tecnológico
 
 SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumplimiento legal:
 
 - **Backend**: Kotlin + Spring Boot 4.0.6. Implementación estricta de Arquitectura Hexagonal (Gold Standard) y Disciplina TDD.
 - **Mensajería**: Apache Kafka (SAGA Coreografía) para transacciones distribuidas entre microservicios.
 - **IA**: Python + LangChain + PGVector (Memoria Semántica por Tenant).
-- **Frontend**: Svelte 5 (Webapp) y Jetpack Compose (Mobile).
+- **Frontend**: SvelteKit 5 (Dashboard unificado bajo `apps/dashboard`).
 - **Persistencia**: PostgreSQL con aislamiento de esquemas y UUID v4 como estándar único de identidad y seudonimización.
 - **Seguridad**: JWT (Stateless) y cumplimiento riguroso con la Ley Chilena 21.719.
 
@@ -49,17 +49,13 @@ docker-compose up -d
 
 ---
 
-## Ecosistema Frontend (En Desarrollo)
+## Ecosistema Frontend — SvelteKit Unificado
 
-SIGA contempla múltiples interfaces organizadas bajo el directorio `apps/` para una clara separación de concerns:
+SIGA converge en un frontend SvelteKit 5 unificado bajo `apps/dashboard`, que funciona como BFF (Backend For Frontend) nativo con server-side data composition:
 
-- **Webapp (Administración)**: Localizada en `apps/webapp`. Basada en Svelte 5.
-- **Página de Inicio (Landing)**: Localizada en `apps/landing`.
-- **Portal de Clientes**: Localizada en `apps/customer-portal`.
-- **Portal de Administración**: Localizada en `apps/admin-portal`.
-- **Mobile App**: Localizada en `apps/mobile`. Basada en Jetpack Compose.
+- **Dashboard**: Localizado en `apps/dashboard`. Unifica las interfaces de administración, landing, portal de clientes y portal de administración en una sola aplicación SvelteKit 5.
 
-*Nota: Los frontends son consumidores de los microservicios ubicados en `services/`.*
+*Nota: Los frontends legacy en `apps/` (webapp, landing, customer-portal, admin-portal, mobile) fueron declarados legacy deprecado en mayo de 2026. El dashboard es el nuevo frontend unificado. Todos los frontends consumen los microservicios ubicados en `services/` a través del API Gateway.*
 
 ---
 

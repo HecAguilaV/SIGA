@@ -2,11 +2,11 @@
 
 *Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../en/README.md)*
 
-Este directorio contiene la documentación estratégica de las pruebas del sistema SIGA. Nuestro objetivo es garantizar la seguridad, la estabilidad y el cumplimiento de la **Ley 21.719 (Seudonimización de datos)** mediante un enfoque bilingüe y profesional.
+Este directorio contiene la documentación estratégica de las pruebas del sistema SIGA. El objetivo es garantizar la seguridad, la estabilidad y el cumplimiento de la **Ley 21.719 (Seudonimización de datos)** mediante un enfoque bilingüe y profesional.
 
 ## Filosofía de Calidad
 1. **Security by Design**: No se escribe código sin considerar el blindaje de credenciales.
-2. **TDD Estricto**: Seguimos el ciclo Rojo-Verde-Refactor para cada cambio estructural (como la migración a UUID).
+2. **TDD Estricto**: Se sigue el ciclo Rojo-Verde-Refactor para cada cambio estructural (como la migración a UUID).
 3. **Memoria Estratégica**: Cada fallo encontrado y superado debe ser documentado para evitar regresiones.
 
 ## Pirámide de Pruebas en SIGA
