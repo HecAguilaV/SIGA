@@ -28,6 +28,11 @@ import SearchBar from '$lib/components/crud/SearchBar.svelte';
 import InsightPanel from '$lib/components/dashboard/InsightPanel.svelte';
 import AnomalyList from '$lib/components/dashboard/AnomalyList.svelte';
 
+// A2UI v0.9 components
+import StatCard from './StatCard.svelte';
+import TrendBadge from './TrendBadge.svelte';
+import DataTable from './DataTable.svelte';
+
 /**
  * Mapa de tipos A2UI a componentes Svelte 5.
  * Cada entrada mapea un string type (ej: "card", "chart")
@@ -46,7 +51,10 @@ export const A2UI_COMPONENT_MAP: Record<string, ComponentType> = {
 	'crud-form': CrudForm,
 	'search-bar': SearchBar,
 	'insight-panel': InsightPanel,
-	'anomaly-list': AnomalyList
+	'anomaly-list': AnomalyList,
+	'stat-card': StatCard,
+	'trend-badge': TrendBadge,
+	'data-table': DataTable
 };
 
 /**

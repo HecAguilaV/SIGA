@@ -1,43 +1,95 @@
 <script lang="ts">
 	/**
-	 * A2UIRenderer.svelte — Renderizador principal de árboles A2UI.
+	 * A2UIRenderer.svelte — Renderizador de superficies A2UI.
 	 *
-	 * Props: tree (A2UINode | A2UINode[] | null)
+	 * Soporta dos modos:
+	 * 1. v0.9: surfaceId + components[] — renderiza lista plana via catalog.ts
+	 * 2. Legacy: tree (A2UINode) — renderizado recursivo con A2UINodeRenderer
 	 *
-	 * - Si tree es null: muestra estado vacío
-	 * - Si tree es un array: renderiza cada nodo como hijo directo
-	 * - Si tree es un solo nodo: renderiza ese nodo (si tiene children, se manejan recursivamente)
-	 *
-	 * El renderizado real de cada nodo delega en A2UINodeRenderer.
+	 * Props:
+	 * - surfaceId?: string — ID de la superficie v0.9
+	 * - components?: A2UIComponent[] — componentes planos v0.9
+	 * - tree?: A2UINode | A2UINode[] | null — árbol legacy
 	 */
 
 	import A2UINodeRenderer from './A2UINodeRenderer.svelte';
+	import { getComponent } from './catalog';
 	import type { A2UINode } from '$lib/types/a2ui';
+	import type { A2UIComponent } from '$lib/types/a2ui';
 
 	let {
+		surfaceId = '',
+		components = undefined,
 		tree = null
 	}: {
+		surfaceId?: string;
+		components?: A2UIComponent[] | undefined;
 		tree?: A2UINode | A2UINode[] | null;
 	} = $props();
+
+	/**
+	 * Determina si estamos en modo v0.9 (components[] presente y no vacío).
+	 */
+	function hasV0Envelope(): boolean {
+		return Array.isArray(components) && components.length > 0;
+	}
+
+	/**
+	 * Resuelve un componente del catálogo por type.
+	 */
+	function resolveComponent(type: string) {
+		return getComponent(type);
+	}
+
+	/**
+	 * Filtra props reservadas de Svelte 5 (children).
+	 */
+	function safeProps(props: Record<string, unknown> | undefined): Record<string, unknown> {
+		if (!props) return {};
+		const { children: _children, ...rest } = props;
+		return rest;
+	}
+
+	/**
+	 * Determina si hay contenido para mostrar.
+	 */
+	function hasContent(): boolean {
+		return hasV0Envelope() || (tree !== null && tree !== undefined);
+	}
 </script>
 
 <div class="a2ui-renderer" data-testid="a2ui-renderer">
-	{#if tree === null || tree === undefined}
+	{#if !hasContent()}
 		<!-- Empty state -->
 		<div class="a2ui-empty" role="status">
 			<div class="a2ui-empty-icon">📋</div>
 			<p class="a2ui-empty-text">No hay contenido disponible</p>
 			<p class="a2ui-empty-hint">Activa el modo agéntico para comenzar</p>
 		</div>
+	{:else if hasV0Envelope()}
+		<!-- A2UI v0.9: render flat list of components via catalog -->
+		<div class="a2ui-components">
+			{#each components as comp (comp.ref ?? comp.type)}
+				{@const Component = resolveComponent(comp.type)}
+				{#if Component}
+					{@const compProps = safeProps(comp.props)}
+					<Component {...compProps} />
+				{:else}
+					<div class="a2ui-fallback" role="alert">
+						<span class="a2ui-fallback-text">Componente no disponible</span>
+					</div>
+				{/if}
+			{/each}
+		</div>
 	{:else if Array.isArray(tree)}
-		<!-- Array of nodes: render each one -->
+		<!-- Legacy: Array of nodes — render each one -->
 		<div class="a2ui-array">
 			{#each tree as node, i}
-				<A2UINodeRenderer node={node} level={0} />
+				<A2UINodeRenderer {node} level={0} />
 			{/each}
 		</div>
 	{:else}
-		<!-- Single node: render it -->
+		<!-- Legacy: Single node — render it -->
 		<A2UINodeRenderer node={tree} level={0} />
 	{/if}
 </div>
@@ -77,9 +129,28 @@
 		margin: 0;
 	}
 
+	.a2ui-components {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
 	.a2ui-array {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-md);
+	}
+
+	.a2ui-fallback {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--spacing-sm);
+		padding: var(--spacing-lg);
+		background: var(--color-bg-alt);
+		border: 1px dashed var(--color-border);
+		border-radius: var(--radius-md);
+		color: var(--color-text-muted);
+		font-size: var(--font-size-sm);
 	}
 </style>
