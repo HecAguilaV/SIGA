@@ -53,5 +53,44 @@ export interface PatchEvent {
 	children: A2UINode[];
 }
 
+// ──────────────────────────────────────────────
+// A2UI v0.9 Types (additive — backward compat)
+// ──────────────────────────────────────────────
+
+/** Componente individual del protocolo A2UI v0.9 */
+export interface A2UIComponent {
+	type: string;
+	props?: Record<string, unknown>;
+	children?: A2UIComponent[];
+	ref?: string; // stable identifier for targeted updates
+}
+
+/** Superficie A2UI v0.9 (conjunto de componentes con layout) */
+export interface A2UISurface {
+	surfaceId: string;
+	components: A2UIComponent[];
+	layout?: A2UILayout;
+}
+
+/** Mensajes del protocolo A2UI v0.9 */
+export type A2UIv0Message =
+	| {
+			type: 'createSurface';
+			surfaceId: string;
+			components: A2UIComponent[];
+			layout?: A2UILayout;
+	  }
+	| {
+			type: 'updateComponents';
+			surfaceId: string;
+			components: A2UIComponent[];
+			mode: 'replace' | 'append' | 'patch';
+	  }
+	| {
+			type: 'updateDataModel';
+			surfaceId: string;
+			data: Record<string, unknown>;
+	  };
+
 /** Unión de todos los eventos A2UI SSE */
 export type A2UIStreamEvent = A2UIEvent | UpdateEvent | PatchEvent;
