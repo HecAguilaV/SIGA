@@ -8,7 +8,7 @@
  * Timeout de 60s por request.
  */
 
-import { error } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 const GATEWAY_BASE = process.env.GATEWAY_BASE || 'http://localhost:8080';
@@ -74,6 +74,42 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 			'X-Accel-Buffering': 'no'
 		}
 	});
+};
+
+/**
+ * POST /api/agent/a2ui — Proxy para generación A2UI v0.9.
+ *
+ * Forward al backend agent service (Python o Kotlin, mismo path).
+ * Retorna 200 + envelope A2UI válido.
+ */
+export const POST: RequestHandler = async ({ request, fetch }) => {
+	let body: { message?: string; context?: string; history?: unknown[]; mode?: string };
+	try {
+		body = await request.json();
+	} catch {
+		return json({ code: 'BAD_REQUEST', message: 'El cuerpo de la solicitud no es JSON válido' }, { status: 400 });
+	}
+
+	if (!body.message || body.message.trim().length === 0) {
+		return json({ code: 'INVALID_MESSAGE', message: 'El campo "message" es requerido' }, { status: 400 });
+	}
+
+	// Forward POST to backend agent service (same path)
+	const agentUrl = `${GATEWAY_BASE}/api/agent/a2ui`;
+
+	const agentRes = await fetch(agentUrl, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+
+	// Read the response body
+	const agentBody = await agentRes.json();
+
+	// Return the same status and body
+	return json(agentBody, { status: agentRes.ok ? 200 : agentRes.status });
 };
 
 /**

@@ -8,7 +8,7 @@
  * - Nodo seleccionado para operaciones dirigidas
  */
 
-import type { A2UINode, A2UILayout, DashboardMode } from '$lib/types/a2ui';
+import type { A2UINode, A2UILayout, DashboardMode, A2UIComponent, A2UIv0Message } from '$lib/types/a2ui';
 
 class A2UIStore {
 	/** Modo de operación: classic (navegación fija) o a2ui (UI generativa) */
@@ -29,6 +29,19 @@ class A2UIStore {
 
 	/** Contexto de ruta activado al entrar en modo agentivo */
 	private routeContext = $state<string>('');
+
+	// ──────────────────────────────────────────────
+	// A2UI v0.9 State (additive — backward compat)
+	// ──────────────────────────────────────────────
+
+	/** Lista plana de componentes A2UI v0.9 (reemplaza tree para surfaces) */
+	components = $state<A2UIComponent[]>([]);
+
+	/** ID de la superficie activa */
+	surfaceId = $state<string>('');
+
+	/** Data bindings resueltos para componentes con binding */
+	dataBindings = $state<Record<string, unknown>>({});
 
 	/**
 	 * enterAgentiveMode — Activa el modo agentivo A2UI.
@@ -135,6 +148,57 @@ class A2UIStore {
 			};
 		}
 		return node;
+	}
+
+	// ──────────────────────────────────────────────
+	// A2UI v0.9 Surface Handling
+	// ──────────────────────────────────────────────
+
+	/**
+	 * handleSurface — Procesa un mensaje A2UI v0.9 y actualiza el estado.
+	 *
+	 * - createSurface → reemplaza components[], surfaceId, dataBindings
+	 * - updateComponents → merge según mode (replace/append/patch por ref)
+	 * - updateDataModel → merge en dataBindings
+	 */
+	handleSurface(msg: A2UIv0Message): void {
+		switch (msg.type) {
+			case 'createSurface': {
+				this.surfaceId = msg.surfaceId;
+				this.components = [...msg.components];
+				this.dataBindings = {};
+				break;
+			}
+			case 'updateComponents': {
+				if (msg.mode === 'replace') {
+					this.components = [...msg.components];
+				} else if (msg.mode === 'append') {
+					this.components = [...this.components, ...msg.components];
+				} else if (msg.mode === 'patch') {
+					// Merge props by ref — update existing or append new
+					for (const incoming of msg.components) {
+						const idx = this.components.findIndex((c) => c.ref === incoming.ref);
+						if (idx >= 0) {
+							this.components[idx] = {
+								...this.components[idx],
+								...incoming,
+								props: {
+									...(this.components[idx].props ?? {}),
+									...(incoming.props ?? {})
+								}
+							};
+						} else {
+							this.components = [...this.components, incoming];
+						}
+					}
+				}
+				break;
+			}
+			case 'updateDataModel': {
+				this.dataBindings = { ...this.dataBindings, ...msg.data };
+				break;
+			}
+		}
 	}
 
 	/**
