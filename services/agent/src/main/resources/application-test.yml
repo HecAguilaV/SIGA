@@ -1,0 +1,7 @@
+eureka:
+  client:
+    enabled: false
+
+gemini:
+  api-key: test-key
+  model-id: gemini-2.0-flash-001
