@@ -199,13 +199,13 @@ services:
   siga-agent:
     image: hdaguila/siga-agent:latest
     build:
-      context: ./services/agent
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/agent/Dockerfile
     container_name: siga-agent
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
-      - PORT=${AGENT_PORT}
-      - DATABASE_URL=postgresql://${AGENT_DB_USER}:${AGENT_DB_PASSWORD}@siga-db:5432/${AGENT_DB_NAME}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL_ID=${GEMINI_MODEL_ID}
     depends_on:
       siga-db:
         condition: service_healthy

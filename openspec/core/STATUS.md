@@ -12,7 +12,7 @@ Este documento refleja la realidad técnica y el progreso de la migración al **
 | `siga-inventory` | 8082 | `siga_inventario` | ✅ Estable | Corazón del stock multi-tenant. |
 | `siga-sales` | 8083 | `siga_ventas` | ✅ Estable | POS y transacciones. |
 | `siga-billing` | 8084 | `siga_comercial` | 🔄 En desarrollo | Gestión comercial y pagos. |
-| `siga-agent` | 8000 | `siga_agente` | ✅ Estable | **IA Agéntica (Strands) estabilizada**. |
+| `siga-agent` | 8000 | `siga_agente` | ✅ Estable | **IA Agéntica (Kotlin Spring Boot + A2UI v0.9)**. |
 | `webapp-v2` | 5173 | — | 🔄 En proceso | Interfaz Premium (SvelteKit). |
 
 ## 2. Decisiones Técnicas Consolidadas
@@ -21,7 +21,7 @@ Este documento refleja la realidad técnica y el progreso de la migración al **
 | :--- | :--- |
 | **Schema-per-service** | Aislamiento lógico sin el costo de múltiples servidores de DB. |
 | **Kotlin (No Data Classes)** | Estabilidad con Hibernate proxies y lazy loading. |
-| **Python FastAPI** | Mejor ecosistema para integración con LLMs (LangChain). |
+| **Kotlin Spring Boot (Agent)** | Agente migrado de Python/FastAPI a Kotlin/Spring Boot con A2UI v0.9. El SDK GenAI de Google reemplaza LangChain. |
 | **Void/Glassmorphism** | Estética premium para diferenciación competitiva. |
 
 ## 3. Próximos Pasos Estratégicos

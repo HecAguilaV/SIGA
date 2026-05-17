@@ -1,20 +1,34 @@
-FROM python:3.11-slim
-
+# Build stage
+FROM gradle:8.10-jdk21 AS build
 WORKDIR /app
 
-# Instalar dependencias
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 1. Copiar Gradle Wrapper y archivos de configuración básicos
+COPY gradlew .
+COPY gradle gradle
 
-# Copiar el app
-COPY app ./app
+# 2. Generar un settings.gradle.kts temporal para construir solo este módulo
+RUN echo 'rootProject.name = "siga"\ninclude("services:common")\ninclude("services:agent")' > settings.gradle.kts
 
-# Exponer el puerto por defecto de FastAPI
+# 3. Copiar la librería común y el microservicio específico
+COPY services/common services/common
+COPY services/agent services/agent
+
+# 4. Construir el microservicio
+RUN ./gradlew :services:agent:assemble --no-daemon
+
+# 5. Extraer el JAR
+RUN find services/agent/build/libs -name "*.jar" ! -name "*-plain.jar" -exec cp {} /app/app.jar \;
+
+# Runtime stage
+FROM eclipse-temurin:21-jre-alpine
+RUN apk add --no-cache curl
+WORKDIR /app
+
+COPY --from=build /app/app.jar app.jar
 EXPOSE 8000
+ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
-# Variables de entorno
-ENV EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://siga-eureka:8761/eureka/
-ENV PORT=8000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
 
-# Ejecutar con uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
