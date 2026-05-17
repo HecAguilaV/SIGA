@@ -29,7 +29,7 @@ SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumpli
 
 - **Backend**: Kotlin + Spring Boot 4.0.6. Implementación estricta de Arquitectura Hexagonal (Gold Standard) y Disciplina TDD.
 - **Mensajería**: Apache Kafka (SAGA Coreografía) para transacciones distribuidas entre microservicios.
-- **IA**: Python + LangChain + PGVector (Memoria Semántica por Tenant).
+- **IA**: Kotlin + Spring Boot + Google Gemini SDK (A2UI v0.9 Protocol + 3-Tier Fallback).
 - **Frontend**: SvelteKit 5 (Dashboard unificado bajo `apps/dashboard`).
 - **Persistencia**: PostgreSQL con aislamiento de esquemas y UUID v4 como estándar único de identidad y seudonimización.
 - **Seguridad**: JWT (Stateless) y cumplimiento riguroso con la Ley Chilena 21.719.
