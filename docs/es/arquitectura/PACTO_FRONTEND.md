@@ -12,9 +12,8 @@
 El proyecto se mantiene como un **Monorepo** gestionado mediante **PNPM Workspaces** para garantizar refactorizaciones atómicas e infraestructura compartida.
 
 ### Núcleo Compartido (`/packages`)
-- **`@siga/api-client`**: El "Traductor". Configuración base de Axios/Fetch, interceptores JWT y manejo de errores para el API Gateway.
-- **`@siga/types`**: El "Contrato de Datos". Interfaces TypeScript compartidas, enums y DTOs entre todos los frontends y el backend.
-- **`@siga/design-tokens`**: El "ADN Visual". Variables CSS, configuración de Tailwind y assets de marca para una consistencia visual del 100%.
+- **`@siga/shared`**: El "Contrato de Datos". Tipos TypeScript, validadores y utilidades compartidas entre todos los frontends (auth, inventory, sales, stores, dashboard).
+- **`@siga/ui-kit`**: El "ADN Visual". Design system con componentes atómicos Svelte 5, tokens CSS nativos (colores, tipografía, glassmorphism) y modo claro/oscuro.
 
 ---
 
@@ -23,9 +22,12 @@ Cada aplicación frontend es independiente en su lógica de negocio pero consume
 
 | Frontend | Tecnología | Patrón | Alcance de Lógica |
 | :--- | :--- | :--- | :--- |
-| **Dashboard** | SvelteKit 5 | Observer + Stores + BFF | Dashboard Admin, Inventario, Ventas, Agente IA, Landing, Portales. |
-
-> **Nota (Mayo 2026)**: Los frontends legacy (webapp, landing, customer-portal React, admin-portal, mobile) fueron declarados legacy deprecado. El dashboard SvelteKit unifica todas las interfaces.
+| **Dashboard** | SvelteKit 5 | Observer + Stores + BFF | Centro operativo: Inventario, Ventas, Agente IA, Analytics |
+| **Customer Portal** | SvelteKit 5 | — | Suscripciones SaaS, pagos, acceso SSO al Dashboard |
+| **Admin Portal** | SvelteKit 5 | — | Administración interna de la plataforma |
+| **Landing** | SvelteKit 5 | — | Sitio público de presentación |
+| **POS** | SvelteKit 5 | — | Terminal de punto de venta en tienda |
+| **Mobile** | — | — | Ejecución rápida en terreno *(etapa futura)* |
 
 ---
 
@@ -40,10 +42,10 @@ Cada aplicación frontend es independiente en su lógica de negocio pero consume
 
 ---
 
-## 4. Hoja de Ruta Próxima Sesión
+## 4. Hoja de Ruta
 1. **Arranque Secuencial Docker**: Eureka -> Gateway -> Auth -> Inventory.
 2. **Smoke Test**: Verificar comunicación cross-service (Ventas -> Deducción de stock en Inventory).
-3. **Estructura de Paquetes**: Crear `@siga/api-client` y `@siga/types`.
+3. **Integración de Paquetes**: Consolidar `@siga/shared` y `@siga/ui-kit` como consumo estándar en todos los frontends.
 
 ---
 > [!NOTE]

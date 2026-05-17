@@ -196,6 +196,26 @@ services:
     networks:
       - siga-net
 
+  siga-agent:
+    image: hdaguila/siga-agent:latest
+    build:
+      context: .
+      dockerfile: ./services/agent/Dockerfile
+    container_name: siga-agent
+    profiles:
+      - agent
+    ports:
+      - "${AGENT_PORT}:8000"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL_ID=${GEMINI_MODEL_ID}
+    depends_on:
+      siga-eureka:
+        condition: service_started
+    networks:
+      - siga-net
+
 volumes:
   siga-db-data:
   siga-pgadmin-data:

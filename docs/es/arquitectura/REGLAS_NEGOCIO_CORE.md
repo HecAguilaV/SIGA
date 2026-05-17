@@ -12,9 +12,12 @@ SIGA (Sistema de Inteligencia y Gestión de Activos) es una solución tecnológi
 4. **Arquitectura de Microservicios Soberanos:** Implementación SaaS real con una base de datos independiente por servicio (`siga_auth`, `siga_inventory`, `siga_sales`, `siga_billing`, `siga_agent`). El aislamiento es total a nivel de infraestructura.
 
 ## 3. Frontends y Puntos de Entrada
-*   **customer-portal:** Puerta de entrada para el dueño de la pyme (SaaS). Gestión de suscripciones, pagos y acceso SSO a la webapp.
-*   **webapp:** Centro operativo para la gestión diaria de la pyme (Inventario, Ventas, Reportes).
-*   **mobile:** Herramienta de ejecución rápida para el personal de terreno.
+*   **dashboard:** Centro operativo para la gestión diaria de la pyme (Inventario, Ventas, Reportes, Agente IA).
+*   **customer-portal:** Puerta de entrada para el dueño de la pyme (SaaS). Gestión de suscripciones, pagos y acceso SSO al dashboard.
+*   **admin-portal:** Panel de administración interna de la plataforma SIGA.
+*   **landing:** Sitio público de presentación del producto.
+*   **pos:** Terminal de punto de venta para operaciones en tienda.
+*   **mobile:** Herramienta de ejecución rápida para el personal de terreno *(etapa futura)*.
 
 ## 4. Roles y Flexibilidad (Gobernanza de Permisos)
 En las PYMES, las fronteras de los roles son difusas y dinámicas. SIGA implementa un modelo de **Permisos Granulares e Inheredables**:
