@@ -63,7 +63,7 @@ test.describe('Auth Flow (E2E)', () => {
 		// Switch to User tab
 		await page.getByRole('tab', { name: /usuario del sistema/i }).click();
 
-		await page.getByLabel('Correo electrónico').fill('admin@siga.com');
+		await page.getByLabel('Correo electrónico').fill('admin@siga.cl');
 		await page.getByLabel('Contraseña').fill('admin1234');
 		await page.getByRole('button', { name: /iniciar sesión/i }).click();
 

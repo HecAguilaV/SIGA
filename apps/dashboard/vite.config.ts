@@ -14,6 +14,18 @@ export default defineConfig({
 		port: 5173,
 		strictPort: true,
 		proxy: {
+			// Agent A2UI (POST /api/agent/a2ui) → direct to Kotlin agent
+			'/api/agent': {
+				target: 'http://localhost:8000',
+				changeOrigin: true
+			},
+			// Chat SSE (GET /api/chat/stream) → rewrite path to agent's endpoint
+			'/api/chat': {
+				target: 'http://localhost:8000',
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/api\/chat/, '/api/agent/chat')
+			},
+			// Everything else through the gateway
 			'/api': {
 				target: 'http://localhost:8080',
 				changeOrigin: true,

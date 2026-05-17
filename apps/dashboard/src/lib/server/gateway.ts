@@ -108,28 +108,28 @@ export async function attemptRefresh(
 
 		const data = await res.json();
 
-		// Setear nuevas cookies
+		// Setear nuevas cookies (sin Secure para compatibilidad HTTP)
 		if (data.accessToken) {
 			event.cookies.set('siga_token', data.accessToken, {
 				path: '/',
 				httpOnly: true,
-				secure: true,
 				sameSite: 'lax',
-				maxAge: 60 * 15 // 15 min
+				maxAge: data.expiresIn ?? 900
 			});
+
+			if (data.refreshToken) {
+				event.cookies.set('siga_refresh', data.refreshToken, {
+					path: '/api/auth/refresh',
+					httpOnly: true,
+					sameSite: 'strict',
+					maxAge: 60 * 60 * 24 * 7
+				});
+			}
+
+			return true;
 		}
 
-		if (data.refreshToken) {
-			event.cookies.set('siga_refresh', data.refreshToken, {
-				path: '/api/auth/refresh',
-				httpOnly: true,
-				secure: true,
-				sameSite: 'strict',
-				maxAge: 60 * 60 * 24 * 7 // 7 días
-			});
-		}
-
-		return true;
+		return false;
 	} catch {
 		return false;
 	}

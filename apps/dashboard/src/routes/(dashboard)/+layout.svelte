@@ -33,7 +33,11 @@
 			<!-- Agentive mode: render A2UIRenderer -->
 			{#if a2ui.isAgentive}
 				<div class="a2ui-slot" class:a2ui-slot--visible={a2ui.isAgentive}>
-					<A2UIRenderer tree={a2ui.tree} />
+					<A2UIRenderer 
+						tree={a2ui.tree} 
+						components={a2ui.components} 
+						surfaceId={a2ui.surfaceId} 
+					/>
 				</div>
 			{/if}
 		</main>

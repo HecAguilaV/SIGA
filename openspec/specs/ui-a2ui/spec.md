@@ -2,6 +2,7 @@
 
 **Status**: Active
 **Source change**: frontend-desde-cero (archived)
+**Delta changes**: agent-kotlin-a2ui (archived)
 **Depends on**: ui-bff, ui-auth-flow, ui-theme
 
 ## Requirements
@@ -18,24 +19,29 @@
 
 ### A2UI Protocol
 
-- REQ-A2UI-14: El sistema DEBE implementar un renderizador `A2UIRenderer.svelte` que mapee payloads JSON A2UI {type, props, children} a componentes nativos del catálogo.
-- REQ-A2UI-15: El sistema DEBE mantener un catálogo de componentes registrados (Card, Button, Input, CrudTable, ChartWrapper, InsightPanel, AnomalyList, Badge, Modal, Spinner, Skeleton, SearchBar, CrudForm, Container).
-- REQ-A2UI-16: El SSE DEBE extenderse para transportar eventos `a2ui` además de `chunk`/`done`/`error`/`tool`.
+- REQ-A2UI-14: El sistema DEBE implementar un renderizador `A2UIRenderer.svelte` que acepte un envelope A2UI v0.9 con `surfaceId` + `components[]` y mapee cada componente (`type`, `props`, `ref`) a componentes nativos del catálogo.
+- REQ-A2UI-15: El sistema DEBE mantener un catálogo de componentes registrados (Card, Button, Input, CrudTable, ChartWrapper, InsightPanel, AnomalyList, Badge, Modal, Spinner, Skeleton, SearchBar, CrudForm, Container, StatCard, TrendBadge, DataTable).
+- REQ-A2UI-16: El SSE DEBE transportar eventos de protocolo A2UI v0.9 (`createSurface`, `updateComponents`, `updateDataModel`) dentro del tipo `a2ui`, además de `chunk`/`done`/`error`/`tool`.
 - REQ-A2UI-17: El sistema DEBE soportar dos modos de operación: Classic (navegación fija) y Agentive (UI compuesta por agente vía A2UI).
 - REQ-A2UI-18: El sistema DEBE proveer un mecanismo de transición (botón "Ahorremos tiempo: SIGA") que transforme la vista actual de modo clásico a agentivo.
-- REQ-A2UI-19: El A2UIRenderer DEBE soportar actualizaciones incrementales (update nodo por ID), parches de children (patch) y reemplazo completo de árbol (replace).
+- REQ-A2UI-19: El A2UIRenderer DEBE soportar actualizaciones incrementales vía `updateComponents` (target por `ref` dentro de `components[]`) y reemplazo completo vía `createSurface`.
+
+#### ADDED BY agent-kotlin-a2ui
+
+- REQ-A2UI-23: El a2ui store DEBE mantener `surfaceId`, `components[]`, y `dataBindings{}` en lugar de un único `tree`. Cada componente DEBE tener un `ref` (identificador estable) para actualizaciones dirigidas.
+- REQ-A2UI-24: Los componentes DEBEN usar `ref` (no `nodeId`) como identidad. Los children DEBEN expresarse como `children[]` con `ref` por child, no como árboles `A2UINode` anidados.
+- REQ-A2UI-25: Los componentes PUEDEN declarar data bindings: `{ref:"chart-1", bind:"/api/sales"}`. El store DEBE resolver bindings desde `dataBindings{}` y pasar el resultado como props.
+- REQ-A2UI-26: El catálogo DEBE agregar tres componentes: `stat-card`, `trend-badge`, `data-table`.
 
 ### Protocolo SSE
 
 | Evento | Formato | Descripción |
 |--------|---------|-------------|
-| chunk | `data: {"type":"chunk","content":"texto parcial","done":false}\n\n` | Fragmento de respuesta del agente |
+| chunk | `data: {"type":"chunk","content":"texto","done":false}\n\n` | Fragmento de respuesta del agente |
 | done | `data: {"type":"done","content":"texto completo","done":true}\n\n` | Fin de la respuesta |
-| error | `data: {"type":"error","code":"AGENT_TIMEOUT","message":"El agente no respondió a tiempo"}\n\n` | Error del agente |
-| tool | `data: {"type":"tool","name":"ajustar_stock","status":"running"}\n\n` | Notificación de ejecución de herramienta |
-| a2ui | `data: {"type":"a2ui","tree":{"type":"container","children":[...]},"action":"replace"}\n\n` | Payload A2UI para renderizado de UI generativa (action: replace \| append) |
-| update | `data: {"type":"update","nodeId":"chart-1","props":{...}}\n\n` | Actualización incremental de props en un nodo A2UI existente |
-| patch | `data: {"type":"patch","nodeId":"container-main","children":[...]}\n\n` | Reemplazo de children en un nodo A2UI existente |
+| error | `data: {"type":"error","code":"...","message":"..."}\n\n` | Error del agente |
+| tool | `data: {"type":"tool","name":"...","status":"running\|done\|error"}\n\n` | Notificación de ejecución de herramienta |
+| a2ui | `data: {"type":"a2ui","surfaceId":"...","surface":{"type":"createSurface\|updateComponents\|updateDataModel","components":[...]}}\n\n` | Payload A2UI v0.9 |
 
 ### Non-functional
 
@@ -118,9 +124,55 @@ Y el chat se muestra como sidebar colapsable a la derecha
 Y las cards se redistribuyen sin pérdida de contenido
 Y al rotar a vertical (< 768px) la grilla pasa a 1 columna automáticamente
 
+### Scenario: Agente renderiza dashboard via createSurface (v0.9)
+Given el agente responde con `{"type":"createSurface","surfaceId":"s1","components":[{"type":"chart","ref":"c1","props":{...}},{"type":"stat-card","ref":"sc1","props":{...}}],"dataBindings":{"c1":"/api/sales"}}`
+When el evento SSE a2ui llega al store
+Then el store setea `surfaceId="s1"`, `components=[...]`, `dataBindings={...}`
+Y el renderer muestra chart + stat-card
+
+### Scenario: Contenedor con children referenciados (v0.9)
+Given un componente container con `ref:"main"` y `children:[{ref:"grid1",type:"container",...}]`
+When el renderer procesa el componente
+Then cada child es addressable por `ref` para futuros `updateComponents`
+
+### Scenario: Data binding resolution (v0.9)
+Given `dataBindings:{ "chart-1":"/api/sales" }` y componente `{ref:"chart-1", bind:"chart-1"}`
+When el renderer monta el componente
+Then fetch `/api/sales` se ejecuta y el resultado se pasa como prop `data`
+
+### Scenario: Render v0.9 components array
+Given el store tiene `components:[{type:"chart",ref:"c1"},{type:"stat-card",ref:"sc1"}]`
+When A2UIRenderer procesa el array
+Then renderiza cada componente en orden como lista plana o envuelto en un surface container
+Y cada componente recibe su `ref` como data attribute
+
+### Scenario: Empty components array (v0.9)
+Given `components:[]`
+When A2UIRenderer renderiza
+Then muestra el estado vacío ("No hay contenido disponible")
+
+### Scenario: Surface llega via SSE durante streaming (v0.9)
+Given un chat stream en progreso
+When el agente emite `{"type":"a2ui","surfaceId":"s1","surface":{"type":"createSurface","components":[...]}}`
+Then el parser SSE lo rutea al a2ui store
+Y el store actualiza `components` y dispara re-render
+
+### Scenario: Backward compat con update/patch legacy (v0.9)
+Given un agente anterior emite `{"type":"update","nodeId":"n1","props":{}}`
+When el frontend lo recibe
+Then lo procesa como una actualización dirigida via `patchNode` (backward compat)
+
+### Scenario: Targeted component update via ref (v0.9)
+Given `components:[{ref:"c1",type:"chart",...},{ref:"sc1",type:"stat-card",...}]`
+When el agente emite `{"type":"a2ui","surfaceId":"s1","surface":{"type":"updateComponents","components":[{"ref":"sc1","props":{"value":"$15K"}}]}}`
+Then el store mergea los nuevos props en el stat-card por `ref`
+Y el chart permanece sin cambios
+
 ## Edge Cases
 - REQ-A2UI-12: Si el usuario envía mensajes muy rápido (spam), el sistema DEBE encolar y procesar en orden, ignorando mensajes duplicados idénticos en los últimos 2s.
 - REQ-A2UI-13: Si el agente responde con un tool call que falla, DEBE mostrar el error en el chat y permitir al usuario corregir.
+- REQ-A2UI-27: Si `updateComponents` referencia un `ref` que no está en `components[]`, el sistema DEBE ignorarlo silenciosamente y loguear una advertencia.
+- REQ-A2UI-28: Backward compat: eventos SSE con tipos `update`/`patch` (formato legacy) DEBEN seguir funcionando via `patchNode`/`patchChildren` existente.
 
 ## Acceptance Criteria
 - [ ] Endpoint SSE funcional con `ReadableStream`
@@ -134,7 +186,7 @@ Y al rotar a vertical (< 768px) la grilla pasa a 1 columna automáticamente
 - [ ] Dual-mode: Classic ↔ Agentive vía store reactivo
 - [ ] Botón "Ahorremos tiempo: SIGA" en Header/FAB
 - [ ] Actualización incremental de nodos A2UI (update/patch)
-- [ ] Catálogo de 14 tipos A2UI registrados
+- [ ] Catálogo de 17 tipos A2UI registrados (14 legacy + 3 v0.9)
 - [ ] Responsive-first: 3 breakpoints funcionales (mobile < 768px, tablet 768-1024px, desktop > 1024px)
 - [ ] ContextualAssistant como bottom sheet en mobile
 - [ ] Touch targets mínimos 44px en todos los componentes interactivos

@@ -258,8 +258,12 @@ class ChatStore {
 				break;
 			}
 			case 'a2ui': {
-				if (event.tree && event.action) {
+				if (event.surface) {
+					a2ui.handleSurface(event.surface);
+					a2ui.enterAgentiveMode({});
+				} else if (event.tree && event.action) {
 					a2ui.updateTree(event.tree, event.action);
+					a2ui.enterAgentiveMode({});
 				}
 				break;
 			}

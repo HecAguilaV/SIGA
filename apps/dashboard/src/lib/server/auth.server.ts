@@ -67,7 +67,6 @@ export function setSessionCookies(
 	cookies.set('siga_token', accessToken, {
 		path: '/',
 		httpOnly: true,
-		secure: true,
 		sameSite: 'lax',
 		maxAge: 60 * 15 // 15 minutos
 	});
@@ -75,7 +74,6 @@ export function setSessionCookies(
 	cookies.set('siga_refresh', refreshToken, {
 		path: '/api/auth/refresh',
 		httpOnly: true,
-		secure: true,
 		sameSite: 'strict',
 		maxAge: 60 * 60 * 24 * 7 // 7 días
 	});

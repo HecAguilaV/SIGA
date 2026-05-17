@@ -34,9 +34,7 @@ spring:
         - id: siga-inventory
           uri: lb://siga-inventory
           predicates:
-            - Path=/api/products/**
-            - Path=/api/stores/**
-            - Path=/api/inventory/**
+            - Path=/api/products/**, /api/stores/**, /api/inventory/**
           filters:
             - RewritePath=/api/(?<service>products|stores|inventory)/(?<segment>.*), /api/v1/$\{service}/$\{segment}
 
@@ -44,8 +42,7 @@ spring:
         - id: siga-sales
           uri: lb://siga-sales
           predicates:
-            - Path=/api/sales/**
-            - Path=/api/cash-shifts/**
+            - Path=/api/sales/**, /api/cash-shifts/**
           filters:
             - RewritePath=/api/(?<segment>.*), /api/v1/$\{segment}
 
@@ -53,8 +50,7 @@ spring:
         - id: siga-billing
           uri: lb://siga-billing
           predicates:
-            - Path=/api/billing/**
-            - Path=/api/comercial/**
+            - Path=/api/billing/**, /api/comercial/**
           filters:
             - RewritePath=/api/billing/(?<segment>.*), /api/v1/billing/$\{segment}
             - RewritePath=/api/comercial/(?<segment>.*), /api/v1/billing/$\{segment}
@@ -63,7 +59,9 @@ spring:
         - id: siga-agent
           uri: lb://siga-agent
           predicates:
-            - Path=/api/agent/**
+            - Path=/api/agent/**, /api/chat/**
+          filters:
+            - RewritePath=/api/chat/(?<segment>.*), /api/agent/chat/$\{segment}
 
 eureka:
   instance:

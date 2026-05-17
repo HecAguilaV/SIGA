@@ -68,7 +68,7 @@ describe('Auth Flow Integration', () => {
 				principalType: 'user',
 				user: {
 					id: 'user-1',
-					email: 'admin@siga.com',
+					email: 'admin@siga.cl',
 					name: 'Admin SIGA',
 					principalType: 'user',
 					rol: 'admin',
@@ -80,7 +80,7 @@ describe('Auth Flow Integration', () => {
 				new Response(JSON.stringify(loginResponse), { status: 200 })
 			);
 
-			const result = await login(mockFetch, 'admin@siga.com', 'admin1234');
+			const result = await login(mockFetch, 'admin@siga.cl', 'admin1234');
 
 			expect(result.data).toBeDefined();
 			expect(result.data?.user.rol).toBe('admin');

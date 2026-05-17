@@ -5,7 +5,7 @@
  * eventos SSE del agente, y llamadas a herramientas.
  */
 
-import type { A2UINode } from './a2ui';
+import type { A2UINode, A2UIv0Message } from './a2ui';
 
 /** Mensaje individual en la conversación */
 export interface ChatMessage {
@@ -31,6 +31,7 @@ export interface SSEEvent {
 	// A2UI event payloads
 	tree?: A2UINode;
 	action?: 'replace' | 'append';
+	surface?: A2UIv0Message;
 	nodeId?: string;
 	props?: Record<string, unknown>;
 	children?: A2UINode[];

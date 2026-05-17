@@ -5,7 +5,7 @@ test.describe('Products CRUD (E2E)', () => {
 		// Login as admin before each test
 		await page.goto('/login');
 		await page.getByRole('tab', { name: /usuario del sistema/i }).click();
-		await page.getByLabel('Correo electrónico').fill('admin@siga.com');
+		await page.getByLabel('Correo electrónico').fill('admin@siga.cl');
 		await page.getByLabel('Contraseña').fill('admin1234');
 		await page.getByRole('button', { name: /iniciar sesión/i }).click();
 		await page.waitForURL(/\/(?!login)/);
