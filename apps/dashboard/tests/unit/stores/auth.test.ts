@@ -18,7 +18,7 @@ describe('Auth Store', () => {
 
 	const mockAdmin: UserSession = {
 		id: 'admin-1',
-		email: 'admin@siga.com',
+		email: 'admin@siga.cl',
 		name: 'Admin SIGA',
 		principalType: 'user',
 		rol: 'admin',

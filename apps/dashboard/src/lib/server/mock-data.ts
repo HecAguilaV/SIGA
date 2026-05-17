@@ -15,9 +15,9 @@ export const MOCK_PRODUCTS = [
 ];
 
 export const MOCK_STORES = [
-	{ id: 'store1', name: 'Sucursal Centro', address: 'Av. Siempre Viva 123', phone: '555-0101', email: 'centro@siga.com', active: true, productCount: 35, createdAt: '2024-01-01', updatedAt: '2025-05-01' },
-	{ id: 'store2', name: 'Sucursal Norte', address: 'Av. Libertador 456', phone: '555-0102', email: 'norte@siga.com', active: true, productCount: 28, createdAt: '2024-03-15', updatedAt: '2025-05-15' },
-	{ id: 'store3', name: 'Depósito Central', address: 'Ruta 8 Km 15', phone: '555-0103', email: 'deposito@siga.com', active: true, productCount: 120, createdAt: '2024-06-01', updatedAt: '2025-04-20' }
+	{ id: 'store1', name: 'Sucursal Centro', address: 'Av. Siempre Viva 123', phone: '555-0101', email: 'centro@siga.cl', active: true, productCount: 35, createdAt: '2024-01-01', updatedAt: '2025-05-01' },
+	{ id: 'store2', name: 'Sucursal Norte', address: 'Av. Libertador 456', phone: '555-0102', email: 'norte@siga.cl', active: true, productCount: 28, createdAt: '2024-03-15', updatedAt: '2025-05-15' },
+	{ id: 'store3', name: 'Depósito Central', address: 'Ruta 8 Km 15', phone: '555-0103', email: 'deposito@siga.cl', active: true, productCount: 120, createdAt: '2024-06-01', updatedAt: '2025-04-20' }
 ];
 
 export const MOCK_CATEGORIES = [
@@ -32,9 +32,9 @@ export const MOCK_CATEGORIES = [
 ];
 
 export const MOCK_USERS = [
-	{ id: 'user1', email: 'admin@siga.com', name: 'Admin Principal', rol: 'ADMINISTRATOR', tenantId: 'tenant1', active: true, principalType: 'user' as const, createdAt: '2024-01-01', updatedAt: '2025-06-01' },
-	{ id: 'user2', email: 'oper@siga.com', name: 'Operador Juan', rol: 'OPERATOR', tenantId: 'tenant1', active: true, principalType: 'user' as const, createdAt: '2024-02-01', updatedAt: '2025-05-15' },
-	{ id: 'user3', email: 'caja@siga.com', name: 'Cajero Pedro', rol: 'CASHIER', tenantId: 'tenant1', active: true, principalType: 'user' as const, createdAt: '2024-03-01', updatedAt: '2025-04-20' }
+	{ id: 'user1', email: 'demo@siga.cl', name: 'Demo Principal', rol: 'ADMINISTRATOR', tenantId: 'tenant1', active: true, principalType: 'user' as const, createdAt: '2024-01-01', updatedAt: '2025-06-01' },
+	{ id: 'user2', email: 'oper@siga.cl', name: 'Operador Juan', rol: 'OPERATOR', tenantId: 'tenant1', active: true, principalType: 'user' as const, createdAt: '2024-02-01', updatedAt: '2025-05-15' },
+	{ id: 'user3', email: 'caja@siga.cl', name: 'Cajero Pedro', rol: 'CASHIER', tenantId: 'tenant1', active: true, principalType: 'user' as const, createdAt: '2024-03-01', updatedAt: '2025-04-20' }
 ];
 
 export function paginateMock<T>(items: T[], page: number, pageSize: number): { items: T[]; total: number; page: number; pageSize: number; totalPages: number } {

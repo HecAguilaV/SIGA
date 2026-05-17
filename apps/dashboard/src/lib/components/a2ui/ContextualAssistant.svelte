@@ -8,11 +8,8 @@
 	 *
 	 * Características:
 	 * - FAB global con badge de estado online/offline
-	 * - Se expande en un widget de chat con historial
-	 * - Reconexión automática con backoff (1s → 2s → 4s, máx 3)
-	 * - Timeout global de 60s por mensaje
-	 * - Envía contexto de ruta actual en el payload
-	 * - Tool indicators para llamadas a herramientas
+	 * - Se expande en un widget de chat arrastrable (Draggable)
+	 * - Se abre automáticamente al entrar en modo agéntico
 	 */
 
 	import AssistantFab from './AssistantFab.svelte';
@@ -20,6 +17,7 @@
 	import ChatInput from './ChatInput.svelte';
 	import ToolIndicator from './ToolIndicator.svelte';
 	import { chat } from '$lib/stores/chat.svelte';
+	import { a2ui } from '$lib/stores/a2ui.svelte';
 
 	interface ToolCallDisplay {
 		name: string;
@@ -36,21 +34,27 @@
 	} = $props();
 
 	let isOpen = $state(false);
-	let isOnline = $state(true); // Inicia asumiendo online
+	let isOnline = $state(true);
 	let isConnecting = $state(false);
 	let activeToolCalls = $state<ToolCallDisplay[]>([]);
 	let chatWidgetEl: HTMLDivElement | undefined = $state();
 
-	// Sincronizar con el store
+	// Sincronizar con el store de chat y a2ui
 	$effect(() => {
 		activeToolCalls = chat.toolCalls ?? [];
 		isConnecting = chat.status === 'connecting';
 	});
 
+	// Abrir automáticamente si se activa el modo agéntico
+	$effect(() => {
+		if (a2ui.isAgentive && !isOpen) {
+			isOpen = true;
+		}
+	});
+
 	function toggleOpen() {
 		isOpen = !isOpen;
 		if (isOpen) {
-			// Scroll al último mensaje al abrir
 			requestAnimationFrame(() => {
 				if (chatWidgetEl) {
 					chatWidgetEl.scrollTop = chatWidgetEl.scrollHeight;
@@ -60,7 +64,6 @@
 	}
 
 	async function handleSend(text: string) {
-		// Construir contexto con modo y ruta actual
 		const contextPayload = JSON.stringify({
 			mode,
 			currentRoute,
@@ -69,7 +72,6 @@
 
 		await chat.send(text, contextPayload);
 
-		// Scroll al final después de agregar mensajes
 		requestAnimationFrame(() => {
 			if (chatWidgetEl) {
 				chatWidgetEl.scrollTop = chatWidgetEl.scrollHeight;
@@ -87,18 +89,13 @@
 
 	const statusMessage = $derived.by(() => {
 		switch (chat.status) {
-			case 'connecting':
-				return 'Conectando...';
-			case 'streaming':
-				return 'El asistente está respondiendo...';
-			case 'error':
-				return 'Error de conexión';
-			default:
-				return '';
+			case 'connecting': return 'Conectando...';
+			case 'streaming': return 'El asistente está respondiendo...';
+			case 'error': return 'Error de conexión';
+			default: return '';
 		}
 	});
 
-	// Scroll automático al recibir nuevos mensajes
 	$effect(() => {
 		if (chat.messages.length > 0 && chatWidgetEl) {
 			requestAnimationFrame(() => {
@@ -106,99 +103,146 @@
 			});
 		}
 	});
+
+	// Svelte Action para arrastrar la ventana
+	function draggable(node: HTMLElement) {
+		let x = 0;
+		let y = 0;
+
+		function handleMousedown(event: MouseEvent) {
+			// Solo permitir arrastrar desde el header
+			if (!(event.target as HTMLElement).closest('.widget-header')) return;
+			// Ignorar clics en los botones del header
+			if ((event.target as HTMLElement).closest('.header-btn')) return;
+
+			// Convertir a fixed si no lo es, para evitar conflictos de offset
+			node.style.position = 'fixed';
+			
+			const rect = node.getBoundingClientRect();
+			x = event.clientX - rect.left;
+			y = event.clientY - rect.top;
+
+			window.addEventListener('mousemove', handleMousemove);
+			window.addEventListener('mouseup', handleMouseup);
+		}
+
+		function handleMousemove(event: MouseEvent) {
+			let newLeft = event.clientX - x;
+			let newTop = event.clientY - y;
+
+			// Límites para no perder la ventana
+			const maxLeft = window.innerWidth - node.offsetWidth;
+			const maxTop = window.innerHeight - node.offsetHeight;
+			
+			newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+			newTop = Math.max(0, Math.min(newTop, maxTop));
+
+			node.style.left = `${newLeft}px`;
+			node.style.top = `${newTop}px`;
+			node.style.bottom = 'auto'; // Sobrescribir el default
+			node.style.right = 'auto';  // Sobrescribir el default
+		}
+
+		function handleMouseup() {
+			window.removeEventListener('mousemove', handleMousemove);
+			window.removeEventListener('mouseup', handleMouseup);
+		}
+
+		node.addEventListener('mousedown', handleMousedown);
+
+		return {
+			destroy() {
+				node.removeEventListener('mousedown', handleMousedown);
+			}
+		};
+	}
 </script>
 
 <div class="contextual-assistant">
-	<!-- FAB trigger -->
 	<AssistantFab
 		isOnline={isOnline}
 		isOpen={isOpen}
 		onclick={toggleOpen}
 		unread={0}
 	/>
+</div>
 
-	<!-- Chat widget (expandido) -->
-	{#if isOpen}
-		<div class="chat-widget" role="dialog" aria-label="Asistente SIGA" aria-modal="false">
-			<!-- Header -->
-			<div class="widget-header">
-				<div class="header-info">
-					<span class="header-title">Asistente SIGA</span>
-					<span class="header-mode">{mode === 'analyst' ? 'Analista' : 'Operador'}</span>
-				</div>
-				<div class="header-actions">
-					{#if chat.status === 'streaming' || chat.status === 'connecting'}
-						<button class="header-btn" onclick={handleCancel} aria-label="Cancelar" type="button">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-								<rect x="6" y="6" width="12" height="12" rx="2" ry="2"></rect>
-							</svg>
-						</button>
-					{/if}
-					<button class="header-btn" onclick={toggleOpen} aria-label="Cerrar" type="button">
+<!-- Chat widget (Fuera de contextual-assistant para que sea position: fixed global) -->
+{#if isOpen}
+	<div class="chat-widget" role="dialog" aria-label="Asistente SIGA" aria-modal="false" use:draggable>
+		<div class="widget-header">
+			<div class="header-info">
+				<span class="header-title">Asistente SIGA</span>
+				<span class="header-mode">{mode === 'analyst' ? 'Analista' : 'Operador'}</span>
+			</div>
+			<div class="header-actions">
+				{#if chat.status === 'streaming' || chat.status === 'connecting'}
+					<button class="header-btn" onclick={handleCancel} aria-label="Cancelar" type="button">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<line x1="18" y1="6" x2="6" y2="18"></line>
-							<line x1="6" y1="6" x2="18" y2="18"></line>
+							<rect x="6" y="6" width="12" height="12" rx="2" ry="2"></rect>
 						</svg>
 					</button>
-				</div>
+				{/if}
+				<button class="header-btn" onclick={toggleOpen} aria-label="Cerrar" type="button">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
+					</svg>
+				</button>
 			</div>
-
-			<!-- Messages area -->
-			<div class="widget-messages" bind:this={chatWidgetEl}>
-				{#if chat.messages.length === 0}
-					<div class="empty-state">
-						<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-						</svg>
-						<p class="empty-title">Asistente {mode === 'analyst' ? 'Analista' : 'Operador'}</p>
-						<p class="empty-desc">
-							{mode === 'analyst'
-								? 'Consulta datos del negocio: stock, ventas, tendencias.'
-								: 'Ejecuta acciones: ajustar stock, crear productos, etc.'}
-						</p>
-					</div>
-				{:else}
-					{#each chat.messages as msg (msg.id)}
-						<ChatBubble
-							role={msg.role}
-							content={msg.content}
-							streaming={msg.streaming ?? false}
-							timestamp={msg.timestamp}
-						/>
-					{/each}
-				{/if}
-
-				<!-- Tool indicators -->
-				{#if activeToolCalls.length > 0}
-					<div class="tool-indicators">
-						{#each activeToolCalls as tool (tool.name)}
-							<ToolIndicator name={tool.name} status={tool.status} label={tool.label ?? tool.name} />
-						{/each}
-					</div>
-				{/if}
-
-				<!-- Status message -->
-				{#if statusMessage}
-					<div class="status-message" class:error={chat.status === 'error'} role="status">
-						{statusMessage}
-						{#if chat.status === 'error'}
-							<button class="reconnect-btn" onclick={handleReconnect} type="button">
-								Reconectar
-							</button>
-						{/if}
-					</div>
-				{/if}
-			</div>
-
-			<!-- Input area -->
-			<ChatInput
-				disabled={chat.status === 'connecting' || chat.status === 'streaming'}
-				onsend={handleSend}
-				placeholder={mode === 'analyst' ? 'Consulta datos...' : 'Ej: agregá 10 unidades a Harina 000'}
-			/>
 		</div>
-	{/if}
-</div>
+
+		<div class="widget-messages" bind:this={chatWidgetEl}>
+			{#if chat.messages.length === 0}
+				<div class="empty-state">
+					<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+					</svg>
+					<p class="empty-title">Asistente {mode === 'analyst' ? 'Analista' : 'Operador'}</p>
+					<p class="empty-desc">
+						{mode === 'analyst'
+							? 'Consulta datos del negocio: stock, ventas, tendencias.'
+							: 'Ejecuta acciones: ajustar stock, crear productos, etc.'}
+					</p>
+				</div>
+			{:else}
+				{#each chat.messages as msg (msg.id)}
+					<ChatBubble
+						role={msg.role}
+						content={msg.content}
+						streaming={msg.streaming ?? false}
+						timestamp={msg.timestamp}
+					/>
+				{/each}
+			{/if}
+
+			{#if activeToolCalls.length > 0}
+				<div class="tool-indicators">
+					{#each activeToolCalls as tool (tool.name)}
+						<ToolIndicator name={tool.name} status={tool.status} label={tool.label ?? tool.name} />
+					{/each}
+				</div>
+			{/if}
+
+			{#if statusMessage}
+				<div class="status-message" class:error={chat.status === 'error'} role="status">
+					{statusMessage}
+					{#if chat.status === 'error'}
+						<button class="reconnect-btn" onclick={handleReconnect} type="button">
+							Reconectar
+						</button>
+					{/if}
+				</div>
+			{/if}
+		</div>
+
+		<ChatInput
+			disabled={chat.status === 'connecting' || chat.status === 'streaming'}
+			onsend={handleSend}
+			placeholder={mode === 'analyst' ? 'Consulta datos...' : 'Ej: agregá 10 unidades a Harina 000'}
+		/>
+	</div>
+{/if}
 
 <style>
 	.contextual-assistant {
@@ -213,20 +257,21 @@
 	}
 
 	.chat-widget {
-		position: absolute;
-		bottom: 64px;
-		right: 0;
-		width: 360px;
-		height: 520px;
+		position: fixed;
+		bottom: 90px;
+		right: 24px;
+		width: 420px;
+		height: 600px;
 		max-height: calc(100vh - 120px);
 		background: var(--color-bg);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
-		box-shadow: var(--shadow-lg);
+		box-shadow: var(--shadow-xl);
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
 		animation: slide-up 0.2s ease-out;
+		z-index: 950;
 	}
 
 	@keyframes slide-up {
@@ -248,6 +293,12 @@
 		border-bottom: 1px solid var(--color-border);
 		background: var(--color-surface);
 		flex-shrink: 0;
+		cursor: grab;
+		user-select: none;
+	}
+
+	.widget-header:active {
+		cursor: grabbing;
 	}
 
 	.header-info {

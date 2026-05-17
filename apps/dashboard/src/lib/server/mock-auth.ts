@@ -27,8 +27,8 @@ const MOCK_CUSTOMER: UserSession = {
 
 const MOCK_ADMIN: UserSession = {
 	id: 'mock-user-001',
-	email: 'admin@siga.com',
-	name: 'Admin SIGA',
+	email: 'demo@siga.cl',
+	name: 'Demo SIGA',
 	principalType: 'user',
 	rol: 'ADMINISTRATOR',
 	tenantId: 'tenant-001'
@@ -36,7 +36,7 @@ const MOCK_ADMIN: UserSession = {
 
 const MOCK_OPERATOR: UserSession = {
 	id: 'mock-user-002',
-	email: 'oper@siga.com',
+	email: 'oper@siga.cl',
 	name: 'Operador Juan',
 	principalType: 'user',
 	rol: 'OPERATOR',
@@ -45,7 +45,7 @@ const MOCK_OPERATOR: UserSession = {
 
 const MOCK_CASHIER: UserSession = {
 	id: 'mock-user-003',
-	email: 'caja@siga.com',
+	email: 'caja@siga.cl',
 	name: 'Cajero Pedro',
 	principalType: 'user',
 	rol: 'CASHIER',
@@ -57,15 +57,15 @@ const MOCK_CREDENTIALS: Record<string, { password: string; session: UserSession 
 		password: 'demo1234',
 		session: MOCK_CUSTOMER
 	},
-	'admin@siga.com': {
-		password: 'admin1234',
+	'demo@siga.cl': {
+		password: 'demo1234',
 		session: MOCK_ADMIN
 	},
-	'oper@siga.com': {
+	'oper@siga.cl': {
 		password: 'oper1234',
 		session: MOCK_OPERATOR
 	},
-	'caja@siga.com': {
+	'caja@siga.cl': {
 		password: 'caja1234',
 		session: MOCK_CASHIER
 	}

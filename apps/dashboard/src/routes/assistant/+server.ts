@@ -12,6 +12,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 const GATEWAY_BASE = process.env.GATEWAY_BASE || 'http://localhost:8080';
+const AGENT_BASE = process.env.AGENT_BASE || 'http://localhost:8000';
 const AGENT_TIMEOUT_MS = 60_000;
 
 export const GET: RequestHandler = async ({ url, fetch }) => {
@@ -23,8 +24,8 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 		throw error(400, 'El parámetro "message" es requerido');
 	}
 
-	// 1. Conectar con siga-agent vía Gateway
-	const agentUrl = new URL(`${GATEWAY_BASE}/api/agent/chat/stream`);
+	// 1. Conectar con siga-agent directamente (no gateway)
+	const agentUrl = new URL(`${AGENT_BASE}/api/agent/chat/stream`);
 	agentUrl.searchParams.set('message', message);
 	agentUrl.searchParams.set('context', context);
 	agentUrl.searchParams.set('history', history);
@@ -94,8 +95,8 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 		return json({ code: 'INVALID_MESSAGE', message: 'El campo "message" es requerido' }, { status: 400 });
 	}
 
-	// Forward POST to backend agent service (same path)
-	const agentUrl = `${GATEWAY_BASE}/api/agent/a2ui`;
+	// Forward POST to backend agent service (same path, direct — no gateway)
+	const agentUrl = `${AGENT_BASE}/api/agent/a2ui`;
 
 	const agentRes = await fetch(agentUrl, {
 		method: 'POST',
