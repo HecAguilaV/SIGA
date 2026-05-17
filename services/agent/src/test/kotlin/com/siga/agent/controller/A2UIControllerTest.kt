@@ -1,9 +1,10 @@
 package com.siga.agent.controller
 
-import com.siga.agent.engine.GeminiEngine
 import com.siga.agent.model.A2UIComponent
 import com.siga.agent.model.A2UILayout
-import com.siga.agent.model.CreateSurface
+import com.siga.agent.service.A2UIEnvelopeResponse
+import com.siga.agent.service.A2UIService
+import com.siga.agent.service.SurfaceEnvelope
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -28,24 +29,29 @@ class A2UIControllerTest {
     private lateinit var webTestClient: WebTestClient
 
     @TestConfiguration
-    class MockGeminiEngineConfig {
+    class MockA2UIServiceConfig {
         @Bean
         @Primary
-        fun mockGeminiEngine(): GeminiEngine {
-            val mock = mockk<GeminiEngine>()
+        fun mockA2UIService(): A2UIService {
+            val mock = mockk<A2UIService>()
             every {
-                mock.generateSurface(any(), any())
+                mock.generateSurface(any())
             } returns Mono.just(
-                CreateSurface(
+                A2UIEnvelopeResponse(
                     surfaceId = "surf-test-001",
-                    components = listOf(
-                        A2UIComponent(
-                            type = "stat-card",
-                            props = mapOf("label" to "Ventas", "value" to "100"),
-                            nodeId = "node-1"
-                        )
+                    surface = SurfaceEnvelope(
+                        type = "createSurface",
+                        surfaceId = "surf-test-001",
+                        components = listOf(
+                            A2UIComponent(
+                                type = "stat-card",
+                                props = mapOf("label" to "Ventas", "value" to "100"),
+                                nodeId = "node-1"
+                            )
+                        ),
+                        layout = A2UILayout(layout = "grid", columns = 2)
                     ),
-                    layout = A2UILayout(layout = "grid", columns = 2)
+                    provenance = "gemini"
                 )
             )
             return mock
