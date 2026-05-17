@@ -15,13 +15,13 @@ SIGA opera en **dos modos** que comparten el mismo catálogo de componentes Svel
 1. **Modo Clásico**: Navegación fija por rutas (`/products`, `/analytics`, `/dashboard`). Los datos se componen server-side via load functions con polling cada 60s. Es el dashboard tradicional.
 2. **Modo Agentivo (A2UI)**: El agente orquestador compone la UI dinámicamente enviando payloads JSON A2UI `{type, props, children}` via SSE. El frontend tiene un `A2UIRenderer.svelte` que mapea tipos a componentes del catálogo nativo.
 
-La misma webapp alberga ambos modos. No son excluyentes — el usuario elige cuándo saltar de uno a otro mediante el botón "Ahorremos tiempo: SIGA".
+La misma aplicación Dashboard alberga ambos modos. No son excluyentes — el usuario elige cuándo saltar de uno a otro mediante el botón "Ahorremos tiempo: SIGA".
 
 ### Arquitectura Dual-Mode
 
 ```
 ┌──────────────────────────────────────────────┐
-│              SIGA WebApp                       │
+│              SIGA Dashboard                    │
 │                                                 │
 │  ┌──────────────┐   ┌──────────────────────┐  │
 │  │ MODO CLÁSICO │   │  MODO AGENTIVO A2UI  │  │

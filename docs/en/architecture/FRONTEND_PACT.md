@@ -12,9 +12,8 @@
 The project remains a **Monorepo** managed via **PNPM Workspaces** to ensure atomic refactors and shared infrastructure.
 
 ### Shared Core (`/packages`)
-- **`@siga/api-client`**: The "Translator". Base Axios/Fetch configuration, JWT interceptors, and error handling for the API Gateway.
-- **`@siga/types`**: The "Data Contract". Shared TypeScript interfaces, enums, and DTOs between all frontends and the backend.
-- **`@siga/design-tokens`**: The "Visual DNA". CSS variables, Tailwind configuration, and brand assets for 100% visual consistency.
+- **`@siga/shared`**: The "Data Contract". Shared TypeScript types, validators, and utilities across all frontends (auth, inventory, sales, stores, dashboard).
+- **`@siga/ui-kit`**: The "Visual DNA". Design system with atomic Svelte 5 components, native CSS tokens (colors, typography, glassmorphism), and light/dark mode.
 
 ---
 
@@ -23,9 +22,12 @@ Each frontend application is independent in its business logic but consumes the 
 
 | Frontend | Technology | Pattern | Logic Scope |
 | :--- | :--- | :--- | :--- |
-| **Dashboard** | SvelteKit 5 | Observer + Stores + BFF | Admin Dashboard, Inventory, Sales, AI Agent, Landing, Portals. |
-
-> **Note (May 2026)**: Legacy frontends (webapp, landing, customer-portal React, admin-portal, mobile) were declared legacy deprecated. The SvelteKit dashboard unifies all interfaces.
+| **Dashboard** | SvelteKit 5 | Observer + Stores + BFF | Operations center: Inventory, Sales, AI Agent, Analytics |
+| **Customer Portal** | SvelteKit 5 | — | SaaS subscriptions, payments, SSO access to Dashboard |
+| **Admin Portal** | SvelteKit 5 | — | Internal platform administration |
+| **Landing** | SvelteKit 5 | — | Public product presentation site |
+| **POS** | SvelteKit 5 | — | In-store point-of-sale terminal |
+| **Mobile** | — | — | Quick field execution *(future stage)* |
 
 ---
 
@@ -40,10 +42,10 @@ Each frontend application is independent in its business logic but consumes the 
 
 ---
 
-## 4. Next Session Roadmap
+## 4. Roadmap
 1. **Docker Sequential Boot**: Eureka -> Gateway -> Auth -> Inventory.
 2. **Smoke Test**: Verify cross-service communication (Sales -> Inventory stock deduction).
-3. **Packages Scaffold**: Create `@siga/api-client` and `@siga/types`.
+3. **Package Integration**: Consolidate `@siga/shared` and `@siga/ui-kit` as standard consumption across all frontends.
 
 ---
 > [!NOTE]

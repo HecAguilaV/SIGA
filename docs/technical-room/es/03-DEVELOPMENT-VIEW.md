@@ -2,7 +2,7 @@
 
 Describe la organización del sistema desde la perspectiva de construcción, reflejando la jerarquía funcional real de los módulos.
 
-[🇺🇸 View English Version](../en/03-DEVELOPMENT-VIEW.mdx)
+[🇺🇸 View English Version](../en/03-DEVELOPMENT-VIEW.md)
 
 ## 1. Estructura Semántica del Monorepo (Gradle)
 
@@ -11,6 +11,8 @@ A diferencia de un simple listado de carpetas, este diagrama muestra la relació
 ```mermaid
 graph LR
     Root((SIGA Proyecto)) --> Services[services/]
+    Root --> Apps[apps/]
+    Root --> Packages[packages/]
     
     subgraph Infra [<b>Infraestructura</b>]
         S_GT[gateway]
@@ -21,31 +23,40 @@ graph LR
         S_AUTH[auth]
         S_INV[inventory]
         S_SALES[sales]
+        S_BILL[billing]
         S_AGENT[agent]
-        
-        subgraph Billing_System [<b>Ecosistema de Facturación</b>]
-            S_BILL[billing - Backend]
-            W_COMM[commercial - Frontend]
-        end
     end
 
     subgraph UI [<b>Aplicaciones Cliente</b>]
-        W_WEB[webapp - Admin]
-        W_MOB[mobile - POS]
+        W_DASH[dashboard - Centro Operativo]
+        W_CUST[customer-portal - SaaS]
+        W_ADMIN[admin-portal - Administración]
         W_LAND[landing - Público]
+        W_POS[pos - Punto de Venta]
+        W_MOB[mobile - Terreno]:::future
     end
 
-    subgraph Libs [<b>Librerías Compartidas</b>]
+    subgraph Pkgs [<b>Paquetes Compartidos</b>]
+        P_SHARED[@siga/shared - Tipos y Utilidades]
+        P_UIKIT[@siga/ui-kit - Design System]
+    end
+
+    subgraph Libs [<b>Librerías Backend</b>]
         L_COM[common]
     end
 
-    Services --> Infra & Core & UI & Libs
-    S_BILL --- W_COMM
+    Services --> Infra & Core
+    Apps --> UI
+    Packages --> Pkgs
+    Services --> Libs
+    UI -.->|consume| Pkgs
 
     %% Estilos Glass-Tech
     style Services fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
-    style Billing_System fill:#0369a110,stroke:#38bdf8,stroke-dasharray: 5 5
+    style Apps fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
+    style Packages fill:#0ea5e90a,stroke:#38bdf8,stroke-width:2px
     style Libs fill:#0369a120,stroke:#38bdf8,stroke-width:2px,stroke-dasharray: 5 5
+    classDef future fill:#1e293b,stroke:#94a3b8,stroke-dasharray: 5 5,color:#94a3b8
 ```
 
 ## 2. Diagrama de Componentes (Dependencias Internas)
