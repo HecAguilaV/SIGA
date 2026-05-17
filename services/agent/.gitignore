@@ -1,4 +1,24 @@
-venv/
-__pycache__/
-*.pyc
-.pytest_cache/
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kotlin
+*.class
+
+# JAR
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
