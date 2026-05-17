@@ -28,7 +28,7 @@ A Semantic Mirroring standard has been established to ensure that documentation 
 SIGA utilizes cutting-edge technologies to ensure performance and legal compliance:
 
 - **Backend**: Kotlin + Spring Boot 4.0.6. Strict implementation of Gold Standard Hexagonal Architecture and TDD Discipline.
-- **AI**: Python + LangChain + PGVector (Per-Tenant Semantic Memory).
+- **AI**: Kotlin + Spring Boot + Google Gemini SDK (A2UI v0.9 Protocol + 3-Tier Fallback).
 - **Frontend**: SvelteKit 5 (Unified dashboard under `apps/dashboard`).
 - **Persistence**: PostgreSQL with schema isolation and UUID v4 as the unique standard for identity and pseudonymization.
 - **Security**: JWT (Stateless) and rigorous compliance with Chilean Law 21.719.

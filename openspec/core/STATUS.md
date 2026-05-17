@@ -1,6 +1,6 @@
 # Estado del Ecosistema SIGA (Brain Sync)
 
-Este documento refleja la realidad técnica y el progreso de la migración al **12 de mayo de 2026**.
+Este documento refleja la realidad técnica y el progreso de la migración al **16 de mayo de 2026**.
 
 ## 1. Mapa de Servicios y Puertos
 
@@ -27,12 +27,12 @@ Este documento refleja la realidad técnica y el progreso de la migración al **
 ## 3. Próximos Pasos Estratégicos
 
 *   ✅ **Autenticación Multi-Tenant Completa**: Register, verify, login dual (Customer+User), JWT, y CRUD de usuarios con alcance por tenant — 126 tests, 0 fallos.
-*   **Integración A2UI**: Conectar la interfaz de chat con las herramientas CRUD del backend.
+*   ✅ **Integración A2UI**: Agente Kotlin con protocolo A2UI v0.9, 3-tier fallback, SSE streaming. Frontend con renderizador A2UI, componentes Svelte 5 (StatCard, TrendBadge, DataTable).
 *   **Permisos Dinámicos**: Implementar la lógica para que los dueños de Pyme autogestionen permisos.
 *   ✅ **Infra-hardening**: Gateway routes corregidas (RewritePath), Flyway unificado (DDL propio en V1), JWT secret hardening (sin defaults, validación al startup).
 *   **Documentación MDX**: Activar el Technical Room interactivo.
 
 ---
-*Actualizado: 12 de mayo de 2026*
+*Actualizado: 16 de mayo de 2026*
 Héctor Aguila
 `> Un Soñador con Poca RAM 👨🏻‍💻`

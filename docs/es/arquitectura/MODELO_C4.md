@@ -83,7 +83,7 @@ flowchart TB
             Inv["siga-inventory<br>[Spring Boot<br>🔺 Hexagonal"]
             Sales["siga-sales<br>[Spring Boot<br>🔺 Hexagonal"]
             Bill["siga-billing<br>[Spring Boot<br>🔺 Hexagonal"]
-            Agent["siga-agent<br>[Python/LangChain]"]
+            Agent["siga-agent<br>[Kotlin/Spring Boot<br>🔺 A2UI v0.9]"]
         end
         
         %% Base de datos
