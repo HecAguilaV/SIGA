@@ -41,8 +41,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     // JDBC for FallbackEngine — added in Phase 3
-    // implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    // implementation("org.postgresql:postgresql")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.postgresql:postgresql")
 
     // Google GenAI SDK for Gemini API calls
     implementation("com.google.genai:google-genai:1.43.0")
