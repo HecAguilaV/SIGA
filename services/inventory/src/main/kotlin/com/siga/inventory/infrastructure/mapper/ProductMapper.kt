@@ -20,6 +20,8 @@ object ProductMapper {
             unitPrice = entity.unitPrice,
             isActive = entity.isActive,
             commercialUserId = entity.commercialUserId,
+            sku = entity.sku,
+            unitType = entity.unitType,
             createdAt = entity.createdAt ?: throw IllegalStateException("createdAt cannot be null"),
             updatedAt = entity.updatedAt ?: throw IllegalStateException("updatedAt cannot be null")
         )
@@ -35,6 +37,8 @@ object ProductMapper {
             unitPrice = model.unitPrice,
             isActive = model.isActive,
             commercialUserId = model.commercialUserId,
+            sku = model.sku,
+            unitType = model.unitType,
             createdAt = model.createdAt,
             updatedAt = model.updatedAt
         )

@@ -45,6 +45,12 @@ class Movement(
     @Column(columnDefinition = "TEXT")
     val observations: String? = null,
 
+    @Column(name = "correlation_id")
+    val correlationId: UUID? = null,
+
+    @Column(name = "destination_store_id")
+    val destinationStoreId: UUID? = null,
+
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now()
 ) {

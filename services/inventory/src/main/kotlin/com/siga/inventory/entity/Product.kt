@@ -23,6 +23,12 @@ class Product(
     @Column(name = "barcode", unique = true, length = 100)
     var barcode: String? = null,
 
+    @Column(length = 50)
+    var sku: String? = null,
+
+    @Column(name = "unit_type", length = 20)
+    var unitType: String? = null,
+
     @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
     var unitPrice: BigDecimal,
 

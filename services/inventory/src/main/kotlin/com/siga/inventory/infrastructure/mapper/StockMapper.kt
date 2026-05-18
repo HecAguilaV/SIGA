@@ -11,7 +11,8 @@ object StockMapper {
         return Stock(
             productId = entity.productId,
             storeId = entity.storeId,
-            quantity = entity.quantity
+            quantity = entity.quantity,
+            lastMovementAt = entity.lastMovementAt
         )
     }
 
@@ -20,7 +21,8 @@ object StockMapper {
         return EntityStock(
             productId = model.productId,
             storeId = model.storeId,
-            quantity = model.quantity
+            quantity = model.quantity,
+            lastMovementAt = model.lastMovementAt
         )
     }
 }

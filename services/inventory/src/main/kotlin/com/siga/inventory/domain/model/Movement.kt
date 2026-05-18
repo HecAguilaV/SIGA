@@ -3,7 +3,7 @@ package com.siga.inventory.domain.model
 import java.util.UUID
 
 /**
- * Domain model for inventory movements (Sales, Adjustments, etc.).
+ * Domain model for inventory movements (Sales, Adjustments, Reconciliation, Transfers, etc.).
  *
  * WHY HEXAGONAL: This is the "Audit Trail" of the domain.
  * The infrastructure layer (JPA) will persist this, but the DOMAIN defines what a movement is.
@@ -18,7 +18,9 @@ data class Movement(
     val newQuantity: Int,
     val userId: UUID?,
     val saleId: UUID?,
-    val observations: String?
+    val observations: String?,
+    val correlationId: UUID? = null,
+    val destinationStoreId: UUID? = null
 )
 
-enum class MovementType { SALE, ADJUSTMENT, ENTRY }
+enum class MovementType { SALE, ADJUSTMENT, ENTRY, RECONCILIATION, TRANSFER }

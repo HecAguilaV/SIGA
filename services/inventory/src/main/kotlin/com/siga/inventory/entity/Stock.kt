@@ -25,6 +25,9 @@ class Stock(
     @Column(name = "minimum_quantity", nullable = false)
     var minimumQuantity: Int = 0,
 
+    @Column(name = "last_movement_at")
+    var lastMovementAt: Instant? = null,
+
     @Column(name = "updated_at", nullable = false)
     var updatedAt: Instant? = null
 ) {

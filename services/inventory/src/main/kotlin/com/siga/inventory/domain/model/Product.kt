@@ -27,6 +27,8 @@ data class Product(
     val unitPrice: BigDecimal,
     val isActive: Boolean,
     val commercialUserId: UUID?,
+    val sku: String? = null,
+    val unitType: String? = null,
     val createdAt: java.time.Instant,
     val updatedAt: java.time.Instant
 )
