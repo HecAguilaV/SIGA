@@ -244,6 +244,7 @@ services:
   siga-agent:       # IA — se registra en Eureka (Python)
   siga-kafka:       # Message Broker — SAGA pattern
   kafdrop:          # UI para ver Kafka
+  siga-ops:         # ContainerFlow — Observabilidad local de contenedores
 ```
 
 **¿Por qué una sola instancia de PostgreSQL y no un servidor de BD por servicio?**
@@ -636,6 +637,32 @@ H2 es genial para tests por su velocidad. Pero NO es PostgreSQL. Las diferencias
 | Array columns                | ❌ Limitado                        | ✅ Nativo                                     |
 
 **Aprendizaje**: No asumas que porque funciona en H2 funciona en PostgreSQL, ni viceversa. Los tests en H2 son para velocidad, pero eventualmente necesitas tests con Testcontainers (PostgreSQL real).
+
+### 6.6 Observabilidad Local Ligera (ContainerFlow)
+
+**Problema**: Levantar 6 microservicios + PostgreSQL + Kafka en Docker consume muchísimos recursos, especialmente en un entorno remoto sin GUI (Docker Desktop no es una opción viable por peso y licencias). Necesitábamos ver el estado, logs y métricas de los contenedores sin colapsar la RAM ni recurrir a herramientas pesadas como Portainer.
+
+**Solución**: Integramos **ContainerFlow** (`ghcr.io/rgjorge/containerflow`) como un contenedor "sidecar" de operaciones (`siga-ops`). Pesa solo ~80MB, ofrece un dashboard en tiempo real vía navegador, y se levanta en la fase final de nuestro script de inicio escalonado (`start-staggered.sh`).
+
+**Aprendizaje**: No siempre necesitas la herramienta estándar de la industria (Portainer/Docker Desktop). Para desarrollo local, las herramientas minimalistas enfocadas en una sola tarea (ver logs y estado de contenedores) mejoran drásticamente la experiencia del desarrollador (DX) sin penalizar el rendimiento del servidor. **Dato clave:** hay que forzar a estas herramientas a exponerse correctamente usando credenciales (ej. `AUTH_TOKEN`) para que bindeen a `0.0.0.0` y no queden atrapadas en `127.0.0.1` dentro del contenedor.
+
+### 6.7 Secretos y el Patrón 12-Factor (.env vs .env.example)
+
+**Problema**: En el archivo `.env.example` estábamos dejando placeholders vacíos para todo, lo que obligaba a cada desarrollador a inventar contraseñas de bases de datos locales solo para que `docker compose up` funcionara. Pero a la vez, si poníamos contraseñas por defecto, corríamos el riesgo de poner contraseñas reales de servicios externos (como SMTP o JWT).
+
+**Solución**: Aplicar la metodología **12-Factor App** dividiendo el `.env.example` en dos categorías estrictas:
+1. **Defaults de Infraestructura Local**: Valores hardcodeados inofensivos (`siga_local_dev`, puertos por defecto) que permiten levantar el entorno local "out-of-the-box" sin configurar nada.
+2. **Secretos Externos Reales**: Claves de APIs, JWT secrets y credenciales SMTP quedan como placeholders explícitos (`<tu_secreto>`). NUNCA se sube un secreto real al repositorio.
+
+**Aprendizaje**: Un buen `.env.example` debe equilibrar seguridad extrema para producción con cero-fricción para desarrollo local.
+
+### 6.8 Falsos Positivos en Scanners de Seguridad (GitGuardian)
+
+**Problema**: GitGuardian bloqueó un commit lanzando una alerta de "Incidente Secreto Interno (Credenciales SMTP)". 
+
+**Causa**: Nuestro `.env.example` recién refactorizado tenía las líneas `SPRING_MAIL_HOST=smtp.gmail.com` seguidas de `SPRING_MAIL_PASSWORD=<your_app_password>`. El escáner heurístico vio un host real junto a la palabra PASSWORD y disparó la alarma, aunque el valor fuera literalmente un texto de relleno (`<your_app_password>`).
+
+**Aprendizaje**: Los escáneres de seguridad automatizados buscan **patrones**, no solo valores reales. Para evitar falsos positivos y "fatiga de alertas" en el equipo, es mejor usar dominios falsos (`mail.ejemplo.com`) y placeholders obvios (`escribe_tu_password_aqui`) en los archivos de ejemplo públicos.
 
 ---
 
