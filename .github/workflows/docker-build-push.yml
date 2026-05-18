@@ -37,7 +37,7 @@ jobs:
             dockerfile: ./services/registry/Dockerfile
             image: hdaguila/siga-eureka
           - service: agent
-            context: ./services/agent
+            context: .
             dockerfile: ./services/agent/Dockerfile
             image: hdaguila/siga-agent
 
