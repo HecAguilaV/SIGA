@@ -28,10 +28,12 @@ A Semantic Mirroring standard has been established to ensure that documentation 
 SIGA utilizes cutting-edge technologies to ensure performance and legal compliance:
 
 - **Backend**: Kotlin + Spring Boot 4.0.6. Strict implementation of Gold Standard Hexagonal Architecture and TDD Discipline.
+- **Messaging**: Apache Kafka (SAGA Choreography) for distributed transactions between microservices.
 - **AI**: Kotlin + Spring Boot + Google Gemini SDK (A2UI v0.9 Protocol + 3-Tier Fallback).
 - **Frontend**: SvelteKit 5 (Unified dashboard under `apps/dashboard`).
 - **Persistence**: PostgreSQL with schema isolation and UUID v4 as the unique standard for identity and pseudonymization.
 - **Security**: JWT (Stateless) and rigorous compliance with Chilean Law 21.719.
+- **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — real-time Docker architecture visualizer with interactive topology, metrics, logs, and best-practice recommendations.
 
 ---
 
@@ -40,11 +42,17 @@ SIGA utilizes cutting-edge technologies to ensure performance and legal complian
 SIGA's infrastructure is fully dockerized to ensure a consistent development environment.
 
 ```bash
-# Spin up full infrastructure (Database + Microservices)
-docker-compose up -d
+# Option 1: Spin up everything at once (requires ~16 GB RAM)
+docker compose up -d
+
+# Option 2: Staggered startup (recommended for resource-constrained machines)
+# Starts services one by one with 30-60s delays between each phase.
+bash scripts/start-staggered.sh
 ```
 
 **Service Status**: Once up, the API Gateway will orchestrate requests to the Auth, Billing, and Inventory microservices under the UUID standard.
+
+**Ops Panel**: ContainerFlow is available at `http://localhost:9470` — visualize container topology, check CPU/RAM metrics, browse logs, and execute commands (`docker exec`) directly from the browser.
 
 ---
 

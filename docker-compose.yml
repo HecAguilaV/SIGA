@@ -1,10 +1,14 @@
 services:
 
   # ============================================================
-  # Database: PostgreSQL + PGVector (Multi-DB Mode)
+  # LAYER 0 — PERSISTENCE
+  # PostgreSQL 16 + PGVector extension for AI vector search.
+  # Single instance hosts all service databases (database-per-service
+  # via separate schemas). init-db.sh creates schemas and users on
+  # first run; Flyway owns all DDL from that point forward.
   # ============================================================
   siga-db:
-    image: pgvector/pgvector:pg16
+    image: pgvector/pgvector:pg16              # PostgreSQL 16 with pgvector for AI embeddings
     container_name: siga-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -25,10 +29,13 @@ services:
       - siga-net
 
   # ============================================================
-  # Event Streaming: Kafka (For SAGA & Big Data)
+  # LAYER 0 — EVENT STREAMING
+  # Apache Kafka in KRaft mode (no Zookeeper). Handles SAGA
+  # choreography events between microservices (e.g. sale → stock
+  # reservation → billing invoice). Single-node for dev/staging.
   # ============================================================
   siga-kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:latest        # Confluent Kafka — KRaft mode (no Zookeeper)
     container_name: siga-kafka
     ports:
       - "${KAFKA_PORT}:9092"
@@ -49,8 +56,14 @@ services:
     networks:
       - siga-net
 
+  # ============================================================
+  # LAYER 0 — ADMIN UIs
+  # Web-based management panels for Postgres and Kafka.
+  # Not required for the application to work — purely for
+  # developer/DBA convenience during development and debugging.
+  # ============================================================
   siga-kafka-ui:
-    image: provectuslabs/kafka-ui:latest
+    image: provectuslabs/kafka-ui:latest       # Web UI for Kafka topic inspection and consumer groups
     container_name: siga-kafka-ui
     ports:
       - "${KAFKA_UI_PORT}:8080"
@@ -62,11 +75,8 @@ services:
     networks:
       - siga-net
 
-  # ============================================================
-  # Infrastructure: pgAdmin, Eureka, Gateway
-  # ============================================================
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4                      # Web UI for PostgreSQL administration and query execution
     container_name: siga-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
@@ -81,8 +91,14 @@ services:
     networks:
       - siga-net
 
+  # ============================================================
+  # LAYER 1 — SERVICE DISCOVERY & API GATEWAY
+  # Eureka handles service registration; Gateway routes all
+  # external traffic to internal microservices via RewritePath
+  # rules (e.g. /api/auth/* → siga-auth /api/v1/*).
+  # ============================================================
   siga-eureka:
-    image: hdaguila/siga-eureka:latest
+    image: hdaguila/siga-eureka:latest         # Netflix Eureka — service registry and discovery
     build:
       context: .
       dockerfile: ./services/registry/Dockerfile
@@ -93,7 +109,7 @@ services:
       - siga-net
 
   siga-gateway:
-    image: hdaguila/siga-gateway:latest
+    image: hdaguila/siga-gateway:latest        # Spring Cloud Gateway — API routing with RewritePath
     build:
       context: .
       dockerfile: ./services/gateway/Dockerfile
@@ -108,8 +124,14 @@ services:
       - siga-net
 
   # ============================================================
-  # Core Microservices (Independent DBs)
+  # LAYER 2 — CORE MICROSERVICES (Hexagonal Architecture)
+  # Each service owns its database schema (database-per-service).
+  # All follow Hexagonal Architecture: domain/port → adapter → usecase.
+  # Communication: REST (sync via Gateway) + Kafka (async SAGA).
   # ============================================================
+
+  # Auth: Identity, RBAC permissions, JWT, email verification.
+  # Owns: siga_auth database, auth schema.
   siga-auth:
     image: hdaguila/siga-auth:latest
     build:
@@ -130,6 +152,9 @@ services:
     networks:
       - siga-net
 
+  # Inventory: Stock control, SKU generation, reconciliation, transfers.
+  # Owns: siga_inventory database, inventory schema.
+  # Kafka consumer: listens for sale events to reserve stock (SAGA).
   siga-inventory:
     image: hdaguila/siga-inventory:latest
     build:
@@ -152,6 +177,9 @@ services:
     networks:
       - siga-net
 
+  # Sales: POS, internal invoicing for the SME.
+  # Owns: siga_sales database, sales schema.
+  # Kafka producer: emits sale events for SAGA choreography.
   siga-sales:
     image: hdaguila/siga-sales:latest
     build:
@@ -174,6 +202,9 @@ services:
     networks:
       - siga-net
 
+  # Billing: SaaS subscription management and payment processing.
+  # Owns: siga_billing database, billing schema.
+  # Kafka consumer: receives sale events to generate invoices (SAGA step 4).
   siga-billing:
     image: hdaguila/siga-billing:latest
     build:
@@ -196,8 +227,13 @@ services:
     networks:
       - siga-net
 
+  # ============================================================
+  # LAYER 3 — AI AGENT (Optional — requires Gemini API Key)
+  # A2UI v0.9 agent powered by Gemini. Activated only with
+  # the "agent" profile: docker compose --profile agent up -d
+  # ============================================================
   siga-agent:
-    image: hdaguila/siga-agent:latest
+    image: hdaguila/siga-agent:latest          # Kotlin agent — A2UI v0.9 + Gemini 3 Flash
     build:
       context: .
       dockerfile: ./services/agent/Dockerfile
@@ -216,10 +252,33 @@ services:
     networks:
       - siga-net
 
+  # ============================================================
+  # LAYER 4 — OPS & OBSERVABILITY
+  # Developer tools for monitoring the Docker environment.
+  # ContainerFlow: real-time Docker architecture visualizer with
+  # interactive topology graph, container logs, exec terminal,
+  # CPU/RAM metrics, and best-practice recommendations.
+  # Source: https://github.com/RGJorge/ContainerFlow
+  # License: AGPL-3.0
+  # ============================================================
+  siga-ops:
+    image: ghcr.io/rgjorge/containerflow:latest  # ContainerFlow — Docker architecture visualizer
+    container_name: siga-ops
+    ports:
+      - "${OPS_PORT:-9470}:9470"
+    environment:
+      - PORT=9470
+      - AUTH_TOKEN=${OPS_AUTH_TOKEN}             # Activa acceso remoto (bind a 0.0.0.0) y pantalla de login
+      - ALLOW_NON_COMPOSE=true                   # Show containers not managed by Compose
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Read-only access to Docker socket
+    networks:
+      - siga-net
+
 volumes:
-  siga-db-data:
-  siga-pgadmin-data:
+  siga-db-data:      # Persistent PostgreSQL data (survives container recreation)
+  siga-pgadmin-data: # Persistent pgAdmin configuration and saved connections
 
 networks:
   siga-net:
-    driver: bridge
+    driver: bridge   # Default bridge network — all services communicate by container name

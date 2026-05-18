@@ -80,11 +80,14 @@ flowchart TB
         %% Microservicios (Hexagonal Architecture)
         subgraph Microservicios [Core Backend - Hexagonal]
             Auth["siga-auth<br>[Spring Boot]"]
-            Inv["siga-inventory<br>[Spring Boot<br>🔺 Hexagonal"]
-            Sales["siga-sales<br>[Spring Boot<br>🔺 Hexagonal"]
-            Bill["siga-billing<br>[Spring Boot<br>🔺 Hexagonal"]
+            Inv["siga-inventory<br>[Spring Boot<br>🔺 Hexagonal]"]
+            Sales["siga-sales<br>[Spring Boot<br>🔺 Hexagonal]"]
+            Bill["siga-billing<br>[Spring Boot<br>🔺 Hexagonal]"]
             Agent["siga-agent<br>[Kotlin/Spring Boot<br>🔺 A2UI v0.9]"]
         end
+        
+        %% Ops & Observability
+        Ops["siga-ops<br>[ContainerFlow]<br>Visualizador Docker"]:::container
         
         %% Base de datos
         DB[(PostgreSQL Multi-tenant)]:::db
@@ -127,6 +130,10 @@ flowchart TB
     Sales -->|Lee/Escribe esquema: sales| DB
     Bill -->|Lee/Escribe esquema: billing| DB
     Agent -->|Búsqueda Vectorial esquema: agent| DB
+    
+    %% Ops
+    Ops -.->|Monitorea (/var/run/docker.sock)| Gateway
+    Ops -.->|Monitorea| Microservicios
 ```
 
 ### Decisiones Técnicas Clave (L2)
@@ -134,6 +141,7 @@ flowchart TB
 - **Service Registry (Eureka)**: Permite escalar microservicios horizontalmente sin necesidad de balanceadores de carga físicos.
 - **Mensajería (Kafka)**: Implementa el patrón **SAGA (Coreografía)** para transacciones distribuidas. Sales orquesta la reserva de stock con Inventory y, al confirmarse, publica un evento para que Billing genere la factura de venta (`SaleInvoice`).
 - **Aislamiento de Datos**: Cada microservicio se conecta a un único servidor PostgreSQL, pero tiene su propio `esquema` restringido, garantizando que un servicio no pueda corromper los datos de otro de forma directa.
+- **Observabilidad Local (Ops)**: ContainerFlow (`siga-ops`) lee directamente el socket de Docker para graficar topología interactiva y unificar logs en tiempo real, operando independientemente de la red de Spring.
 
 ---
 `> Un Soñador con poca RAM 🧑‍💻
