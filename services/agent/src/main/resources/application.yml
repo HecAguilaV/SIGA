@@ -4,6 +4,17 @@ server:
 spring:
   application:
     name: siga-agent
+  datasource:
+    url: jdbc:postgresql://localhost:5432/siga_agent
+    username: agent_user
+    password: agent_pass
+    hikari:
+      initialization-fail-timeout: -1
+
+management:
+  health:
+    db:
+      enabled: false
 
 eureka:
   instance:
