@@ -33,6 +33,7 @@ SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumpli
 - **Frontend**: SvelteKit 5 (Dashboard unificado bajo `apps/dashboard`).
 - **Persistencia**: PostgreSQL con aislamiento de esquemas y UUID v4 como estándar único de identidad y seudonimización.
 - **Seguridad**: JWT (Stateless) y cumplimiento riguroso con la Ley Chilena 21.719.
+- **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — visualizador de arquitectura Docker en tiempo real con topología interactiva, métricas, logs y recomendaciones de buenas prácticas.
 
 ---
 
@@ -41,11 +42,17 @@ SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumpli
 La infraestructura de SIGA está completamente dockerizada para garantizar un entorno de desarrollo consistente.
 
 ```bash
-# Levantar infraestructura completa (Base de Datos + Microservicios)
-docker-compose up -d
+# Opción 1: Levantar todo de golpe (requiere ~16 GB RAM)
+docker compose up -d
+
+# Opción 2: Arranque escalonado (recomendado para máquinas con recursos limitados)
+# Levanta servicios de a uno con delays de 30-60s entre cada fase.
+bash scripts/start-staggered.sh
 ```
 
 **Estado de Servicios**: Una vez arriba, la API Gateway orquestará las peticiones hacia los microservicios de Auth, Billing e Inventory bajo el estándar UUID.
+
+**Panel de Operaciones**: ContainerFlow queda disponible en `http://localhost:9470` — permite visualizar la topología de contenedores, revisar métricas CPU/RAM, consultar logs y ejecutar comandos (`docker exec`) directamente desde el navegador.
 
 ---
 

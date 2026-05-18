@@ -42,6 +42,7 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 *   **API Gateway**: Spring Cloud Gateway con RewritePath (mapeo `/api/*` → `/api/v1/*`), Eureka discovery locator deshabilitado.
 *   **Event Broker**: **Apache Kafka** (Local) / **GCP Pub/Sub** (Cloud).
 *   **Contenerización**: Docker Compose con inicialización automatizada (`init-db.sh` crea schemas + usuarios; Flyway gestiona el DDL como única fuente de verdad).
+*   **Ops & Observability**: **ContainerFlow** — visualizador de arquitectura Docker en tiempo real. Muestra topología de servicios, conexiones, métricas CPU/RAM, logs, terminal interactiva (`docker exec`) y recomendaciones de buenas prácticas. Puerto: `${OPS_PORT:-9470}`. [Fuente](https://github.com/RGJorge/ContainerFlow).
 
 ## 4. Patrones de Comunicación
 *   **Sincrónico**: REST API vía Gateway para operaciones de lectura y comandos críticos.

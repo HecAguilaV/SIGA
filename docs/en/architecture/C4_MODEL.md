@@ -86,6 +86,9 @@ flowchart TB
             Agent["siga-agent<br>[Kotlin/Spring Boot<br>🔺 A2UI v0.9]"]
         end
         
+        %% Ops & Observability
+        Ops["siga-ops<br>[ContainerFlow]<br>Docker Visualizer"]:::container
+        
         %% Database
         DB[(PostgreSQL Multi-tenant)]:::db
     end
@@ -127,6 +130,10 @@ flowchart TB
     Sales -->|Reads/Writes schema: sales| DB
     Bill -->|Reads/Writes schema: billing| DB
     Agent -->|Vector Search schema: agent| DB
+    
+    %% Ops
+    Ops -.->|Monitors (/var/run/docker.sock)| Gateway
+    Ops -.->|Monitors| Microservices
 ```
 
 ### Key Technical Decisions (L2)
@@ -134,6 +141,7 @@ flowchart TB
 - **Service Registry (Eureka)**: Allows horizontal scaling of microservices without the need for physical load balancers.
 - **Messaging (Kafka)**: Implements the **SAGA (Choreography)** pattern for distributed transactions. Sales orchestrates stock reservation with Inventory and, once confirmed, publishes an event for Billing to generate the sales invoice (`SaleInvoice`).
 - **Data Isolation**: Each microservice connects to a single PostgreSQL server but has its own restricted `schema`, ensuring that one service cannot directly corrupt another's data.
+- **Local Observability (Ops)**: ContainerFlow (`siga-ops`) directly reads the Docker socket to chart interactive topology and unify logs in real-time, operating independently from the Spring network.
 
 ---
 > A Dreamer with little RAM 🧑‍💻
