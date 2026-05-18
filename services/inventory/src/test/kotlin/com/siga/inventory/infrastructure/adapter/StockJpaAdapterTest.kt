@@ -99,6 +99,40 @@ class StockJpaAdapterTest : DescribeSpec() {
                 found shouldNotBe null
                 found?.quantity shouldBe 0
             }
+
+            it("findByProductIds returns stock for given product IDs") {
+                val productA = UUID.randomUUID()
+                val productB = UUID.randomUUID()
+                val productC = UUID.randomUUID()
+                val storeId = UUID.randomUUID()
+
+                adapter.save(Stock(productId = productA, storeId = storeId, quantity = 10))
+                adapter.save(Stock(productId = productB, storeId = storeId, quantity = 20))
+                adapter.save(Stock(productId = productC, storeId = storeId, quantity = 30))
+
+                val result = adapter.findByProductIds(listOf(productA, productB))
+                result.size shouldBe 2
+                result.any { it.productId == productA && it.quantity == 10 } shouldBe true
+                result.any { it.productId == productB && it.quantity == 20 } shouldBe true
+            }
+
+            it("findByProductIds returns empty list for non-existent products") {
+                val result = adapter.findByProductIds(listOf(UUID.randomUUID(), UUID.randomUUID()))
+                result shouldBe emptyList()
+            }
+
+            it("findByProductIds returns stock across multiple stores") {
+                val productId = UUID.randomUUID()
+                val storeA = UUID.randomUUID()
+                val storeB = UUID.randomUUID()
+
+                adapter.save(Stock(productId = productId, storeId = storeA, quantity = 50))
+                adapter.save(Stock(productId = productId, storeId = storeB, quantity = 100))
+
+                val result = adapter.findByProductIds(listOf(productId))
+                result.size shouldBe 2
+                result.all { it.productId == productId } shouldBe true
+            }
         }
     }
 }

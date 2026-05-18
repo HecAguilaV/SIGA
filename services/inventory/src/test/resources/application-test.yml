@@ -15,6 +15,7 @@ spring:
       hibernate:
         format_sql: true
         default_schema: inventory
+        metadata_builder_contributor: com.siga.inventory.config.UnaccentMetadataContributor
 
   # Kafka config for tests (pointing to nothing, but beans will be mocked)
   kafka:

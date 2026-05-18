@@ -11,5 +11,8 @@ import java.util.UUID
  */
 interface StockRepositoryPort {
     fun findByProductIdAndStoreId(productId: UUID, storeId: UUID): Stock?
+    fun findByProductId(productId: UUID): List<Stock>
+    fun findByProductIds(productIds: List<UUID>): List<Stock>
+    fun findAll(): List<Stock>
     fun save(stock: Stock): Stock
 }

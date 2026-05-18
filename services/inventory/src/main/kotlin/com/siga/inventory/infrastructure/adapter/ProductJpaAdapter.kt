@@ -5,6 +5,8 @@ import com.siga.inventory.domain.port.ProductRepositoryPort
 import com.siga.inventory.entity.Product as ProductEntity
 import com.siga.inventory.infrastructure.mapper.ProductMapper
 import com.siga.inventory.repository.ProductRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Component
 import java.util.UUID
 
@@ -41,5 +43,14 @@ class ProductJpaAdapter(
     override fun findByBarcode(barcode: String): Product? {
         val entity = productRepository.findByBarcode(barcode) ?: return null
         return ProductMapper.toDomain(entity)
+    }
+
+    override fun search(query: String, page: Int, size: Int): Page<Product> {
+        val pageable = PageRequest.of(page, size)
+        return productRepository.search(query, pageable).map { ProductMapper.toDomain(it) }
+    }
+
+    override fun findByNameLike(name: String): List<Product> {
+        return productRepository.findByNameLike("%$name%").map { ProductMapper.toDomain(it) }
     }
 }

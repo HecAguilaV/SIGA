@@ -11,6 +11,7 @@ import java.util.UUID
 @Repository
 interface StockRepository : JpaRepository<Stock, UUID> {
     fun findByProductId(productId: UUID): List<Stock>
+    fun findByProductIdIn(productIds: List<UUID>): List<Stock>
     fun findByStoreId(storeId: UUID): List<Stock>
     fun findByProductIdAndStoreId(productId: UUID, storeId: UUID): Stock?
 }

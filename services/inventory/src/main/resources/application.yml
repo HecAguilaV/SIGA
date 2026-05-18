@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         default_schema: inventory
+        metadata_builder_contributor: com.siga.inventory.config.UnaccentMetadataContributor
 
   # Kafka — SAGA choreography with Sales service
   kafka:

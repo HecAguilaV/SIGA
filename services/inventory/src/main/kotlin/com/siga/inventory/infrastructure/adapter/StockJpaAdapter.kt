@@ -26,6 +26,18 @@ class StockJpaAdapter(
         return StockMapper.toDomain(entity)
     }
 
+    override fun findByProductId(productId: UUID): List<Stock> {
+        return stockRepository.findByProductId(productId).map { StockMapper.toDomain(it) }
+    }
+
+    override fun findByProductIds(productIds: List<UUID>): List<Stock> {
+        return stockRepository.findByProductIdIn(productIds).map { StockMapper.toDomain(it) }
+    }
+
+    override fun findAll(): List<Stock> {
+        return stockRepository.findAll().map { StockMapper.toDomain(it) }
+    }
+
     override fun save(stock: Stock): Stock {
         val existingEntity = stockRepository.findByProductIdAndStoreId(stock.productId, stock.storeId)
         val entity = if (existingEntity != null) {
