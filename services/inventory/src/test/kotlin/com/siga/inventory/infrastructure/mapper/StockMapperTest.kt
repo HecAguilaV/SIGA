@@ -4,6 +4,7 @@ import com.siga.inventory.domain.model.Stock
 import com.siga.inventory.entity.Stock as EntityStock
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import java.time.Instant
 import java.util.UUID
 
 class StockMapperTest : DescribeSpec({
@@ -33,6 +34,7 @@ class StockMapperTest : DescribeSpec({
                 result.productId shouldBe domainStock.productId
                 result.storeId shouldBe domainStock.storeId
                 result.quantity shouldBe domainStock.quantity
+                result.lastMovementAt shouldBe domainStock.lastMovementAt
             }
 
             it("given entity with zero quantity when mapping to domain then should preserve zero") {
@@ -46,6 +48,33 @@ class StockMapperTest : DescribeSpec({
 
                 result.quantity shouldBe 0
             }
+
+            it("given entity with lastMovementAt when mapping to domain then should map correctly") {
+                val now = Instant.now()
+                val entity = EntityStock(
+                    id = UUID.randomUUID(),
+                    productId = productId,
+                    storeId = storeId,
+                    quantity = 15,
+                    lastMovementAt = now
+                )
+
+                val result = StockMapper.toDomain(entity)
+
+                result.lastMovementAt shouldBe now
+            }
+
+            it("given entity with null lastMovementAt when mapping to domain then should return null") {
+                val entity = EntityStock(
+                    productId = productId,
+                    storeId = storeId,
+                    quantity = 10
+                )
+
+                val result = StockMapper.toDomain(entity)
+
+                result.lastMovementAt shouldBe null
+            }
         }
 
         describe("toEntity") {
@@ -56,6 +85,7 @@ class StockMapperTest : DescribeSpec({
                 result.productId shouldBe domainStock.productId
                 result.storeId shouldBe domainStock.storeId
                 result.quantity shouldBe domainStock.quantity
+                result.lastMovementAt shouldBe domainStock.lastMovementAt
             }
 
             it("given domain stock when mapping to entity then id should default to null") {
@@ -68,6 +98,23 @@ class StockMapperTest : DescribeSpec({
                 val result = StockMapper.toEntity(domainStock)
 
                 result.minimumQuantity shouldBe 0
+            }
+
+            it("given domain stock with lastMovementAt when mapping to entity then should map correctly") {
+                val now = Instant.now()
+                val domainWithLastMovement = domainStock.copy(lastMovementAt = now)
+
+                val result = StockMapper.toEntity(domainWithLastMovement)
+
+                result.lastMovementAt shouldBe now
+            }
+
+            it("given domain stock with null lastMovementAt when mapping to entity then should map null") {
+                val domainNullLastMovement = domainStock.copy(lastMovementAt = null)
+
+                val result = StockMapper.toEntity(domainNullLastMovement)
+
+                result.lastMovementAt shouldBe null
             }
         }
 

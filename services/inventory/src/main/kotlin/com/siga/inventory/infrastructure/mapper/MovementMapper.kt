@@ -8,9 +8,9 @@ import com.siga.inventory.entity.MovementType as EntityMovementType
 /**
  * Mapper for Movement audit trail.
  *
- * WHY EXPLICIT MAPPING: The entity enum [EntityMovementType] has values (IN, OUT, SALE, ADJUSTMENT, TRANSFER)
- * while the domain enum [MovementType] has values (SALE, ADJUSTMENT, ENTRY).
- * Using `valueOf` would crash because the sets don't overlap exactly.
+ * WHY EXPLICIT MAPPING: The entity enum [EntityMovementType] has values (IN, OUT, SALE, ADJUSTMENT, TRANSFER, RECONCILIATION)
+ * while the domain enum [MovementType] has values (SALE, ADJUSTMENT, ENTRY, RECONCILIATION, TRANSFER).
+ * Using `valueOf` would crash because the sets don't overlap exactly (e.g., entity IN → domain ENTRY).
  */
 object MovementMapper {
 
@@ -25,7 +25,9 @@ object MovementMapper {
             newQuantity = entity.newQuantity,
             userId = entity.userId,
             saleId = entity.saleId,
-            observations = entity.observations
+            observations = entity.observations,
+            correlationId = entity.correlationId,
+            destinationStoreId = entity.destinationStoreId
         )
     }
 
@@ -40,7 +42,9 @@ object MovementMapper {
             newQuantity = model.newQuantity,
             userId = model.userId,
             saleId = model.saleId,
-            observations = model.observations
+            observations = model.observations,
+            correlationId = model.correlationId,
+            destinationStoreId = model.destinationStoreId
         )
     }
 
@@ -49,8 +53,9 @@ object MovementMapper {
             EntityMovementType.IN -> MovementType.ENTRY
             EntityMovementType.SALE -> MovementType.SALE
             EntityMovementType.ADJUSTMENT -> MovementType.ADJUSTMENT
+            EntityMovementType.RECONCILIATION -> MovementType.RECONCILIATION
+            EntityMovementType.TRANSFER -> MovementType.TRANSFER
             EntityMovementType.OUT -> throw IllegalArgumentException("OUT movement type is not supported in domain")
-            EntityMovementType.TRANSFER -> throw IllegalArgumentException("TRANSFER movement type is not supported in domain")
         }
     }
 
@@ -59,6 +64,8 @@ object MovementMapper {
             MovementType.ENTRY -> EntityMovementType.IN
             MovementType.SALE -> EntityMovementType.SALE
             MovementType.ADJUSTMENT -> EntityMovementType.ADJUSTMENT
+            MovementType.RECONCILIATION -> EntityMovementType.RECONCILIATION
+            MovementType.TRANSFER -> EntityMovementType.TRANSFER
         }
     }
 }

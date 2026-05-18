@@ -9,7 +9,8 @@ enum class MovementType {
     OUT,
     SALE,
     ADJUSTMENT,
-    TRANSFER
+    TRANSFER,
+    RECONCILIATION
 }
 
 /**

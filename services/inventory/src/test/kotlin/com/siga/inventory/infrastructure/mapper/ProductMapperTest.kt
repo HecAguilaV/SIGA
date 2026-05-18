@@ -23,7 +23,9 @@ class ProductMapperTest : DescribeSpec({
         isActive = true,
         commercialUserId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
         createdAt = now,
-        updatedAt = now
+        updatedAt = now,
+        sku = null,
+        unitType = null
     )
 
     val entityProduct = EntityProduct(
@@ -57,6 +59,42 @@ class ProductMapperTest : DescribeSpec({
                 result.commercialUserId shouldBe domainProduct.commercialUserId
                 result.createdAt shouldBe domainProduct.createdAt
                 result.updatedAt shouldBe domainProduct.updatedAt
+                result.sku shouldBe domainProduct.sku
+                result.unitType shouldBe domainProduct.unitType
+            }
+
+            it("given entity with sku and unitType when mapping to domain then should map correctly") {
+                val entity = EntityProduct(
+                    id = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+                    name = "Sku Test",
+                    unitPrice = BigDecimal("10.00")
+                ).apply {
+                    sku = "PRD-001"
+                    unitType = "UNIDAD"
+                    createdAt = now
+                    updatedAt = now
+                }
+
+                val result = ProductMapper.toDomain(entity)
+
+                result.sku shouldBe "PRD-001"
+                result.unitType shouldBe "UNIDAD"
+            }
+
+            it("given entity with null sku and unitType when mapping to domain then should return null") {
+                val entity = EntityProduct(
+                    id = UUID.randomUUID(),
+                    name = "No Sku",
+                    unitPrice = BigDecimal("10.00")
+                ).apply {
+                    createdAt = now
+                    updatedAt = now
+                }
+
+                val result = ProductMapper.toDomain(entity)
+
+                result.sku shouldBe null
+                result.unitType shouldBe null
             }
 
             it("given entity with null id when mapping to domain then should throw") {
@@ -118,6 +156,26 @@ class ProductMapperTest : DescribeSpec({
                 result.unitPrice shouldBe domainProduct.unitPrice
                 result.isActive shouldBe domainProduct.isActive
                 result.commercialUserId shouldBe domainProduct.commercialUserId
+                result.sku shouldBe domainProduct.sku
+                result.unitType shouldBe domainProduct.unitType
+            }
+
+            it("given domain product with sku and unitType when mapping to entity then should map correctly") {
+                val domainWithSku = domainProduct.copy(sku = "PRD-001", unitType = "UNIDAD")
+
+                val result = ProductMapper.toEntity(domainWithSku)
+
+                result.sku shouldBe "PRD-001"
+                result.unitType shouldBe "UNIDAD"
+            }
+
+            it("given domain product with null sku and unitType when mapping to entity then should map null") {
+                val domainNullSku = domainProduct.copy(sku = null, unitType = null)
+
+                val result = ProductMapper.toEntity(domainNullSku)
+
+                result.sku shouldBe null
+                result.unitType shouldBe null
             }
 
             it("given domain product when mapping to entity then createdAt and updatedAt should be mapped") {

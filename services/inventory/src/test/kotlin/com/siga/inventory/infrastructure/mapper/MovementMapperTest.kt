@@ -123,6 +123,106 @@ class MovementMapperTest : DescribeSpec({
             }
         }
 
+        describe("RECONCILIATION type") {
+
+            it("given entity with RECONCILIATION type when mapping to domain then should map enum correctly") {
+                val entity = EntityMovement(
+                    id = movementId,
+                    productId = productId,
+                    storeId = storeId,
+                    type = EntityMovementType.RECONCILIATION,
+                    quantity = 5,
+                    previousQuantity = 10,
+                    newQuantity = 5
+                )
+
+                val result = MovementMapper.toDomain(entity)
+
+                result.type shouldBe DomainMovementType.RECONCILIATION
+            }
+
+            it("given domain with RECONCILIATION type when mapping to entity then should map enum correctly") {
+                val domainRec = domainMovement.copy(
+                    id = UUID.randomUUID(),
+                    type = DomainMovementType.RECONCILIATION
+                )
+
+                val result = MovementMapper.toEntity(domainRec)
+
+                result.type shouldBe EntityMovementType.RECONCILIATION
+            }
+        }
+
+        describe("TRANSFER type") {
+
+            it("given entity with TRANSFER type when mapping to domain then should map enum correctly") {
+                val entity = EntityMovement(
+                    id = movementId,
+                    productId = productId,
+                    storeId = storeId,
+                    type = EntityMovementType.TRANSFER,
+                    quantity = 10,
+                    previousQuantity = 20,
+                    newQuantity = 10
+                )
+
+                val result = MovementMapper.toDomain(entity)
+
+                result.type shouldBe DomainMovementType.TRANSFER
+            }
+
+            it("given domain with TRANSFER type when mapping to entity then should map enum correctly") {
+                val domainTransfer = domainMovement.copy(
+                    id = UUID.randomUUID(),
+                    type = DomainMovementType.TRANSFER
+                )
+
+                val result = MovementMapper.toEntity(domainTransfer)
+
+                result.type shouldBe EntityMovementType.TRANSFER
+            }
+        }
+
+        describe("correlationId and destinationStoreId") {
+
+            it("given entity with correlationId and destinationStoreId when mapping to domain then should map correctly") {
+                val correlationId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567895")
+                val destStoreId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567896")
+                val entity = EntityMovement(
+                    id = movementId,
+                    productId = productId,
+                    storeId = storeId,
+                    type = EntityMovementType.TRANSFER,
+                    quantity = 10,
+                    previousQuantity = 20,
+                    newQuantity = 10,
+                    correlationId = correlationId,
+                    destinationStoreId = destStoreId
+                )
+
+                val result = MovementMapper.toDomain(entity)
+
+                result.correlationId shouldBe correlationId
+                result.destinationStoreId shouldBe destStoreId
+            }
+
+            it("given domain with correlationId and destinationStoreId when mapping to entity then should map correctly") {
+                val correlationId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567897")
+                val destStoreId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567898")
+                val domainTransfer = domainMovement.copy(
+                    id = UUID.randomUUID(),
+                    type = DomainMovementType.TRANSFER,
+                    correlationId = correlationId,
+                    destinationStoreId = destStoreId
+                )
+
+                val result = MovementMapper.toEntity(domainTransfer)
+
+                result.correlationId shouldBe correlationId
+                result.destinationStoreId shouldBe destStoreId
+            }
+        }
+
         describe("roundtrip") {
 
             it("given domain movement when toEntity then toDomain should preserve all fields") {

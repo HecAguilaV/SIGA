@@ -1,5 +1,6 @@
 package com.siga.inventory.domain.model
 
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -12,5 +13,6 @@ import java.util.UUID
 data class Stock(
     val productId: UUID,
     val storeId: UUID,
-    val quantity: Int
+    val quantity: Int,
+    val lastMovementAt: Instant? = null
 )
