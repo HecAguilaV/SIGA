@@ -18,7 +18,7 @@
 | **Yesenia** | Operaria/cajera de kiosko | Registra ventas, solicita agregar productos nuevos que la dueña compra sin informar. Debe trackear manualmente cuánto stock queda. Encontraba discrepancias por productos duplicados con distintos códigos. Búsquedas case-sensitive la confundían. | No puede vender lo que no está en el sistema, y no puede encontrar lo que sí está. |
 | **Luis** | Chofer repartidor y comprador | Trabaja lunes a viernes. Todo se coordina por voz o WhatsApp con Elizabeth. Algunas cocinas le avisan directamente cuando falta algo. Él pide a la bodeguera. | Sin registro formal de lo que entrega ni lo que le piden. Todo es verbal. |
 | **Antonia** | Encargada de bodega | Gestiona la bodega central, entrega productos a casinos, cocina y kioskos. Sin gestión en papel ni digital: todo de boca a boca. Los productos existían en el ERP pero nadie los gestionaba. | Cero trazabilidad. Si le preguntan qué entregó la semana pasada, no lo sabe. |
-| **Valentina** | Administradora SIGA (interna) | Equipo interno de la plataforma. Gestiona clientes SaaS y la salud del sistema. | Necesita visibilidad centralizada de tenants y servicios. |
+| **Héctor** *(como Admin SIGA)* | Administrador de la plataforma | Construye, opera y monitorea SIGA. Su 5% restante lo dedica a mantener la plataforma funcionando: gestiona tenants, revisa salud de microservicios, y se asegura de que Elizabeth, Yesenia, Luis y Antonia puedan trabajar sin fricción. | Necesita visibilidad del estado del sistema para detectar problemas antes de que los usuarios los reporten. |
 
 ---
 
@@ -184,7 +184,7 @@ Scenario: Registro de salida de bodega a punto operativo
   And queda un registro: fecha, producto, cantidad, origen, destino, responsable (Antonia)
 
 Scenario: Consulta de historial de entregas
-  Given Valentina pregunta "¿Qué entregaste la semana pasada al Casino Colegio?"
+    Given Luis pregunta "Anto, ¿qué entregaste la semana pasada al Casino Colegio?"
   When Antonia consulta el historial filtrado por destino y fecha
   Then ve la lista completa de entregas con fecha, producto, cantidad
 ```
@@ -362,13 +362,13 @@ Scenario: Upgrade de plan activa IA operativa
 
 ### US-6.1 — Visibilidad de tenants y salud
 
-**Como** Valentina (administradora SIGA),
+**Como** Héctor (admin SIGA),
 **quiero** ver el estado de todos los clientes y la salud de los microservicios,
-**para** detectar problemas antes de que los clientes los reporten.
+**para** detectar problemas antes de que los usuarios los reporten.
 
 ```gherkin
 Scenario: Dashboard de tenants
-  Given Valentina accede al admin-portal
+    Given Héctor accede al admin-portal
   Then ve lista de clientes con: empresa, plan, estado, fecha de registro
   And puede filtrar por plan y estado
 

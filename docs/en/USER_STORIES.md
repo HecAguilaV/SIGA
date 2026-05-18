@@ -18,7 +18,7 @@
 | **Yesenia** | Kiosk operator/cashier | Registers sales, requests product additions when the owner buys items without informing anyone. Must manually track remaining stock. Found discrepancies from duplicate products with different codes. Case-sensitive search confused her. | Can't sell what's not in the system, and can't find what is. |
 | **Luis** | Driver/delivery and purchasing | Works Monday to Friday. Everything coordinated by voice or WhatsApp with Elizabeth. Some kitchens contact him directly when they need something. He requests from the warehouse manager. | No formal record of what he delivers or what's requested. Everything is verbal. |
 | **Antonia** | Warehouse manager | Manages the central warehouse, delivers products to cafeterias, central kitchen, and some kiosk supplies. No paper or digital management — all word-of-mouth. Products existed in the ERP but nobody managed them. | Zero traceability. If asked what she delivered last week, she doesn't know. |
-| **Valentina** | SIGA Admin (internal) | Internal platform team. Manages SaaS customers and system health. | Needs centralized visibility into tenants and services. |
+| **Héctor** *(as SIGA Admin)* | Platform administrator | Builds, operates, and monitors SIGA. Spends his remaining 5% keeping the platform running: manages tenants, checks microservice health, and ensures Elizabeth, Yesenia, Luis, and Antonia can work without friction. | Needs system health visibility to catch problems before users report them. |
 
 ---
 
@@ -362,13 +362,13 @@ Scenario: Plan upgrade activates operative AI
 
 ### US-6.1 — Tenant Visibility and Health
 
-**As** Valentina (SIGA platform administrator),
+**As** Héctor (SIGA admin),
 **I want** to see all customers' status and microservice health,
-**so that** I can detect problems before customers report them.
+**so that** I can catch problems before users report them.
 
 ```gherkin
 Scenario: Tenant dashboard
-  Given Valentina accesses the admin-portal
+    Given Héctor accesses the admin-portal
   Then she sees a customer list with: company, plan, status, registration date
   And can filter by plan and status
 
