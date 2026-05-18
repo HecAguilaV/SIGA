@@ -42,18 +42,18 @@ Chain strategy: pending
 
 ## Phase 2: Ports, Repositories, Adapters
 
-- [ ] 2.1 Create `domain/port/SkuSequencePort.kt` — `nextSequence(tenantId, prefix): Int`
-- [ ] 2.2 Create `domain/port/AlertRepositoryPort.kt` — `save(alert)`, `findByStoreId(storeId)`
-- [ ] 2.3 Add `findByProductIds(ids, tenantId)` to `domain/port/StockRepositoryPort.kt`
-- [ ] 2.4 Add `search(query, page, size)` and `findByNameLike(name, tenantId)` to `domain/port/ProductRepositoryPort.kt`
-- [ ] 2.5 Add `findByFilters(storeId, type, from, to, pageable)` to `domain/port/MovementRepositoryPort.kt`
-- [ ] 2.6 Create `infrastructure/adapter/SkuSequenceJpaAdapter.kt` — JPA `sku_sequences` counter
-- [ ] 2.7 Create `infrastructure/adapter/AlertJpaAdapter.kt` — Alert persistence
-- [ ] 2.8 Update `infrastructure/adapter/StockJpaAdapter.kt` — implement `findByProductIds`
-- [ ] 2.9 Update `infrastructure/adapter/ProductJpaAdapter.kt` — implement `search`, `findByNameLike`
-- [ ] 2.10 Update `infrastructure/adapter/MovementJpaAdapter.kt` — implement `findByFilters`
-- [ ] 2.11 Add `@Query` search method (ILIKE + unaccent) to `repository/ProductRepository.kt`
-- [ ] 2.12 Add filtered query methods to `repository/MovementRepository.kt`
+- [x] 2.1 Create `domain/port/SkuSequencePort.kt` — `nextSequence(tenantId, prefix): Int`
+- [x] 2.2 Create `domain/port/AlertRepositoryPort.kt` — `save(alert)`, `findByStoreId(storeId)`
+- [x] 2.3 Add `findByProductIds(ids, tenantId)` to `domain/port/StockRepositoryPort.kt`
+- [x] 2.4 Add `search(query, page, size)` and `findByNameLike(name, tenantId)` to `domain/port/ProductRepositoryPort.kt`
+- [x] 2.5 Add `findByFilters(storeId, type, from, to, pageable)` to `domain/port/MovementRepositoryPort.kt`
+- [x] 2.6 Create `infrastructure/adapter/SkuSequenceJpaAdapter.kt` — JPA `sku_sequences` counter
+- [x] 2.7 Create `infrastructure/adapter/AlertJpaAdapter.kt` — Alert persistence
+- [x] 2.8 Update `infrastructure/adapter/StockJpaAdapter.kt` — implement `findByProductIds`
+- [x] 2.9 Update `infrastructure/adapter/ProductJpaAdapter.kt` — implement `search`, `findByNameLike`
+- [x] 2.10 Update `infrastructure/adapter/MovementJpaAdapter.kt` — implement `findByFilters`
+- [x] 2.11 Add `@Query` search method (ILIKE + unaccent) to `repository/ProductRepository.kt`
+- [x] 2.12 Add filtered query methods to `repository/MovementRepository.kt`
 
 ## Phase 3: Domain Service & Use Cases
 

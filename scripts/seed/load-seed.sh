@@ -22,15 +22,20 @@ echo "  SIGA - Load Demo Seed Data"
 echo "  $(date '+%Y-%m-%d %H:%M:%S')"
 echo "=============================================="
 
-# Configuración de bases de datos
-DB_HOST="localhost"
-DB_PORT="${DB_PORT:-5432}"
+# Container name
+PG_CONTAINER="siga-postgres"
 
 declare -A DB_CONFIG
-DB_CONFIG[auth]="siga_auth:auth_user:auth_pass_2026"
-DB_CONFIG[inventory]="siga_inventory:inventory_user:inventory_pass_2026"
-DB_CONFIG[sales]="siga_sales:sales_user:sales_pass_2026"
-DB_CONFIG[billing]="siga_billing:billing_user:billing_pass_2026"
+DB_CONFIG[auth]="siga_auth:auth_user"
+DB_CONFIG[inventory]="siga_inventory:inventory_user"
+DB_CONFIG[sales]="siga_sales:sales_user"
+DB_CONFIG[billing]="siga_billing:billing_user"
+
+PSQL_CMD() {
+    local db=$1
+    shift
+    docker exec -i "$PG_CONTAINER" psql -U "$db" -d "$db" "$@"
+}
 
 run_seed() {
     local service=$1
@@ -38,7 +43,6 @@ run_seed() {
     local config="${DB_CONFIG[$service]}"
     local db_name=$(echo "$config" | cut -d: -f1)
     local db_user=$(echo "$config" | cut -d: -f2)
-    local db_pass=$(echo "$config" | cut -d: -f3)
 
     echo ""
     echo "──────────────────────────────────────────────"
@@ -50,8 +54,8 @@ run_seed() {
         return 1
     fi
 
-    PGPASSWORD="$db_pass" psql -h "$DB_HOST" -p "$DB_PORT" -U "$db_user" -d "$db_name" \
-        -f "$seed_file" -v ON_ERROR_STOP=1 2>&1 | sed 's/^/  /'
+    docker exec -i "$PG_CONTAINER" psql -U "$db_user" -d "$db_name" \
+        -v ON_ERROR_STOP=1 < "$seed_file" 2>&1 | sed 's/^/  /'
 
     local exit_code=${PIPESTATUS[0]}
     if [ $exit_code -eq 0 ]; then
@@ -65,8 +69,8 @@ run_seed() {
 # Verificar conexión a PostgreSQL
 echo ""
 echo "⏳ Verificando conexión a PostgreSQL..."
-if ! PGPASSWORD="auth_pass_2026" psql -h "$DB_HOST" -p "$DB_PORT" -U "auth_user" -d "siga_auth" -c "SELECT 1" > /dev/null 2>&1; then
-    echo -e "  ${RED}✗ No se puede conectar a PostgreSQL en $DB_HOST:$DB_PORT${NC}"
+if ! docker exec "$PG_CONTAINER" psql -U siga_admin -d siga_master_db -c "SELECT 1" > /dev/null 2>&1; then
+    echo -e "  ${RED}✗ No se puede conectar a PostgreSQL en contenedor $PG_CONTAINER${NC}"
     echo "  Asegúrate de que siga-db esté corriendo (./scripts/start-staggered.sh)"
     exit 1
 fi
