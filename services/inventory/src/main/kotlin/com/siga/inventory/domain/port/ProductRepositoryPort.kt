@@ -1,6 +1,7 @@
 package com.siga.inventory.domain.port
 
 import com.siga.inventory.domain.model.Product
+import org.springframework.data.domain.Page
 import java.util.UUID
 
 /**
@@ -12,4 +13,6 @@ interface ProductRepositoryPort {
     fun findByCommercialUserId(userId: UUID): List<Product>
     fun findByCategoryId(categoryId: UUID): List<Product>
     fun findByBarcode(barcode: String): Product?
+    fun search(query: String, page: Int, size: Int): Page<Product>
+    fun findByNameLike(name: String): List<Product>
 }

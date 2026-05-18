@@ -9,6 +9,7 @@ import io.kotest.matchers.shouldNotBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.math.BigDecimal
 import java.time.Instant
@@ -20,6 +21,7 @@ import java.util.UUID
  */
 @SpringBootTest
 @ActiveProfiles("test")
+@Sql(scripts = ["classpath:create-unaccent-alias.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class ProductJpaAdapterTest : DescribeSpec() {
 
     @Autowired
@@ -144,6 +146,76 @@ class ProductJpaAdapterTest : DescribeSpec() {
                 found?.name shouldBe "Updated Name"
                 found?.unitPrice shouldBe BigDecimal("200.00")
                 found?.isActive shouldBe false
+            }
+
+            it("findByNameLike returns products matching name fragment") {
+                adapter.save(Product(
+                    id = UUID.randomUUID(), name = "Galleta Surtida", description = null,
+                    categoryId = null, barcode = null, unitPrice = BigDecimal("10.00"),
+                    isActive = true, commercialUserId = null, sku = null, unitType = null,
+                    createdAt = Instant.now(), updatedAt = Instant.now()
+                ))
+                adapter.save(Product(
+                    id = UUID.randomUUID(), name = "Galleta Salada", description = null,
+                    categoryId = null, barcode = null, unitPrice = BigDecimal("12.00"),
+                    isActive = true, commercialUserId = null, sku = null, unitType = null,
+                    createdAt = Instant.now(), updatedAt = Instant.now()
+                ))
+                adapter.save(Product(
+                    id = UUID.randomUUID(), name = "Arroz 1kg", description = null,
+                    categoryId = null, barcode = null, unitPrice = BigDecimal("5.00"),
+                    isActive = true, commercialUserId = null, sku = null, unitType = null,
+                    createdAt = Instant.now(), updatedAt = Instant.now()
+                ))
+
+                val result = adapter.findByNameLike("Galleta")
+                result.size shouldBe 2
+                result.all { it.name.startsWith("Galleta") } shouldBe true
+            }
+
+            it("findByNameLike returns empty list when no matches") {
+                adapter.save(Product(
+                    id = UUID.randomUUID(), name = "Leche Descremada", description = null,
+                    categoryId = null, barcode = null, unitPrice = BigDecimal("3.00"),
+                    isActive = true, commercialUserId = null, sku = null, unitType = null,
+                    createdAt = Instant.now(), updatedAt = Instant.now()
+                ))
+
+                val result = adapter.findByNameLike("XYZZZ")
+                result shouldBe emptyList()
+            }
+
+            it("search returns paginated results") {
+                // Use non-accented names since H2 ILIKE is case-insensitive but NOT accent-insensitive
+                adapter.save(Product(
+                    id = UUID.randomUUID(), name = "Cafe Instantaneo 200g", description = null,
+                    categoryId = null, barcode = null, unitPrice = BigDecimal("15.00"),
+                    isActive = true, commercialUserId = null, sku = null, unitType = null,
+                    createdAt = Instant.now(), updatedAt = Instant.now()
+                ))
+                adapter.save(Product(
+                    id = UUID.randomUUID(), name = "Cafe Molido 500g", description = null,
+                    categoryId = null, barcode = null, unitPrice = BigDecimal("20.00"),
+                    isActive = true, commercialUserId = null, sku = null, unitType = null,
+                    createdAt = Instant.now(), updatedAt = Instant.now()
+                ))
+                adapter.save(Product(
+                    id = UUID.randomUUID(), name = "Te Verde", description = null,
+                    categoryId = null, barcode = null, unitPrice = BigDecimal("8.00"),
+                    isActive = true, commercialUserId = null, sku = null, unitType = null,
+                    createdAt = Instant.now(), updatedAt = Instant.now()
+                ))
+
+                val result = adapter.search("cafe", 0, 10)
+                result.totalElements shouldBe 2
+                result.content.size shouldBe 2
+                result.content.all { it.name.contains("Cafe", ignoreCase = true) } shouldBe true
+            }
+
+            it("search returns empty page when no matches") {
+                val result = adapter.search("NONEXISTENTPRODUCT", 0, 10)
+                result.totalElements shouldBe 0
+                result.content shouldBe emptyList()
             }
         }
     }
