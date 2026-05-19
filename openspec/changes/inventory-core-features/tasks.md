@@ -67,8 +67,8 @@ Chain strategy: pending
 
 ## Phase 4: Controllers & Wiring
 
-- [ ] 4.1 Add `GET /consolidated`, `POST /reconciliations`, `POST /transfers`, `GET /movements` to `StockController.kt`
-- [ ] 4.2 Replace direct JPA repo usage in `ProductController.kt` — use `CreateProductUseCase`, add `GET /search`, `GET /duplicate-check`
+- [x] 4.1 Add `GET /consolidated`, `POST /reconciliations`, `POST /transfers`, `GET /movements` to `StockController.kt`
+- [x] 4.2 Replace direct JPA repo usage in `ProductController.kt` — use `CreateProductUseCase`, add `GET /search`, `GET /duplicate-check`
 
 ## Phase 5: Seed Cleanup
 
