@@ -14,6 +14,11 @@ export interface ChatMessage {
 	content: string;
 	timestamp: Date;
 	streaming?: boolean;
+	provenance?: 'gemini' | 'fallback-engine' | string;
+	metadata?: {
+		hidden?: boolean;
+		[key: string]: unknown;
+	};
 }
 
 /** Posibles estados del store de chat */

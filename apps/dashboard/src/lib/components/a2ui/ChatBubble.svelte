@@ -19,12 +19,14 @@
 		role = 'user',
 		content = '',
 		streaming = false,
-		timestamp = new Date()
+		timestamp = new Date(),
+		provenance
 	}: {
 		role?: 'user' | 'assistant';
 		content?: string;
 		streaming?: boolean;
 		timestamp?: Date;
+		provenance?: string;
 	} = $props();
 
 	const isUser = $derived(role === 'user');
@@ -61,6 +63,11 @@
 	<div class="bubble-content">
 		<div class="bubble-header">
 			<span class="bubble-role">{isUser ? 'Tú' : 'Asistente'}</span>
+			{#if provenance}
+				<span class="provenance-badge" class:gemini={provenance === 'gemini'} class:fallback={provenance === 'fallback-engine'}>
+					{provenance === 'gemini' ? 'Gemini 3' : 'Fallback'}
+				</span>
+			{/if}
 			<span class="bubble-time">{formattedTime}</span>
 		</div>
 
@@ -144,6 +151,28 @@
 		font-size: var(--font-size-xs);
 		color: var(--color-text-muted);
 		font-family: var(--font-mono);
+	}
+
+	.provenance-badge {
+		font-size: 9px;
+		font-weight: var(--font-weight-bold);
+		text-transform: uppercase;
+		padding: 1px 6px;
+		border-radius: 4px;
+		letter-spacing: 0.05em;
+		backdrop-filter: blur(4px);
+	}
+
+	.provenance-badge.gemini {
+		background: rgba(16, 185, 129, 0.1);
+		color: #10b981;
+		border: 1px solid rgba(16, 185, 129, 0.2);
+	}
+
+	.provenance-badge.fallback {
+		background: rgba(245, 158, 11, 0.1);
+		color: #f59e0b;
+		border: 1px solid rgba(245, 158, 11, 0.2);
 	}
 
 	.bubble-text {

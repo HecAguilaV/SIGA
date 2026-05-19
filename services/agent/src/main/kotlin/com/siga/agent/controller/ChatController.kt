@@ -85,10 +85,16 @@ class ChatController(
         val sink = Sinks.many().unicast().onBackpressureBuffer<ServerSentEvent<String>>()
 
         // Emit initial chunk event (TTFB < 2s)
+        val initialContent = if (request.prompt.contains("Acabo de activar el modo agéntico")) {
+            "Estamos en modo agéntico para facilitar tu experiencia. Por el momento te entrego un resumen de tu inventario y ventas."
+        } else {
+            "Procesando tu consulta..."
+        }
+
         sink.tryEmitNext(
             ServerSentEvent.builder("")
                 .event("chunk")
-                .data("""{"type":"chunk","content":"Procesando consulta...","done":false}""")
+                .data("""{"type":"chunk","content":"$initialContent","done":false}""")
                 .build()
         )
 
@@ -98,6 +104,16 @@ class ChatController(
 
         responseMono.subscribe(
             { response ->
+                // Emit narrative if present
+                response.surface.narrative?.let { narrative ->
+                    sink.tryEmitNext(
+                        ServerSentEvent.builder("")
+                            .event("chunk")
+                            .data("""{"type":"chunk","content":"$narrative","done":false}""")
+                            .build()
+                    )
+                }
+
                 // Emit tool event
                 sink.tryEmitNext(
                     ServerSentEvent.builder("")

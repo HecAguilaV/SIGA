@@ -4,7 +4,7 @@ import { decodeJwtPayload, buildUserSession, clearSessionCookies } from '$lib/se
 import { attemptRefresh } from '$lib/server/gateway';
 
 // Rutas públicas que no requieren autenticación
-const PUBLIC_ROUTES = ['/login', '/logout', '/api/chat/stream', '/_app'];
+const PUBLIC_ROUTES = ['/login', '/logout', '/chat-handler/stream', '/_app'];
 
 // Route-level role guards (check before layout load functions)
 const ROLE_GUARDS: Record<string, string[]> = {
@@ -39,8 +39,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// ── 2. Leer cookie ──
 	const token = event.cookies.get('siga_token');
-
+	console.log(`[Hooks] Path: ${pathname}, Token presente: ${!!token}`);
+	
 	if (!token) {
+		console.warn(`[Hooks] Redirigiendo a login porque no hay token en ${pathname}`);
 		return redirectToLogin(event);
 	}
 

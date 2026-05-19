@@ -41,7 +41,10 @@
 
 	// Sincronizar con el store de chat y a2ui
 	$effect(() => {
-		activeToolCalls = chat.toolCalls ?? [];
+		// Ocultar motores internos de la lista de herramientas técnicas
+		activeToolCalls = (chat.toolCalls ?? []).filter(
+			(t) => !['gemini', 'fallback-engine'].includes(t.name)
+		);
 		isConnecting = chat.status === 'connecting';
 	});
 
@@ -97,7 +100,8 @@
 	});
 
 	$effect(() => {
-		if (chat.messages.length > 0 && chatWidgetEl) {
+		// Scroll to bottom when messages or UI components change
+		if (chatWidgetEl && (chat.messages.length > 0 || a2ui.components?.length > 0 || a2ui.tree)) {
 			requestAnimationFrame(() => {
 				chatWidgetEl.scrollTop = chatWidgetEl.scrollHeight;
 			});
@@ -206,12 +210,13 @@
 					</p>
 				</div>
 			{:else}
-				{#each chat.messages as msg (msg.id)}
+				{#each chat.messages.filter(m => !m.metadata?.hidden) as msg (msg.id)}
 					<ChatBubble
 						role={msg.role}
 						content={msg.content}
 						streaming={msg.streaming ?? false}
 						timestamp={msg.timestamp}
+						provenance={msg.provenance}
 					/>
 				{/each}
 			{/if}
@@ -260,8 +265,11 @@
 		position: fixed;
 		bottom: 90px;
 		right: 24px;
-		width: 420px;
-		height: 600px;
+		width: 380px;
+		height: 520px;
+		min-width: 300px;
+		min-height: 350px;
+		max-width: 90vw;
 		max-height: calc(100vh - 120px);
 		background: var(--color-bg);
 		border: 1px solid var(--color-border);
@@ -270,9 +278,10 @@
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
+		resize: both;
 		animation: slide-up 0.2s ease-out;
 		z-index: 950;
-		transition: all var(--transition-base);
+		transition: opacity var(--transition-base), transform var(--transition-base), border-color var(--transition-base);
 	}
 
 	@media (max-width: 768px) {

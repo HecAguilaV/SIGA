@@ -25,7 +25,8 @@ data class A2UIv0Request(
 data class CreateSurface(
     val surfaceId: String,
     val components: List<A2UIComponent>,
-    val layout: A2UILayout? = null
+    val layout: A2UILayout? = null,
+    val narrative: String? = null
 )
 
 /**

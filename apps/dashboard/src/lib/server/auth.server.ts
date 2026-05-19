@@ -68,13 +68,15 @@ export function setSessionCookies(
 		path: '/',
 		httpOnly: true,
 		sameSite: 'lax',
+		secure: false, // Forzar false para Tailscale/IP
 		maxAge: 60 * 15 // 15 minutos
 	});
 
 	cookies.set('siga_refresh', refreshToken, {
 		path: '/api/auth/refresh',
 		httpOnly: true,
-		sameSite: 'strict',
+		sameSite: 'lax', // Menos estricto para la prueba
+		secure: false, // Forzar false para Tailscale/IP
 		maxAge: 60 * 60 * 24 * 7 // 7 días
 	});
 }

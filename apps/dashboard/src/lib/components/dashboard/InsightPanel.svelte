@@ -38,7 +38,7 @@
 		<p class="insight-empty" role="status">{emptyMessage}</p>
 	{:else}
 		<div class="insight-list">
-			{#each insights as insight (insight.id)}
+			{#each insights as insight, i (insight.id ?? i)}
 				<div class="insight-item">
 					<div class="insight-header">
 						<Badge variant={badgeVariant(insight.type)}>
