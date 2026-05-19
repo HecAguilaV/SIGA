@@ -1,17 +1,6 @@
-/**
- * +server.ts — SSE proxy endpoint para A2UI chat.
- *
- * GET /api/chat/stream?message=&context=&history=
- *
- * Conecta con siga-agent vía Gateway, pipea el ReadableStream de respuesta
- * y transforma los eventos SSE (chunk, done, error, tool) hacia el cliente.
- * Timeout de 60s por request.
- */
-
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-const GATEWAY_BASE = process.env.GATEWAY_BASE || 'http://localhost:8080';
 const AGENT_BASE = process.env.AGENT_BASE || 'http://localhost:8000';
 const AGENT_TIMEOUT_MS = 60_000;
 
@@ -24,7 +13,6 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 		throw error(400, 'El parámetro "message" es requerido');
 	}
 
-	// 1. Conectar con siga-agent directamente (no gateway)
 	const agentUrl = new URL(`${AGENT_BASE}/api/agent/chat/stream`);
 	agentUrl.searchParams.set('message', message);
 	agentUrl.searchParams.set('context', context);
@@ -59,7 +47,6 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 		throw error(502, 'El agente no devolvió un cuerpo de respuesta');
 	}
 
-	// 2. Pipe de eventos: ReadableStream → transform → cliente
 	const { readable, writable } = new TransformStream();
 	const writer = writable.getWriter();
 	const encoder = new TextEncoder();
@@ -77,47 +64,6 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 	});
 };
 
-/**
- * POST /api/agent/a2ui — Proxy para generación A2UI v0.9.
- *
- * Forward al backend agent service (Python o Kotlin, mismo path).
- * Retorna 200 + envelope A2UI válido.
- */
-export const POST: RequestHandler = async ({ request, fetch }) => {
-	let body: { message?: string; context?: string; history?: unknown[]; mode?: string };
-	try {
-		body = await request.json();
-	} catch {
-		return json({ code: 'BAD_REQUEST', message: 'El cuerpo de la solicitud no es JSON válido' }, { status: 400 });
-	}
-
-	if (!body.message || body.message.trim().length === 0) {
-		return json({ code: 'INVALID_MESSAGE', message: 'El campo "message" es requerido' }, { status: 400 });
-	}
-
-	// Forward POST to backend agent service (same path, direct — no gateway)
-	const agentUrl = `${AGENT_BASE}/api/agent/a2ui`;
-
-	const agentRes = await fetch(agentUrl, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(body)
-	});
-
-	// Read the response body
-	const agentBody = await agentRes.json();
-
-	// Return the same status and body
-	return json(agentBody, { status: agentRes.ok ? 200 : agentRes.status });
-};
-
-/**
- * pipeAgentStream — Lee el body del agente (ReadableStream<Uint8Array>),
- * divide en líneas SSE, transforma cada evento al formato estándar SSE
- * y lo escribe en el writable del TransformStream hacia el cliente.
- */
 async function pipeAgentStream(
 	body: ReadableStream<Uint8Array>,
 	writer: WritableStreamDefaultWriter<Uint8Array>,
@@ -134,7 +80,6 @@ async function pipeAgentStream(
 			const { done, value } = await reader.read();
 
 			if (done) {
-				// Procesar resto del buffer
 				if (buffer.trim()) {
 					for (const line of buffer.split('\n')) {
 						const trimmed = line.trim();
@@ -147,17 +92,12 @@ async function pipeAgentStream(
 			}
 
 			buffer += decoder.decode(value, { stream: true });
-
-			// Dividir por doble newline (delimitador SSE)
 			const parts = buffer.split('\n\n');
-			// El último elemento puede estar incompleto
 			buffer = parts.pop() ?? '';
 
 			for (const part of parts) {
 				const trimmed = part.trim();
 				if (!trimmed) continue;
-
-				// Transformar el evento del agente al formato SSE estándar
 				const sseEvent = transformAgentEvent(trimmed);
 				if (sseEvent) {
 					await writer.write(encoder.encode(sseEvent + '\n\n'));
@@ -166,7 +106,6 @@ async function pipeAgentStream(
 		}
 	} catch (err) {
 		if (err instanceof DOMException && err.name === 'AbortError') {
-			// Timeout — enviar evento de error al cliente
 			const errorEvent = `data: ${JSON.stringify({
 				type: 'error',
 				code: 'TIMEOUT',
@@ -188,34 +127,15 @@ async function pipeAgentStream(
 	}
 }
 
-/**
- * transformAgentEvent — Toma una línea JSON del agente y la formatea
- * como un evento SSE estándar (`data: {...}`).
- *
- * El agente emite eventos con formato:
- *   {"type":"chunk","content":"texto","done":false}
- *   {"type":"done","content":"texto","done":true}
- *   {"type":"error","code":"...","message":"..."}
- *   {"type":"tool","name":"...","status":"running"|"done"|"error"}
- *
- * Retorna la línea SSE formateada, o null si no se pudo parsear.
- */
 function transformAgentEvent(line: string): string | null {
-	// Si ya viene con prefijo "data:", pasarlo directamente
-	if (line.startsWith('data:')) {
-		return line;
-	}
-
+	if (line.startsWith('data:')) return line;
 	try {
 		const parsed = JSON.parse(line);
-		// Validar que sea un evento reconocido
-		if (parsed.type && ['chunk', 'done', 'error', 'tool'].includes(parsed.type)) {
+		if (parsed.type && ['chunk', 'done', 'error', 'tool', 'a2ui', 'update', 'patch'].includes(parsed.type)) {
 			return `data: ${JSON.stringify(parsed)}`;
 		}
-		// Evento desconocido — pasarlo como chunk genérico
 		return `data: ${JSON.stringify({ type: 'chunk', content: line, done: false })}`;
 	} catch {
-		// No es JSON — tratarlo como chunk de texto
 		return `data: ${JSON.stringify({ type: 'chunk', content: line, done: false })}`;
 	}
 }

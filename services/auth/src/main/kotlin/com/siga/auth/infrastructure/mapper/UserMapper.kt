@@ -22,6 +22,7 @@ object UserMapper {
                 EntityUserRole.ADMINISTRATOR -> DomainUserRole.ADMINISTRATOR
                 EntityUserRole.OPERATOR -> DomainUserRole.OPERATOR
                 EntityUserRole.CASHIER -> DomainUserRole.CASHIER
+                EntityUserRole.EMPLOYEE -> DomainUserRole.EMPLOYEE
             },
             commercialUserId = entity.commercialUserId,
             customerId = entity.customerId,
@@ -42,6 +43,7 @@ object UserMapper {
                 DomainUserRole.ADMINISTRATOR -> EntityUserRole.ADMINISTRATOR
                 DomainUserRole.OPERATOR -> EntityUserRole.OPERATOR
                 DomainUserRole.CASHIER -> EntityUserRole.CASHIER
+                DomainUserRole.EMPLOYEE -> EntityUserRole.EMPLOYEE
             },
             commercialUserId = domain.commercialUserId,
             customerId = domain.customerId,

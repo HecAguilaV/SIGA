@@ -37,6 +37,7 @@
 						tree={a2ui.tree} 
 						components={a2ui.components} 
 						surfaceId={a2ui.surfaceId} 
+						layout={a2ui.layout}
 					/>
 				</div>
 			{/if}

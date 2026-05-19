@@ -20,11 +20,13 @@
 	let {
 		surfaceId = '',
 		components = undefined,
-		tree = null
+		tree = null,
+		layout = undefined
 	}: {
 		surfaceId?: string;
 		components?: A2UIComponent[] | undefined;
 		tree?: A2UINode | A2UINode[] | null;
+		layout?: import('$lib/types/a2ui').A2UILayout;
 	} = $props();
 
 	/**
@@ -68,7 +70,10 @@
 		</div>
 	{:else if hasV0Envelope()}
 		<!-- A2UI v0.9: render flat list of components via catalog -->
-		<div class="a2ui-components">
+		<div 
+			class="a2ui-components" 
+			style="--a2ui-cols-desktop: {layout?.columns?.desktop ?? 3}; --a2ui-cols-tablet: {layout?.columns?.tablet ?? 2}; --a2ui-gap: var(--spacing-{layout?.gap ?? 'lg'});"
+		>
 			{#each components as comp (comp.ref ?? comp.type)}
 				{@const Component = resolveComponent(comp.type)}
 				{#if Component}
@@ -130,15 +135,30 @@
 	}
 
 	.a2ui-components {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-md);
+		display: grid;
+		grid-template-columns: repeat(var(--a2ui-cols-desktop, 3), 1fr);
+		gap: var(--a2ui-gap, var(--spacing-lg));
+		padding: var(--spacing-md) 0;
+		align-items: start;
+	}
+
+	@media (max-width: 1024px) {
+		.a2ui-components {
+			grid-template-columns: repeat(var(--a2ui-cols-tablet, 2), 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.a2ui-components {
+			grid-template-columns: 1fr;
+			gap: var(--spacing-md);
+		}
 	}
 
 	.a2ui-array {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-md);
+		gap: var(--spacing-lg);
 	}
 
 	.a2ui-fallback {

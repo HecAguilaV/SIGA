@@ -272,6 +272,20 @@
 		overflow: hidden;
 		animation: slide-up 0.2s ease-out;
 		z-index: 950;
+		transition: all var(--transition-base);
+	}
+
+	@media (max-width: 768px) {
+		.chat-widget {
+			bottom: 0;
+			right: 0;
+			width: 100%;
+			height: 80vh;
+			max-height: 90vh;
+			border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+			border-bottom: none;
+			box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+		}
 	}
 
 	@keyframes slide-up {
