@@ -58,6 +58,25 @@ bash scripts/start-staggered.sh
 
 ## Ecosistema Frontend — SvelteKit Unificado
 
+### 🚚 Inventory Core — Nuevas Capacidades (Mayo 2026)
+
+`siga-inventory` ahora cuenta con lógica de negocio completa:
+
+| Capacidad | Endpoint | Historias |
+|-----------|----------|-----------|
+| **Stock consolidado** | `GET /api/v1/inventory/stock/consolidated?productId=X` | US-2.1 |
+| **Auto-SKU + detección duplicados** | `POST /api/v1/inventory/products`, `GET /duplicate-check?name=X` | US-2.2 |
+| **Búsqueda inteligente** | `GET /api/v1/inventory/products/search?q=X` | US-2.3 |
+| **Reconciliación de stock** | `POST /api/v1/inventory/stock/reconciliations` | US-2.4 |
+| **Transferencia bodega ↔ punto** | `POST /api/v1/inventory/stock/transfers` | US-2.5 |
+| **Historial de movimientos** | `GET /api/v1/inventory/stock/movements` | US-2.5 |
+
+Cada capacidad implementada con **Arquitectura Hexagonal** puertos/adaptadores, **Strict TDD** (50+ tests), y especificaciones SDD en `openspec/changes/inventory-core-features/`.
+
+---
+
+## Ecosistema Frontend — SvelteKit Unificado
+
 SIGA converge en un frontend SvelteKit 5 unificado bajo `apps/dashboard`, que funciona como BFF (Backend For Frontend) nativo con server-side data composition:
 
 - **Dashboard**: Localizado en `apps/dashboard`. Unifica las interfaces de administración, landing, portal de clientes y portal de administración en una sola aplicación SvelteKit 5.
