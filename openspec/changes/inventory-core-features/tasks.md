@@ -72,9 +72,9 @@ Chain strategy: pending
 
 ## Phase 5: Seed Cleanup
 
-- [ ] 5.1 Replace hardcoded bcrypt hashes with env-var placeholder in `scripts/seed/01_seed_auth.sql`
-- [ ] 5.2 Replace hardcoded bcrypt hashes with env-var placeholder in `scripts/seed/04_seed_billing.sql`
-- [ ] 5.3 Replace hardcoded bcrypt hashes with env-var placeholder in `scripts/seed/demo_data.sql`
+- [x] 5.1 Replace hardcoded bcrypt hashes with env-var placeholder in `scripts/seed/01_seed_auth.sql`
+- [x] 5.2 Replace hardcoded bcrypt hashes with env-var placeholder in `scripts/seed/04_seed_billing.sql`
+- [x] 5.3 Replace hardcoded bcrypt hashes with env-var placeholder in `scripts/seed/demo_data.sql`
 
 ## Phase 6: Testing
 
