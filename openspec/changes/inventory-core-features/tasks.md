@@ -57,13 +57,13 @@ Chain strategy: pending
 
 ## Phase 3: Domain Service & Use Cases
 
-- [ ] 3.1 Create `domain/service/SkuGenerator.kt` — prefix extraction + sequence via port
-- [ ] 3.2 Create `application/usecase/ConsolidatedStockUseCase.kt` — paginated products → batch load stock → in-memory group
-- [ ] 3.3 Create `application/usecase/CreateProductUseCase.kt` — SKU gen, fuzzy duplicate check, save
-- [ ] 3.4 Create `application/usecase/SearchProductsUseCase.kt` — delegate to port, validate min 2 chars
-- [ ] 3.5 Create `application/usecase/ReconcileStockUseCase.kt` — discrepancy calc, stock adjust, >10% alert
-- [ ] 3.6 Create `application/usecase/TransferStockUseCase.kt` — `@Transactional` OUT+IN with correlation UUID
-- [ ] 3.7 Create `application/usecase/TransferMovementHistoryUseCase.kt` — filtered movement history
+- [x] 3.1 Create `domain/service/SkuGenerator.kt` — prefix extraction + sequence via port
+- [x] 3.2 Create `application/usecase/ConsolidatedStockUseCase.kt` — paginated products → batch load stock → in-memory group
+- [x] 3.3 Create `application/usecase/CreateProductUseCase.kt` — SKU gen, fuzzy duplicate check, save
+- [x] 3.4 Create `application/usecase/SearchProductsUseCase.kt` — delegate to port, validate min 2 chars
+- [x] 3.5 Create `application/usecase/ReconcileStockUseCase.kt` — discrepancy calc, stock adjust, >10% alert
+- [x] 3.6 Create `application/usecase/TransferStockUseCase.kt` — `@Transactional` OUT+IN with correlation UUID
+- [x] 3.7 Create `application/usecase/TransferMovementHistoryUseCase.kt` — filtered movement history
 
 ## Phase 4: Controllers & Wiring
 
