@@ -2,14 +2,14 @@
 -- SIGA - Demo Seed Data: Auth Service (siga_auth)
 -- =============================================================================
 -- Contraseña demo para TODOS los usuarios: demo123
--- Hash BCrypt: $2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS
+-- Hash BCrypt: $2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD (demo-only, do not use in production)
 -- =============================================================================
 
 -- Cliente / Tenant demo (Elizabeth, la dueña)
 INSERT INTO auth.customers (email, password_hash, name, last_name, company_name, is_active, is_on_trial, role)
 VALUES (
     'elizabeth@casinoeliz.cl',
-    '$2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS',
+    '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
     'Elizabeth', 'González Muñoz',
     'Casino Elizabeth Ltda.',
     true, false, 'customer'
@@ -54,19 +54,19 @@ ON CONFLICT DO NOTHING;
 INSERT INTO auth.users (id, email, password_hash, first_name, last_name, role, customer_id, is_active)
 VALUES
     ('3e24680e-1e54-5868-a2f8-23dc77cdd740', 'elizabeth@casinoeliz.cl',
-     '$2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS',
+     '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
      'Elizabeth', 'González', 'OWNER', 1, true),
     ('8ea0cd5a-6fe6-5b2d-9004-75eb961f0fcd', 'hector@siga.cl',
-     '$2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS',
+     '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
      'Héctor', 'Águila', 'EMPLOYEE', 1, true),
     ('f02181c8-dc68-5943-8228-3c33347f0c0b', 'yesenia@casinoeliz.cl',
-     '$2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS',
+     '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
      'Yesenia', 'Martínez', 'EMPLOYEE', 1, true),
     ('9dba16c4-98b0-5726-bc8c-f0ccc0b33166', 'luis@casinoeliz.cl',
-     '$2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS',
+     '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
      'Luis', 'Cifuentes', 'EMPLOYEE', 1, true),
     ('7b20777b-032c-54cc-8eac-cd2fef89a4a4', 'antonia@casinoeliz.cl',
-     '$2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS',
+     '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
      'Antonia', 'Rojas', 'EMPLOYEE', 1, true)
 ON CONFLICT (email) DO NOTHING;
 

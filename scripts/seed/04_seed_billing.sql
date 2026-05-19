@@ -17,7 +17,7 @@ INSERT INTO billing.customers (id, email, password_hash, name, last_name, compan
 VALUES (
     '3e24680e-1e54-5868-a2f8-23dc77cdd740',
     'elizabeth@casinoeliz.cl',
-    '$2b$12$IwerABf2qrSfqo5m7pAWj.jnBNl4RHiVU/IdzFpZu8whVN26Z5uAS',
+    '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
     'Elizabeth', 'González Muñoz',
     'Casino Elizabeth Ltda.',
     'customer',
