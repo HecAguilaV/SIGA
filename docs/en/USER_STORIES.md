@@ -387,6 +387,31 @@ US-3.1 (Sale with stock deduction)
   → Scenario: "Successful sale with sufficient stock" (BDD)
   → openspec/changes/saga-sales-inventory/spec.md (SDD)
   → SaleCompletedBehaviorSpec.kt (Kotest BehaviorSpec)
+
+US-2.1 (Multi-point consolidated stock)
+  → Scenario: "Consolidated stock view"
+  → openspec/changes/inventory-core-features/specs/consolidated-stock-view/spec.md (SDD)
+  → ConsolidatedStockQueryTest.kt (Kotest)
+
+US-2.2 (Frictionless product entry)
+  → Scenario: "Add product with auto-generated code"
+  → openspec/changes/inventory-core-features/specs/product-creation-flow/spec.md (SDD)
+  → CreateProductUseCaseTest.kt (Kotest)
+
+US-2.3 (Search that works for everyone)
+  → Scenario: "Case-insensitive and unaccented search"
+  → openspec/changes/inventory-core-features/specs/inventory-search/spec.md (SDD)
+  → InventorySearchTest.kt (Kotest)
+
+US-2.4 (Stock reconciliation)
+  → Scenario: "Physical count with discrepancy detection"
+  → openspec/changes/inventory-core-features/specs/stock-reconciliation/spec.md (SDD)
+  → ReconcileStockUseCaseTest.kt, ReconciliationAlertTest.kt (Kotest)
+
+US-2.5 (Warehouse management with traceability)
+  → Scenario: "Warehouse exit to operational point"
+  → openspec/changes/inventory-core-features/specs/warehouse-transfer/spec.md (SDD)
+  → TransferStockUseCaseTest.kt, TransferAtomicityTest.kt (Kotest)
 ```
 
 > Each story is traceable to an automated test. The Harness pipeline executes TDD → BDD → SDD in sequence.

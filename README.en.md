@@ -56,6 +56,23 @@ bash scripts/start-staggered.sh
 
 ---
 
+### 🚚 Inventory Core — New Capabilities (May 2026)
+
+`siga-inventory` now features full business logic:
+
+| Capability | Endpoint | Stories |
+|------------|----------|---------|
+| **Consolidated stock view** | `GET /api/v1/inventory/stock/consolidated?productId=X` | US-2.1 |
+| **Auto-SKU + duplicate detection** | `POST /api/v1/inventory/products`, `GET /duplicate-check?name=X` | US-2.2 |
+| **Smart search** | `GET /api/v1/inventory/products/search?q=X` | US-2.3 |
+| **Stock reconciliation** | `POST /api/v1/inventory/stock/reconciliations` | US-2.4 |
+| **Warehouse ↔ store transfer** | `POST /api/v1/inventory/stock/transfers` | US-2.5 |
+| **Movement history** | `GET /api/v1/inventory/stock/movements` | US-2.5 |
+
+Each capability implemented with **Hexagonal Architecture** (ports/adapters), **Strict TDD** (50+ tests), and SDD specs at `openspec/changes/inventory-core-features/`.
+
+---
+
 ## Frontend Ecosystem — SvelteKit Unified
 
 SIGA converges into a unified SvelteKit 5 frontend under `apps/dashboard`, acting as a native BFF (Backend For Frontend) with server-side data composition:

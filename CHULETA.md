@@ -21,7 +21,7 @@ Guía rápida y al grano para no perderse en la arquitectura del monorepo SIGA.
 | **`siga-registry`** | `8761` | **El Directorio Telefónico (Eureka)**. Todos los servicios le avisan "estoy vivo y esta es mi IP". El Gateway le pregunta dónde mandar el tráfico. | ❌ No tiene |
 | **`siga-gateway`** | `8080` | **La Puerta de Entrada**. Valida los tokens JWT, maneja el CORS y enruta la petición al microservicio correcto. | ❌ No tiene |
 | **`siga-auth`** | `8081` | **El Guardián (Identidad)**. Maneja login, registro, emite los JWT, valida emails y gestiona los permisos y roles (Dueños vs Empleados). | ✅ `siga_auth` |
-| **`siga-inventory`** | `8082` | **La Bodega (Stock)**. Maestro de productos, controla las mermas, el stock, y las transferencias entre sucursales. | ✅ `siga_inventory` |
+| **`siga-inventory`** | `8082` | **La Bodega (Stock)**. Maestro de productos, auto-SKU, búsqueda inteligente, stock consolidado multi-punto, conciliación con detección de discrepancias, transferencias entre sucursales con trazabilidad. | ✅ `siga_inventory` |
 | **`siga-sales`** | `8083` | **La Caja Registradora (POS)**. Maneja el carrito, procesa ventas, cobros y emite boletas/facturas a los clientes finales. | ✅ `siga_sales` |
 | **`siga-billing`** | `8084` | **La Suscripción (SaaS)**. Cobra la mensualidad de SIGA a las PYMEs, controla los planes (Básico, Premium). | ✅ `siga_billing` |
 | **`siga-agent`** | `8000` | **El Cerebro (IA)**. Escrito en Python. Asistente RAG para responder preguntas estratégicas ("¿Qué producto se vende más?"). | ✅ `siga_agent` |

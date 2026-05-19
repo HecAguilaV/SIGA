@@ -387,6 +387,31 @@ US-3.1 (Venta con descuento)
   → Scenario: "Venta exitosa con stock suficiente" (BDD)
   → openspec/changes/saga-sales-inventory/spec.md (SDD)
   → SaleCompletedBehaviorSpec.kt (Kotest BehaviorSpec)
+
+US-2.1 (Stock consolidado multi-punto)
+  → Scenario: "Vista consolidada de stock"
+  → openspec/changes/inventory-core-features/specs/consolidated-stock-view/spec.md (SDD)
+  → ConsolidatedStockQueryTest.kt (Kotest)
+
+US-2.2 (Ingreso rápido de productos)
+  → Scenario: "Agregar producto con código automático"
+  → openspec/changes/inventory-core-features/specs/product-creation-flow/spec.md (SDD)
+  → CreateProductUseCaseTest.kt (Kotest)
+
+US-2.3 (Búsqueda que funcione para todos)
+  → Scenario: "Búsqueda case-insensitive y sin tildes"
+  → openspec/changes/inventory-core-features/specs/inventory-search/spec.md (SDD)
+  → InventorySearchTest.kt (Kotest)
+
+US-2.4 (Reconciliación de stock)
+  → Scenario: "Conteo físico con detección de desfase"
+  → openspec/changes/inventory-core-features/specs/stock-reconciliation/spec.md (SDD)
+  → ReconcileStockUseCaseTest.kt, ReconciliationAlertTest.kt (Kotest)
+
+US-2.5 (Gestión de bodega con trazabilidad)
+  → Scenario: "Registro de salida de bodega a punto operativo"
+  → openspec/changes/inventory-core-features/specs/warehouse-transfer/spec.md (SDD)
+  → TransferStockUseCaseTest.kt, TransferAtomicityTest.kt (Kotest)
 ```
 
 > Cada historia es trazable hasta un test automatizado. El pipeline Harness ejecuta TDD → BDD → SDD en secuencia.
