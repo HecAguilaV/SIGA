@@ -78,10 +78,10 @@ Chain strategy: pending
 
 ## Phase 6: Testing
 
-- [ ] 6.1 Unit tests for `SkuGenerator` — prefix extraction, sequence logic (no Spring)
-- [ ] 6.2 Unit test per Use Case (MockK) — ConsolidatedStock, CreateProduct, SearchProducts, ReconcileStock, TransferStock, TransferMovementHistory
-- [ ] 6.3 Integration test — consolidated stock query via `@DataJpaTest`
-- [ ] 6.4 Integration test — search ILIKE + unaccent via `@DataJpaTest`
-- [ ] 6.5 Integration test — transfer `@Transactional` atomicity (rollback-only assertion)
-- [ ] 6.6 Integration test — reconciliation >10% alert creation
-- [ ] 6.7 Integration test — controller endpoints (MockMvc)
+- [x] 6.1 Unit tests for `SkuGenerator` — prefix extraction, sequence logic (no Spring)
+- [x] 6.2 Unit test per Use Case (MockK) — ConsolidatedStock, CreateProduct, SearchProducts, ReconcileStock, TransferStock, TransferMovementHistory
+- [x] 6.3 Integration test — consolidated stock query via `@DataJpaTest`
+- [x] 6.4 Integration test — search ILIKE + unaccent via `@DataJpaTest`
+- [x] 6.5 Integration test — transfer `@Transactional` atomicity (rollback-only assertion)
+- [x] 6.6 Integration test — reconciliation >10% alert creation
+- [x] 6.7 Integration test — controller endpoints (MockMvc)
