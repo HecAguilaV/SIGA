@@ -11,4 +11,5 @@ import java.util.UUID
 @Repository
 interface PermissionRepository : JpaRepository<Permission, UUID> {
     fun findByName(name: String): Permission?
+    fun findByCode(code: String): Permission?
 }

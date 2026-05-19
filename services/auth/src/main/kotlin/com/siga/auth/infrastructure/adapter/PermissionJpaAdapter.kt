@@ -25,6 +25,11 @@ class PermissionJpaAdapter(
         return PermissionMapper.toDomain(entity)
     }
 
+    override fun findByCode(code: String): Permission? {
+        val entity = permissionRepository.findByCode(code) ?: return null
+        return PermissionMapper.toDomain(entity)
+    }
+
     override fun findAll(): List<Permission> = permissionRepository.findAll().map { PermissionMapper.toDomain(it) }
 
     override fun save(permission: Permission): Permission {
@@ -35,5 +40,9 @@ class PermissionJpaAdapter(
         }
         val saved = permissionRepository.save(entity)
         return PermissionMapper.toDomain(saved)
+    }
+
+    override fun deleteById(id: UUID) {
+        permissionRepository.deleteById(id)
     }
 }

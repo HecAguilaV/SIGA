@@ -7,5 +7,6 @@ package com.siga.auth.entity
 enum class UserRole {
     ADMINISTRATOR,
     OPERATOR,
-    CASHIER
+    CASHIER,
+    EMPLOYEE
 }
