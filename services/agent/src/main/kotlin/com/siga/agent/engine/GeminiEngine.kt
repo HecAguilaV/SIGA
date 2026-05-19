@@ -105,7 +105,8 @@ class GeminiEngine(
                 return CreateSurface(
                     surfaceId = actualSurfaceId,
                     components = components,
-                    layout = layout
+                    layout = layout,
+                    narrative = root.get("narrative")?.asText()
                 )
             } catch (e: Exception) {
                 throw RuntimeException("Failed to parse Gemini response: ${e.message}", e)
@@ -179,14 +180,15 @@ class GeminiEngine(
 Eres siga-agent, el agente de UI generativa de SIGA. Tu trabajo es ÚNICAMENTE generar interfaces de usuario declarativas siguiendo el protocolo A2UI v0.9.
 
 ## REGLAS ESTRICTAS
-1. NO respondas con texto conversacional. Generás un JSON A2UI y nada más.
-2. NO saludes, NO expliques, NO justifiques. Solo devolvé el JSON.
+1. Respondés SIEMPRE con un JSON que sigue el protocolo A2UI v0.9.
+2. Usá el campo "narrative" para dar una respuesta textual breve, empática y profesional que acompañe a la UI.
 3. NO generes múltiples alternativas. Una sola propuesta de UI.
 
 ## FORMATO DE RESPUESTA
 Debes responder con un JSON con esta estructura:
 {
   "surfaceId": "identificador-único",
+  "narrative": "Aquí tenés un resumen de los puntos clave...",
   "components": [
     {
       "type": "stat-card",

@@ -1,15 +1,19 @@
 import { error } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 
-const AGENT_BASE = process.env.AGENT_BASE || 'http://localhost:8000';
+const AGENT_BASE = env.AGENT_BASE || 'http://localhost:8000';
 const AGENT_TIMEOUT_MS = 60_000;
 
 export const GET: RequestHandler = async ({ url, fetch }) => {
+	console.log(`[SSE Proxy] Iniciando conexión con el agente en ${AGENT_BASE}`);
+	
 	const message = url.searchParams.get('message');
-	const context = url.searchParams.get('context') ?? '';
-	const history = url.searchParams.get('history') ?? '[]';
+	const context = url.searchParams.get('context') || '';
+	const history = url.searchParams.get('history') || '[]';
 
 	if (!message || message.trim().length === 0) {
+		console.warn('[SSE Proxy] Intento de conexión sin mensaje');
 		throw error(400, 'El parámetro "message" es requerido');
 	}
 
@@ -128,14 +132,23 @@ async function pipeAgentStream(
 }
 
 function transformAgentEvent(line: string): string | null {
-	if (line.startsWith('data:')) return line;
+	const trimmed = line.trim();
+	if (!trimmed) return null;
+
+	// Si ya es un evento SSE (empieza con event: o data:), lo dejamos pasar tal cual
+	if (trimmed.startsWith('event:') || trimmed.startsWith('data:')) {
+		return trimmed;
+	}
+
+	// Si no, intentamos parsear como JSON por si es un objeto crudo
 	try {
-		const parsed = JSON.parse(line);
+		const parsed = JSON.parse(trimmed);
 		if (parsed.type && ['chunk', 'done', 'error', 'tool', 'a2ui', 'update', 'patch'].includes(parsed.type)) {
 			return `data: ${JSON.stringify(parsed)}`;
 		}
-		return `data: ${JSON.stringify({ type: 'chunk', content: line, done: false })}`;
+		return `data: ${JSON.stringify({ type: 'chunk', content: trimmed, done: false })}`;
 	} catch {
-		return `data: ${JSON.stringify({ type: 'chunk', content: line, done: false })}`;
+		// Es texto plano, lo envolvemos en un chunk
+		return `data: ${JSON.stringify({ type: 'chunk', content: trimmed, done: false })}`;
 	}
 }

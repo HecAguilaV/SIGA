@@ -33,51 +33,68 @@
 	{/snippet}
 
 	{#snippet children()}
-		<form method="POST">
-			<!-- Error message -->
-			{#if form?.error}
-				<div class="login-error" role="alert">
-					{form.error}
-				</div>
-			{/if}
-
-			<!-- Fields -->
-			<div class="login-fields">
-				<Input
-					type="email"
-					name="email"
-					label="Correo electrónico"
-					placeholder="demo@siga.cl"
-					bind:value={email}
-					required
-					autocomplete="email"
-					error={form?.missing === 'email' ? form?.error : undefined}
-				/>
-
-				<Input
-					type="password"
-					name="password"
-					label="Contraseña"
-					placeholder="demo1234"
-					bind:value={password}
-					required
-					autocomplete="current-password"
-					error={form?.missing === 'password' ? form?.error : undefined}
-				/>
-			</div>
-
-			<!-- Submit -->
-			<div class="login-submit">
-				<Button
-					type="submit"
-					variant="primary"
-					size="lg"
-					style="width: 100%"
+		{#if form?.success}
+			<div style="text-align: center; padding: 20px; background: #e6fffa; border: 1px solid #38b2ac; border-radius: 8px;">
+				<h2 style="color: #2c7a7b; margin-bottom: 10px;">¡LOGIN EXITOSO!</h2>
+				<p style="margin-bottom: 20px;">Las cookies se setearon correctamente.</p>
+				<a 
+					href={form.redirectTo} 
+					style="display: block; padding: 14px; background: #38b2ac; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;"
 				>
-					Iniciar sesión
-				</Button>
+					ENTRAR AL DASHBOARD
+				</a>
 			</div>
-		</form>
+		{:else}
+			<form 
+				method="POST" 
+				onsubmit={() => {
+					console.log('Formulario enviado!');
+					// alert('Enviando login...'); // Descomentar si no ves la consola
+				}}
+			>
+				<!-- Error message -->
+				{#if form?.error}
+					<div class="login-error" role="alert">
+						{form.error}
+					</div>
+				{/if}
+
+				<!-- Fields -->
+				<div class="login-fields">
+					<Input
+						type="email"
+						name="email"
+						label="Correo electrónico"
+						placeholder="demo@siga.cl"
+						bind:value={email}
+						required
+						autocomplete="email"
+						error={form?.missing === 'email' ? form?.error : undefined}
+					/>
+
+					<Input
+						type="password"
+						name="password"
+						label="Contraseña"
+						placeholder="demo1234"
+						bind:value={password}
+						required
+						autocomplete="current-password"
+						error={form?.missing === 'password' ? form?.error : undefined}
+					/>
+				</div>
+
+				<!-- Submit -->
+				<div class="login-submit">
+					<button
+						type="submit"
+						style="width: 100%; padding: 14px; background: #0070f3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"
+					>
+						Iniciar sesión (TEST NATIVO)
+					</button>
+				</div>
+			</form>
+		{/if}
 	{/snippet}
 
 	{#snippet footer()}

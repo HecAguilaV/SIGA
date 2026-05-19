@@ -28,13 +28,14 @@ data class SurfaceEnvelope(
     val type: String = "createSurface",
     val surfaceId: String,
     val components: List<A2UIComponent>,
-    val layout: A2UILayout? = null
+    val layout: A2UILayout? = null,
+    val narrative: String? = null
 )
 
 /**
  * 3-tier orchestrator for A2UI surface generation.
  *
- * Tier 1: GeminiEngine (LLM-powered, 15s timeout)
+ * Tier 1: GeminiEngine (LLM-powered, 30s timeout)
  * Tier 2: FallbackEngine (keyword/regex matching, <2s)
  * Tier 3: Catalog (static defaults, <500ms)
  *
@@ -106,11 +107,11 @@ class A2UIService(
     }
 
     /**
-     * Tier 1: Try GeminiEngine with 15s timeout.
+     * Tier 1: GeminiEngine (LLM-powered, 30s timeout)
      */
     private fun tryGemini(request: A2UIv0Request): Mono<A2UIEnvelopeResponse> {
         return geminiEngine.generateSurface(request.prompt, request.context)
-            .timeout(Duration.ofSeconds(15))
+            .timeout(Duration.ofSeconds(30))
             .map { surface ->
                 A2UIEnvelopeResponse(
                     surfaceId = surface.surfaceId,
@@ -118,7 +119,8 @@ class A2UIService(
                         type = "createSurface",
                         surfaceId = surface.surfaceId,
                         components = surface.components,
-                        layout = surface.layout
+                        layout = surface.layout,
+                        narrative = surface.narrative
                     ),
                     provenance = "gemini"
                 )
@@ -132,7 +134,7 @@ class A2UIService(
     private fun tryFallback(request: A2UIv0Request): Mono<A2UIEnvelopeResponse> {
         return Mono.fromCallable {
             fallbackEngine.generateSurface(request.prompt)
-        }.timeout(Duration.ofSeconds(15))
+        }.timeout(Duration.ofSeconds(30))
             .map { surface ->
                 A2UIEnvelopeResponse(
                     surfaceId = surface.surfaceId,

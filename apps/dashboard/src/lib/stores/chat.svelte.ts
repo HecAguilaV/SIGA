@@ -56,7 +56,7 @@ class ChatStore {
 	 * 3. Procesa eventos (chunk → acumula, done → finaliza, error → muestra)
 	 * 4. Maneja reconexión automática en caso de error
 	 */
-	async send(text: string, context?: string): Promise<void> {
+	async send(text: string, context?: string, metadata?: { hidden?: boolean }): Promise<void> {
 		if (!text.trim() || this.status === 'connecting' || this.status === 'streaming') return;
 
 		this.lastMessage = { text, context };
@@ -67,7 +67,8 @@ class ChatStore {
 			id: generateId(),
 			role: 'user',
 			content: text,
-			timestamp: new Date()
+			timestamp: new Date(),
+			metadata
 		};
 		this.messages = [...this.messages, userMsg];
 
@@ -105,7 +106,7 @@ class ChatStore {
 				.map((m) => ({ role: m.role, content: m.content }));
 			params.set('history', JSON.stringify(history));
 
-			const response = await fetch(`/api/chat/stream?${params.toString()}`, {
+			const response = await fetch(`/chat-handler/stream?${params.toString()}`, {
 				signal: controller.signal,
 				headers: {
 					Accept: 'text/event-stream'
@@ -254,6 +255,13 @@ class ChatStore {
 						...this.toolCalls.filter((t) => t.name !== event.name),
 						toolCall
 					];
+
+					// Si el nombre es gemini o fallback-engine, setear procedencia
+					if (['gemini', 'fallback-engine'].includes(event.name)) {
+						this.messages = this.messages.map((m) =>
+							m.id === assistantMsgId ? { ...m, provenance: event.name } : m
+						);
+					}
 				}
 				break;
 			}

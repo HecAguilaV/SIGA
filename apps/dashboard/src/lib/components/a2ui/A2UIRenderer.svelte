@@ -74,7 +74,7 @@
 			class="a2ui-components" 
 			style="--a2ui-cols-desktop: {layout?.columns?.desktop ?? 3}; --a2ui-cols-tablet: {layout?.columns?.tablet ?? 2}; --a2ui-gap: var(--spacing-{layout?.gap ?? 'lg'});"
 		>
-			{#each components as comp (comp.ref ?? comp.type)}
+			{#each components as comp, i (i)}
 				{@const Component = resolveComponent(comp.type)}
 				{#if Component}
 					{@const compProps = safeProps(comp.props)}

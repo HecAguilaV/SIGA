@@ -31,7 +31,7 @@
 
 			// Enviar mensaje al agente con contexto
 			const message = `Acabo de activar el modo agéntico. Estoy en ${currentRoute}. Mostrame el panel principal.`;
-			chat.send(message, currentRoute);
+			chat.send(message, currentRoute, { hidden: true });
 		}
 	}
 </script>
