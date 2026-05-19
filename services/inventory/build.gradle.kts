@@ -70,6 +70,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:6.0.0")
     testImplementation("io.kotest:kotest-extensions-spring:6.0.0")
     testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.0.0")
     testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testRuntimeOnly("com.h2database:h2")

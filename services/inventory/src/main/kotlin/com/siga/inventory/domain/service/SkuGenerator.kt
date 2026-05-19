@@ -1,6 +1,7 @@
 package com.siga.inventory.domain.service
 
 import com.siga.inventory.domain.port.SkuSequencePort
+import org.springframework.stereotype.Service
 
 /**
  * Domain service for generating SKUs (Stock Keeping Units).
@@ -14,6 +15,7 @@ import com.siga.inventory.domain.port.SkuSequencePort
  *   - PREFIX: First 3 uppercase alpha characters of the category name, or "GEN" if null/blank
  *   - SEQUENCE: Zero-padded 4-digit number from [SkuSequencePort.nextSequence]
  */
+@Service
 class SkuGenerator(
     private val sequencePort: SkuSequencePort
 ) {

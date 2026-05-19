@@ -19,6 +19,9 @@ class AlertJpaAdapter(
 
     override fun save(alert: Alert): Alert {
         val entity = AlertMapper.toEntity(alert)
+        if (entity.id == null) {
+            entity.id = UUID.randomUUID()
+        }
         val savedEntity = alertRepository.save(entity)
         return AlertMapper.toDomain(savedEntity)
     }
