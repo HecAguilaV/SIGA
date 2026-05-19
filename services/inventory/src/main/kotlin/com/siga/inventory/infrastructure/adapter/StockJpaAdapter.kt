@@ -45,7 +45,9 @@ class StockJpaAdapter(
             existingEntity.quantity = stock.quantity
             existingEntity
         } else {
-            StockMapper.toEntity(stock)
+            val entity = StockMapper.toEntity(stock)
+            entity.id = entity.id ?: UUID.randomUUID()
+            entity
         }
         val savedEntity = stockRepository.save(entity)
         return StockMapper.toDomain(savedEntity)
