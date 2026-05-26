@@ -1,6 +1,8 @@
 package com.siga.auth.application.usecase
 
 import com.siga.auth.domain.model.User
+import com.siga.auth.domain.port.PermissionRepositoryPort
+import com.siga.auth.domain.port.UserPermissionRepositoryPort
 import com.siga.auth.security.JwtService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -14,7 +16,9 @@ class LoginUseCase(
     private val manageCustomerUseCase: ManageCustomerUseCase,
     private val manageUserUseCase: ManageUserUseCase,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val userPermissionRepositoryPort: UserPermissionRepositoryPort,
+    private val permissionRepositoryPort: PermissionRepositoryPort
 ) {
 
     fun login(email: String, rawPassword: String): LoginResult {
@@ -75,13 +79,18 @@ class LoginUseCase(
             principalType = "user"
         )
 
+        val permissions = userPermissionRepositoryPort
+            .findByUserId(user.id!!)
+            .mapNotNull { userPerm -> permissionRepositoryPort.findById(userPerm.permissionId)?.code }
+
         return LoginResult(
             token = token,
             email = user.email,
             tenantId = null,
             role = user.role.name,
             principalType = "user",
-            userId = user.id
+            userId = user.id,
+            permissions = permissions
         )
     }
 }

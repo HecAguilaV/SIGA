@@ -1,8 +1,12 @@
 package com.siga.auth.application.usecase
 
 import com.siga.auth.domain.model.Customer
+import com.siga.auth.domain.model.Permission
 import com.siga.auth.domain.model.User
+import com.siga.auth.domain.model.UserPermission
 import com.siga.auth.domain.model.UserRole
+import com.siga.auth.domain.port.PermissionRepositoryPort
+import com.siga.auth.domain.port.UserPermissionRepositoryPort
 import com.siga.auth.security.JwtService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -21,11 +25,15 @@ class LoginUseCaseTest {
     private val manageUserUseCase = mock(ManageUserUseCase::class.java)
     private val passwordEncoder = BCryptPasswordEncoder()
     private val jwtService = mock(JwtService::class.java)
+    private val userPermissionRepositoryPort = mock(UserPermissionRepositoryPort::class.java)
+    private val permissionRepositoryPort = mock(PermissionRepositoryPort::class.java)
     private val useCase = LoginUseCase(
         manageCustomerUseCase,
         manageUserUseCase,
         passwordEncoder,
-        jwtService
+        jwtService,
+        userPermissionRepositoryPort,
+        permissionRepositoryPort
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -65,7 +73,7 @@ class LoginUseCaseTest {
     }
 
     @Test
-    fun `user login success returns LoginResult with principalType user`() {
+    fun `user login success returns LoginResult with principalType user and permissions`() {
         val email = "user_${UUID.randomUUID()}@test.com"
         val rawPassword = "UserPass123!"
         val userId = UUID.randomUUID()
@@ -78,10 +86,21 @@ class LoginUseCaseTest {
             role = UserRole.OPERATOR,
             isActive = true
         )
+        val permissionId1 = UUID.randomUUID()
+        val permissionId2 = UUID.randomUUID()
+        val userPermissions = listOf(
+            UserPermission(userId = userId, permissionId = permissionId1, assignedAt = java.time.Instant.now()),
+            UserPermission(userId = userId, permissionId = permissionId2, assignedAt = java.time.Instant.now())
+        )
+        val permission1 = Permission(id = permissionId1, code = "SALES_REP", name = "Sales Rep", category = "SALES")
+        val permission2 = Permission(id = permissionId2, code = "INVENTORY_VIEW", name = "Inventory View", category = "INVENTORY")
 
         `when`(manageCustomerUseCase.findByEmail(email)).thenReturn(null)
         `when`(manageUserUseCase.findByEmail(email)).thenReturn(user)
         `when`(jwtService.generateToken(email, "OPERATOR", null, "user")).thenReturn("mock-user-jwt")
+        `when`(userPermissionRepositoryPort.findByUserId(userId)).thenReturn(userPermissions)
+        `when`(permissionRepositoryPort.findById(permissionId1)).thenReturn(permission1)
+        `when`(permissionRepositoryPort.findById(permissionId2)).thenReturn(permission2)
 
         val result = useCase.login(email, rawPassword)
 
@@ -91,6 +110,7 @@ class LoginUseCaseTest {
         assertEquals("OPERATOR", result.role)
         assertNull(result.tenantId)
         assertEquals(userId, result.userId)
+        assertEquals(listOf("SALES_REP", "INVENTORY_VIEW"), result.permissions)
     }
 
     @Test
