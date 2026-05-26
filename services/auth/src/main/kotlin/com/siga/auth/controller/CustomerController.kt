@@ -41,7 +41,11 @@ class CustomerController(
 
     @PostMapping
     fun createCustomer(@RequestBody customer: Customer): ResponseEntity<Customer> {
-        return ResponseEntity.ok(manageCustomerUseCase.create(customer))
+        return try {
+            ResponseEntity.ok(manageCustomerUseCase.create(customer))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().build()
+        }
     }
 
     @PutMapping("/{id}")

@@ -229,11 +229,252 @@ class UserControllerIntegrationTest @Autowired constructor(
             .andExpect(status().isForbidden)
     }
 
+    // ===== Additional coverage: GET /{id} =====
+
     @Test
-    fun `GET user by id returns 403 for user principal`() {
-        authenticateAsUser()
+    fun `GET user by id returns user for same tenant`() {
+        val customerTenantId = 100
+        authenticateAsCustomer(customerTenantId)
+
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "by_id_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "ById",
+                role = UserRole.OPERATOR,
+                customerId = customerTenantId
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users/${user.id}"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.email").value(user.email))
+            .andExpect(jsonPath("$.customerId").value(customerTenantId))
+    }
+
+    @Test
+    fun `GET user by id returns 404 for wrong tenant`() {
+        authenticateAsCustomer(200)
+
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "wrong_tenant_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "Wrong",
+                role = UserRole.OPERATOR,
+                customerId = 999
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users/${user.id}"))
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `GET user by id returns 404 when not found`() {
+        authenticateAsCustomer(300)
 
         mockMvc.perform(get("/api/v1/auth/users/${UUID.randomUUID()}"))
+            .andExpect(status().isNotFound)
+    }
+
+    // ===== Additional coverage: GET /email/{email} =====
+
+    @Test
+    fun `GET user by email returns user for same tenant`() {
+        val customerTenantId = 400
+        authenticateAsCustomer(customerTenantId)
+
+        val email = "by_email_${UUID.randomUUID()}@test.com"
+        userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = email,
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "ByEmail",
+                role = UserRole.OPERATOR,
+                customerId = customerTenantId
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users/email/$email"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.email").value(email))
+            .andExpect(jsonPath("$.customerId").value(customerTenantId))
+    }
+
+    @Test
+    fun `GET user by email returns 404 for wrong tenant`() {
+        authenticateAsCustomer(500)
+
+        val email = "wrong_email_${UUID.randomUUID()}@test.com"
+        userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = email,
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "WrongEmail",
+                role = UserRole.OPERATOR,
+                customerId = 999
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users/email/$email"))
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `GET user by email returns 403 for user principal`() {
+        authenticateAsUser()
+
+        mockMvc.perform(get("/api/v1/auth/users/email/test@test.com"))
             .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `GET user by email returns 404 when not found`() {
+        authenticateAsCustomer(600)
+
+        mockMvc.perform(get("/api/v1/auth/users/email/nonexistent@test.com"))
+            .andExpect(status().isNotFound)
+    }
+
+    // ===== Additional coverage: PUT /{id} =====
+
+    @Test
+    fun `PUT user updates user for same tenant`() {
+        val customerTenantId = 700
+        authenticateAsCustomer(customerTenantId)
+
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "put_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "Original",
+                role = UserRole.OPERATOR,
+                customerId = customerTenantId
+            )
+        )
+
+        val body = createUserJson(
+            email = user.email,
+            firstName = "Updated",
+            role = UserRole.CASHIER,
+            customerId = customerTenantId
+        )
+
+        mockMvc.perform(
+            put("/api/v1/auth/users/${user.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.firstName").value("Updated"))
+            .andExpect(jsonPath("$.customerId").value(customerTenantId))
+    }
+
+    @Test
+    fun `PUT user returns 404 for wrong tenant`() {
+        authenticateAsCustomer(800)
+
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "put_wrong_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "WrongTenant",
+                role = UserRole.OPERATOR,
+                customerId = 999
+            )
+        )
+
+        mockMvc.perform(
+            put("/api/v1/auth/users/${user.id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createUserJson(email = "x@x.com"))
+        )
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `PUT user returns 404 when not found`() {
+        authenticateAsCustomer(900)
+
+        mockMvc.perform(
+            put("/api/v1/auth/users/${UUID.randomUUID()}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createUserJson(email = "x@test.com"))
+        )
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `PUT user returns 403 for user principal`() {
+        authenticateAsUser()
+
+        mockMvc.perform(
+            put("/api/v1/auth/users/${UUID.randomUUID()}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createUserJson(email = "x@test.com"))
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    // ===== Backward compat (no SecurityContext) =====
+
+    @Test
+    fun `GET users without auth returns all users in backward compat mode`() {
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "noauth_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "NoAuth",
+                role = UserRole.OPERATOR
+            )
+        )
+
+        // No SecurityContext set — backward compat, no tenant scoping
+        mockMvc.perform(get("/api/v1/auth/users"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[?(@.email == '${user.email}')]").exists())
+    }
+
+    @Test
+    fun `GET user by id without auth returns user in backward compat mode`() {
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "noauth_id_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "NoAuthID",
+                role = UserRole.OPERATOR
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users/${user.id}"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.email").value(user.email))
+    }
+
+    @Test
+    fun `GET user by email without auth returns user in backward compat mode`() {
+        val email = "noauth_email_${UUID.randomUUID()}@test.com"
+        userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = email,
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "NoAuthEmail",
+                role = UserRole.OPERATOR
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users/email/$email"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.email").value(email))
     }
 }
