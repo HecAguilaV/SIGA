@@ -19,7 +19,7 @@ Se ha establecido un estándar de Espejo Semántico para garantizar que la docum
 | **Pruebas y Calidad** | [Estrategia de Tests](docs/tests/es/README.md) | [Testing Strategy](docs/tests/en/README.md) |
 | **Negocio** | [Reglas de Negocio Core](docs/es/arquitectura/REGLAS_NEGOCIO_CORE.md) | [Core Business Rules](docs/en/architecture/CORE_BUSINESS.md) |
 | **Testing/APIs** | [Colección Postman](docs/es/api/siga-apis.postman_collection.json) | [Postman Collection](docs/en/api/siga-apis.postman_collection.json) |
-| **Front-end** | [Pacto de Frontend](docs/es/arquitectura/PACTO_FRONTEND.md) | [Frontend Pact](docs/en/architecture/FRONTEND_PACT.md) |
+| **Roadmap** | [ROADMAP.md](ROADMAP.md) | [ROADMAP.en.md](ROADMAP.en.md) |
 
 ---
 
@@ -30,10 +30,10 @@ SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumpli
 - **Backend**: Kotlin + Spring Boot 4.0.6. Implementación estricta de Arquitectura Hexagonal (Gold Standard) y Disciplina TDD.
 - **Mensajería**: Apache Kafka (SAGA Coreografía) para transacciones distribuidas entre microservicios.
 - **IA**: Kotlin + Spring Boot + Google Gemini SDK (A2UI v0.9 Protocol + 3-Tier Fallback).
-- **Frontend**: SvelteKit 5 (Dashboard unificado bajo `apps/dashboard`).
+- **Frontend**: SvelteKit 5 (`apps/dashboard`) — ÚNICA app frontend activa. Funciona como BFF nativo con server-side data composition.
 - **Persistencia**: PostgreSQL con aislamiento de esquemas y UUID v4 como estándar único de identidad y seudonimización.
 - **Seguridad**: JWT (Stateless) y cumplimiento riguroso con la Ley Chilena 21.719.
-- **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — visualizador de arquitectura Docker en tiempo real con topología interactiva, métricas, logs y recomendaciones de buenas prácticas.
+- **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — visualizador de arquitectura Docker en tiempo real.
 
 ---
 
@@ -56,32 +56,70 @@ bash scripts/start-staggered.sh
 
 ---
 
-## Ecosistema Frontend — SvelteKit Unificado
+## Frontend Unificado — `apps/dashboard`
 
-### 🚚 Inventory Core — Nuevas Capacidades (Mayo 2026)
+**SIGA tiene UNA SOLA app frontend activa: `apps/dashboard/` (SvelteKit 5).**
 
-`siga-inventory` ahora cuenta con lógica de negocio completa:
+El frontend se divide en grupos de rutas dentro del mismo proyecto:
+- `/(auth)/` — login, logout
+- `/(dashboard)/` — interfaz del cliente PYME (categorías, productos, tiendas, usuarios, analytics)
+- `/(platform)/` — **futuro**: administración de la plataforma SIGA (planes, suscripciones, clientes SaaS, monitoreo)
+- `/assistant` — agente IA conversacional
 
-| Capacidad | Endpoint | Historias |
-|-----------|----------|-----------|
-| **Stock consolidado** | `GET /api/v1/inventory/stock/consolidated?productId=X` | US-2.1 |
-| **Auto-SKU + detección duplicados** | `POST /api/v1/inventory/products`, `GET /duplicate-check?name=X` | US-2.2 |
-| **Búsqueda inteligente** | `GET /api/v1/inventory/products/search?q=X` | US-2.3 |
-| **Reconciliación de stock** | `POST /api/v1/inventory/stock/reconciliations` | US-2.4 |
-| **Transferencia bodega ↔ punto** | `POST /api/v1/inventory/stock/transfers` | US-2.5 |
-| **Historial de movimientos** | `GET /api/v1/inventory/stock/movements` | US-2.5 |
-
-Cada capacidad implementada con **Arquitectura Hexagonal** puertos/adaptadores, **Strict TDD** (50+ tests), y especificaciones SDD en `openspec/changes/inventory-core-features/`.
+*Nota: Los antiguos directorios `apps/admin-portal`, `apps/customer-portal`, `apps/mobile`, `apps/pos` y `apps/landing` fueron eliminados en mayo 2026. Eran carpetas vacías o con solo READMEs que confundían. Sus funcionalidades se unificaron en `apps/dashboard`.*
 
 ---
 
-## Ecosistema Frontend — SvelteKit Unificado
+## Microservicios
 
-SIGA converge en un frontend SvelteKit 5 unificado bajo `apps/dashboard`, que funciona como BFF (Backend For Frontend) nativo con server-side data composition:
+| Servicio | Puerto | BD | Rol |
+|----------|--------|----|-----|
+| `siga-auth` | 8081 | `siga_auth` | Identidad, registro, login, JWT, permisos, roles |
+| `siga-billing` | 8084 | `siga_billing` | **SaaS de SIGA**: planes de suscripción, gestión de clientes del SaaS, pagos |
+| `siga-inventory` | 8082 | `siga_inventory` | Stock multi-tenant, búsqueda, transferencias, conciliación |
+| `siga-sales` | 8083 | `siga_sales` | POS y registro de ventas de la PYME (SAGA con inventory) |
+| `siga-agent` | 8000 | `siga_agent` | Agente IA con búsqueda vectorial (A2UI v0.9) |
+| `siga-gateway` | 8080 | — | API Gateway (Spring Cloud Gateway) |
+| `siga-registry` | 8761 | — | Service Discovery (Eureka) |
 
-- **Dashboard**: Localizado en `apps/dashboard`. Unifica las interfaces de administración, landing, portal de clientes y portal de administración en una sola aplicación SvelteKit 5.
+### Billing — Solo SaaS de SIGA
 
-*Nota: Los frontends legacy en `apps/` (webapp, landing, customer-portal, admin-portal, mobile) fueron declarados legacy deprecado en mayo de 2026. El dashboard es el nuevo frontend unificado. Todos los frontends consumen los microservicios ubicados en `services/` a través del API Gateway.*
+`siga-billing` gestiona exclusivamente la facturación de la **plataforma SIGA**:
+- Planes de suscripción (planes que las PYMEs contratan)
+- Suscripciones activas por cliente
+- Pagos de las PYMEs a SIGA
+
+**No incluye** la facturación de ventas de las PYMEs (boletas/facturas SII). Esa funcionalidad está planificada para una fase futura mediante integración con servicios externos (Nexxus/E-Sii).
+
+---
+
+## POS — Fase 1 (Actual)
+
+El POS actual registra ventas con descuento automático de stock vía SAGA (Kafka). Es un POS simple pensado para que cajeras registren ventas rápidamente.
+
+**Incluye:**
+- Búsqueda de productos en tiempo real
+- Carrito de ventas
+- Múltiples métodos de pago
+- Descuento de stock automático (SAGA)
+- Comprobante interno (no fiscal)
+
+**No incluye (futuro):**
+- Facturación electrónica SII (boletas/facturas)
+- Integración con servicios DTE externos
+
+---
+
+## Inventory Core — Capacidades
+
+| Capacidad | Endpoint |
+|-----------|----------|
+| Stock consolidado multi-punto | `GET /api/v1/inventory/stock/consolidated?productId=X` |
+| Auto-SKU + detección duplicados | `POST /api/v1/inventory/products` |
+| Búsqueda inteligente (ILIKE+unaccent) | `GET /api/v1/inventory/products/search?q=X` |
+| Reconciliación de stock con alertas | `POST /api/v1/inventory/stock/reconciliations` |
+| Transferencia bodega ↔ punto | `POST /api/v1/inventory/stock/transfers` |
+| Historial de movimientos | `GET /api/v1/inventory/stock/movements` |
 
 ---
 
@@ -95,10 +133,15 @@ SIGA no es solo código; es una plataforma diseñada para ser legalmente inexpug
 - **SDD (Spec-Driven Development)**: Cada cambio técnico nace de una especificación, asegurando que la seguridad y la privacidad sean requisitos funcionales, no añadidos posteriores.
 - **Bilingüismo Técnico**: Documentación y contratos de API en espejo (ES/EN) para asegurar transparencia y escalabilidad.
 
+## Roadmap
+
+Ver [ROADMAP.md](ROADMAP.md) para el plan de desarrollo completo (pasado, presente y futuro).
+
 ## Licencia
 
 Este proyecto es propiedad privada de **Héctor Aguila**. Todos los derechos están reservados. El código se proporciona exclusivamente para fines de revisión técnica y cumplimiento de auditoría bajo la Ley 21.719. Consulte el archivo [LICENSE](LICENSE) para más detalles.
 
 ---
+
 Héctor Aguila
 `> Un Soñador con Poca RAM 👨🏻‍💻`
