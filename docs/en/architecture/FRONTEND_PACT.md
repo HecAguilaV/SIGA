@@ -1,10 +1,18 @@
 # SIGA Frontend Architecture & Repository Pact
 
-*Leer en otros idiomas: [![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-green)](../../es/arquitectura/PACTO_FRONTEND.md)*
+> **⚠️ HISTORICAL DOCUMENT (Superseded — 2026-05-26)**
+>
+> This pact was written when SIGA had multiple separate frontends. Since the May 2026 consolidation, **SIGA has a single frontend app: `apps/dashboard/` (SvelteKit 5)**. All other frontends (customer-portal, admin-portal, landing, POS, mobile) have been removed from the repository.
+>
+> See [`ROADMAP.md`](../../../ROADMAP.md) and [`ARCHITECTURE_STATE.md`](../../../openspec/ARCHITECTURE_STATE.md) for the current architecture.
+>
+> **TL;DR**: Where this document says "Dashboard + Customer Portal + Admin Portal + Landing + POS + Mobile", it's now **one app** with route groups: `/(auth)/`, `/(dashboard)/`, `/(platform)/`, `/assistant`.
 
-## Status: STIPULATED & DEFINED
-**Date**: April 21, 2026
-**Architecture Level**: Professional Microservices Ecosystem
+*Leer en otros idiomas: [![Español](https://img.shields.io/gitignore/Language-Español-green)](../../es/arquitectura/PACTO_FRONTEND.md)*
+
+## Status: SUPERSEDED — See ARCHITECTURE_STATE.md and ROADMAP.md
+**Original date:** April 21, 2026
+**Architecture Level:** Professional Microservices Ecosystem
 
 ---
 

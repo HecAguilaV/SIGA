@@ -1,6 +1,6 @@
 # Estado de la Arquitectura - SIGA
 
-**Última Actualización:** 2026-05-12
+**Última Actualización:** 2026-05-26
 **Estado:** Hexagonal Completo (100% microservicios migrados)
 
 ## 1. Modelo de Despliegue
@@ -8,21 +8,23 @@ El sistema ha completado su transición de Monolito Modular a una arquitectura d
 
 ### Componentes Core
 *   **siga-auth**: Gestión de identidad y permisos (SSO). ✅ Hexagonal
-*   **siga-billing**: Gestión de suscripciones y pagos del SaaS (Dominio Billing). ✅ Hexagonal
+*   **siga-billing**: Gestión de suscripciones y pagos del **SaaS de SIGA** (NO incluye facturación de ventas PYME). ✅ Hexagonal
 *   **siga-inventory**: Control de stock y activos. ✅ Hexagonal
-*   **siga-sales**: POS y facturación interna de la Pyme (Dominio Sales). ✅ Hexagonal
+*   **siga-sales**: POS y registro de ventas de la PYME (Dominio Sales). ✅ Hexagonal
 *   **siga-agent**: Inteligencia Artificial y búsqueda vectorial (pgvector).
 
-### Frontends — Legacy Deprecado
-> **Decisión (12/05/2026)**: Todos los frontends existentes en `apps/` son declarados **legacy deprecado**. El stack frontend unificado será **SvelteKit 5**, que funciona como BFF nativo (server-side data composition). La webapp SvelteKit existente (`apps/webapp`) es la base sobre la que se construirá el nuevo frontend unificado. Los demás (customer-portal React, landing, admin-portal, mobile) quedan congelados como referencia.
+### Frontend — Única App Activa
 
-| Frontend | Stack | Estado |
-|----------|-------|--------|
-| `apps/webapp` | SvelteKit 5 | ⏳ Legacy activo (base para el nuevo frontend) |
-| `apps/customer-portal` | React + Vite | 🧊 Legacy congelado — no desarrollar |
-| `apps/landing` | HTML estático | 🧊 Legacy congelado — no desarrollar |
-| `apps/admin-portal` | Vacío | 🧊 Legacy congelado — no desarrollar |
-| `apps/mobile` | Pre-built | 🧊 Legacy congelado — no desarrollar |
+> **Decisión consolidada (26/05/2026)**: SIGA tiene **UNA SOLA** aplicación frontend activa: `apps/dashboard/` (SvelteKit 5). Funciona como BFF nativo con server-side data composition (`+page.server.ts` load functions).
+
+No existen más frontends. Los directorios legacy (`apps/admin-portal`, `apps/customer-portal`, `apps/landing`, `apps/mobile`, `apps/pos`) fueron eliminados del repositorio — contenían solo READMEs que confundían. Sus funcionalidades previstas se unificarán como grupos de rutas dentro de `apps/dashboard/`.
+
+| Grupo de rutas | Contenido | Estado |
+|----------------|-----------|--------|
+| `/(auth)/` | Login, logout | ✅ Implementado |
+| `/(dashboard)/` | Categorías, productos, tiendas, usuarios, analytics | ✅ Implementado |
+| `/(platform)/` | Admin SIGA: planes, clientes SaaS, suscripciones, monitoreo | 🚧 Pendiente |
+| `/assistant` | Agente IA conversacional (A2UI) | ✅ Implementado |
 
 ## 2. Estrategia de Persistencia
 Se aplica el principio de **Database per Service**. Cada microservicio es dueño absoluto de su base de datos.
@@ -35,7 +37,7 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 | siga-sales    | siga_sales    | sales             |
 | siga-agent    | siga_agent    | agent             |
 
-**Nota sobre Sales**: El microservicio de Sales gestiona sus propias facturas de venta bajo el esquema `sales`, independiente de la facturación del SaaS.
+**Nota sobre Billing**: `siga-billing` gestiona exclusivamente la facturación SaaS de SIGA (planes, suscripciones, pagos). El modelo `SaleInvoice` dentro de billing es un registro interno generado por eventos de Sales (SAGA), sin endpoints REST ni UI — existe para futuros KPIs del cliente PYME.
 
 ## 3. Infraestructura
 *   **Service Discovery**: Netflix Eureka.
@@ -46,7 +48,7 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 
 ## 4. Patrones de Comunicación
 *   **Sincrónico**: REST API vía Gateway para operaciones de lectura y comandos críticos.
-*   **Asincrónico (SAGA)**: Coreografía de eventos vía Kafka para transacciones distribuidas (ej: Venta -> Stock).
+*   **Asincrónico (SAGA)**: Coreografía de eventos vía Kafka para transacciones distribuidas (ej: Venta -> Stock -> Billing).
 *   **Analítico**: Streaming de eventos hacia BigQuery/Vertex AI para ingesta Big Data.
 
 ## 5. Patrón Interno (Hexagonal Architecture - Implementado)
@@ -57,7 +59,43 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 *   **Casos de Uso**: Lógica de aplicación en `application/usecase/` con validación.
 *   **Controladores**: Capa de entrada HTTP que inyecta casos de uso (no repositorios).
 
-## 6. Calidad y Cobertura de Tests
+## 6. Roles y Modelo de Jerarquía
+
+### Estado Actual
+```kotlin
+enum class UserRole {
+    ADMINISTRATOR,  // ← comodín total
+    OPERATOR,       // ← empleado con permisos base
+    CASHIER,        // ← cajero (solo POS)
+    EMPLOYEE        // ← empleado general
+}
+```
+
+### Modelo Deseado (Pendiente de Implementar)
+```
+Godadmin (dueño de SIGA)
+├── Control total de la plataforma
+├── Ve todos los tenants
+├── Políticas de seguridad globales
+├── Recuperación de datos (Ley 21.719)
+└── Acceso a /(platform)/ en dashboard
+
+Super-admin (dueño de empresa PYME)
+├── Control total de su empresa
+├── Crea hasta 1 admin adicional
+├── Ve KPIs de su negocio
+└── Nadie puede quitarle privilegios
+
+Admin (empleado con permisos)
+├── Permisos default de su rol
+├── Puede tener overrides del Super-admin
+└── NO puede quitarle privilegios al Super-admin
+
+Cajero / Operador / Repartidor
+└── Permisos default de su rol
+```
+
+## 7. Calidad y Cobertura de Tests
 
 ### Cobertura por Servicio (Mayo 2026)
 | Servicio | Tests Unitarios | Tests Adaptadores | Tests Integración HTTP | Total |
@@ -71,8 +109,7 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 - **H2** para tests de adaptadores y persistencia (rápido, sin Docker)
 - **MockMvc** para tests de integración HTTP
 - **Embedded Kafka** para tests de eventos SAGA
-- **Flyway**: Activado en producción (`ddl-auto: validate`), deshabilitado en tests (H2 + `create-drop`). V1 migrations son responsables de crear schemas (`CREATE SCHEMA IF NOT EXISTS`) y usar `schema.table` explícito.
-- **Auth**: Flujos completos de autenticación implementados: register, email verification, dual-principal login (Customer/User), JWT (generate+verify+filter + @PostConstruct validateSecret), SecurityConfig (permitAll + JWT chain), tenant-scoped User CRUD — 131 tests, 0 failures. Jerarquía de tenants clara: Dueño ≠ User, Customer con control inherente, Users con permisos granulares.
+- **Flyway**: Activado en producción (`ddl-auto: validate`), deshabilitado en tests (H2 + `create-drop`). V1 migrations responsables de crear schemas (`CREATE SCHEMA IF NOT EXISTS`) y usar `schema.table` explícito.
 - **Convención**: Tests en cada servicio replican el patrón hexagonal: adapter tests → use case tests → integration tests
 
 ### Patrón de Commits
@@ -80,3 +117,30 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 - **Formato**: Conventional Commits en español e inglés (bilingüe)
 - **No PRs**: Commits directos a la rama en uso
 
+## 8. POS (Punto de Venta)
+
+### Fase 1 — POS Simple (Actual)
+- UI para cajeras con búsqueda de productos
+- Carrito de ventas con múltiples métodos de pago
+- Descuento de stock automático vía SAGA (Kafka)
+- Comprobante interno (no fiscal)
+- KPIs para el cliente PYME (productos más vendidos, ventas por período)
+
+### Fase 2 — Facturación Electrónica (Futuro)
+- Integración con servicio externo DTE (Nexxus/E-Sii.cl)
+- Emisión de boletas y facturas electrónicas SII
+- Cada PYME usa su propio certificado digital
+- SIGA NO accede a los montos ni datos fiscales (Ley 21.719)
+
+## 9. Billing — Alcance Definido
+
+`siga-billing` gestiona **exclusivamente** el SaaS de SIGA:
+
+| Recurso | Endpoint | Estado |
+|---------|----------|--------|
+| Planes de suscripción | `GET/POST /api/v1/billing/plans` | ✅ |
+| Clientes del SaaS | `GET/POST /api/v1/billing/customers` | ✅ |
+| Suscripciones | `GET/POST /api/v1/billing/subscriptions` | ✅ |
+| Pagos | `GET/POST /api/v1/billing/payments` | ✅ |
+
+El modelo `SaleInvoice` (en billing) se genera automáticamente desde eventos de Sales (SAGA). No tiene endpoints REST ni UI. Su propósito futuro es entregar KPIS agregados al cliente PYME sin exponer montos individuales.

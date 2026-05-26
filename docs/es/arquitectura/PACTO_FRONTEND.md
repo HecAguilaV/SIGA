@@ -1,9 +1,17 @@
 # Arquitectura Frontend y Pacto de Repositorio SIGA
 
+> **⚠️ DOCUMENTO HISTÓRICO (Superseded — 26/05/2026)**
+>
+> Este pacto fue escrito cuando SIGA tenía múltiples frontends separados. Desde la consolidación de mayo 2026, **SIGA tiene una sola app frontend: `apps/dashboard/` (SvelteKit 5)**. Todos los demás frontends (customer-portal, admin-portal, landing, POS, mobile) fueron eliminados del repositorio.
+>
+> Ver [`ROADMAP.md`](../../../ROADMAP.md) y [`ARCHITECTURE_STATE.md`](../../../openspec/ARCHITECTURE_STATE.md) para la arquitectura actual.
+>
+> **TL;DR**: Donde este documento dice "Dashboard + Customer Portal + Admin Portal + Landing + POS + Mobile", ahora es **una sola app** con grupos de rutas: `/(auth)/`, `/(dashboard)/`, `/(platform)/`, `/assistant`.
+
 *Read this in other languages: [![English](https://img.shields.io/badge/Language-English-blue)](../../en/architecture/FRONTEND_PACT.md)*
 
-## Estado: ESTIPULADO Y DEFINIDO
-**Fecha:** 21 de Abril, 2026
+## Estado: SUPERSEDED — Ver ARCHITECTURE_STATE.md y ROADMAP.md
+**Fecha original:** 21 de Abril, 2026
 **Nivel de Arquitectura:** Ecosistema de Microservicios Profesional
 
 ---
