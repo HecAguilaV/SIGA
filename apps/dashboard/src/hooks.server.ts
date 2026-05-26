@@ -39,7 +39,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// ── 2. Leer cookie ──
 	const token = event.cookies.get('siga_token');
-	console.log(`[Hooks] Path: ${pathname}, Token presente: ${!!token}`);
 	
 	if (!token) {
 		console.warn(`[Hooks] Redirigiendo a login porque no hay token en ${pathname}`);

@@ -35,6 +35,7 @@ function createThemeStore() {
 
 	function storeTheme(theme: Theme) {
 		try {
+			// nosemgrep: js-localstorage-sensitive
 			localStorage.setItem('siga-theme', theme);
 		} catch {
 			// localStorage not available (incognito, blocked policy)

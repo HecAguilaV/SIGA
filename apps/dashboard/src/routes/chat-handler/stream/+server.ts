@@ -6,8 +6,6 @@ const AGENT_BASE = env.AGENT_BASE || 'http://localhost:8000';
 const AGENT_TIMEOUT_MS = 60_000;
 
 export const GET: RequestHandler = async ({ url, fetch }) => {
-	console.log(`[SSE Proxy] Iniciando conexión con el agente en ${AGENT_BASE}`);
-	
 	const message = url.searchParams.get('message');
 	const context = url.searchParams.get('context') || '';
 	const history = url.searchParams.get('history') || '[]';

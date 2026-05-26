@@ -1,8 +1,9 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LoginResponse, UserSession } from '$lib/types/auth';
+import { env } from '$env/dynamic/private';
 
-const GATEWAY_BASE = 'http://localhost:8080';
+const GATEWAY_BASE = env.GATEWAY_BASE_URL || 'http://localhost:8080';
 
 /**
  * login — Autentica al usuario vía gateway (login dual: Customer primero, luego User).

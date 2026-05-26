@@ -1,7 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
-const GATEWAY_BASE = 'http://localhost:8080';
+const GATEWAY_BASE = env.GATEWAY_BASE_URL || 'http://localhost:8080';
 const TIMEOUT_MS = 8000;
 
 interface FetchWithAuthOptions extends RequestInit {

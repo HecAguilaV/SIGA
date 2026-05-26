@@ -14,12 +14,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 export const actions: Actions = {
 	default: async ({ request, cookies, url }) => {
-		console.log('[Login Action] Recibida solicitud de login');
 		const formData = await request.formData();
 		const email = (formData.get('email') as string)?.trim();
 		const password = formData.get('password') as string;
 		const redirectParam = url.searchParams.get('redirect') || '/';
-		console.log(`[Login Action] Email: ${email}, Redirect: ${redirectParam}`);
 
 		// ── Validación ──
 		if (!email) return fail(400, { email, error: 'El correo electrónico es requerido', missing: 'email' });
