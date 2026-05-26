@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coverage · SIGA</title>
+<style>
+  :root {
+    --green: #7cc97c;
+    --red: #da6d6d;
+    --orange: #daa06d;
+    --bg: #1a1a2e;
+    --card: #16213e;
+    --text: #e0e0e0;
+    --muted: #8892b0;
+    --border: #2a2a4a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 2rem;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 2rem; margin-bottom: 0.25rem; color: #fff; }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .card-header h2 { font-size: 1.25rem; font-weight: 600; }
+  .badge {
+    font-size: 0.75rem; font-weight: 700;
+    padding: 0.25rem 0.6rem; border-radius: 8px;
+  }
+  .badge.pass { background: #1b4332; color: #95d5b2; }
+  .badge.fail { background: #3a1a1a; color: #e5989b; }
+  .badge.near { background: #3a2e1a; color: #e9c46a; }
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.4rem; font-size: 0.85rem;
+  }
+  .stat-label { color: var(--muted); }
+  .stat-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bar-track {
+    height: 8px; background: #2a2a4a; border-radius: 4px; overflow: hidden;
+    margin-bottom: 0.6rem;
+  }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .bar-fill.green { background: linear-gradient(90deg, #52b788, #7cc97c); }
+  .bar-fill.yellow { background: linear-gradient(90deg, #d4a017, #e9c46a); }
+  .bar-fill.red { background: linear-gradient(90deg, #c0392b, #e5989b); }
+  .card-footer {
+    margin-top: 0.8rem; padding-top: 0.8rem;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+  }
+  .card-footer a {
+    color: #64b5f6; text-decoration: none;
+    font-size: 0.9rem; font-weight: 500;
+  }
+  .card-footer a:hover { text-decoration: underline; }
+  .meta-line {
+    font-size: 0.85rem; color: var(--muted); margin-top: 1.5rem;
+    padding: 1rem; background: var(--card); border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .legend {
+    display: flex; gap: 1.5rem; margin-bottom: 1.5rem;
+    font-size: 0.85rem; color: var(--muted); flex-wrap: wrap;
+  }
+  .legend span { display: flex; align-items: center; gap: 0.4rem; }
+  .legend .dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+  }
+  .legend .dot.instr { background: #7cc97c; }
+  .legend .dot.branch { background: #e9c46a; }
+  .legend .dot.line { background: #64b5f6; }
+  .error-banner {
+    background: #3a1a1a; border: 1px solid #6b2a2a;
+    border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.5rem;
+    color: #e5989b; font-size: 0.85rem;
+  }
+  .error-banner strong { color: #f5c6c6; }
+</style>
+</head>
+<body>
+
+<h1>📊 Cobertura SIGA</h1>
+<p class="subtitle">
+  Reportes JaCoCo por microservicio — hacé click en "Ver reporte" para navegar al detalle
+</p>
+
+<div class="error-banner">
+  <strong>⚠️ Servicios que no llegan a 80% requieren más tests.</strong>
+  Billing (tests rotos pre-existentes), Sales, y Auth están por debajo del objetivo.
+</div>
+
+<div class="legend">
+  <span><span class="dot instr"></span> Instructions</span>
+  <span><span class="dot branch"></span> Branches</span>
+  <span><span class="dot line"></span> Lines</span>
+  <span>🎯 Objetivo: <strong>80%</strong></span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<p class="meta-line" id="meta"></p>
+
+<script>
+const services = [
+  { name: "auth",     fullName: "🔐 Auth Service",
+    instr: 78, branch: 58, line: 83,
+    totalInstr: 5443, totalBranch: 294, totalLine: 836,
+    reportPath: "services/auth/build/reports/jacoco/test/html/index.html" },
+  { name: "agent",    fullName: "🤖 Agent Service",
+    instr: 82, branch: 48, line: 87,
+    totalInstr: 3796, totalBranch: 212, totalLine: 619,
+    reportPath: "services/agent/build/reports/jacoco/test/html/index.html" },
+  { name: "billing",  fullName: "💰 Billing Service",
+    instr: 10, branch: 0, line: 10,
+    totalInstr: 4327, totalBranch: 126, totalLine: 630,
+    reportPath: "services/billing/build/reports/jacoco/test/html/index.html" },
+  { name: "inventory", fullName: "📦 Inventory Service",
+    instr: 88, branch: 63, line: 93,
+    totalInstr: 5910, totalBranch: 248, totalLine: 1003,
+    reportPath: "services/inventory/build/reports/jacoco/test/html/index.html" },
+  { name: "sales",    fullName: "🛒 Sales Service",
+    instr: 75, branch: 43, line: 81,
+    totalInstr: 4007, totalBranch: 146, totalLine: 578,
+    reportPath: "services/sales/build/reports/jacoco/test/html/index.html" }
+];
+
+function barColor(pct) {
+  if (pct >= 80) return 'green';
+  if (pct >= 50) return 'yellow';
+  return 'red';
+}
+function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+const grid = document.getElementById('grid');
+let passed = 0, failed = 0, pass80 = 0;
+
+services.forEach(s => {
+  const passes80 = s.instr >= 80;
+  const passesAll = s.instr >= 80 && s.branch >= 80 && s.line >= 80;
+  if (passes80) pass80++;
+
+  const badgeClass = passes80 ? 'pass' : (s.instr >= 60 ? 'near' : 'fail');
+  const badgeText = passes80 ? '✓ 80%+' : s.instr + '%';
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="card-header">
+      <h2>${s.fullName}</h2>
+      <span class="badge ${badgeClass}">${badgeText}</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Instructions</span>
+      <span class="stat-value"><span style="color:${barColor(s.instr) === 'green' ? '#7cc97c' : barColor(s.instr) === 'yellow' ? '#e9c46a' : '#e5989b'}">${s.instr}%</span></span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill ${barColor(s.instr)}" style="width:${s.instr}%"></div>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Branches</span>
+      <span class="stat-value">${s.branch}%</span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill ${barColor(s.branch)}" style="width:${s.branch}%"></div>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Lines</span>
+      <span class="stat-value">${s.line}%</span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill ${barColor(s.line)}" style="width:${s.line}%"></div>
+    </div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.4rem">
+      ${fmt(s.totalLine)} líneas · ${fmt(s.totalBranch)} branches · ${fmt(s.totalInstr)} instrucciones
+    </div>
+    <div class="card-footer">
+      <a href="${s.reportPath}" target="_blank">🔍 Ver reporte detallado →</a>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+
+document.getElementById('meta').innerHTML =
+  `📋 ${services.length} microservicios · ${pass80} pasan 80% (${services.length - pass80} no) · ` +
+  `<strong>🎯 Objetivo: 80% mínimo en cada servicio</strong><br>` +
+  `<span style="font-size:0.8rem">💡 Tip: cada card linkea al reporte JaCoCo individual. Desde ahí podés navegar por paquetes y clases con el breadcrumb.</span>`;
+</script>
+</body>
+</html>
