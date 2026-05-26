@@ -26,7 +26,7 @@ class ManageUserPermissionUseCase(
      * Assigns a permission to a user.
      * Validates that the assigner's tenant matches the target user's tenant.
      */
-    fun assign(userId: UUID, permissionId: UUID, assignedBy: UUID, tenantId: Int?): UserPermission {
+    fun assign(userId: UUID, permissionId: UUID, assignedBy: UUID? = null, tenantId: Int?): UserPermission {
         validateTenantAccess(userId, tenantId)
 
         if (userPermissionRepositoryPort.existsByUserIdAndPermissionId(userId, permissionId)) {
