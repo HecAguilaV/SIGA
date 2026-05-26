@@ -26,26 +26,26 @@ Chain strategy: stacked-to-main
 
 ## Phase 1: Foundation — Role Enum + V4 Seed + Persistence Stack
 
-- [ ] 1.1 Add `EMPLOYEE` to `entity/Enums.kt`, `domain/model/UserRole.kt`, and `infrastructure/mapper/UserMapper.kt` mapping
-- [ ] 1.2 Create `db/migration/V4__seed_permissions.sql` with 8 permission codes
-- [ ] 1.3 Create `repository/UserPermissionRepository.kt` (Spring Data JPA, `UserPermissionId` composite key)
-- [ ] 1.4 Create `domain/port/UserPermissionRepositoryPort.kt` (hexagonal port interface)
-- [ ] 1.5 Create `infrastructure/mapper/UserPermissionMapper.kt` (entity ↔ domain, mirror `UserStoreMapper`)
-- [ ] 1.6 Create `infrastructure/adapter/UserPermissionJpaAdapter.kt` (implements port, mirror `UserStoreJpaAdapter`)
-- [ ] 1.7 Create `UserPermissionJpaAdapterTest.kt` — integration: CRUD via H2 (FK user setup, mirror `UserStoreJpaAdapterTest`)
+- [x] 1.1 Add `EMPLOYEE` to `entity/Enums.kt`, `domain/model/UserRole.kt`, and `infrastructure/mapper/UserMapper.kt` mapping
+- [x] 1.2 Create `db/migration/V4__seed_permissions.sql` with 8 permission codes
+- [x] 1.3 Create `repository/UserPermissionRepository.kt` (Spring Data JPA, `UserPermissionId` composite key)
+- [x] 1.4 Create `domain/port/UserPermissionRepositoryPort.kt` (hexagonal port interface)
+- [x] 1.5 Create `infrastructure/mapper/UserPermissionMapper.kt` (entity ↔ domain, mirror `UserStoreMapper`)
+- [x] 1.6 Create `infrastructure/adapter/UserPermissionJpaAdapter.kt` (implements port, mirror `UserStoreJpaAdapter`)
+- [x] 1.7 Create `UserPermissionJpaAdapterTest.kt` — integration: CRUD via H2 (FK user setup, mirror `UserStoreJpaAdapterTest`)
 
 ## Phase 2: Core — UseCase + Unit Tests
 
-- [ ] 2.1 Create `application/usecase/ManageUserPermissionUseCase.kt` (assign, revoke, verify, exists; tenant ownership validation via JWT `tenantId` vs target user's `customerId`)
-- [ ] 2.2 Create `ManageUserPermissionUseCaseTest.kt` — unit: assign, revoke, verify, cross-tenant rejection (Mockito on `UserPermissionRepositoryPort` + `UserRepositoryPort`)
+- [x] 2.1 Create `application/usecase/ManageUserPermissionUseCase.kt` (assign, revoke, verify, exists; tenant ownership validation via JWT `tenantId` vs target user's `customerId`)
+- [x] 2.2 Create `ManageUserPermissionUseCaseTest.kt` — unit: assign, revoke, verify, cross-tenant rejection (Mockito on `UserPermissionRepositoryPort` + `UserRepositoryPort`)
 
 ## Phase 3: REST — Controller + Integration Tests
 
-- [ ] 3.1 Create `controller/PermissionController.kt` — CRUD at `/api/v1/auth/permissions`, assign/revoke/verify at `/api/v1/auth/users/{id}/permissions`
-- [ ] 3.2 Create `PermissionControllerIntegrationTest.kt` — integration: assign, verify, list, cross-tenant rejection (MockMvc via `BaseIntegrationTest`, JWT claim setup per `UserControllerIntegrationTest`)
+- [x] 3.1 Create `controller/PermissionController.kt` — CRUD at `/api/v1/auth/permissions`, assign/revoke/verify at `/api/v1/auth/users/{id}/permissions`
+- [x] 3.2 Create `PermissionControllerIntegrationTest.kt` — integration: assign, verify, list, cross-tenant rejection (MockMvc via `BaseIntegrationTest`, JWT claim setup per `UserControllerIntegrationTest`)
 
 ## Phase 4: Integration — Login Response Enhancement
 
-- [ ] 4.1 Add `permissions: List<String> = emptyList()` to `LoginResult.kt`
-- [ ] 4.2 Inject `UserPermissionRepositoryPort` in `LoginUseCase`, fetch effective permissions via `findByUserId()` after successful auth
-- [ ] 4.3 Update `LoginUseCaseTest.kt` — assert permissions field in response for both Customer and User login paths
+- [x] 4.1 Add `permissions: List<String> = emptyList()` to `LoginResult.kt`
+- [x] 4.2 Inject `UserPermissionRepositoryPort` + `PermissionRepositoryPort` in `LoginUseCase`, fetch permission codes via `findByUserId()` + `findById()` after successful user auth
+- [x] 4.3 Update `LoginUseCaseTest.kt` — assert permissions field in response for User login path (Customer returns emptyList)
