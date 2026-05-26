@@ -12,5 +12,6 @@ data class LoginResult(
     val tenantId: Int?,
     val role: String,
     val principalType: String,  // "customer" or "user"
-    val userId: UUID? = null
+    val userId: UUID? = null,
+    val permissions: List<String> = emptyList()
 )
