@@ -408,7 +408,6 @@ rules:
     severity: ERROR
     languages:
       - yaml
-      - properties
     metadata:
       cwe: CWE-798
       category: security
