@@ -3,6 +3,9 @@ package com.siga.auth.application.usecase
 import com.siga.auth.domain.model.Customer
 import com.siga.auth.domain.port.CustomerRepositoryPort
 import com.siga.auth.domain.port.EmailSenderPort
+import com.siga.auth.event.EmailEvent
+import com.siga.auth.event.EmailEventProducer
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -11,13 +14,20 @@ import java.util.UUID
 
 /**
  * Use case for customer registration.
+ *
  * Validates input, hashes password, creates pending Customer, and sends verification email.
+ * Email sending mode is controlled by the `app.email.mode` feature flag:
+ * - `async` (default): publishes a WELCOME EmailEvent to Kafka (Notification service sends it)
+ * - `sync`: calls EmailSenderPort directly (legacy behavior, retained for rollback)
  */
 @Service
 class RegisterCustomerUseCase(
     private val customerRepositoryPort: CustomerRepositoryPort,
     private val emailSenderPort: EmailSenderPort,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val emailEventProducer: EmailEventProducer? = null,
+    @Value("\${app.email.mode:async}")
+    private val emailMode: String = "async"
 ) {
 
     fun register(email: String, rawPassword: String, name: String, companyName: String): Customer {
@@ -47,7 +57,20 @@ class RegisterCustomerUseCase(
         )
 
         val saved = customerRepositoryPort.save(customer)
-        emailSenderPort.sendVerificationEmail(email, verificationToken, name)
+
+        if (emailMode == "async" && emailEventProducer != null) {
+            emailEventProducer.publish(
+                EmailEvent(
+                    email = email,
+                    type = "WELCOME",
+                    name = name,
+                    token = verificationToken
+                )
+            )
+        } else {
+            emailSenderPort.sendVerificationEmail(email, verificationToken, name)
+        }
+
         return saved
     }
 }

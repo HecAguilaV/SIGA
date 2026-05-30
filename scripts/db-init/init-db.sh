@@ -54,4 +54,7 @@ init_service_db "siga_sales" "sales_user" "sales_pass_2026" "sales"
 # 5. Agent Service (AI)
 init_service_db "siga_agent" "agent_user" "agent_pass_2026" "agent"
 
+# 6. Notification Service (Async Email)
+init_service_db "siga_notification" "notification_user" "notification_pass_2026" "notification"
+
 echo "✅ SIGA Infrastructure Synchronized with Backup Scripts!"

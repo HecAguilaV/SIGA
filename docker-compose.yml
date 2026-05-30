@@ -241,6 +241,35 @@ services:
     networks:
       - siga-net
 
+  # Notification: Async email delivery via Kafka consumer.
+  # Owns: siga_notification database, notification schema.
+  # Kafka consumer: listens for email events to send verification/reset emails.
+  siga-notification:
+    image: hdaguila/siga-notification:latest
+    build:
+      context: .
+      dockerfile: ./services/notification/Dockerfile
+    container_name: siga-notification
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${NOTIFICATION_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${NOTIFICATION_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${NOTIFICATION_DB_PASSWORD}
+      - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
+      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+    depends_on:
+      siga-db:
+        condition: service_healthy
+      siga-eureka:
+        condition: service_started
+      siga-kafka:
+        condition: service_started
+    networks:
+      - siga-net
+
   # ============================================================
   # LAYER 3 — AI AGENT (Optional — requires Gemini API Key)
   # A2UI v0.9 agent powered by Gemini. Activated only with

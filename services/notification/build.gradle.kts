@@ -32,54 +32,39 @@ dependencyManagement {
 dependencies {
     // Shared module
     implementation(project(":services:common"))
-    
+
+    // Web (actuator health checks)
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    // JPA + PostgreSQL
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    
-    // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    
-    // PostgreSQL (version managed by Spring Boot BOM)
     implementation("org.postgresql:postgresql")
 
-    // Flyway for database migrations (SB 4.x: use starter for auto-config + postgresql module)
+    // Flyway for database migrations
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
 
-    // JWT
-    implementation("com.auth0:java-jwt:4.4.0")
-    
-    // Mail
-    implementation("org.springframework.boot:spring-boot-starter-mail")
-
-    // Kafka producer for async email events
+    // Kafka consumer
     implementation("org.springframework.kafka:spring-kafka")
 
-    // Health checks
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // Mail sender
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 
-    // Swagger / OpenAPI
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
-    
+    // Eureka client
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testRuntimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-        freeCompilerArgs.add("-Xjsr305=strict")
-    }
 }
 
 jacoco {
@@ -98,3 +83,9 @@ tasks.jacocoTestReport {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        freeCompilerArgs.add("-Xjsr305=strict")
+    }
+}

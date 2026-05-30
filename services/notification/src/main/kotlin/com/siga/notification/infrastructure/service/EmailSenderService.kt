@@ -30,13 +30,14 @@ class EmailSenderService {
      * @param body HTML body content
      */
     fun send(to: String, subject: String, body: String) {
-        if (mailSender == null) {
+        val sender = mailSender
+        if (sender == null || (sender is org.springframework.mail.javamail.JavaMailSenderImpl && sender.host.isNullOrBlank())) {
             log.info("[EMAIL] To: $to, Subject: $subject")
             log.info("[EMAIL] Body:\n$body")
             return
         }
 
-        val message: MimeMessage = mailSender!!.createMimeMessage()
+        val message: MimeMessage = sender.createMimeMessage()
         val helper = MimeMessageHelper(message, true)
         helper.setTo(to)
         helper.setSubject(subject)
