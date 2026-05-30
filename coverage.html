@@ -5,292 +5,546 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stream · Coverage · SIGA</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+  
   :root {
-    --green: #00f593;
-    --green-dark: #003d22;
-    --red: #ff4060;
-    --red-dark: #3d0010;
-    --yellow: #f5a623;
-    --yellow-dark: #3d2a00;
-    --bg: #0d0d1a;
-    --card-bg: #12122a;
-    --card-border: #1e1e40;
-    --text: #c8c8e0;
-    --muted: #6b6b8a;
-    --accent: #00bcd4;
+    /* Nord Light Theme Palette */
+    --bg: #eceff4; /* Nord 6 - Light snow storm background */
+    --surface: #ffffff; /* Pure white for containers */
+    --border: #d8dee9; /* Nord 4 - Clean light border */
+    --border-muted: #e5e9f0; /* Nord 5 - Very light border separator */
+    --text: #2e3440; /* Nord 0 - Deep gray-black */
+    --text-muted: #4c566a; /* Nord 3 - Slate gray */
+    --text-dark: #9eabbc; /* Slate light for subtle labels */
+    
+    /* Nord Status Colors */
+    --success: #a3be8c; /* Nord 14 - Green */
+    --warning: #ebcb8b; /* Nord 13 - Yellow */
+    --danger: #bf616a; /* Nord 11 - Red */
+    
+    --accent: #5e81ac; /* Nord 10 - Deep steel blue */
+    --accent-hover: #81a1c1; /* Nord 9 - Light steel blue */
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* === SCANLINES === */
-  body::after {
-    content: '';
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none; z-index: 999;
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    background-color: var(--bg);
     color: var(--text);
-    padding: 2rem;
+    padding: 3rem 2rem;
     min-height: 100vh;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  /* === HEADER STREAM === */
-  .stream-header {
+  .container {
+    width: 100%;
+    max-width: 1100px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  /* === HEADER === */
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 1.5rem;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: baseline;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--card-border);
-    padding-bottom: 1.25rem;
   }
-  .stream-header h1 {
-    font-size: 1.75rem;
+
+  .header h1 {
+    font-size: 1.5rem;
     font-weight: 800;
-    color: #fff;
-    letter-spacing: 0.5px;
+    letter-spacing: -0.03em;
+    color: var(--text);
   }
-  .stream-header h1 span { color: var(--accent); }
-  .live-indicator {
+
+  .header h1 span {
+    color: var(--text-dark);
+  }
+
+  .live-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #4b8d75; /* A bit darker nord green for readability on light bg */
+    letter-spacing: 0.05em;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--green);
-    text-transform: uppercase;
-    letter-spacing: 1px;
   }
+
   .live-dot {
-    width: 10px; height: 10px;
-    background: var(--green);
+    width: 6px;
+    height: 6px;
+    background: #4b8d75;
     border-radius: 50%;
-    animation: pulse 1.5s ease-in-out infinite;
+    display: inline-block;
+    animation: pulse 2s infinite;
   }
+
   @keyframes pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,245,147,0.6); }
-    50% { opacity: 0.6; box-shadow: 0 0 0 8px rgba(0,245,147,0); }
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
   }
 
   .subtitle {
-    color: var(--muted);
-    font-size: 0.9rem;
-    width: 100%;
-    margin-top: 0.25rem;
-  }
-
-  /* === STATS BAR === */
-  .stats-bar {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-    padding: 1rem 1.25rem;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
+    color: var(--text-muted);
     font-size: 0.85rem;
-  }
-  .stats-bar .stat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .stats-bar .stat strong {
-    font-size: 1.2rem;
-    color: #fff;
-  }
-  .stats-bar .stat .dot {
-    width: 8px; height: 8px; border-radius: 2px; display: inline-block;
-  }
-  .dot.inst { background: var(--green); }
-  .dot.bran { background: var(--yellow); }
-  .dot.line { background: var(--accent); }
-
-  .target-badge {
-    margin-left: auto;
-    background: var(--green-dark);
-    color: var(--green);
-    padding: 0.25rem 1rem;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 0.8rem;
-    border: 1px solid rgba(0,245,147,0.2);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
   }
 
-  /* === GRID === */
-  .grid {
+  /* === TOP CONSOLIDATED METRICS === */
+  .metrics-summary-bar {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 4px 12px rgba(46, 52, 64, 0.04);
   }
 
-  .card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    transition: border-color 0.2s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-  .card-header {
+  .summary-item {
+    padding: 1rem 1.5rem;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 0.25rem;
   }
-  .card-header h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #fff;
+
+  .summary-item:not(:last-child) {
+    border-right: 1px solid var(--border);
   }
-  .badge {
+
+  .summary-label {
     font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.2rem 0.7rem;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-  }
-  .badge.pass  { background: var(--green-dark); color: var(--green); border: 1px solid rgba(0,245,147,0.2); }
-  .badge.fail  { background: var(--red-dark);   color: var(--red);   border: 1px solid rgba(255,64,96,0.2); }
-  .badge.near  { background: var(--yellow-dark); color: var(--yellow); border: 1px solid rgba(245,166,35,0.2); }
-
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.3rem;
-    font-size: 0.8rem;
-  }
-  .stat-label { color: var(--muted); }
-  .stat-value { font-weight: 700; font-variant-numeric: tabular-nums; }
-
-  .bar-track {
-    height: 6px;
-    background: #1a1a35;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 0.7rem;
-  }
-  .bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 1s ease;
-    position: relative;
-  }
-  .bar-fill.green  { background: linear-gradient(90deg, #00b86b, var(--green)); }
-  .bar-fill.yellow { background: linear-gradient(90deg, #c47f00, var(--yellow)); }
-  .bar-fill.red    { background: linear-gradient(90deg, #cc0030, var(--red)); }
-
-  .card-footer {
-    margin-top: 0.8rem;
-    padding-top: 0.7rem;
-    border-top: 1px solid var(--card-border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .card-footer a {
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.8rem;
     font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .summary-val-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
+  }
+
+  .summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .summary-unit {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+  }
+
+  /* === CONTROLS === */
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+
+  .search-container {
+    position: relative;
+    width: 320px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 6px rgba(46, 52, 64, 0.02);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(94, 129, 172, 0.15);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    position: relative;
     transition: color 0.2s;
   }
-  .card-footer a:hover { color: #80eaff; }
-  .card-footer .total-stats {
-    font-size: 0.75rem;
-    color: var(--muted);
+
+  .filter-btn:hover {
+    color: var(--text);
   }
 
+  .filter-btn.active {
+    color: var(--accent);
+  }
+
+  .filter-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1.1rem;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  /* === HIGH-DENSITY TABLE === */
+  .table-wrapper {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 4px 16px rgba(46, 52, 64, 0.03);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.8rem;
+  }
+
+  th {
+    background: #f0f4f8; /* Soft frosted light gray for headers */
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.25rem;
+  }
+
+  td {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--border-muted);
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: #fafbfc;
+  }
+
+  .service-name-cell {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .service-name-cell span {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 0.15rem;
+  }
+
+  /* Metric column display */
+  .metric-cell {
+    width: 170px;
+  }
+
+  .metric-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+  }
+
+  .pct-val {
+    font-weight: 700;
+  }
+
+  .bar-track {
+    height: 3px;
+    background: #e5e9f0; /* Nord 5 */
+    width: 100%;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+  }
+
+  .bar-fill.green { background: #8fa87a; } /* Readability-enhanced Nord Green */
+  .bar-fill.yellow { background: #d0a656; } /* Readability-enhanced Nord Amber */
+  .bar-fill.red { background: #bf616a; } /* Nord Red */
+
+  .loc-cell {
+    color: var(--text-muted);
+  }
+
+  .status-indicator-cell {
+    text-align: center;
+    width: 80px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .status-dot.pass { background: #8fa87a; }
+  .status-dot.near { background: #d0a656; }
+  .status-dot.fail { background: #bf616a; }
+
+  .action-cell {
+    text-align: right;
+    width: 220px;
+  }
+
+  .action-links {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.85rem;
+  }
+
+  .report-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    background: #f0f4f8;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .report-link:hover {
+    color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    background: #ffffff;
+  }
+
+  /* === META INFO === */
   .meta-line {
-    margin-top: 1.5rem;
-    padding: 1rem 1.25rem;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-    font-size: 0.85rem;
-    color: var(--muted);
-    line-height: 1.6;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    border-left: 2px solid var(--border);
+    padding-left: 1.25rem;
+  }
+
+  .meta-line strong {
+    color: var(--text);
+  }
+
+  .meta-line span.highlight-green { color: #5b7a44; font-weight: 600; }
+  .meta-line span.highlight-red { color: #9c3f47; font-weight: 600; }
+
+  /* === FOOTER SIGNATURE === */
+  .footer-signature {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .signature-line {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .signature-line strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .signature-quote {
+    font-size: 0.7rem;
+    color: #64748b;
+  }
+
+  /* === ROW TRANSITIONS === */
+  tr.hidden {
+    display: none !important;
   }
 
   /* === RESPONSIVE === */
-  @media (max-width: 600px) {
-    body { padding: 1rem; }
-    .grid { grid-template-columns: 1fr; }
-    .stream-header h1 { font-size: 1.4rem; }
-    .stats-bar { flex-direction: column; gap: 0.5rem; }
-    .target-badge { margin-left: 0; }
+  @media (max-width: 768px) {
+    body { padding: 2rem 1rem; }
+    .metrics-summary-bar { grid-template-columns: 1fr; }
+    .summary-item:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
+    .controls-bar { flex-direction: column; align-items: stretch; }
+    .search-container { width: 100%; }
+    .filter-tabs { justify-content: space-between; margin-top: 0.5rem; }
+    .action-links { flex-direction: column; gap: 0.35rem; align-items: flex-end; }
   }
 </style>
 </head>
 <body>
 
-<div class="stream-header">
-  <div>
-    <h1>◉ <span>Stream</span> · Coverage</h1>
-    <div class="subtitle">Dashboard en vivo de cobertura de pruebas por microservicio</div>
+<div class="container">
+  <!-- === HEADER === -->
+  <header class="header">
+    <div class="title-row">
+      <h1>SIGA <span>/</span> Coverage Stream</h1>
+      <div class="live-status">
+        <span class="live-dot"></span> LIVE SYNC ACTIVE
+      </div>
+    </div>
+    <div class="subtitle">Métricas reales de cobertura de pruebas por microservicio e integración continua</div>
+  </header>
+
+  <!-- === TOP CONSOLIDATED METRICS === -->
+  <section class="metrics-summary-bar">
+    <div class="summary-item">
+      <span class="summary-label">Avg. Instructions</span>
+      <div class="summary-val-row">
+        <span class="summary-value" id="avgInstr">--</span>
+        <span class="summary-unit">%</span>
+      </div>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Avg. Branches</span>
+      <div class="summary-val-row">
+        <span class="summary-value" id="avgBranch">--</span>
+        <span class="summary-unit">%</span>
+      </div>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Avg. Lines</span>
+      <div class="summary-val-row">
+        <span class="summary-value" id="avgLine">--</span>
+        <span class="summary-unit">%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- === CONTROLS === -->
+  <div class="controls-bar">
+    <div class="search-container">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input type="text" id="searchInput" placeholder="Buscar microservicio..." class="search-input">
+    </div>
+    <div class="filter-tabs">
+      <button class="filter-btn active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="passed">Aprobados (80%+)</button>
+      <button class="filter-btn" data-filter="failed">Críticos (&lt;80%)</button>
+    </div>
   </div>
-  <div class="live-indicator">
-    <span class="live-dot"></span> Live
+
+  <!-- === HIGH-DENSITY TABLE === -->
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Microservicio</th>
+          <th>Instrucciones</th>
+          <th>Ramas</th>
+          <th>Líneas</th>
+          <th>Tamaño</th>
+          <th style="text-align: center;">Estado</th>
+          <th style="text-align: right;">Reportes</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
   </div>
+
+  <!-- === META SUMMARY === -->
+  <div class="meta-line" id="meta"></div>
+
+  <!-- === FOOTER SIGNATURE === -->
+  <footer class="footer-signature">
+    <div class="signature-line">
+      Desarrollado por <strong>Héctor Aguila</strong> <span style="color: var(--border)">/</span> SIGA &copy; 2026
+    </div>
+    <div class="signature-quote">
+      &gt; Un Soñador con Poca RAM 👨🏻💻
+    </div>
+  </footer>
 </div>
-
-<div class="stats-bar" id="statsBar">
-  <div class="stat"><span class="dot inst"></span> Instructions: <strong id="avgInstr">--</strong>%</div>
-  <div class="stat"><span class="dot bran"></span> Branches: <strong id="avgBranch">--</strong>%</div>
-  <div class="stat"><span class="dot line"></span> Lines: <strong id="avgLine">--</strong>%</div>
-  <div class="target-badge">🎯 meta: 80%</div>
-</div>
-
-<div class="grid" id="grid"></div>
-
-<div class="meta-line" id="meta"></div>
 
 <script>
+// Base de datos de servicios
 const services = [
   { name: "auth",      fullName: "Auth Service",
     instr: 78, branch: 58, line: 83,
     totalInstr: 5443, totalBranch: 294, totalLine: 836,
     reportPath: "services/auth/build/reports/jacoco/test/html/index.html",
-    icon: "🔐" },
+    testPath: "services/auth/build/reports/tests/test/index.html" },
   { name: "agent",     fullName: "Agent Service",
     instr: 82, branch: 48, line: 87,
     totalInstr: 3796, totalBranch: 212, totalLine: 619,
     reportPath: "services/agent/build/reports/jacoco/test/html/index.html",
-    icon: "🤖" },
+    testPath: "services/agent/build/reports/tests/test/index.html" },
   { name: "billing",   fullName: "Billing Service",
     instr: 10, branch: 0,  line: 10,
     totalInstr: 4327, totalBranch: 126, totalLine: 630,
     reportPath: "services/billing/build/reports/jacoco/test/html/index.html",
-    icon: "💰" },
+    testPath: "services/billing/build/reports/tests/test/index.html" },
   { name: "inventory", fullName: "Inventory Service",
     instr: 88, branch: 63, line: 93,
     totalInstr: 5910, totalBranch: 248, totalLine: 1003,
     reportPath: "services/inventory/build/reports/jacoco/test/html/index.html",
-    icon: "📦" },
+    testPath: "services/inventory/build/reports/tests/test/index.html" },
   { name: "sales",     fullName: "Sales Service",
     instr: 75, branch: 43, line: 81,
     totalInstr: 4007, totalBranch: 146, totalLine: 578,
     reportPath: "services/sales/build/reports/jacoco/test/html/index.html",
-    icon: "🛒" }
+    testPath: "services/sales/build/reports/tests/test/index.html" }
 ];
 
 function barColor(pct) {
@@ -298,68 +552,151 @@ function barColor(pct) {
   if (pct >= 50) return 'yellow';
   return 'red';
 }
-function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
-const grid = document.getElementById('grid');
+function valueColor(pct) {
+  if (pct >= 80) return 'var(--success)';
+  if (pct >= 50) return 'var(--warning)';
+  return 'var(--danger)';
+}
+
+function fmt(n) { 
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+}
+
+const tableBody = document.getElementById('tableBody');
 let pass80 = 0;
 
-services.forEach(s => {
-  const passes80 = s.instr >= 80;
-  if (passes80) pass80++;
+// Renderizar filas de la tabla
+function renderRows() {
+  tableBody.innerHTML = '';
+  pass80 = 0;
+  
+  services.forEach(s => {
+    const passes80 = s.instr >= 80;
+    if (passes80) pass80++;
 
-  const badgeClass = passes80 ? 'pass' : (s.instr >= 60 ? 'near' : 'fail');
-  const badgeText  = passes80 ? '✓ 80%+' : s.instr + '%';
+    const statusDotClass = passes80 ? 'pass' : (s.instr >= 60 ? 'near' : 'fail');
 
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.innerHTML = `
-    <div class="card-header">
-      <h2>${s.icon} ${s.fullName}</h2>
-      <span class="badge ${badgeClass}">${badgeText}</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Instructions</span>
-      <span class="stat-value" style="color:${barColor(s.instr) === 'green' ? '#00f593' : barColor(s.instr) === 'yellow' ? '#f5a623' : '#ff4060'}">${s.instr}%</span>
-    </div>
-    <div class="bar-track">
-      <div class="bar-fill ${barColor(s.instr)}" style="width:${s.instr}%"></div>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Branches</span>
-      <span class="stat-value" style="color:${barColor(s.branch) === 'green' ? '#00f593' : barColor(s.branch) === 'yellow' ? '#f5a623' : '#ff4060'}">${s.branch}%</span>
-    </div>
-    <div class="bar-track">
-      <div class="bar-fill ${barColor(s.branch)}" style="width:${s.branch}%"></div>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">Lines</span>
-      <span class="stat-value" style="color:${barColor(s.line) === 'green' ? '#00f593' : barColor(s.line) === 'yellow' ? '#f5a623' : '#ff4060'}">${s.line}%</span>
-    </div>
-    <div class="bar-track">
-      <div class="bar-fill ${barColor(s.line)}" style="width:${s.line}%"></div>
-    </div>
-    <div class="card-footer">
-      <span class="total-stats">${fmt(s.totalLine)} lines · ${fmt(s.totalBranch)} branches · ${fmt(s.totalInstr)} instr</span>
-      <a href="${s.reportPath}" target="_blank">Ver reporte →</a>
-    </div>
-  `;
-  grid.appendChild(card);
+    const tr = document.createElement('tr');
+    tr.dataset.name = s.name.toLowerCase();
+    tr.dataset.fullName = s.fullName.toLowerCase();
+    tr.dataset.status = passes80 ? 'passed' : 'failed';
+    
+    tr.innerHTML = `
+      <td class="service-name-cell">
+        ${s.name}
+        <span>${s.fullName}</span>
+      </td>
+      
+      <!-- Instructions -->
+      <td class="metric-cell">
+        <div class="metric-header">
+          <span>Instr.</span>
+          <span class="pct-val" style="color:${valueColor(s.instr)}">${s.instr}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill ${barColor(s.instr)}" style="width:${s.instr}%"></div>
+        </div>
+      </td>
+      
+      <!-- Branches -->
+      <td class="metric-cell">
+        <div class="metric-header">
+          <span>Branch</span>
+          <span class="pct-val" style="color:${valueColor(s.branch)}">${s.branch}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill ${barColor(s.branch)}" style="width:${s.branch}%"></div>
+        </div>
+      </td>
+      
+      <!-- Lines -->
+      <td class="metric-cell">
+        <div class="metric-header">
+          <span>Lines</span>
+          <span class="pct-val" style="color:${valueColor(s.line)}">${s.line}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill ${barColor(s.line)}" style="width:${s.line}%"></div>
+        </div>
+      </td>
+      
+      <!-- LOC Size -->
+      <td class="loc-cell">
+        ${fmt(s.totalLine)} LOC
+      </td>
+      
+      <!-- Status -->
+      <td class="status-indicator-cell">
+        <span class="status-dot ${statusDotClass}"></span>
+      </td>
+      
+      <!-- Action -->
+      <td class="action-cell">
+        <div class="action-links">
+          <a href="${s.reportPath}" class="report-link" target="_blank">COBERTURA</a>
+          <a href="${s.testPath}" class="report-link" target="_blank">PRUEBAS</a>
+        </div>
+      </td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+
+// Calcular promedios generales
+function updateGlobalAverages() {
+  const avgInstr = services.reduce((a, s) => a + s.instr, 0) / services.length;
+  const avgBranch = services.reduce((a, s) => a + s.branch, 0) / services.length;
+  const avgLine = services.reduce((a, s) => a + s.line, 0) / services.length;
+
+  document.getElementById('avgInstr').textContent  = avgInstr.toFixed(0);
+  document.getElementById('avgBranch').textContent = avgBranch.toFixed(0);
+  document.getElementById('avgLine').textContent   = avgLine.toFixed(0);
+
+  const failedCount = services.length - pass80;
+  
+  document.getElementById('meta').innerHTML =
+    `Monitoreando un total de <strong>${services.length}</strong> microservicios · ` +
+    `Hay <span class="highlight-green">${pass80}</span> que alcanzan la meta del 80% y ` +
+    `<span class="${failedCount > 0 ? 'highlight-red' : 'highlight-green'}">${failedCount}</span> por debajo de la meta.<br>` +
+    `<span style="color:var(--text-dark)">Cada fila permite acceder tanto al reporte de cobertura (JaCoCo) como al reporte de ejecución de pruebas (JUnit).</span>`;
+}
+
+// Lógica de búsqueda y filtrado
+const searchInput = document.getElementById('searchInput');
+const filterBtns = document.querySelectorAll('.filter-btn');
+
+function filterServices() {
+  const query = searchInput.value.toLowerCase().trim();
+  const activeTab = document.querySelector('.filter-btn.active').dataset.filter;
+  const rows = tableBody.querySelectorAll('tr');
+
+  rows.forEach(row => {
+    const nameMatch = row.dataset.name.includes(query) || row.dataset.fullName.includes(query);
+    const statusMatch = activeTab === 'all' || row.dataset.status === activeTab;
+
+    if (nameMatch && statusMatch) {
+      row.classList.remove('hidden');
+    } else {
+      row.classList.add('hidden');
+    }
+  });
+}
+
+// Inicializar eventos
+searchInput.addEventListener('input', filterServices);
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterServices();
+  });
 });
 
-// Summary
-const avgInstr = services.reduce((a, s) => a + s.instr, 0) / services.length;
-const avgBranch = services.reduce((a, s) => a + s.branch, 0) / services.length;
-const avgLine = services.reduce((a, s) => a + s.line, 0) / services.length;
-
-document.getElementById('avgInstr').textContent  = avgInstr.toFixed(0);
-document.getElementById('avgBranch').textContent = avgBranch.toFixed(0);
-document.getElementById('avgLine').textContent   = avgLine.toFixed(0);
-
-document.getElementById('meta').innerHTML =
-  `<strong>${services.length}</strong> microservicios monitoreados · ` +
-  `<strong>${pass80}</strong> alcanzan el 80% · ` +
-  `<strong>${services.length - pass80}</strong> por debajo de la meta<br>` +
-  `<span style="font-size:0.8rem">Cada tarjeta enlaza al reporte detallado de JaCoCo. Los datos se actualizan con cada ejecución de pruebas.</span>`;
+// Inicialización
+renderRows();
+updateGlobalAverages();
 </script>
 </body>
 </html>
