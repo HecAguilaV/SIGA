@@ -2,20 +2,24 @@ package com.siga.auth.controller
 
 import com.siga.auth.application.usecase.LoginUseCase
 import com.siga.auth.application.usecase.RegisterCustomerUseCase
+import com.siga.auth.application.usecase.ResetPasswordConfirmUseCase
+import com.siga.auth.application.usecase.ResetPasswordRequestUseCase
 import com.siga.auth.application.usecase.VerifyCustomerUseCase
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 /**
- * Controller for authentication flows: registration, email verification, and login.
+ * Controller for authentication flows: registration, email verification, login, and password reset.
  */
 @RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
     private val registerCustomerUseCase: RegisterCustomerUseCase,
     private val verifyCustomerUseCase: VerifyCustomerUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val resetPasswordRequestUseCase: ResetPasswordRequestUseCase,
+    private val resetPasswordConfirmUseCase: ResetPasswordConfirmUseCase
 ) {
 
     @PostMapping("/register")
@@ -52,6 +56,34 @@ class AuthController(
         } catch (e: IllegalStateException) {
             ResponseEntity.status(HttpStatus.GONE)
                 .body(mapOf("error" to "Verification token has expired"))
+        }
+    }
+
+    @PostMapping("/reset-password/request")
+    fun resetPasswordRequest(@RequestBody request: ResetPasswordRequest): ResponseEntity<Map<String, String>> {
+        if (request.email.isNullOrBlank()) {
+            return ResponseEntity.badRequest()
+                .body(mapOf("error" to "Email is required"))
+        }
+        resetPasswordRequestUseCase.request(request.email)
+        return ResponseEntity.ok(mapOf("message" to "If the email exists, a reset link has been sent"))
+    }
+
+    @PostMapping("/reset-password/confirm")
+    fun resetPasswordConfirm(@RequestBody request: ResetPasswordConfirmRequest): ResponseEntity<*> {
+        if (request.token.isNullOrBlank() || request.newPassword.isNullOrBlank()) {
+            return ResponseEntity.badRequest()
+                .body(mapOf("error" to "Token and newPassword are required"))
+        }
+        return try {
+            resetPasswordConfirmUseCase.confirm(request.token, request.newPassword)
+            ResponseEntity.noContent().build<Any>()
+        } catch (e: NoSuchElementException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(mapOf("error" to (e.message ?: "Invalid reset token")))
+        } catch (e: IllegalStateException) {
+            ResponseEntity.status(HttpStatus.GONE)
+                .body(mapOf("error" to (e.message ?: "Reset token has expired")))
         }
     }
 
@@ -94,4 +126,19 @@ data class RegisterRequest(
 data class LoginRequest(
     val email: String,
     val password: String
+)
+
+/**
+ * Request DTO for password reset request.
+ */
+data class ResetPasswordRequest(
+    val email: String?
+)
+
+/**
+ * Request DTO for password reset confirmation.
+ */
+data class ResetPasswordConfirmRequest(
+    val token: String?,
+    val newPassword: String?
 )
