@@ -14,6 +14,7 @@ Define auth flows, tenant-scoped user management, and granular permission model 
 | **Admin** | Empleado con role=ADMINISTRATOR | Según permisos asignados. Puede recibir TODOS (Super Admin 2) si el dueño decide. | Máximo 1 por empresa |
 | **Cajero** | Empleado con role=CASHIER | Permisos default de cajero + overrides que asigne el dueño/admin | Ilimitado según plan |
 | **Inventario** | Empleado con role=OPERATOR | Permisos default de operador + overrides que asigne el dueño/admin | Ilimitado según plan |
+| **Polifuncional** | Empleado con role=EMPLOYEE | Sin permisos default. Todos los permisos vía UserPermission | Ilimitado según plan |
 
 ### Principios
 
@@ -108,7 +109,7 @@ El dueño (Customer) NO necesita permisos — tiene control inherente sobre su t
 
 - GIVEN an active User (customerId=1) with valid credentials
 - WHEN POST /api/v1/auth/login
-- THEN 200 + JWT with `tenantId=1`, `principalType=user`, `rol=ADMINISTRATOR|CASHIER|OPERATOR`
+- THEN 200 + JWT with `tenantId=1`, `principalType=user`, `rol=ADMINISTRATOR|CASHIER|OPERATOR|EMPLOYEE`
 
 #### Scenario: Inactive Customer rejected
 
@@ -140,7 +141,11 @@ All User CRUD is scoped to the authenticated Customer's tenant. Only the Custome
 
 #### R4.1: Create User
 
-`POST /api/v1/auth/users` (Auth required: Customer or user with `user:create` permission).
+`POST /api/v1/auth/users` (Auth required: Customer or user with `user:create` permission). The system MUST accept `EMPLOYEE` as a valid role. EMPLOYEE users MUST NOT receive default role permissions — only granular UserPermission assignments.
+
+- GIVEN authenticated Customer (`tenantId=1`)
+- WHEN POST /api/v1/auth/users with `{ email, password, firstName, role: EMPLOYEE }`
+- THEN 201 + User created with `customerId=1`, role=EMPLOYEE, no default role permissions
 
 - GIVEN an authenticated Customer (`tenantId=1`)
 - WHEN POST /api/v1/auth/users with `{ email, password, firstName, role: CASHIER }`
@@ -205,18 +210,30 @@ All User CRUD is scoped to the authenticated Customer's tenant. Only the Custome
 
 ### R5: Permission Management
 
-`GET /api/v1/auth/permissions` — list all available permissions (catalogue)
-`GET /api/v1/auth/users/{id}/permissions` — list effective permissions for a user
-`POST /api/v1/auth/users/{id}/permissions` — assign permission to a user
-`DELETE /api/v1/auth/users/{id}/permissions/{permId}` — revoke permission from a user
+All permission endpoints require authentication. Customer (dueño) or users with `permission:manage` MAY manage the catalogue and user assignments.
 
-All permission endpoints: Auth required, Customer or user with `permission:manage` access.
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | /api/v1/auth/permissions | List catalogue |
+| POST | /api/v1/auth/permissions | Create permission code |
+| PUT | /api/v1/auth/permissions/{id} | Update permission code |
+| DELETE | /api/v1/auth/permissions/{id} | Remove permission code |
+| GET | /api/v1/auth/users/{id}/permissions | List user permissions |
+| POST | /api/v1/auth/users/{id}/permissions | Assign permission(s) |
+| DELETE | /api/v1/auth/users/{id}/permissions/{permId} | Revoke permission |
+| GET | /api/v1/auth/users/{id}/permissions/verify?code=X | Verify permission |
 
 #### Scenario: List permissions catalogue
 
 - GIVEN available permissions in the catalogue
 - WHEN GET /api/v1/auth/permissions
 - THEN 200 + list of all `Permission` entries
+
+#### Scenario: Create permission code
+
+- GIVEN authenticated user with `permission:manage`
+- WHEN POST /api/v1/auth/permissions with `{ code, description }`
+- THEN 201 + permission created
 
 #### Scenario: Assign permission to user
 
@@ -229,6 +246,18 @@ All permission endpoints: Auth required, Customer or user with `permission:manag
 - GIVEN an existing UserPermission for user X and permission Y
 - WHEN DELETE /api/v1/auth/users/{id}/permissions/{permId}
 - THEN 204 No Content
+
+#### Scenario: Verify user has permission
+
+- GIVEN user with INVENTORY_READ
+- WHEN GET /api/v1/auth/users/{id}/permissions/verify?code=INVENTORY_READ
+- THEN 200 + `{ hasPermission: true }`
+
+#### Scenario: Cross-tenant assign rejected
+
+- GIVEN assigner tenant A, target tenant B
+- WHEN POST assign
+- THEN 403 Forbidden
 
 ### R6: Verification Token Expiry
 
@@ -261,3 +290,23 @@ The number of active users per tenant MUST NOT exceed the limit defined by `Cust
 - THEN 402 Payment Required — plan limit reached
 
 *Note: Full plan enforcement requires billing service. Initial implementation: allow unlimited users (limit check deferred).*
+
+### R9: EMPLOYEE Role
+
+The system MUST accept `EMPLOYEE` as a valid UserRole in the domain model and entity enum. EMPLOYEE users MUST NOT receive default RolePermission assignments — all permissions come via UserPermission.
+
+#### Scenario: Create EMPLOYEE user
+
+- GIVEN authenticated Customer (dueño)
+- WHEN POST /api/v1/auth/users with `{ role: EMPLOYEE }`
+- THEN 201 + User created with role=EMPLOYEE, no default permissions
+
+### R10: Permission Codes in Auth Response
+
+The system SHOULD include the user's effective permission codes in the login response payload.
+
+#### Scenario: Login returns permissions
+
+- GIVEN authenticated User with INVENTORY_READ
+- WHEN POST /api/v1/auth/login
+- THEN 200 + response includes `{ permissions: ["INVENTORY_READ"] }`
