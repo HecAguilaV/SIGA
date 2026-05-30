@@ -47,6 +47,9 @@ dependencies {
 
     // Kafka para SAGA (comunicación asíncrona con Sales)
     implementation("org.springframework.kafka:spring-kafka")
+
+    // Redis — declarative caching via Spring Cache + @Cacheable
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -73,6 +76,9 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.0.0")
     testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    // Testcontainers for integration tests with external infrastructure
+    testImplementation("org.testcontainers:testcontainers:1.20.4")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testRuntimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

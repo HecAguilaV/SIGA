@@ -2,6 +2,7 @@ package com.siga.inventory.application.usecase
 
 import com.siga.inventory.domain.port.ProductRepositoryPort
 import com.siga.inventory.domain.port.StockRepositoryPort
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.UUID
@@ -27,11 +28,15 @@ class ConsolidatedStockUseCase(
     /**
      * Executes the consolidated stock query.
      *
+     * Results are cached in Redis for 60s (configured via `spring.cache.redis.time-to-live`).
+     * Cache key format: `consolidatedStock::<storeId_or_"all">:<page>:<size>`.
+     *
      * @param storeId Optional filter: if provided, only stock for this store is included.
      * @param page Zero-based page number.
      * @param size Page size.
      * @return [ConsolidatedStockResponse] with aggregated products.
      */
+    @Cacheable(cacheNames = ["consolidatedStock"], key = "(#storeId?.toString() ?: 'all') + ':' + #page + ':' + #size")
     fun execute(storeId: UUID?, page: Int, size: Int): ConsolidatedStockResponse {
         val allStock = if (storeId != null) {
             stockPort.findAll().filter { it.storeId == storeId }

@@ -21,6 +21,16 @@ spring:
         default_schema: inventory
         metadata_builder_contributor: com.siga.inventory.config.UnaccentMetadataContributor
 
+  # Redis — declarative caching for read-heavy queries
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60s
+  data:
+    redis:
+      host: ${REDIS_HOST:-localhost}
+      port: ${REDIS_PORT:-6379}
+
   # Kafka — SAGA choreography with Sales service
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}
