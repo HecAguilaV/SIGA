@@ -57,8 +57,22 @@ services:
       - siga-net
 
   # ============================================================
+  # LAYER 0 — CACHE
+  # Redis 7 for declarative caching via Spring Cache abstraction.
+  # Single-node for dev/staging. Cluster mode can be added later
+  # if cache pressure grows beyond single-instance capacity.
+  # ============================================================
+  siga-redis:
+    image: redis:7-alpine
+    container_name: siga-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - siga-net
+
+  # ============================================================
   # LAYER 0 — ADMIN UIs
-  # Web-based management panels for Postgres and Kafka.
+  # Web-based management panels for Postgres, Redis, and Kafka.
   # Not required for the application to work — purely for
   # developer/DBA convenience during development and debugging.
   # ============================================================
