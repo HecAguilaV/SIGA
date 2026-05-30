@@ -20,12 +20,28 @@ spring:
       hibernate:
         default_schema: auth
 
+  # Kafka — producer for email-events topic
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
 eureka:
   instance:
     hostname: siga-auth
   client:
     service-url:
       defaultZone: ${EUREKA_URL:-http://localhost:8761/eureka/}
+
+# Feature flag: email sending mode
+# async → publish EmailEvent to Kafka (Notification service sends it)
+# sync → call EmailSenderPort directly (legacy behavior)
+app:
+  email:
+    mode: ${APP_EMAIL_MODE:-async}
 
 jwt:
   secret: ${JWT_SECRET}
