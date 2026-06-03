@@ -8,8 +8,8 @@ import com.siga.notification.infrastructure.service.EmailSenderService
 import com.siga.notification.infrastructure.service.TemplateRenderer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.*
 import java.util.*
 
 /**
@@ -130,5 +130,54 @@ class EmailEventConsumerTest {
         consumer.consume(event)
 
         verify(templateRenderer).render("password-reset.html", "Test User", "/api/v1/auth/login")
+    }
+
+    // --- REQ-5: SMTP Retry Tests ---
+
+    @Test
+    fun `consume retries 4 times when sender always throws and does NOT save processed event`() {
+        `when`(processedEventRepository.existsById(anyObject())).thenReturn(false)
+        doThrow(RuntimeException("SMTP failure"))
+            .`when`(emailSenderService)
+            .send(anyString(), anyString(), anyString())
+
+        val event = EmailEvent(
+            eventId = UUID.randomUUID(),
+            email = "retry@test.com",
+            type = EmailType.WELCOME,
+            name = "Retry User",
+            token = "retry-token"
+        )
+
+        consumer.consume(event)
+
+        // Must attempt 4 times (1 initial + 3 retries with backoff)
+        verify(emailSenderService, times(4)).send(anyString(), anyString(), anyString())
+        // Must NOT mark as processed — retries were exhausted
+        verify(processedEventRepository, never()).save(anyObject())
+    }
+
+    @Test
+    fun `consume retries then succeeds on second attempt and saves processed event`() {
+        `when`(processedEventRepository.existsById(anyObject())).thenReturn(false)
+        doThrow(RuntimeException("First attempt failure"))
+            .doNothing()
+            .`when`(emailSenderService)
+            .send(anyString(), anyString(), anyString())
+
+        val event = EmailEvent(
+            eventId = UUID.randomUUID(),
+            email = "retry-then-success@test.com",
+            type = EmailType.PASSWORD_RESET,
+            name = "Retry Success User",
+            token = "retry-success-token"
+        )
+
+        consumer.consume(event)
+
+        // First attempt failed, second succeeded — no more retries needed
+        verify(emailSenderService, times(2)).send(anyString(), anyString(), anyString())
+        // Must mark as processed after success
+        verify(processedEventRepository).save(anyObject())
     }
 }
