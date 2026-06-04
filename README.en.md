@@ -33,7 +33,7 @@ SIGA utilizes cutting-edge technologies to ensure performance and legal complian
 - **Frontend**: SvelteKit 5 (Unified dashboard under `apps/dashboard`).
 - **Persistence**: PostgreSQL with schema isolation and UUID v4 as the unique standard for identity and pseudonymization.
 - **Security**: JWT (Stateless) and rigorous compliance with Chilean Law 21.719.
-- **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — real-time Docker architecture visualizer with interactive topology, metrics, logs, and best-practice recommendations.
+- **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — real-time Docker architecture visualizer with interactive topology, metrics, logs, best-practice recommendations, and Discord notifications (state changes, CPU/RAM alerts, action errors).
 
 ---
 
@@ -52,7 +52,7 @@ bash scripts/start-staggered.sh
 
 **Service Status**: Once up, the API Gateway will orchestrate requests to the Auth, Billing, and Inventory microservices under the UUID standard.
 
-**Ops Panel**: ContainerFlow is available at `http://localhost:9470` — visualize container topology, check CPU/RAM metrics, browse logs, and execute commands (`docker exec`) directly from the browser.
+**Ops Panel**: ContainerFlow is available at `http://localhost:9470` — visualize container topology, check CPU/RAM metrics, browse logs, execute commands (`docker exec`) directly from the browser, and receive Discord alerts when a container crashes, restarts, or exceeds resource thresholds.
 
 ---
 

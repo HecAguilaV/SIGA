@@ -315,12 +315,14 @@ services:
       - ALLOW_NON_COMPOSE=true                   # Show containers not managed by Compose
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro  # Read-only access to Docker socket
+      - containerflow-data:/app/data                    # Persist Discord config, thresholds, stats history
     networks:
       - siga-net
 
 volumes:
   siga-db-data:      # Persistent PostgreSQL data (survives container recreation)
   siga-pgadmin-data: # Persistent pgAdmin configuration and saved connections
+  containerflow-data: # Persistent siga-ops data: Discord config, thresholds, stats history
 
 networks:
   siga-net:
