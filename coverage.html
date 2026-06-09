@@ -636,6 +636,136 @@
       font-size: 0.7rem;
       font-weight: 500;
     }
+
+    /* Interactive Security Card and Modal Styles */
+    .security-card {
+      cursor: pointer;
+      transition: transform var(--transition-fast), background-color var(--transition-fast);
+    }
+    .security-card:hover {
+      background: var(--border-light);
+      transform: translateY(-2px);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-container {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transform: translateY(20px);
+      transition: transform 0.2s ease;
+    }
+    .modal-overlay.active .modal-container {
+      transform: translateY(0);
+    }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+    }
+    .modal-title {
+      font-size: 1.125rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 50%;
+      transition: background 0.15s;
+    }
+    .modal-close:hover {
+      background: var(--border-light);
+      color: var(--text);
+    }
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .finding-item {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      border-left: 4px solid var(--text-muted);
+      margin-bottom: 1rem;
+      font-size: 0.825rem;
+    }
+    .finding-item.warning {
+      border-left-color: var(--warning);
+    }
+    .finding-item.danger, .finding-item.error {
+      border-left-color: var(--error);
+    }
+    .finding-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    .finding-rule {
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .finding-loc {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    .finding-msg {
+      margin-top: 0.5rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .finding-match {
+      margin-top: 0.5rem;
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text);
+      overflow-x: auto;
+    }
   </style>
 </head>
 <body>
@@ -796,10 +926,10 @@ const devopsData = {
       "name": "auth",
       "fullName": "Auth Service",
       "type": "backend",
-      "instr": 78,
-      "branch": 58,
-      "line": 83,
-      "totalLine": 836,
+      "instr": 0,
+      "branch": 100,
+      "line": 0,
+      "totalLine": 3,
       "reportPath": "services/auth/build/reports/jacoco/test/html/index.html",
       "testPath": "services/auth/build/reports/tests/test/index.html"
     },
@@ -807,10 +937,10 @@ const devopsData = {
       "name": "agent",
       "fullName": "Agent Service",
       "type": "backend",
-      "instr": 82,
-      "branch": 48,
-      "line": 87,
-      "totalLine": 619,
+      "instr": 100,
+      "branch": 83,
+      "line": 100,
+      "totalLine": 2,
       "reportPath": "services/agent/build/reports/jacoco/test/html/index.html",
       "testPath": "services/agent/build/reports/tests/test/index.html"
     },
@@ -818,10 +948,10 @@ const devopsData = {
       "name": "billing",
       "fullName": "Billing Service",
       "type": "backend",
-      "instr": 10,
-      "branch": 0,
-      "line": 10,
-      "totalLine": 630,
+      "instr": 100,
+      "branch": 50,
+      "line": 100,
+      "totalLine": 8,
       "reportPath": "services/billing/build/reports/jacoco/test/html/index.html",
       "testPath": "services/billing/build/reports/tests/test/index.html"
     },
@@ -829,10 +959,10 @@ const devopsData = {
       "name": "inventory",
       "fullName": "Inventory Service",
       "type": "backend",
-      "instr": 88,
-      "branch": 63,
-      "line": 93,
-      "totalLine": 1003,
+      "instr": 100,
+      "branch": 100,
+      "line": 100,
+      "totalLine": 1,
       "reportPath": "services/inventory/build/reports/jacoco/test/html/index.html",
       "testPath": "services/inventory/build/reports/tests/test/index.html"
     },
@@ -840,10 +970,10 @@ const devopsData = {
       "name": "sales",
       "fullName": "Sales Service",
       "type": "backend",
-      "instr": 75,
-      "branch": 43,
-      "line": 81,
-      "totalLine": 578,
+      "instr": 0,
+      "branch": 100,
+      "line": 0,
+      "totalLine": 6,
       "reportPath": "services/sales/build/reports/jacoco/test/html/index.html",
       "testPath": "services/sales/build/reports/tests/test/index.html"
     },
@@ -851,64 +981,64 @@ const devopsData = {
       "name": "dashboard",
       "fullName": "Frontend Dashboard",
       "type": "frontend",
-      "instr": 34,
-      "branch": 66,
-      "line": 34,
-      "totalLine": 3877,
+      "instr": 0,
+      "branch": 0,
+      "line": 0,
+      "totalLine": 0,
       "reportPath": "apps/dashboard/coverage/index.html",
       "testPath": "apps/dashboard/coverage/index.html"
     }
   ],
   "security": {
     "semgrep": {
-      "status": "pending",
-      "count": 0,
-      "lastRun": "2026-06-09T21:35:51.024Z"
+      "status": "warning",
+      "count": 7,
+      "lastRun": "2026-06-09T22:50:21.811Z"
     },
     "gitleaks": {
-      "status": "pending",
-      "count": 0,
-      "lastRun": "2026-06-09T21:35:51.030Z"
+      "status": "danger",
+      "count": 620,
+      "lastRun": "2026-06-09T22:50:21.811Z"
     }
   },
   "docker": {
-    "status": "offline",
+    "status": "online",
     "containers": [
       {
         "name": "siga-auth",
-        "status": "offline"
+        "status": "running"
       },
       {
         "name": "siga-inventory",
-        "status": "offline"
+        "status": "running"
       },
       {
         "name": "siga-sales",
-        "status": "offline"
+        "status": "running"
       },
       {
         "name": "siga-agent",
-        "status": "offline"
+        "status": "running"
       },
       {
         "name": "siga-billing",
-        "status": "offline"
+        "status": "running"
       },
       {
         "name": "siga-gateway",
-        "status": "offline"
+        "status": "running"
       },
       {
         "name": "siga-registry",
-        "status": "offline"
+        "status": "running"
       },
       {
         "name": "containerflow",
-        "status": "offline"
+        "status": "running"
       }
     ]
   },
-  "updatedAt": "9/6/2026, 05:35:51"
+  "updatedAt": "9/6/2026, 06:50:21"
 };
 </script>
 <!-- === DEVOPS DATA END === -->
