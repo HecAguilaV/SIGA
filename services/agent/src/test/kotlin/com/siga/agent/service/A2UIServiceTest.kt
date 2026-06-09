@@ -111,11 +111,11 @@ class A2UIServiceTest {
     fun `Tier 1 timeout triggers fallback to Tier 2`() {
         // Simulate Gemini timeout by returning a slow Mono
         every { geminiEngine.generateSurface(any(), any()) } returns Mono.just(testSurface)
-            .delayElement(Duration.ofSeconds(20)) // exceeds 15s tier timeout
+            .delayElement(Duration.ofSeconds(35)) // exceeds 30s tier timeout
         every { fallbackEngine.generateSurface(any(), any()) } returns testSurface
 
         val request = A2UIv0Request(prompt = "stock de leche")
-        val result = service.generateSurface(request).block(Duration.ofSeconds(30))
+        val result = service.generateSurface(request).block(Duration.ofSeconds(60))
 
         assertNotNull(result)
         assertEquals("fallback-engine", result!!.provenance)
