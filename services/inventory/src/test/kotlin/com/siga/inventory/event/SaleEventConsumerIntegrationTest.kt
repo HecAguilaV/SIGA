@@ -51,7 +51,7 @@ class SaleEventConsumerIntegrationTest : DescribeSpec() {
                 )
             )
             val stock = stockRepository.save(
-                Stock(productId = product.id!!, storeId = tenantId, quantity = 10)
+                Stock(id = UUID.randomUUID(), productId = product.id!!, storeId = tenantId, quantity = 10)
             )
 
             val event = SaleEvent(
