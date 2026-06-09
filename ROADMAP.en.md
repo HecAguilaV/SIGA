@@ -49,17 +49,22 @@
 | **May 2026** | **SAGA con Kafka**: Venta → Stock (coreografía) + BillingInvoiceConsumer | ✅ |
 | **May 2026** | **Consolidación**: single frontend, billing solo SaaS, directorios legacy eliminados | ✅ |
 | **May 2026** | **Este roadmap** creado como guía única de desarrollo | ✅ |
+| **Jun 2026** | **Massive test fix**: 672 tests passing across all services | ✅ |
+| **Jun 2026** | **Notification microservice**: async email via Kafka (SMTP + templates) | ✅ |
+| **Jun 2026** | **Real JaCoCo**: 74% instructions (was 46.5% stale/hardcoded) | ✅ |
+| **Jun 2026** | **Test fixes**: Sales (133), Billing (33), Agent (64), Inventory (237) | ✅ |
 
-### 🟠 HOY — Estado Actual (Mayo 2026)
+### 🟠 HOY — Estado Actual (June 2026)
 
 ```
-Backend:    ✅ Hexagonal completo · 300+ tests · Kafka SAGA · API Gateway
+Backend:    ✅ Hexagonal completo · 672 tests · Kafka SAGA · API Gateway
 Frontend:   ✅ SvelteKit 5 (apps/dashboard/) · BFF nativo · A2UI v0.9
-Auth:       ✅ JWT · BCrypt · dual login (Customer/User) · tenant-scoped CRUD
-Billing:    ✅ Planes · Suscripciones · Pagos (SOLO SaaS de SIGA)
-Inventory:  ✅ Stock consolidado · Auto-SKU · Búsqueda · Transferencias
-Sales:      ✅ POS backend · SAGA con Inventory · SaleInvoice event
-Agent:      ✅ Gemini 2.5 Flash · A2UI v0.9 · pgvector
+Auth:       ✅ JWT · BCrypt · dual login (Customer/User) · tenant-scoped CRUD · 189 tests
+Billing:    ✅ Planes · Suscripciones · Pagos (SOLO SaaS de SIGA) · 33 tests · 20% coverage
+Inventory:  ✅ Stock consolidado · Auto-SKU · Búsqueda · Transferencias · 237 tests
+Sales:      ✅ POS backend · SAGA con Inventory · SaleInvoice event · 134 tests · 65% coverage
+Agent:      ✅ Gemini 2.5 Flash · A2UI v0.9 · pgvector · 64 tests · 81% coverage
+Notification: ✅ Async email via Kafka · SMTP with retries · templates · 15 tests · 88% coverage
 Roles:      ⚠️ Solo ADMINISTRATOR, OPERATOR, CASHIER, EMPLOYEE — falta GODADMIN y SUPER_ADMIN
 Dashboard:  ⚠️ Falta /(platform)/ para admin de SIGA
 POS UI:     ❌ No existe como interfaz de usuario
@@ -126,8 +131,10 @@ Completar la UI que el cliente PYME ve.
 | Tarea | Detalle | Estado |
 |-------|---------|--------|
 | JaCoCo coverage unificado | Reporte agregado de todos los servicios | ✅ |
-| Subir cobertura billing + sales | Billing 33 tests, Sales 103 tests — cubrir más | 📋 |
-| Tests de SAGA con Embedded Kafka | Tests de integración de eventos | 📋 |
+| Subir cobertura billing + sales | Sales 134 tests, Billing 33 tests — cubrir más | 🚧 |
+| Tests de SAGA con Embedded Kafka | Tests de integración de eventos | ✅ |
+| Tests de todos los servicios | 672 tests pasando en todos los servicios | ✅ |
+| Cobertura real 74% | Antes 46.5% stale hardcodeado — ahora dato real | ✅ |
 | GitHub Actions CI | Build + test + coverage en cada push | 📋 |
 | Contenerización completa | docker-compose funcional para todo el stack | ✅ |
 
@@ -215,11 +222,15 @@ Completar la UI que el cliente PYME ve.
 
 | Métrica | Actual | Objetivo MVP |
 |---------|--------|--------------|
-| Tests totales | 300+ | 500+ |
-| Cobertura auth | 80.9% | 85% |
-| Cobertura billing | ~40% | 75% |
-| Cobertura inventory | ~70% | 80% |
-| Cobertura sales | ~60% | 80% |
+| Tests totales | 672 | 500+ |
+| Cobertura global (instrucciones) | 74% | 85% |
+| Cobertura auth | 76% | 85% |
+| Cobertura billing | 20% | 75% |
+| Cobertura inventory (paquetes) | 95-100% | 80% |
+| Cobertura aggregate inventory | 20% ⚠️ | 80% |
+| Cobertura sales | 65% | 80% |
+| Cobertura agent | 81% | 85% |
+| Cobertura notification | 88% | 85% |
 | Frontend rutas implementadas | ~60% | 100% |
 | Roles implementados | 4/6 | 6/6 |
 | Servicios cloud | 0 | Todos en AWS |
