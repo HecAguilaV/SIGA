@@ -1,16 +1,25 @@
 package com.siga.agent.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.Assertions.assertEquals
+import com.siga.agent.model.A2UIComponent
+import com.siga.agent.model.A2UILayout
+import com.siga.agent.model.A2UIv0Request
+import com.siga.agent.service.A2UIEnvelopeResponse
+import com.siga.agent.service.A2UIService
+import com.siga.agent.service.SurfaceEnvelope
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.http.MediaType
-import java.time.Duration
+import reactor.core.publisher.Mono
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -20,7 +29,6 @@ class ChatControllerTest {
     private var port: Int = 0
 
     private lateinit var webTestClient: WebTestClient
-    private val mapper = ObjectMapper()
 
     @BeforeEach
     fun setUp() {
@@ -124,5 +132,29 @@ class ChatControllerTest {
             .exchange()
             .expectStatus().isOk
             .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+    }
+
+    @TestConfiguration
+    class MockA2UIServiceConfig {
+
+        @Bean
+        @Primary
+        fun a2uiService(): A2UIService {
+            val mock = mockk<A2UIService>()
+            val mockResponse = A2UIEnvelopeResponse(
+                surfaceId = "surf-test",
+                surface = SurfaceEnvelope(
+                    type = "createSurface",
+                    surfaceId = "surf-test",
+                    components = listOf(
+                        A2UIComponent(type = "stat-card", props = mapOf("label" to "Test"))
+                    ),
+                    layout = A2UILayout(layout = "grid", columns = 2)
+                ),
+                provenance = "gemini"
+            )
+            every { mock.generateSurface(any()) } returns Mono.just(mockResponse)
+            return mock
+        }
     }
 }
