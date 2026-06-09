@@ -21,7 +21,8 @@ class StockEventConsumerTest : DescribeSpec({
 
     val saleRepositoryPort = mockk<SaleRepositoryPort>()
     val processedEventRepository = mockk<ProcessedEventRepository>()
-    val consumer = StockEventConsumer(saleRepositoryPort, processedEventRepository)
+    val saleCompletedEventProducer = mockk<SaleCompletedEventProducer>(relaxed = true)
+    val consumer = StockEventConsumer(saleRepositoryPort, processedEventRepository, saleCompletedEventProducer)
 
     beforeEach {
         clearAllMocks()

@@ -53,8 +53,6 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
-
-eureka:
   instance:
     hostname: siga-billing
     prefer-ip-address: false
