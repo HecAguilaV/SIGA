@@ -78,8 +78,14 @@ function getFrontendCoverage() {
 // Obtener estado de los contenedores Docker
 function getDockerStatus() {
   const containerNames = [
-    'siga-auth', 'siga-inventory', 'siga-sales', 'siga-agent', 
-    'siga-billing', 'siga-gateway', 'siga-registry', 'containerflow'
+    { key: 'siga-auth', dockerName: 'siga-auth' },
+    { key: 'siga-inventory', dockerName: 'siga-inventory' },
+    { key: 'siga-sales', dockerName: 'siga-sales' },
+    { key: 'siga-agent', dockerName: 'siga-agent' },
+    { key: 'siga-billing', dockerName: 'siga-billing' },
+    { key: 'siga-gateway', dockerName: 'siga-gateway' },
+    { key: 'siga-registry', dockerName: 'siga-eureka' },
+    { key: 'containerflow', dockerName: 'siga-ops' }
   ];
   
   try {
@@ -89,17 +95,17 @@ function getDockerStatus() {
       const [name, status] = line.split(':');
       if (name) {
         // Encontrar coincidencia parcial de nombres
-        containerNames.forEach(cName => {
-          if (name.includes(cName)) {
-            activeContainers[cName] = status.toLowerCase().includes('up') ? 'running' : 'stopped';
+        containerNames.forEach(c => {
+          if (name.includes(c.dockerName)) {
+            activeContainers[c.key] = status.toLowerCase().includes('up') ? 'running' : 'stopped';
           }
         });
       }
     });
 
-    const containers = containerNames.map(name => ({
-      name,
-      status: activeContainers[name] || 'offline'
+    const containers = containerNames.map(c => ({
+      name: c.key,
+      status: activeContainers[c.key] || 'offline'
     }));
 
     return {
@@ -109,7 +115,7 @@ function getDockerStatus() {
   } catch (e) {
     return {
       status: 'offline',
-      containers: containerNames.map(name => ({ name, status: 'offline' }))
+      containers: containerNames.map(c => ({ name: c.key, status: 'offline' }))
     };
   }
 }
@@ -118,8 +124,10 @@ function getDockerStatus() {
 function getSecurityAudits() {
   let semgrepCount = 0;
   let semgrepStatus = 'unknown';
+  let semgrepFindings = [];
   let gitleaksCount = 0;
   let gitleaksStatus = 'unknown';
+  let gitleaksFindings = [];
 
   const semgrepReportPath = path.join(ROOT_DIR, 'build/reports/security/semgrep.json');
   const gitleaksReportPath = path.join(ROOT_DIR, 'build/reports/security/gitleaks.json');
@@ -129,6 +137,15 @@ function getSecurityAudits() {
       const semgrepData = JSON.parse(fs.readFileSync(semgrepReportPath, 'utf8'));
       semgrepCount = semgrepData.results ? semgrepData.results.length : 0;
       semgrepStatus = semgrepCount === 0 ? 'success' : 'warning';
+      if (semgrepData.results) {
+        semgrepFindings = semgrepData.results.map(r => ({
+          rule: r.check_id,
+          path: r.path,
+          line: r.start ? r.start.line : 0,
+          message: r.extra ? r.extra.message.trim() : '',
+          severity: r.extra ? r.extra.severity : 'INFO'
+        }));
+      }
     } else {
       // Intento rápido de ver si semgrep está configurado, si no reportamos desconocido
       semgrepStatus = 'pending';
@@ -142,6 +159,20 @@ function getSecurityAudits() {
       const gitleaksData = JSON.parse(fs.readFileSync(gitleaksReportPath, 'utf8'));
       gitleaksCount = Array.isArray(gitleaksData) ? gitleaksData.length : 0;
       gitleaksStatus = gitleaksCount === 0 ? 'success' : 'danger';
+      if (Array.isArray(gitleaksData)) {
+        gitleaksFindings = gitleaksData.map(l => {
+          let cleanMatch = l.Match || '';
+          if (l.Secret && cleanMatch.includes(l.Secret)) {
+            cleanMatch = cleanMatch.replace(l.Secret, '[REDACCIONADO]');
+          }
+          return {
+            rule: l.RuleID || l.Description || 'generic',
+            path: l.File || '',
+            line: l.StartLine || 0,
+            match: cleanMatch
+          };
+        });
+      }
     } else {
       gitleaksStatus = 'pending';
     }
@@ -150,8 +181,8 @@ function getSecurityAudits() {
   }
 
   return {
-    semgrep: { status: semgrepStatus, count: semgrepCount, lastRun: new Date().toISOString() },
-    gitleaks: { status: gitleaksStatus, count: gitleaksCount, lastRun: new Date().toISOString() }
+    semgrep: { status: semgrepStatus, count: semgrepCount, lastRun: new Date().toISOString(), findings: semgrepFindings },
+    gitleaks: { status: gitleaksStatus, count: gitleaksCount, lastRun: new Date().toISOString(), findings: gitleaksFindings }
   };
 }
 
