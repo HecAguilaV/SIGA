@@ -1,4 +1,4 @@
-<script lang="ts" generics="T extends Record<string, unknown>">
+<script lang="ts" generics="T">
 	import Skeleton from '@siga/ui-kit/Skeleton.svelte';
 	import Spinner from '@siga/ui-kit/Spinner.svelte';
 	import Button from '@siga/ui-kit/Button.svelte';
@@ -8,21 +8,7 @@
 	import CaretLeft from 'phosphor-svelte/lib/CaretLeft';
 	import CaretRight from 'phosphor-svelte/lib/CaretRight';
 	import ArrowsDownUp from 'phosphor-svelte/lib/ArrowsDownUp';
-
-	export interface ColumnDef<T> {
-		key: string;
-		label: string;
-		sortable?: boolean;
-		render?: (item: T) => string;
-		class?: string;
-	}
-
-	export interface ActionDef {
-		label: string;
-		variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
-		icon?: string;
-		onClick: (item: T) => void;
-	}
+	import type { ColumnDef, ActionDef } from './types';
 
 	let {
 		columns = [] as ColumnDef<T>[],
@@ -54,7 +40,7 @@
 
 	function getCellValue(item: T, col: ColumnDef<T>): string {
 		if (col.render) return col.render(item);
-		const val = item[col.key];
+		const val = (item as any)[col.key];
 		return val != null ? String(val) : '';
 	}
 

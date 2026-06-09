@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/svelte';
-import CrudForm from '../../../../src/lib/components/crud/CrudForm.svelte';
-import type { FieldDef } from '../../../../src/lib/components/crud/CrudForm.svelte';
+import CrudForm from '$lib/components/crud/CrudForm.svelte';
+import type { FieldDef } from '$lib/components/crud/types';
 
 describe('CrudForm', () => {
 	const fields: FieldDef<any>[] = [

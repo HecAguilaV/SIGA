@@ -17,7 +17,7 @@ import type { A2UIComponent } from '../../../../src/lib/types/a2ui';
 vi.mock('chart.js', () => {
 	const destroyMock = vi.fn();
 	const updateMock = vi.fn();
-	const Chart = vi.fn().mockImplementation(function (
+	const Chart: any = vi.fn().mockImplementation(function (
 		this: { destroy: typeof destroyMock; update: typeof updateMock; config: { type: string } },
 		_ctx: unknown,
 		config: { type: string }

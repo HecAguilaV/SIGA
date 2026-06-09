@@ -71,7 +71,7 @@
 		border-radius: var(--radius-md);
 		border: 1px solid var(--color-accent);
 		background: var(--color-accent);
-		color: #fff;
+		color: var(--color-primary);
 		cursor: pointer;
 		transition: all var(--transition-fast);
 		white-space: nowrap;

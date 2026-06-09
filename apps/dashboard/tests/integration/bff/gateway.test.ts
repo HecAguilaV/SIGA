@@ -20,7 +20,7 @@ function createMockCookies() {
 function createMockEvent(cookies: ReturnType<typeof createMockCookies>, pathname = '/dashboard') {
 	return {
 		request: new Request(`http://localhost:5173${pathname}`),
-		cookies,
+		cookies: cookies as any,
 		url: new URL(`http://localhost:5173${pathname}`)
 	};
 }

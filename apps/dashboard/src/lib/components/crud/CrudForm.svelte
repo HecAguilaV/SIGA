@@ -1,16 +1,7 @@
-<script lang="ts" generics="T extends Record<string, unknown>>">
+<script lang="ts" generics="T">
 	import Button from '@siga/ui-kit/Button.svelte';
 	import Input from '@siga/ui-kit/Input.svelte';
-
-	export interface FieldDef<T> {
-		key: string;
-		label: string;
-		type: 'text' | 'number' | 'email' | 'select' | 'textarea' | 'password';
-		options?: { value: string; label: string }[];
-		required?: boolean;
-		placeholder?: string;
-		validate?: (value: string) => string | undefined;
-	}
+	import type { FieldDef } from './types';
 
 	let {
 		fields = [] as FieldDef<T>[],

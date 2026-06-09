@@ -33,7 +33,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const { pathname } = event.url;
 
 	// ── 1. Rutas públicas ──
-	if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
+	const isPublic = pathname === '/' || PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+	if (isPublic) {
 		return resolve(event);
 	}
 
@@ -110,6 +111,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 };
 
 function redirectToLogin(event: Parameters<Handle>[0]['event']): Response {
-	const redirectTo = event.url.pathname + event.url.search;
+	let redirectTo = event.url.pathname + event.url.search;
+	if (redirectTo === '/') redirectTo = '/dashboard';
 	throw redirect(303, `/login?redirect=${encodeURIComponent(redirectTo)}`);
 }

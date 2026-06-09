@@ -79,29 +79,33 @@
 
 	/* Variants */
 	.btn-primary {
-		background: var(--color-accent);
+		background: var(--color-primary);
 		color: #fff;
-		border-color: var(--color-accent);
+		border-color: var(--color-primary);
 	}
 
 	.btn-primary:hover:not(:disabled) {
+		background: var(--color-primary-hover);
+		border-color: var(--color-primary-hover);
+	}
+
+	.btn-primary:active:not(:disabled) {
+		background: var(--color-primary-dark);
+	}
+
+	.btn-secondary {
+		background: var(--color-accent);
+		color: var(--color-primary);
+		border-color: var(--color-accent);
+	}
+
+	.btn-secondary:hover:not(:disabled) {
 		background: var(--color-accent-hover);
 		border-color: var(--color-accent-hover);
 	}
 
-	.btn-primary:active:not(:disabled) {
+	.btn-secondary:active:not(:disabled) {
 		background: var(--color-accent-dark);
-	}
-
-	.btn-secondary {
-		background: var(--color-surface);
-		color: var(--color-text);
-		border-color: var(--color-border);
-	}
-
-	.btn-secondary:hover:not(:disabled) {
-		background: var(--color-surface-hover);
-		border-color: var(--color-accent);
 	}
 
 	.btn-ghost {

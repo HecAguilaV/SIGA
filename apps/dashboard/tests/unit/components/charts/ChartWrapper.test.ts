@@ -6,7 +6,7 @@ import ChartWrapper from '$lib/components/charts/ChartWrapper.svelte';
 vi.mock('chart.js', () => {
 	const destroyMock = vi.fn();
 	const updateMock = vi.fn();
-	const Chart = vi.fn().mockImplementation(function (
+	const Chart: any = vi.fn().mockImplementation(function (
 		this: { destroy: typeof destroyMock; update: typeof updateMock; config: { type: string }; data: unknown; options: unknown },
 		_ctx: unknown,
 		config: { type: string; data: unknown; options: unknown }
@@ -73,6 +73,7 @@ describe('ChartWrapper', () => {
 
 	it('recreates chart on type change', async () => {
 		const { Chart } = await import('chart.js');
+		const mockChart = Chart as any;
 
 		const { rerender } = render(ChartWrapper, {
 			props: { type: 'bar', data: mockData, loading: false }
@@ -84,10 +85,10 @@ describe('ChartWrapper', () => {
 		});
 
 		// Verify the last chart was created with bar type
-		const barCalls = Chart.mock.calls.filter(c => c[1]?.type === 'bar');
+		const barCalls = mockChart.mock.calls.filter((c: any) => c[1]?.type === 'bar');
 		expect(barCalls.length).toBeGreaterThan(0);
 
-		const callsBeforeRerender = Chart.mock.calls.length;
+		const callsBeforeRerender = mockChart.mock.calls.length;
 
 		rerender({
 			type: 'line',
@@ -97,7 +98,7 @@ describe('ChartWrapper', () => {
 
 		// After rerender, chart should be re-created with new type
 		await waitFor(() => {
-			const lineCalls = Chart.mock.calls.slice(callsBeforeRerender).filter(c => c[1]?.type === 'line');
+			const lineCalls = mockChart.mock.calls.slice(callsBeforeRerender).filter((c: any) => c[1]?.type === 'line');
 			expect(lineCalls.length).toBeGreaterThan(0);
 		});
 	});

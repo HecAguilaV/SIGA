@@ -8,6 +8,8 @@
 		error?: string;
 		email?: string;
 		missing?: string;
+		success?: boolean;
+		redirectTo?: string;
 	};
 
 	let {

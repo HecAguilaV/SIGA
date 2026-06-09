@@ -1,38 +1,34 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { user } from '$lib/stores/auth.svelte';
+	import { ui } from '$lib/stores/ui.svelte';
 	import { fly } from 'svelte/transition';
 
 	// Phosphor icons
 	import Gauge from 'phosphor-svelte/lib/Gauge';
 	import Package from 'phosphor-svelte/lib/Package';
 	import Storefront from 'phosphor-svelte/lib/Storefront';
-	import Tag from 'phosphor-svelte/lib/Tag';
-	import Users from 'phosphor-svelte/lib/Users';
-	import ChartBar from 'phosphor-svelte/lib/ChartBar';
-	import ChatCircle from 'phosphor-svelte/lib/ChatCircle';
 	import CreditCard from 'phosphor-svelte/lib/CreditCard';
+	import ChartBar from 'phosphor-svelte/lib/ChartBar';
+	import Gear from 'phosphor-svelte/lib/Gear';
 	import SignOut from 'phosphor-svelte/lib/SignOut';
 	import CaretLeft from 'phosphor-svelte/lib/CaretLeft';
 	import CaretRight from 'phosphor-svelte/lib/CaretRight';
-	import UserCircle from 'phosphor-svelte/lib/UserCircle';
 
 	interface NavItem {
 		label: string;
 		href: string;
-		icon: typeof Gauge;
+		icon: any;
 		roles: string[];
 	}
 
 	const allNavItems: NavItem[] = [
-		{ label: 'Dashboard', href: '/', icon: Gauge, roles: ['ADMINISTRATOR', 'OPERATOR', 'CASHIER'] },
-		{ label: 'Productos', href: '/products', icon: Package, roles: ['ADMINISTRATOR', 'OPERATOR'] },
+		{ label: 'Inicio', href: '/dashboard', icon: Gauge, roles: ['ADMINISTRATOR', 'OPERATOR', 'CASHIER'] },
+		{ label: 'Inventario', href: '/products', icon: Package, roles: ['ADMINISTRATOR', 'OPERATOR'] },
 		{ label: 'Locales', href: '/stores', icon: Storefront, roles: ['ADMINISTRATOR', 'OPERATOR'] },
-		{ label: 'Categorías', href: '/categories', icon: Tag, roles: ['ADMINISTRATOR', 'OPERATOR'] },
-		{ label: 'Usuarios', href: '/users', icon: Users, roles: ['ADMINISTRATOR'] },
-		{ label: 'Analíticas', href: '/analytics', icon: ChartBar, roles: ['ADMINISTRATOR', 'OPERATOR'] },
-		{ label: 'Asistente', href: '/assistant', icon: ChatCircle, roles: ['ADMINISTRATOR', 'OPERATOR', 'CASHIER'] },
-		{ label: 'POS', href: '/pos', icon: CreditCard, roles: ['CASHIER'] }
+		{ label: 'POS', href: '/pos', icon: CreditCard, roles: ['CASHIER'] },
+		{ label: 'Reportes', href: '/analytics', icon: ChartBar, roles: ['ADMINISTRATOR', 'OPERATOR'] },
+		{ label: 'Configuración', href: '/users', icon: Gear, roles: ['ADMINISTRATOR'] }
 	];
 
 	let collapsed = $state(false);
@@ -40,8 +36,6 @@
 	const currentPath = $derived($page.url.pathname);
 	const currentUser = $derived($user);
 	const userRole = $derived(currentUser?.rol ?? '');
-	const userName = $derived(currentUser?.name ?? 'Usuario');
-	const userEmail = $derived(currentUser?.email ?? '');
 
 	const visibleItems = $derived(
 		allNavItems.filter((item) => item.roles.length === 0 || item.roles.includes(userRole))
@@ -59,10 +53,11 @@
 
 <aside class="sidebar" class:collapsed>
 	<div class="sidebar-header">
-		<div class="logo-area">
-			<span class="logo-icon">S</span>
-			{#if !collapsed}
-				<span class="logo-text" transition:fly={{ x: -8, duration: 150 }}>SIGA</span>
+		<div class="logo-area" class:logo-area-collapsed={collapsed}>
+			{#if collapsed}
+				<img src="/S.png" alt="S" class="logo-icon-img" transition:fly={{ x: 8, duration: 150 }} />
+			{:else}
+				<img src="/Logo_SIGA.png" alt="SIGA" class="logo-full-img" transition:fly={{ x: -8, duration: 150 }} />
 			{/if}
 		</div>
 		<button
@@ -79,9 +74,24 @@
 		</button>
 	</div>
 
+	<!-- Botón Acción Principal: Nuevo Movimiento -->
+	<div class="sidebar-action">
+		{#if !collapsed}
+			<button class="action-btn" onclick={() => ui.openNewMovement()} type="button">
+				<span class="action-icon-plus">+</span>
+				<span class="action-text">Nuevo Movimiento</span>
+			</button>
+		{:else}
+			<button class="action-btn collapsed-action" onclick={() => ui.openNewMovement()} type="button" aria-label="Nuevo Movimiento">
+				<span class="action-icon-plus">+</span>
+			</button>
+		{/if}
+	</div>
+
 	<nav class="sidebar-nav" aria-label="Navegación principal">
 		<ul>
 			{#each visibleItems as item}
+				{@const Icon = item.icon}
 				<li>
 					<a
 						href={item.href}
@@ -90,23 +100,7 @@
 						aria-current={isActive(item.href) ? 'page' : undefined}
 					>
 						<span class="nav-icon">
-							{#if item.icon === Gauge}
-								<Gauge size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{:else if item.icon === Package}
-								<Package size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{:else if item.icon === Storefront}
-								<Storefront size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{:else if item.icon === Tag}
-								<Tag size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{:else if item.icon === Users}
-								<Users size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{:else if item.icon === ChartBar}
-								<ChartBar size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{:else if item.icon === ChatCircle}
-								<ChatCircle size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{:else if item.icon === CreditCard}
-								<CreditCard size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
-							{/if}
+							<Icon size={20} weight={isActive(item.href) ? 'fill' : 'regular'} />
 						</span>
 						{#if !collapsed}
 							<span class="nav-label">{item.label}</span>
@@ -118,32 +112,25 @@
 	</nav>
 
 	<div class="sidebar-footer">
-		<div class="user-menu">
-			<div class="user-avatar">
-				<UserCircle size={24} weight="fill" />
-			</div>
-			{#if !collapsed}
-				<div class="user-info">
-					<span class="user-name">{userName}</span>
-					<span class="user-role">{userRole}</span>
-				</div>
-			{/if}
-			<form action="/logout" method="POST" class="logout-form">
-				<button type="submit" class="logout-btn" aria-label="Cerrar sesión">
-					<SignOut size={20} weight="regular" />
-				</button>
-			</form>
-		</div>
+		<form action="/logout" method="POST" class="logout-form">
+			<button type="submit" class="logout-btn" class:collapsed-logout={collapsed}>
+				<SignOut size={20} weight="regular" />
+				{#if !collapsed}
+					<span class="logout-text">Cerrar Sesión</span>
+				{/if}
+			</button>
+		</form>
 	</div>
 </aside>
 
 <style>
 	.sidebar {
-		width: 240px;
-		min-width: 240px;
+		width: var(--w-sidebar-width);
+		min-width: var(--w-sidebar-width);
 		height: 100vh;
 		background: var(--color-surface);
-		border-right: 1px solid var(--color-border);
+		box-shadow: 2px 0 8px rgba(15, 23, 42, 0.04);
+		border-right: 1px solid var(--color-border-light);
 		display: flex;
 		flex-direction: column;
 		transition: width var(--transition-base), min-width var(--transition-base);
@@ -153,8 +140,8 @@
 	}
 
 	.sidebar.collapsed {
-		width: 64px;
-		min-width: 64px;
+		width: var(--w-sidebar-collapsed-width);
+		min-width: var(--w-sidebar-collapsed-width);
 	}
 
 	.sidebar-header {
@@ -169,29 +156,25 @@
 	.logo-area {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-sm);
+		height: 36px;
 		overflow: hidden;
 	}
 
-	.logo-icon {
-		display: inline-flex;
-		align-items: center;
+	.logo-area-collapsed {
 		justify-content: center;
-		width: 32px;
-		height: 32px;
-		background: var(--color-accent);
-		color: #fff;
-		border-radius: var(--radius-md);
-		font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-lg);
-		flex-shrink: 0;
+		width: 100%;
 	}
 
-	.logo-text {
-		font-size: var(--font-size-lg);
-		font-weight: var(--font-weight-bold);
-		color: var(--color-text);
-		white-space: nowrap;
+	.logo-icon-img {
+		width: 28px;
+		height: 28px;
+		object-fit: contain;
+	}
+
+	.logo-full-img {
+		height: 28px;
+		object-fit: contain;
+		max-width: 120px;
 	}
 
 	.collapse-btn {
@@ -214,6 +197,51 @@
 		color: var(--color-text);
 	}
 
+	.sidebar-action {
+		padding: var(--spacing-md);
+		display: flex;
+		justify-content: center;
+	}
+
+	.action-btn {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--spacing-sm);
+		padding: 10px 16px;
+		background: var(--color-primary);
+		color: #fff;
+		border: none;
+		border-radius: var(--radius-md);
+		font-weight: var(--font-weight-semibold);
+		font-size: var(--font-size-sm);
+		cursor: pointer;
+		transition: background var(--transition-fast), transform var(--transition-fast);
+	}
+
+	.action-btn:hover {
+		background: var(--color-primary-hover);
+		transform: translateY(-1px);
+	}
+
+	.action-btn:active {
+		transform: translateY(0);
+	}
+
+	.action-icon-plus {
+		font-size: var(--font-size-lg);
+		line-height: 1;
+		font-weight: var(--font-weight-bold);
+	}
+
+	.collapsed-action {
+		width: 40px;
+		height: 40px;
+		padding: 0;
+		border-radius: 50%;
+	}
+
 	.sidebar-nav {
 		flex: 1;
 		padding: var(--spacing-sm);
@@ -223,7 +251,7 @@
 	.sidebar-nav ul {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 4px;
 	}
 
 	.nav-item {
@@ -239,6 +267,7 @@
 		transition: all var(--transition-fast);
 		white-space: nowrap;
 		overflow: hidden;
+		position: relative;
 	}
 
 	.nav-item:hover {
@@ -247,9 +276,20 @@
 	}
 
 	.nav-item.active {
-		background: var(--color-accent-light);
-		color: var(--color-accent);
+		background: var(--color-primary-light);
+		color: var(--color-primary);
 		font-weight: var(--font-weight-semibold);
+	}
+
+	.nav-item.active::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 20%;
+		height: 60%;
+		width: 4px;
+		background-color: var(--color-primary);
+		border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 	}
 
 	.nav-icon {
@@ -271,72 +311,39 @@
 		padding: var(--spacing-sm);
 	}
 
-	.user-menu {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
-		padding: 8px;
-		border-radius: var(--radius-md);
-		transition: background var(--transition-fast);
-	}
-
-	.user-menu:hover {
-		background: var(--color-bg-alt);
-	}
-
-	.user-avatar {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-		color: var(--color-accent);
-	}
-
-	.user-info {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
-		min-width: 0;
-	}
-
-	.user-name {
-		font-size: var(--font-size-sm);
-		font-weight: var(--font-weight-semibold);
-		color: var(--color-text);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.user-role {
-		font-size: var(--font-size-xs);
-		color: var(--color-text-muted);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
 	.logout-form {
-		flex-shrink: 0;
+		width: 100%;
 	}
 
 	.logout-btn {
-		display: inline-flex;
+		width: 100%;
+		display: flex;
 		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
+		gap: var(--spacing-sm);
+		padding: 10px 12px;
 		border: none;
 		background: transparent;
 		color: var(--color-text-muted);
-		border-radius: var(--radius-sm);
+		border-radius: var(--radius-md);
 		cursor: pointer;
+		font-size: var(--font-size-sm);
+		font-weight: var(--font-weight-medium);
 		transition: all var(--transition-fast);
 	}
 
 	.logout-btn:hover {
 		background: var(--color-error-bg);
 		color: var(--color-error);
+	}
+
+	.collapsed-logout {
+		justify-content: center;
+		padding: 10px 0;
+	}
+
+	.logout-text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 </style>

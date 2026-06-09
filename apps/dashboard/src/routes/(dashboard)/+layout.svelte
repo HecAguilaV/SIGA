@@ -2,6 +2,7 @@
 	import '../../app.css';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import Header from '$lib/components/layout/Header.svelte';
+	import NewMovementModal from '$lib/components/dashboard/NewMovementModal.svelte';
 	import ContextualAssistant from '$lib/components/a2ui/ContextualAssistant.svelte';
 	import A2UIRenderer from '$lib/components/a2ui/A2UIRenderer.svelte';
 	import { a2ui } from '$lib/stores/a2ui.svelte';
@@ -9,7 +10,7 @@
 	import type { LayoutData } from './$types';
 
 	let { children, data }: {
-		children?: import('svelte').Snippet;
+		children: import('svelte').Snippet;
 		data: LayoutData;
 	} = $props();
 
@@ -51,6 +52,8 @@
 		currentRoute={currentRoute}
 	/>
 {/if}
+
+<NewMovementModal />
 
 <style>
 	.app-shell {

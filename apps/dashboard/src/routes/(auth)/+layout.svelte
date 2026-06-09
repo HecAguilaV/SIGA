@@ -4,7 +4,7 @@
 	import Sun from 'phosphor-svelte/lib/Sun';
 	import Moon from 'phosphor-svelte/lib/Moon';
 
-	let { children }: { children?: import('svelte').Snippet } = $props();
+	let { children }: { children: import('svelte').Snippet } = $props();
 
 	function handleToggle() {
 		theme.toggle();
