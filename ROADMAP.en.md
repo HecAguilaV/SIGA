@@ -60,7 +60,7 @@
 Backend:    ✅ Hexagonal completo · 672 tests · Kafka SAGA · API Gateway
 Frontend:   ✅ SvelteKit 5 (apps/dashboard/) · BFF nativo · A2UI v0.9
 Auth:       ✅ JWT · BCrypt · dual login (Customer/User) · tenant-scoped CRUD · 189 tests
-Billing:    ✅ Planes · Suscripciones · Pagos (SOLO SaaS de SIGA) · 33 tests · 20% coverage
+Billing:    ✅ Planes · Suscripciones · Pagos (SOLO SaaS de SIGA) · 217 tests · 86% coverage
 Inventory:  ✅ Stock consolidado · Auto-SKU · Búsqueda · Transferencias · 237 tests
 Sales:      ✅ POS backend · SAGA con Inventory · SaleInvoice event · 134 tests · 65% coverage
 Agent:      ✅ Gemini 2.5 Flash · A2UI v0.9 · pgvector · 64 tests · 81% coverage
@@ -225,7 +225,7 @@ Completar la UI que el cliente PYME ve.
 | Tests totales | 672 | 500+ |
 | Cobertura global (instrucciones) | 74% | 85% |
 | Cobertura auth | 76% | 85% |
-| Cobertura billing | 20% | 75% |
+| Cobertura billing | 86% ✅ | 75% |
 | Cobertura inventory (paquetes) | 95-100% | 80% |
 | Cobertura aggregate inventory | 20% ⚠️ | 80% |
 | Cobertura sales | 65% | 80% |
