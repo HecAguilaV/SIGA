@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.serializer.JsonSerializer
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.kafka.test.EmbeddedKafkaBroker
+import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.time.Instant
@@ -31,8 +32,11 @@ import java.util.UUID
  * 4. The sale status is updated to COMPLETED/CANCELLED
  *
  * No Docker required — uses @EmbeddedKafka from spring-kafka-test.
+ *
+ * Allows bean definition overriding so the test's KafkaTemplate (wired to
+ * the embedded broker) takes precedence over the production KafkaConfig bean.
  */
-@SpringBootTest
+@SpringBootTest(properties = ["spring.main.allow-bean-definition-overriding=true"])
 @EmbeddedKafka(
     topics = ["stock-events"],
     partitions = 1
@@ -46,9 +50,6 @@ class StockEventConsumerIntegrationTest : DescribeSpec() {
     @Autowired
     private lateinit var kafkaTemplate: KafkaTemplate<String, Any>
 
-    /**
-     * Test configuration that creates a KafkaTemplate wired to the embedded broker.
-     */
     @TestConfiguration
     class KafkaTestConfig {
         @Bean

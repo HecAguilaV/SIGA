@@ -1,6 +1,7 @@
 package com.siga.inventory
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.siga.inventory.application.usecase.CreateProductRequest
 import com.siga.inventory.entity.Product
 import com.siga.inventory.event.StockEventProducer
 import io.kotest.core.spec.style.DescribeSpec
@@ -51,21 +52,18 @@ class InventoryFlowIntegrationTest : DescribeSpec() {
         describe("Inventory product HTTP flow") {
 
             it("POST /api/v1/inventory/products creates a product and returns 201") {
-                val productId = UUID.randomUUID()
-                val product = Product(
-                    id = productId,
+                val request = CreateProductRequest(
                     name = "Test Laptop",
-                    description = "A test laptop",
+                    sku = null,
                     categoryId = UUID.randomUUID(),
+                    categoryName = null,
+                    description = "A test laptop",
+                    unitType = null,
                     barcode = "INV-FLOW-001",
-                    unitPrice = BigDecimal("1200.00"),
-                    isActive = true,
-                    commercialUserId = UUID.randomUUID(),
-                    createdAt = Instant.now(),
-                    updatedAt = Instant.now()
+                    force = true
                 )
 
-                val requestJson = objectMapper.writeValueAsString(product)
+                val requestJson = objectMapper.writeValueAsString(request)
 
                 mockMvc.perform(
                     post("/api/v1/inventory/products")
@@ -74,20 +72,23 @@ class InventoryFlowIntegrationTest : DescribeSpec() {
                 )
                     .andExpect(status().isCreated)
                     .andExpect(jsonPath("$.name").value("Test Laptop"))
-                    .andExpect(jsonPath("$.barcode").value("INV-FLOW-001"))
-                    .andExpect(jsonPath("$.unitPrice").value(1200.00))
-                    .andExpect(jsonPath("$.id").isNotEmpty)
+                    .andExpect(jsonPath("$.productId").isNotEmpty)
+                    .andExpect(jsonPath("$.status").value("ACTIVE"))
             }
 
             it("GET /api/v1/inventory/products returns all products") {
                 // Create a product first
-                val product = Product(
-                    id = UUID.randomUUID(), name = "List Test", description = null,
-                    categoryId = null, barcode = "LIST-001",
-                    unitPrice = BigDecimal("50.00"), isActive = true,
-                    commercialUserId = null, createdAt = Instant.now(), updatedAt = Instant.now()
+                val request = CreateProductRequest(
+                    name = "List Test",
+                    sku = null,
+                    categoryId = null,
+                    categoryName = null,
+                    description = null,
+                    unitType = null,
+                    barcode = "LIST-001",
+                    force = true
                 )
-                val createJson = objectMapper.writeValueAsString(product)
+                val createJson = objectMapper.writeValueAsString(request)
                 mockMvc.perform(
                     post("/api/v1/inventory/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,19 +101,28 @@ class InventoryFlowIntegrationTest : DescribeSpec() {
             }
 
             it("GET /api/v1/inventory/products/{id} returns a persisted product") {
-                val productId = UUID.randomUUID()
-                val product = Product(
-                    id = productId, name = "Get By ID", description = "Test",
-                    categoryId = UUID.randomUUID(), barcode = "GET-ID-001",
-                    unitPrice = BigDecimal("300.00"), isActive = true,
-                    commercialUserId = UUID.randomUUID(), createdAt = Instant.now(), updatedAt = Instant.now()
+                val request = CreateProductRequest(
+                    name = "Get By ID",
+                    sku = null,
+                    categoryId = UUID.randomUUID(),
+                    categoryName = null,
+                    description = "Test",
+                    unitType = null,
+                    barcode = "GET-ID-001",
+                    force = true
                 )
-                val createJson = objectMapper.writeValueAsString(product)
-                mockMvc.perform(
+                val createJson = objectMapper.writeValueAsString(request)
+                val result = mockMvc.perform(
                     post("/api/v1/inventory/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createJson)
                 ).andExpect(status().isCreated)
+                    .andReturn()
+
+                val responseJson = result.response.contentAsString
+                val productId = UUID.fromString(
+                    objectMapper.readTree(responseJson).get("productId").asText()
+                )
 
                 mockMvc.perform(get("/api/v1/inventory/products/{id}", productId))
                     .andExpect(status().isOk)
@@ -127,19 +137,28 @@ class InventoryFlowIntegrationTest : DescribeSpec() {
             }
 
             it("PUT /api/v1/inventory/products/{id} updates a product") {
-                val productId = UUID.randomUUID()
-                val product = Product(
-                    id = productId, name = "Before Update", description = "Original",
-                    categoryId = null, barcode = "UPD-001",
-                    unitPrice = BigDecimal("100.00"), isActive = true,
-                    commercialUserId = null, createdAt = Instant.now(), updatedAt = Instant.now()
+                val request = CreateProductRequest(
+                    name = "Before Update",
+                    sku = null,
+                    categoryId = null,
+                    categoryName = null,
+                    description = "Original",
+                    unitType = null,
+                    barcode = "UPD-001",
+                    force = true
                 )
-                val createJson = objectMapper.writeValueAsString(product)
-                mockMvc.perform(
+                val createJson = objectMapper.writeValueAsString(request)
+                val result = mockMvc.perform(
                     post("/api/v1/inventory/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createJson)
                 ).andExpect(status().isCreated)
+                    .andReturn()
+
+                val responseJson = result.response.contentAsString
+                val productId = UUID.fromString(
+                    objectMapper.readTree(responseJson).get("productId").asText()
+                )
 
                 val updated = Product(
                     id = productId, name = "After Update", description = "Modified",
@@ -177,19 +196,28 @@ class InventoryFlowIntegrationTest : DescribeSpec() {
             }
 
             it("DELETE /api/v1/inventory/products/{id} deletes a product and returns 204") {
-                val productId = UUID.randomUUID()
-                val product = Product(
-                    id = productId, name = "To Delete", description = null,
-                    categoryId = null, barcode = "DEL-001",
-                    unitPrice = BigDecimal("50.00"), isActive = true,
-                    commercialUserId = null, createdAt = Instant.now(), updatedAt = Instant.now()
+                val request = CreateProductRequest(
+                    name = "To Delete",
+                    sku = null,
+                    categoryId = null,
+                    categoryName = null,
+                    description = null,
+                    unitType = null,
+                    barcode = "DEL-001",
+                    force = true
                 )
-                val createJson = objectMapper.writeValueAsString(product)
-                mockMvc.perform(
+                val createJson = objectMapper.writeValueAsString(request)
+                val result = mockMvc.perform(
                     post("/api/v1/inventory/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createJson)
                 ).andExpect(status().isCreated)
+                    .andReturn()
+
+                val responseJson = result.response.contentAsString
+                val productId = UUID.fromString(
+                    objectMapper.readTree(responseJson).get("productId").asText()
+                )
 
                 mockMvc.perform(delete("/api/v1/inventory/products/{id}", productId))
                     .andExpect(status().isNoContent)
@@ -205,20 +233,29 @@ class InventoryFlowIntegrationTest : DescribeSpec() {
             }
 
             it("GET /api/v1/inventory/products/barcode/{barcode} finds product by barcode") {
-                val productId = UUID.randomUUID()
                 val barcode = "BARCODE-SEARCH-001"
-                val product = Product(
-                    id = productId, name = "Barcode Search", description = null,
-                    categoryId = null, barcode = barcode,
-                    unitPrice = BigDecimal("75.00"), isActive = true,
-                    commercialUserId = null, createdAt = Instant.now(), updatedAt = Instant.now()
+                val request = CreateProductRequest(
+                    name = "Barcode Search",
+                    sku = null,
+                    categoryId = null,
+                    categoryName = null,
+                    description = null,
+                    unitType = null,
+                    barcode = barcode,
+                    force = true
                 )
-                val createJson = objectMapper.writeValueAsString(product)
-                mockMvc.perform(
+                val createJson = objectMapper.writeValueAsString(request)
+                val result = mockMvc.perform(
                     post("/api/v1/inventory/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createJson)
                 ).andExpect(status().isCreated)
+                    .andReturn()
+
+                val responseJson = result.response.contentAsString
+                val productId = UUID.fromString(
+                    objectMapper.readTree(responseJson).get("productId").asText()
+                )
 
                 mockMvc.perform(get("/api/v1/inventory/products/barcode/{barcode}", barcode))
                     .andExpect(status().isOk)

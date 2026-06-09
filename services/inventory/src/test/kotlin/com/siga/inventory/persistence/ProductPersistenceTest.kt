@@ -8,7 +8,6 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.math.BigDecimal
 import java.util.UUID
 
 class ProductPersistenceTest : BaseIntegrationTest() {
@@ -19,12 +18,13 @@ class ProductPersistenceTest : BaseIntegrationTest() {
         val barcode = "PERSISTENCE-${UUID.randomUUID().toString().substring(0, 8)}"
         val productJson = """
             {
-                "id": "${UUID.randomUUID()}",
                 "name": "Laptop Pro 16",
                 "description": "High performance laptop",
-                "unitPrice": 1500.00,
                 "barcode": "$barcode",
-                "isActive": true
+                "sku": null,
+                "categoryId": null,
+                "unitType": null,
+                "force": true
             }
         """.trimIndent()
 
@@ -35,7 +35,7 @@ class ProductPersistenceTest : BaseIntegrationTest() {
             .content(productJson))
             .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
             .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").isString) // Here we expect UUID string
+            .andExpect(jsonPath("$.productId").isString) // Here we expect UUID string
             .andExpect(jsonPath("$.name").value("Laptop Pro 16"))
     }
 }
