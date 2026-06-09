@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 	import CrudTable from '$lib/components/crud/CrudTable.svelte';
-	import type { ColumnDef, ActionDef } from '$lib/components/crud/CrudTable.svelte';
+	import type { ColumnDef, ActionDef } from '$lib/components/crud/types';
 	import SearchBar from '$lib/components/crud/SearchBar.svelte';
 	import ConfirmDelete from '$lib/components/crud/ConfirmDelete.svelte';
 	import Button from '@siga/ui-kit/Button.svelte';
@@ -18,19 +18,19 @@
 		{
 			key: 'active',
 			label: 'Estado',
-			render: (item) => item.active ? 'Activo' : 'Inactivo'
+			render: (item: any) => item.active ? 'Activo' : 'Inactivo'
 		}
 	];
 
-	const userActions: ActionDef[] = [
+	const userActions: ActionDef<any>[] = [
 		{
 			label: 'Editar',
-			onClick: (item) => goto(`/users/${item.id}`)
+			onClick: (item: any) => goto(`/users/${item.id}`)
 		},
 		{
 			label: 'Eliminar',
 			variant: 'danger',
-			onClick: (item) => {
+			onClick: (item: any) => {
 				deleteTarget = { id: item.id, name: item.name };
 			}
 		}

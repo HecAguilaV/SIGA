@@ -37,7 +37,7 @@
 		{#if isOpen}
 			<X size={22} weight="bold" />
 		{:else}
-			<ChatCircle size={22} weight="fill" />
+			<img src="/S.png" alt="S" class="fab-logo-img" />
 		{/if}
 	</span>
 
@@ -59,12 +59,12 @@
 		border: none;
 		border-radius: var(--radius-full);
 		background: var(--color-accent);
-		color: #fff;
+		color: var(--color-primary);
 		cursor: pointer;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: var(--shadow-lg);
+		box-shadow: var(--shadow-glow), var(--shadow-md);
 		transition: all var(--transition-base);
 		z-index: 1000;
 	}
@@ -72,7 +72,7 @@
 	.assistant-fab:hover {
 		background: var(--color-accent-hover);
 		transform: scale(1.05);
-		box-shadow: var(--shadow-glow);
+		box-shadow: 0 0 25px rgba(128, 255, 219, 0.6), var(--shadow-lg);
 	}
 
 	.assistant-fab:active {
@@ -81,16 +81,25 @@
 
 	.assistant-fab.open {
 		background: var(--color-error);
+		color: #fff;
+		box-shadow: var(--shadow-md);
 	}
 
 	.assistant-fab.open:hover {
 		background: #dc2626;
+		box-shadow: var(--shadow-lg);
 	}
 
 	.fab-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.fab-logo-img {
+		width: 24px;
+		height: 24px;
+		object-fit: contain;
 	}
 
 	/* Status badge */

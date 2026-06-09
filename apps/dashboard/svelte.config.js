@@ -9,6 +9,12 @@ const config = {
 		adapter: adapter(),
 		csrf: {
 			checkOrigin: false
+		},
+		alias: {
+			'@siga/ui-kit': '../../packages/ui-kit',
+			'@siga/ui-kit/*': '../../packages/ui-kit/*',
+			'@siga/shared': '../../packages/shared',
+			'@siga/shared/*': '../../packages/shared/*'
 		}
 	}
 };

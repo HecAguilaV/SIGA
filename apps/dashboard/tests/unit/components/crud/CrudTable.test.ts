@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
-import CrudTable from '../../../../src/lib/components/crud/CrudTable.svelte';
-import type { ColumnDef, ActionDef } from '../../../../src/lib/components/crud/CrudTable.svelte';
+import CrudTable from '$lib/components/crud/CrudTable.svelte';
+import type { ColumnDef, ActionDef } from '$lib/components/crud/types';
 
 describe('CrudTable', () => {
 	const columns: ColumnDef<any>[] = [

@@ -44,9 +44,10 @@
 
 	// Auto-scroll al recibir nuevos mensajes
 	$effect(() => {
-		if (chat.messages.length > 0 && messagesContainer) {
+		const container = messagesContainer;
+		if (chat.messages.length > 0 && container) {
 			requestAnimationFrame(() => {
-				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				container.scrollTop = container.scrollHeight;
 			});
 		}
 	});
@@ -62,7 +63,7 @@
 	<!-- Header -->
 	<header class="page-header">
 		<div class="header-left">
-			<Sparkle size={24} weight="fill" aria-hidden="true" />
+			<img src="/S.png" alt="S" class="header-logo-img" aria-hidden="true" />
 			<div class="header-text">
 				<h1>Asistente SIGA</h1>
 				<p class="header-status">
@@ -85,12 +86,12 @@
 			</button>
 		</div>
 	</header>
-
+ 
 	<!-- Messages -->
 	<div class="messages-area" bind:this={messagesContainer}>
 		{#if chat.messages.length === 0}
 			<div class="empty-state">
-				<Sparkle size={48} weight="thin" aria-hidden="true" />
+				<img src="/S.png" alt="S" class="empty-logo-img" aria-hidden="true" />
 				<h2>Asistente SIGA</h2>
 				<p>Preguntame sobre tu negocio o pedime que ejecute acciones.</p>
 				<div class="suggestions">
@@ -170,7 +171,21 @@
 		display: flex;
 		align-items: center;
 		gap: var(--spacing-md);
-		color: var(--color-accent);
+		color: var(--color-primary);
+	}
+
+	.header-logo-img {
+		width: 24px;
+		height: 24px;
+		object-fit: contain;
+	}
+
+	.empty-logo-img {
+		width: 48px;
+		height: 48px;
+		object-fit: contain;
+		margin-bottom: var(--spacing-sm);
+		filter: drop-shadow(var(--shadow-glow));
 	}
 
 	.header-text h1 {
@@ -269,7 +284,8 @@
 	.suggestion-chip:hover {
 		background: var(--color-accent-light);
 		border-color: var(--color-accent);
-		color: var(--color-accent);
+		color: var(--color-primary);
+		box-shadow: var(--shadow-glow);
 	}
 
 	.tool-indicators {

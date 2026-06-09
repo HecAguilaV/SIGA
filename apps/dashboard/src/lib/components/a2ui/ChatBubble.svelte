@@ -55,7 +55,7 @@
 			</div>
 		{:else}
 			<div class="avatar assistant-avatar" aria-hidden="true">
-				<Sparkle size={18} weight="fill" />
+				<img src="/S.png" alt="S" class="assistant-avatar-img" />
 			</div>
 		{/if}
 	</div>
@@ -112,12 +112,20 @@
 
 	.user-avatar {
 		background: var(--color-accent-light);
-		color: var(--color-accent);
+		color: var(--color-primary);
 	}
 
 	.assistant-avatar {
-		background: var(--color-info-bg);
-		color: var(--color-info);
+		background: var(--color-primary-light);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.assistant-avatar-img {
+		width: 18px;
+		height: 18px;
+		object-fit: contain;
 	}
 
 	.bubble-content {
@@ -186,15 +194,16 @@
 
 	.user .bubble-text {
 		background: var(--color-accent);
-		color: #fff;
+		color: var(--color-primary);
 		border-bottom-right-radius: var(--radius-sm);
 	}
 
 	.assistant .bubble-text {
 		background: var(--color-surface);
 		color: var(--color-text);
-		border: 1px solid var(--color-border-light);
+		border: 1px solid var(--color-accent);
 		border-bottom-left-radius: var(--radius-sm);
+		box-shadow: var(--shadow-glow);
 	}
 
 	/* Streaming dots animation */
@@ -232,6 +241,7 @@
 	}
 
 	.chat-bubble.streaming .bubble-text {
-		border-color: var(--color-info);
+		border-color: var(--color-accent-dark);
+		box-shadow: 0 0 15px rgba(128, 255, 219, 0.45);
 	}
 </style>

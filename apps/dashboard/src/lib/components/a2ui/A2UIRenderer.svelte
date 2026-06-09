@@ -93,7 +93,7 @@
 				<A2UINodeRenderer {node} level={0} />
 			{/each}
 		</div>
-	{:else}
+	{:else if tree}
 		<!-- Legacy: Single node — render it -->
 		<A2UINodeRenderer node={tree} level={0} />
 	{/if}

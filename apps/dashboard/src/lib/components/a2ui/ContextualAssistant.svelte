@@ -101,9 +101,10 @@
 
 	$effect(() => {
 		// Scroll to bottom when messages or UI components change
-		if (chatWidgetEl && (chat.messages.length > 0 || a2ui.components?.length > 0 || a2ui.tree)) {
+		const container = chatWidgetEl;
+		if (container && (chat.messages.length > 0 || a2ui.components?.length > 0 || a2ui.tree)) {
 			requestAnimationFrame(() => {
-				chatWidgetEl.scrollTop = chatWidgetEl.scrollHeight;
+				container.scrollTop = container.scrollHeight;
 			});
 		}
 	});

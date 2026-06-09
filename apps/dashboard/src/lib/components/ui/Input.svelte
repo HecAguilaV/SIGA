@@ -2,7 +2,7 @@
 	let {
 		type = 'text',
 		label,
-		value = '',
+		value = $bindable(''),
 		error,
 		placeholder = '',
 		name,
@@ -19,7 +19,7 @@
 		name?: string;
 		required?: boolean;
 		disabled?: boolean;
-		autocomplete?: string;
+		autocomplete?: any;
 	} & Record<string, unknown> = $props();
 
 	const inputId = `input-${Math.random().toString(36).slice(2, 9)}`;

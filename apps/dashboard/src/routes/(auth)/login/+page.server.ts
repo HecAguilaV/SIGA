@@ -6,7 +6,7 @@ import { mockLogin } from '$lib/server/mock-auth';
 // Si la load function se ejecuta con sesión activa, redirigir al dashboard
 export const load: PageServerLoad = async ({ locals, url }) => {
 	if (locals.user) {
-		const redirectTo = url.searchParams.get('redirect') || '/';
+		const redirectTo = url.searchParams.get('redirect') || '/dashboard';
 		throw redirect(303, redirectTo);
 	}
 	return {};
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const email = (formData.get('email') as string)?.trim();
 		const password = formData.get('password') as string;
-		const redirectParam = url.searchParams.get('redirect') || '/';
+		const redirectParam = url.searchParams.get('redirect') || '/dashboard';
 
 		// ── Validación ──
 		if (!email) return fail(400, { email, error: 'El correo electrónico es requerido', missing: 'email' });

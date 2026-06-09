@@ -15,7 +15,7 @@ export const actions: Actions = {
 		await logout(fetch, event);
 
 		// Limpiar cookies de sesión
-		clearSessionCookies(cookies);
+		clearSessionCookies(event);
 
 		// Redirigir a login
 		throw redirect(303, '/login');

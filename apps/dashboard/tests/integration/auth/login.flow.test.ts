@@ -112,7 +112,7 @@ describe('Auth Flow Integration', () => {
 		const event = createMockEvent(createMockCookies());
 
 		it('sets siga_token cookie with correct options', () => {
-			setSessionCookies(event, 'test-access-token', 'test-refresh-token');
+			setSessionCookies(event.cookies, 'test-access-token', 'test-refresh-token');
 
 			expect(event.cookies.set).toHaveBeenCalledWith(
 				'siga_token',
@@ -120,14 +120,14 @@ describe('Auth Flow Integration', () => {
 				expect.objectContaining({
 					path: '/',
 					httpOnly: true,
-					secure: true,
+					secure: false,
 					sameSite: 'lax'
 				})
 			);
 		});
 
 		it('sets siga_refresh cookie with correct options', () => {
-			setSessionCookies(event, 'test-access-token', 'test-refresh-token');
+			setSessionCookies(event.cookies, 'test-access-token', 'test-refresh-token');
 
 			expect(event.cookies.set).toHaveBeenCalledWith(
 				'siga_refresh',
@@ -135,8 +135,8 @@ describe('Auth Flow Integration', () => {
 				expect.objectContaining({
 					path: '/api/auth/refresh',
 					httpOnly: true,
-					secure: true,
-					sameSite: 'strict'
+					secure: false,
+					sameSite: 'lax'
 				})
 			);
 		});

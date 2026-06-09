@@ -9,7 +9,7 @@
  * - Layout hints → aplica clases CSS correctas
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/svelte';
 import A2UIRenderer from '../../../../src/lib/components/a2ui/A2UIRenderer.svelte';
 import type { A2UINode } from '../../../../src/lib/types/a2ui';
@@ -19,7 +19,7 @@ import { a2ui } from '../../../../src/lib/stores/a2ui.svelte';
 vi.mock('chart.js', () => {
 	const destroyMock = vi.fn();
 	const updateMock = vi.fn();
-	const Chart = vi.fn().mockImplementation(function (
+	const Chart: any = vi.fn().mockImplementation(function (
 		this: { destroy: typeof destroyMock; update: typeof updateMock; config: { type: string } },
 		_ctx: unknown,
 		config: { type: string }

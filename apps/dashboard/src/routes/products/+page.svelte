@@ -4,7 +4,7 @@
 	import type { PageData } from './$types';
 	import type { ProductListItem } from '$lib/types/inventory';
 	import CrudTable from '$lib/components/crud/CrudTable.svelte';
-	import type { ColumnDef, ActionDef } from '$lib/components/crud/CrudTable.svelte';
+	import type { ColumnDef, ActionDef } from '$lib/components/crud/types';
 	import SearchBar from '$lib/components/crud/SearchBar.svelte';
 	import ConfirmDelete from '$lib/components/crud/ConfirmDelete.svelte';
 	import Button from '@siga/ui-kit/Button.svelte';
@@ -19,25 +19,25 @@
 		{
 			key: 'price',
 			label: 'Precio',
-			render: (item) => `$${item.price.toLocaleString('es-AR')}`
+			render: (item: ProductListItem) => `$${item.price.toLocaleString('es-AR')}`
 		},
 		{
 			key: 'stock',
 			label: 'Stock',
 			class: 'col-stock',
-			render: (item) => `${item.stock}`
+			render: (item: ProductListItem) => `${item.stock}`
 		}
 	];
 
-	const productActions: ActionDef[] = [
+	const productActions: ActionDef<ProductListItem>[] = [
 		{
 			label: 'Editar',
-			onClick: (item) => goto(`/products/${item.id}`)
+			onClick: (item: ProductListItem) => goto(`/products/${item.id}`)
 		},
 		{
 			label: 'Eliminar',
 			variant: 'danger',
-			onClick: (item) => {
+			onClick: (item: ProductListItem) => {
 				deleteTarget = { id: item.id, name: item.name };
 			}
 		}

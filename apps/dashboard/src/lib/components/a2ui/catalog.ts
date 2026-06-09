@@ -5,7 +5,7 @@
  * Provee lookup seguro con fallback para tipos no registrados.
  */
 
-import type { ComponentType } from 'svelte';
+import type { Component } from 'svelte';
 
 // UI atoms
 import Card from '$lib/components/ui/Card.svelte';
@@ -38,7 +38,7 @@ import DataTable from './DataTable.svelte';
  * Cada entrada mapea un string type (ej: "card", "chart")
  * al componente del design system correspondiente.
  */
-export const A2UI_COMPONENT_MAP: Record<string, ComponentType> = {
+export const A2UI_COMPONENT_MAP: Record<string, Component<any, any, any>> = {
 	card: Card,
 	button: Button,
 	input: Input,
@@ -66,6 +66,6 @@ export const A2UI_TYPES: string[] = Object.keys(A2UI_COMPONENT_MAP);
  * getComponent — Lookup seguro de componente por tipo.
  * Retorna el componente o null si no está registrado.
  */
-export function getComponent(type: string): ComponentType | null {
+export function getComponent(type: string): Component<any, any, any> | null {
 	return A2UI_COMPONENT_MAP[type] ?? null;
 }
