@@ -17,7 +17,7 @@ class GatewayApplication {
             .route("siga-agent") { r ->
                 r.path("/api/agent/**")
                     .filters { f -> f.rewritePath("/api/agent/(?<segment>.*)", "/api/agent/\${segment}") }
-                    .uri("http://192.168.1.10:8000")
+                    .uri("lb://siga-agent")
             }
             .route("siga-auth") { r ->
                 r.path("/api/auth/**")
