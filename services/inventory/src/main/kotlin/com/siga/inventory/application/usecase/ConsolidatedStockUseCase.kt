@@ -94,6 +94,7 @@ class ConsolidatedStockUseCase(
 /**
  * Response DTO for consolidated stock view.
  */
+@com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.CLASS, include = com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY, property = "@class")
 data class ConsolidatedStockResponse(
     val products: List<ConsolidatedProduct>,
     val page: Int,
@@ -105,6 +106,7 @@ data class ConsolidatedStockResponse(
 /**
  * Per-product consolidated data.
  */
+@com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.CLASS, include = com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY, property = "@class")
 data class ConsolidatedProduct(
     val productId: UUID,
     val productName: String,
@@ -116,6 +118,7 @@ data class ConsolidatedProduct(
 /**
  * Per-store breakdown within a consolidated product.
  */
+@com.fasterxml.jackson.annotation.JsonTypeInfo(use = com.fasterxml.jackson.annotation.JsonTypeInfo.Id.CLASS, include = com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY, property = "@class")
 data class StoreStock(
     val storeId: UUID,
     val quantity: Int,
