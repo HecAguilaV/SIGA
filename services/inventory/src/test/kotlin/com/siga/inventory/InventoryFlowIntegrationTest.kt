@@ -176,7 +176,7 @@ class InventoryFlowIntegrationTest : DescribeSpec() {
                     .andExpect(status().isOk)
                     .andExpect(jsonPath("$.name").value("After Update"))
                     .andExpect(jsonPath("$.unitPrice").value(200.00))
-                    .andExpect(jsonPath("$.active").value(false))
+                    .andExpect(jsonPath("$.isActive").value(false))
             }
 
             it("PUT /api/v1/inventory/products/{id} returns 404 for non-existent product") {
