@@ -10,7 +10,7 @@ Este documento refleja la realidad técnica y el progreso de la migración al **
 | `siga-gateway` | 8080 | — | ✅ Estable | Ruteo vía RewritePath, Eureka locator deshabilitado, CORS funcional. |
 | `siga-auth` | 8081 | `siga_auth` | ✅ Estable | Autenticación completa: register, verify, login dual (Customer+User), JWT, CRUD multi-tenant — 126 tests. |
 | `siga-inventory` | 8082 | `siga_inventario` | ✅ Estable | Corazón del stock multi-tenant. |
-| `siga-sales` | 8083 | `siga_ventas` | ✅ Estable | POS y transacciones. |
+| `siga-sales` | 8083 | `siga_ventas` | ✅ Estable | POS y transacciones — 181 tests (SAGA Kafka y Feign Integration verificados). |
 | `siga-billing` | 8084 | `siga_comercial` | 🔄 En desarrollo | Gestión comercial y pagos. |
 | `siga-agent` | 8000 | `siga_agente` | ✅ Estable | **IA Agéntica (Kotlin Spring Boot + A2UI v0.9)**. |
 | `webapp-v2` | 5173 | — | 🔄 En proceso | Interfaz Premium (SvelteKit). |

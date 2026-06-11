@@ -54,18 +54,22 @@ Conversión dominio ↔ entidad JPA. Verifican que cada campo se mapea correctam
 | `SaleEventProducerTest` | 2 | Producer de Kafka publica en el topic correcto con saleId como key |
 | `StockEventConsumerTest` | 5 | SAGA paso 3: STOCK_RESERVED → COMPLETED, STOCK_FAILED → CANCELLED, duplicado salta, no encontrado salta, ya completado salta |
 
-### 5. Tests de Integración — Kafka Embedded (no requiere Docker)
+### 5. Tests de Integración — Kafka y Feign (no requiere Docker)
 
-Usa `@EmbeddedKafka` de `spring-kafka-test` para verificar serialización/deserialización real de Kafka sin un broker externo.
+Usa `@EmbeddedKafka` y **WireMock** para verificar la comunicación asíncrona y síncrona sin dependencias externas.
 
-| Clase de Test | Tests | Qué Cubre |
-|--------------|-------|-----------|
-| `StockEventConsumerIntegrationTest` | TBD | Roundtrip completo: producir StockEvent → consumir via @KafkaListener → verificar estado de venta en H2 |
+| Clase de Test | Tests | Qué Cubre | Herramienta |
+|--------------|-------|-----------|-------------|
+| `StockEventConsumerIntegrationTest` | 3 | Roundtrip SAGA: StockReserved → COMPLETED, StockFailed → CANCELLED, Idempotencia | EmbeddedKafka |
+| `InventoryClientIntegrationTest` | 2 | Validación de Stock vía Feign: 200 OK true/false | WireMock |
 
-**No cubierto aún:**
-- Integración Feign (requiere Docker + servicio Inventory corriendo)
-- Coreografía SAGA completa end-to-end (requiere Docker + Kafka + PostgreSQL + Inventory)
-- Tests de registro en Eureka/Gateway
+---
+
+## Escenarios de SAGA (Coreografía)
+
+1. **Happy Path**: `Sale (PENDING)` -> `StockReserved` -> `Sale (COMPLETED)` ✅
+2. **Compensación**: `Sale (PENDING)` -> `StockFailed` -> `Sale (CANCELLED)` ✅
+3. **Idempotencia**: Doble evento no genera doble procesamiento ✅
 
 ---
 
