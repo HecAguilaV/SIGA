@@ -75,6 +75,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core")
     testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
     testRuntimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
