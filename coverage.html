@@ -926,10 +926,10 @@ const devopsData = {
       "name": "auth",
       "fullName": "Auth Service",
       "type": "backend",
-      "instr": 0,
-      "branch": 100,
-      "line": 0,
-      "totalLine": 3,
+      "instr": 78,
+      "branch": 58,
+      "line": 83,
+      "totalLine": 836,
       "reportPath": "services/auth/build/reports/jacoco/test/html/index.html",
       "testPath": "services/auth/build/reports/tests/test/index.html"
     },
@@ -937,10 +937,10 @@ const devopsData = {
       "name": "agent",
       "fullName": "Agent Service",
       "type": "backend",
-      "instr": 100,
-      "branch": 83,
-      "line": 100,
-      "totalLine": 2,
+      "instr": 82,
+      "branch": 48,
+      "line": 87,
+      "totalLine": 619,
       "reportPath": "services/agent/build/reports/jacoco/test/html/index.html",
       "testPath": "services/agent/build/reports/tests/test/index.html"
     },
@@ -948,10 +948,10 @@ const devopsData = {
       "name": "billing",
       "fullName": "Billing Service",
       "type": "backend",
-      "instr": 100,
-      "branch": 50,
-      "line": 100,
-      "totalLine": 8,
+      "instr": 10,
+      "branch": 0,
+      "line": 10,
+      "totalLine": 630,
       "reportPath": "services/billing/build/reports/jacoco/test/html/index.html",
       "testPath": "services/billing/build/reports/tests/test/index.html"
     },
@@ -970,12 +970,23 @@ const devopsData = {
       "name": "sales",
       "fullName": "Sales Service",
       "type": "backend",
-      "instr": 0,
-      "branch": 100,
-      "line": 0,
-      "totalLine": 6,
+      "instr": 90,
+      "branch": 57,
+      "line": 95,
+      "totalLine": 615,
       "reportPath": "services/sales/build/reports/jacoco/test/html/index.html",
       "testPath": "services/sales/build/reports/tests/test/index.html"
+    },
+    {
+      "name": "gateway",
+      "fullName": "API Gateway",
+      "type": "backend",
+      "instr": 90,
+      "branch": 80,
+      "line": 94,
+      "totalLine": 200,
+      "reportPath": "services/gateway/build/reports/jacoco/test/html/index.html",
+      "testPath": "services/gateway/build/reports/tests/test/index.html"
     },
     {
       "name": "dashboard",
@@ -993,12 +1004,3785 @@ const devopsData = {
     "semgrep": {
       "status": "warning",
       "count": 7,
-      "lastRun": "2026-06-09T22:50:21.811Z"
+      "lastRun": "2026-06-10T08:06:32.736Z",
+      "findings": [
+        {
+          "rule": "js-insecure-regex",
+          "path": "scripts/generate-devops-report.js",
+          "line": 25,
+          "message": "Constructing RegExp from user input can lead to ReDoS (Regular Expression Denial of Service).\nValidate and sanitize input before using in RegExp.",
+          "severity": "WARNING"
+        },
+        {
+          "rule": "js-insecure-regex",
+          "path": "scripts/generate-devops-report.js",
+          "line": 36,
+          "message": "Constructing RegExp from user input can lead to ReDoS (Regular Expression Denial of Service).\nValidate and sanitize input before using in RegExp.",
+          "severity": "WARNING"
+        },
+        {
+          "rule": "sensitive-data-logging",
+          "path": "scripts/generate-devops-report.js",
+          "line": 166,
+          "message": "Avoid logging sensitive data. Ensure '\"Iniciando recopilación de datos DevOps...\"' does not contain PII or secrets.",
+          "severity": "WARNING"
+        },
+        {
+          "rule": "js-hardcoded-secret",
+          "path": "scripts/generate-devops-report.js",
+          "line": 209,
+          "message": "Possible hardcoded secret detected. Use environment variables instead.\nExample: process.env.SECRET_KEY instead of const secret = \"literal\"",
+          "severity": "ERROR"
+        },
+        {
+          "rule": "js-hardcoded-secret",
+          "path": "scripts/generate-devops-report.js",
+          "line": 210,
+          "message": "Possible hardcoded secret detected. Use environment variables instead.\nExample: process.env.SECRET_KEY instead of const secret = \"literal\"",
+          "severity": "ERROR"
+        },
+        {
+          "rule": "sensitive-data-logging",
+          "path": "scripts/generate-devops-report.js",
+          "line": 222,
+          "message": "Avoid logging sensitive data. Ensure '\"Insertando etiquetas de inyección DevOps por primera vez...\"' does not contain PII or secrets.",
+          "severity": "WARNING"
+        },
+        {
+          "rule": "sensitive-data-logging",
+          "path": "scripts/generate-devops-report.js",
+          "line": 234,
+          "message": "Avoid logging sensitive data. Ensure '\"¡Reporte DevOps unificado generado con éxito en coverage.html!\"' does not contain PII or secrets.",
+          "severity": "WARNING"
+        }
+      ]
     },
     "gitleaks": {
       "status": "danger",
       "count": 620,
-      "lastRun": "2026-06-09T22:50:21.811Z"
+      "lastRun": "2026-06-10T08:06:32.736Z",
+      "findings": [
+        {
+          "rule": "generic-secret",
+          "path": "services/auth/src/main/kotlin/com/siga/auth/application/usecase/ResetPasswordConfirmUseCase.kt",
+          "line": 42,
+          "match": "[REDACCIONADO] = passwordEncoder"
+        },
+        {
+          "rule": "google-oauth",
+          "path": "apps/PruebasConceptos/defontanadash.html",
+          "line": 8,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "ACADEMIC/LEARNING.md",
+          "line": 739,
+          "match": "[REDACCIONADO] = \"SecurePass1"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/04_seed_billing.sql",
+          "line": 7,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/04_seed_billing.sql",
+          "line": 10,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/04_seed_billing.sql",
+          "line": 18,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/04_seed_billing.sql",
+          "line": 24,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/04_seed_billing.sql",
+          "line": 31,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/04_seed_billing.sql",
+          "line": 32,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 7,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 8,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 9,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 10,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 15,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 15,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 16,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 17,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 17,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 18,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 19,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 19,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 20,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 25,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 25,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 26,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 26,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 27,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 27,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 29,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 29,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 34,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 34,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/03_seed_sales.sql",
+          "line": 35,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-credentials",
+          "path": "scripts/seed/load-seed.sh",
+          "line": 105,
+          "match": "[REDACCIONADO]:\"\necho \""
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 20,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 21,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 22,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 23,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 24,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 25,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 26,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 27,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 29,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 30,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 31,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 32,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 33,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 34,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 35,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 36,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 37,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 56,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 59,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 62,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 65,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 68,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 76,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 83,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 89,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 95,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 101,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 101,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 102,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 102,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 103,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 103,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 104,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 104,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 105,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 105,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 106,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 106,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 107,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 107,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 108,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/01_seed_auth.sql",
+          "line": 108,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 7,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 7,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 8,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 8,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 9,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 9,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 10,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 10,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 11,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 11,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 12,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 12,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 17,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 17,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 18,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 18,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 19,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 19,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 20,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 20,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 25,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 25,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 25,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 26,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 26,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 26,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 27,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 27,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 27,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 29,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 29,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 29,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 30,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 30,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 30,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 31,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 31,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 31,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 32,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 32,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 32,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 33,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 33,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 33,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 34,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 34,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 34,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 35,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 35,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 35,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 36,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 36,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 36,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 37,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 37,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 37,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 38,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 38,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 38,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 39,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 39,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 39,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 40,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 40,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 40,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 48,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 48,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 49,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 49,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 50,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 50,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 51,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 51,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 52,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 52,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 53,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 53,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 54,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 54,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 55,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 55,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 56,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 56,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 57,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 57,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 58,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 58,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 59,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 59,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 60,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 60,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 61,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 61,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 63,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 63,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 64,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 64,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 65,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 65,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 66,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 66,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 67,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 67,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 69,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 69,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 70,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 70,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 71,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 71,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 72,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 72,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 73,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 73,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 75,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 75,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 76,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 76,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 77,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 77,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 78,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 78,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 79,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 79,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 80,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 80,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 81,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 81,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 82,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 82,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 91,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 91,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 93,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 93,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 95,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/02_seed_inventory.sql",
+          "line": 95,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 29,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 30,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 31,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 32,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 33,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 34,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 35,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 36,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 37,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 38,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 39,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 40,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 41,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 42,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 43,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 44,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 45,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 67,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 70,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 73,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 76,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 79,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 87,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 94,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 100,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 106,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 116,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 116,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 117,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 117,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 118,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 118,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 119,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 119,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 120,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 120,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 121,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 121,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 126,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 126,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 127,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 127,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 128,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 128,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 129,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 129,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 134,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 134,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 135,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 135,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 136,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 136,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 137,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 137,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 138,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 138,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 139,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 139,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 140,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 140,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 141,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 141,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 146,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 146,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 146,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 147,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 147,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 147,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 148,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 148,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 148,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 149,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 149,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 149,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 150,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 150,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 150,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 151,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 151,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 151,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 152,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 152,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 152,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 153,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 153,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 153,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 154,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 154,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 154,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 155,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 155,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 155,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 156,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 156,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 156,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 157,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 157,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 157,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 158,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 158,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 158,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 160,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 160,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 160,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 161,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 161,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 161,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 170,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 170,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 171,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 171,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 172,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 172,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 173,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 173,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 174,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 174,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 175,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 175,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 176,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 176,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 177,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 177,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 178,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 178,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 179,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 179,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 180,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 180,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 181,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 181,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 182,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 182,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 183,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 183,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 185,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 185,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 186,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 186,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 187,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 187,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 188,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 188,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 189,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 189,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 191,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 191,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 192,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 192,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 193,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 193,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 194,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 194,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 195,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 195,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 197,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 197,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 198,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 198,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 199,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 199,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 200,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 200,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 201,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 201,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 202,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 202,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 203,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 203,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 204,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 204,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 213,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 213,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 215,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 215,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 217,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 217,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 227,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 228,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 229,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 230,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 235,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 235,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 236,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 237,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 237,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 238,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 239,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 239,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 240,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 247,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 247,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 248,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 248,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 249,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 249,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 250,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 250,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 251,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 251,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 259,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 259,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 260,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 269,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 272,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 280,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 286,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 293,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "scripts/seed/demo_data.sql",
+          "line": 294,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-api-key",
+          "path": "services/agent/src/main/kotlin/com/siga/agent/engine/GeminiEngine.kt",
+          "line": 30,
+          "match": "[REDACCIONADO] = geminiProperties"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "packages/frontend/src/routes/(auth)/login/+page.server.ts",
+          "line": 19,
+          "match": "[REDACCIONADO] = formData"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "openspec/changes/archive/2026-05-12-infra-hardening/tasks.md",
+          "line": 51,
+          "match": "[REDACCIONADO]=changeme"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "openspec/changes/archive/2026-05-12-infra-hardening/tasks.md",
+          "line": 69,
+          "match": "[REDACCIONADO]=changeme"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "openspec/changes/archive/2026-05-12-infra-hardening/spec.md",
+          "line": 144,
+          "match": "[REDACCIONADO]=changeme"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "openspec/changes/archive/2026-05-12-infra-hardening/design.md",
+          "line": 110,
+          "match": "[REDACCIONADO]=changeme"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "apps/landing/public/references/awesome-design-md-main/README.md",
+          "line": 2,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "services/auth/src/main/kotlin/com/siga/auth/application/usecase/RegisterCustomerUseCase.kt",
+          "line": 33,
+          "match": "[REDACCIONADO] = passwordEncoder"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "ACADEMIC/LEARNING.md",
+          "line": 677,
+          "match": "[REDACCIONADO] = \"SecurePass1"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "services/sales/src/main/kotlin/com/siga/sales/infrastructure/mapper/PaymentMethodMapper.kt",
+          "line": 23,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "services/sales/src/main/kotlin/com/siga/sales/infrastructure/mapper/CashShiftMapper.kt",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "services/sales/src/main/kotlin/com/siga/sales/infrastructure/mapper/CustomerMapper.kt",
+          "line": 28,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "services/sales/src/main/kotlin/com/siga/sales/infrastructure/mapper/SaleMapper.kt",
+          "line": 30,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "services/sales/src/main/kotlin/com/siga/sales/infrastructure/mapper/SaleItemMapper.kt",
+          "line": 26,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "services/sales/src/main/kotlin/com/siga/sales/infrastructure/mapper/SaleDocumentMapper.kt",
+          "line": 31,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "database-password",
+          "path": "docker-compose.yml",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "docs/brand/references/awesome-design-md-main/README.md",
+          "line": 2,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "database-password",
+          "path": "docker-compose.yml",
+          "line": 226,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "database-password",
+          "path": ".github/workflows/security.yml",
+          "line": 200,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "database-password",
+          "path": ".github/workflows/security.yml",
+          "line": 406,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "openspec/SECURITY.md",
+          "line": 307,
+          "match": "[REDACCIONADO] = \"12345678\""
+        },
+        {
+          "rule": "database-password",
+          "path": "docker-compose.yml",
+          "line": 177,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "database-password",
+          "path": "docker-compose.yml",
+          "line": 177,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "database-password",
+          "path": "services/agent/app/core/database.py",
+          "line": 10,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "services/inventory/src/main/resources/application.yml",
+          "line": 10,
+          "match": "[REDACCIONADO]: password123"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "services/sales/src/main/resources/application.yml",
+          "line": 10,
+          "match": "[REDACCIONADO]: password123"
+        },
+        {
+          "rule": "database-password",
+          "path": "docs/database/CREDENTIALS.md",
+          "line": 46,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "database-password",
+          "path": "docker-compose.yml",
+          "line": 177,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "heroku-api-key",
+          "path": "openspec/skills/awesome-design-md-main/README.md",
+          "line": 2,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "services/auth/src/main/resources/application.yml",
+          "line": 10,
+          "match": "[REDACCIONADO]: password123"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "services/inventario/src/main/resources/application.yml",
+          "line": 10,
+          "match": "[REDACCIONADO]: password123"
+        },
+        {
+          "rule": "database-password",
+          "path": "services/agente/app/core/database.py",
+          "line": 5,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "services/ventas/src/main/resources/application.yml",
+          "line": 10,
+          "match": "[REDACCIONADO]: password123"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docker-compose.yml",
+          "line": 11,
+          "match": "[REDACCIONADO]: password123"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "SIGA APP/build.gradle.kts",
+          "line": 38,
+          "match": "[REDACCIONADO] = keystoreProperties"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "SIGA APP/build.gradle.kts",
+          "line": 40,
+          "match": "[REDACCIONADO] = keystoreProperties"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "keystore.properties",
+          "line": 2,
+          "match": "[REDACCIONADO]=Kike4466"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "keystore.properties",
+          "line": 4,
+          "match": "[REDACCIONADO]=Kike4466"
+        },
+        {
+          "rule": "generic-credentials",
+          "path": "scripts/generate_keystore_and_sign.sh",
+          "line": 184,
+          "match": "[REDACCIONADO]=\"${USER:-${USERNAME:-}}\""
+        },
+        {
+          "rule": "generic-secret",
+          "path": "debug_auth.js",
+          "line": 8,
+          "match": "[REDACCIONADO]: 'password123'"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "debug_auth.js",
+          "line": 26,
+          "match": "[REDACCIONADO]: 'Password123"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "debug_cors.js",
+          "line": 20,
+          "match": "[REDACCIONADO]: 'password123'"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "README.md",
+          "line": 66,
+          "match": "[REDACCIONADO]=password"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 51,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 52,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 97,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 98,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 122,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 130,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 131,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 194,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 195,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 230,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 231,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 251,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 259,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 260,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 282,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEB_COMERCIAL/API_ENDPOINTS.md",
+          "line": 283,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 51,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 52,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 97,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 98,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 122,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 130,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 131,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 194,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 195,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 230,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 231,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 251,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 259,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 260,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 282,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_APP_MOVIL/API_ENDPOINTS.md",
+          "line": 283,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 51,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 52,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 97,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 98,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 122,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 130,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 131,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 194,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 195,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 230,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 231,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 251,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 259,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 260,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 282,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/EQUIPO_WEBAPP/API_ENDPOINTS.md",
+          "line": 283,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 52,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 53,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 98,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 99,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 123,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 131,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 132,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 195,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 196,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 231,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 232,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 252,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 260,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 261,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 283,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_ENDPOINTS.md",
+          "line": 284,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 18,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 49,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "jwt-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 49,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "jwt-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": " Bearer-auth-in-header",
+          "path": "CHALLA/appweb/ERRORES_PERMISOS_SUSCRIPCION.md",
+          "line": 61,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-api-key",
+          "path": "CHALLA/appweb/SOLUCION_API_KEY_GEMINI.md",
+          "line": 84,
+          "match": "[REDACCIONADO]=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        },
+        {
+          "rule": " Bearer-auth-in-header",
+          "path": "CHALLA/appweb/SOLUCION_ERRORES_PRUEBA.md",
+          "line": 55,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": " Bearer-auth-in-header",
+          "path": "CHALLA/appweb/SOLUCION_ERRORES_PRUEBA.md",
+          "line": 119,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "CHALLA/appweb/GUIA_INTEGRACION_APPWEB.md",
+          "line": 355,
+          "match": "[REDACCIONADO]: \"password123\""
+        },
+        {
+          "rule": "generic-secret",
+          "path": "CHALLA/ecosistema/INSTRUCCIONES_SISTEMA_PERMISOS.md",
+          "line": 194,
+          "match": "[REDACCIONADO]: formData"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "CHALLA/ecosistema/INSTRUCCIONES_SISTEMA_PERMISOS.md",
+          "line": 626,
+          "match": "[REDACCIONADO]: \"password123\""
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_WEBAPP_LOGIN_DIRECTO_EMPRESA_ADMIN.md",
+          "line": 79,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_WEBAPP_LOGIN_DIRECTO_EMPRESA_ADMIN.md",
+          "line": 174,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "jwt-token",
+          "path": "CHALLA/ERROR_WEBAPP_LOGIN_DIRECTO_EMPRESA_ADMIN.md",
+          "line": 174,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": " Bearer-auth-in-header",
+          "path": "CHALLA/ERROR_WEBAPP_LOGIN_DIRECTO_EMPRESA_ADMIN.md",
+          "line": 79,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 18,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 49,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "jwt-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 49,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "jwt-token",
+          "path": "CHALLA/ERROR_SSO_WEBAPP_TOKEN_OPERATIVO.md",
+          "line": 159,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": " Bearer-auth-in-header",
+          "path": "docs/PLAN_ACCION_INMEDIATO.md",
+          "line": 150,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/PROBLEMAS_CONOCIDOS_Y_SOLUCIONES.md",
+          "line": 362,
+          "match": "[REDACCIONADO]: 'contrase"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/PROBLEMAS_CONOCIDOS_Y_SOLUCIONES.md",
+          "line": 410,
+          "match": "[REDACCIONADO]: 'contrase"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/ERROR_UPDATE_EMAIL_WEBCOMERCIAL.md",
+          "line": 74,
+          "match": "[REDACCIONADO]: 'contrase"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/ERROR_UPDATE_EMAIL_WEBCOMERCIAL.md",
+          "line": 121,
+          "match": "[REDACCIONADO]: contrase"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 130,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 131,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 153,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 154,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 166,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 174,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "src/services/auth.js",
+          "line": 82,
+          "match": "[REDACCIONADO]: userData"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "README.md",
+          "line": 46,
+          "match": "[REDACCIONADO]:password"
+        },
+        {
+          "rule": " Bearer-auth-in-header",
+          "path": "README.md",
+          "line": 246,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 38,
+          "match": "[REDACCIONADO]: userData"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/APIS_INTEGRACION.md",
+          "line": 521,
+          "match": "[REDACCIONADO]: 'password123'"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_DOCUMENTACION.md",
+          "line": 68,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_DOCUMENTACION.md",
+          "line": 69,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_DOCUMENTACION.md",
+          "line": 98,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_DOCUMENTACION.md",
+          "line": 99,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_DOCUMENTACION.md",
+          "line": 119,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_DOCUMENTACION.md",
+          "line": 127,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_DOCUMENTACION.md",
+          "line": 128,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "src/main/resources/application.yml",
+          "line": 8,
+          "match": "[REDACCIONADO]:kike4466"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "public/docs/api/openapi.yaml",
+          "line": 92,
+          "match": "[REDACCIONADO]: \"clave123\""
+        },
+        {
+          "rule": "generic-secret",
+          "path": "public/docs/api/openapi.yaml",
+          "line": 106,
+          "match": "[REDACCIONADO]: \"clave123\""
+        },
+        {
+          "rule": "google-api-key",
+          "path": "RAILWAY.md",
+          "line": 20,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "RAILWAY.md",
+          "line": 19,
+          "match": "[REDACCIONADO]=kike4466"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 40,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 41,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 85,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 86,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 118,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 126,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 59,
+          "match": "[REDACCIONADO]: 'password123'"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "API_FRONTEND_COMERCIAL.md",
+          "line": 101,
+          "match": "[REDACCIONADO]: 'password123'"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 40,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 41,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 85,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 86,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 118,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 126,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 59,
+          "match": "[REDACCIONADO]: 'password123'"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/API_FRONTEND_COMERCIAL.md",
+          "line": 101,
+          "match": "[REDACCIONADO]: 'password123'"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_APPWEB.md",
+          "line": 37,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "firebase-token",
+          "path": "docs/API_FRONTEND_APPWEB.md",
+          "line": 38,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "src/main/kotlin/com/siga/backend/config/DatabaseConfig.kt",
+          "line": 26,
+          "match": "[REDACCIONADO] = dbPassword"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "src/main/kotlin/com/siga/backend/config/JWTAuthConfig.kt",
+          "line": 19,
+          "match": "[REDACCIONADO] = EnvLoader"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "src/main/kotlin/com/siga/backend/services/JWTService.kt",
+          "line": 10,
+          "match": "[REDACCIONADO] = EnvLoader"
+        },
+        {
+          "rule": "google-api-key",
+          "path": "docs/BACKEND_GUIDE.md",
+          "line": 78,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "reset-usuarios.js",
+          "line": 15,
+          "match": "[REDACCIONADO]: 'admin123'"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "reset-usuarios.js",
+          "line": 23,
+          "match": "[REDACCIONADO]: 'hector123'"
+        },
+        {
+          "rule": "google-api-key",
+          "path": "docs/GUIA_INTELLIJ_IDEA.md",
+          "line": 176,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "google-api-key",
+          "path": "docs/INSTRUCCIONES_BACKEND.md",
+          "line": 340,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "google-api-key",
+          "path": "README.md",
+          "line": 44,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "google-api-key",
+          "path": "README.md",
+          "line": 45,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-api-key",
+          "path": "README.md",
+          "line": 44,
+          "match": "[REDACCIONADO]=AIzaSyAcxjnWp0d3yy7ev"
+        },
+        {
+          "rule": "generic-api-key",
+          "path": "README.md",
+          "line": 45,
+          "match": "[REDACCIONADO]=AIzaSyAcxjnWp0d3yy7ev"
+        },
+        {
+          "rule": "generic-api-key",
+          "path": "README.md",
+          "line": 122,
+          "match": "[REDACCIONADO]=AIzaSyAcxjnWp0d3yy7ev"
+        },
+        {
+          "rule": "google-api-key",
+          "path": "README.md",
+          "line": 122,
+          "match": "[REDACCIONADO]"
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/api/openapi.yaml",
+          "line": 92,
+          "match": "[REDACCIONADO]: \"clave123\""
+        },
+        {
+          "rule": "generic-secret",
+          "path": "docs/api/openapi.yaml",
+          "line": 106,
+          "match": "[REDACCIONADO]: \"clave123\""
+        }
+      ]
     }
   },
   "docker": {
@@ -1038,7 +4822,7 @@ const devopsData = {
       }
     ]
   },
-  "updatedAt": "9/6/2026, 06:50:21"
+  "updatedAt": "10/6/2026, 04:06:32"
 };
 </script>
 <!-- === DEVOPS DATA END === -->
