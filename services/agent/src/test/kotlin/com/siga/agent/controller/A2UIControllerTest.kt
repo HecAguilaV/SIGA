@@ -4,7 +4,9 @@ import com.siga.agent.model.A2UIComponent
 import com.siga.agent.model.A2UILayout
 import com.siga.agent.service.A2UIEnvelopeResponse
 import com.siga.agent.service.A2UIService
-import com.siga.agent.service.SurfaceEnvelope
+import com.siga.agent.controller.SurfaceEnvelope
+import com.siga.agent.controller.A2UIRequest
+import com.siga.agent.controller.A2UIResponse
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -35,11 +37,15 @@ class A2UIControllerTest {
         fun mockA2UIService(): A2UIService {
             val mock = mockk<A2UIService>()
             every {
-                mock.generateSurface(any())
+                mock.generateSurface(match { it.prompt == "error" })
+            } returns Mono.error(RuntimeException("Mocked service error"))
+            
+            every {
+                mock.generateSurface(match { it.prompt != "error" })
             } returns Mono.just(
                 A2UIEnvelopeResponse(
                     surfaceId = "surf-test-001",
-                    surface = SurfaceEnvelope(
+                    surface = com.siga.agent.service.SurfaceEnvelope(
                         type = "createSurface",
                         surfaceId = "surf-test-001",
                         components = listOf(
@@ -114,5 +120,41 @@ class A2UIControllerTest {
             .expectBody()
             .jsonPath("$.surfaceId").isNotEmpty
             .jsonPath("$.provenance").isEqualTo("gemini")
+    }
+
+    @Test
+    fun `POST a2ui error from service returns 502 BAD GATEWAY`() {
+        webTestClient.post()
+            .uri("/api/agent/a2ui")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue("""{"message": "error"}""")
+            .exchange()
+            .expectStatus().isEqualTo(502)
+            .expectBody()
+            .jsonPath("$.code").isEqualTo("SERVICE_ERROR")
+            .jsonPath("$.message").isEqualTo("Mocked service error")
+    }
+
+    @Test
+    fun `A2UIController Data Classes cover equals hashCode toString and copy`() {
+        val req1 = A2UIRequest("msg", mapOf("k" to "v"), emptyList(), "mode")
+        val req2 = req1.copy()
+        val req3 = req1.copy(message = "m2")
+        org.junit.jupiter.api.Assertions.assertTrue(req1 == req2)
+        org.junit.jupiter.api.Assertions.assertFalse(req1 == req3)
+        org.junit.jupiter.api.Assertions.assertEquals(req1.hashCode(), req2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(req1.toString().contains("A2UIRequest"))
+
+        val env1 = SurfaceEnvelope("type", "sid", emptyList(), null)
+        val env2 = env1.copy()
+        org.junit.jupiter.api.Assertions.assertTrue(env1 == env2)
+        org.junit.jupiter.api.Assertions.assertEquals(env1.hashCode(), env2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(env1.toString().contains("SurfaceEnvelope"))
+
+        val res1 = A2UIResponse("sid", env1, "prov")
+        val res2 = res1.copy()
+        org.junit.jupiter.api.Assertions.assertTrue(res1 == res2)
+        org.junit.jupiter.api.Assertions.assertEquals(res1.hashCode(), res2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(res1.toString().contains("A2UIResponse"))
     }
 }

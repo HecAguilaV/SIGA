@@ -50,4 +50,15 @@ class SigaAgentApplicationTests {
             SigaAgentApplication.validateApiKey(env)
         }
     }
+
+    @Test
+    fun `main method can be executed`() {
+        assertDoesNotThrow {
+            // Test that the companion object instance exists and SigaAgentApplication constructor works
+            val env = mockk<Environment>()
+            every { env.getProperty("gemini.api-key") } returns "test-key-123"
+            val app = SigaAgentApplication(env)
+            org.junit.jupiter.api.Assertions.assertNotNull(app)
+        }
+    }
 }

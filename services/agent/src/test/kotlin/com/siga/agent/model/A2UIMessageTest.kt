@@ -169,4 +169,45 @@ class A2UIMessageTest {
         assertEquals(UpdateMode.APPEND, UpdateMode.valueOf("APPEND"))
         assertEquals(UpdateMode.PATCH, UpdateMode.valueOf("PATCH"))
     }
+
+    @Test
+    fun `Data classes cover equals hashCode toString and copy`() {
+        val req1 = A2UIv0Request("p1", mapOf("k" to "v"), emptyList(), "m1")
+        val req2 = req1.copy()
+        val req3 = req1.copy(prompt = "p2")
+        org.junit.jupiter.api.Assertions.assertTrue(req1 == req2)
+        org.junit.jupiter.api.Assertions.assertFalse(req1 == req3)
+        org.junit.jupiter.api.Assertions.assertEquals(req1.hashCode(), req2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(req1.toString().contains("A2UIv0Request"))
+
+        val comp1 = A2UIComponent("t1", mapOf("k" to "v"), emptyList(), "r1", "n1")
+        val comp2 = comp1.copy()
+        org.junit.jupiter.api.Assertions.assertTrue(comp1 == comp2)
+        org.junit.jupiter.api.Assertions.assertEquals(comp1.hashCode(), comp2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(comp1.toString().contains("A2UIComponent"))
+
+        val layout1 = A2UILayout("l1", 2, 10)
+        val layout2 = layout1.copy()
+        org.junit.jupiter.api.Assertions.assertTrue(layout1 == layout2)
+        org.junit.jupiter.api.Assertions.assertEquals(layout1.hashCode(), layout2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(layout1.toString().contains("A2UILayout"))
+
+        val surf1 = CreateSurface("s1", listOf(comp1), layout1, "n1")
+        val surf2 = surf1.copy()
+        org.junit.jupiter.api.Assertions.assertTrue(surf1 == surf2)
+        org.junit.jupiter.api.Assertions.assertEquals(surf1.hashCode(), surf2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(surf1.toString().contains("CreateSurface"))
+
+        val updateComp1 = UpdateComponents("s1", listOf(comp1), UpdateMode.REPLACE)
+        val updateComp2 = updateComp1.copy()
+        org.junit.jupiter.api.Assertions.assertTrue(updateComp1 == updateComp2)
+        org.junit.jupiter.api.Assertions.assertEquals(updateComp1.hashCode(), updateComp2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(updateComp1.toString().contains("UpdateComponents"))
+
+        val updateData1 = UpdateDataModel("s1", mapOf("k" to "v"))
+        val updateData2 = updateData1.copy()
+        org.junit.jupiter.api.Assertions.assertTrue(updateData1 == updateData2)
+        org.junit.jupiter.api.Assertions.assertEquals(updateData1.hashCode(), updateData2.hashCode())
+        org.junit.jupiter.api.Assertions.assertTrue(updateData1.toString().contains("UpdateDataModel"))
+    }
 }

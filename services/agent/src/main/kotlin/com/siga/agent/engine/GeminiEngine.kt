@@ -151,7 +151,7 @@ class GeminiEngine(
         }
     }
 
-    private fun extractTextFromGeminiResponse(responseBody: String): String {
+    internal fun extractTextFromGeminiResponse(responseBody: String): String {
         val root = mapper.readTree(responseBody)
         val candidates = root.get("candidates")
         if (candidates != null && candidates.isArray && candidates.size() > 0) {
@@ -166,7 +166,7 @@ class GeminiEngine(
         throw RuntimeException("Unexpected Gemini response format: no candidates found")
     }
 
-    private fun buildUserContent(prompt: String, context: Map<String, Any>?): String {
+    internal fun buildUserContent(prompt: String, context: Map<String, Any>?): String {
         val sb = StringBuilder(prompt)
         if (context != null && context.isNotEmpty()) {
             sb.append("\n\nContexto: ")
@@ -175,7 +175,7 @@ class GeminiEngine(
         return sb.toString()
     }
 
-    private fun buildSystemPrompt(): String {
+    internal fun buildSystemPrompt(): String {
         return """
 Eres siga-agent, el agente de UI generativa de SIGA. Tu trabajo es ÚNICAMENTE generar interfaces de usuario declarativas siguiendo el protocolo A2UI v0.9.
 

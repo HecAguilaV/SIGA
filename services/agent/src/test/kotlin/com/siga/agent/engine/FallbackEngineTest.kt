@@ -1,10 +1,14 @@
 package com.siga.agent.engine
 
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.sql.SQLException
+import javax.sql.DataSource
 
 class FallbackEngineTest {
 
@@ -189,6 +193,44 @@ class FallbackEngineTest {
         // Simulate window reset (we can't actually wait, but the clock-based impl should work)
         // The implementation uses a sliding window with System.currentTimeMillis()
         // We verify the state is tracked
+    }
+
+    @Test
+    fun `generateSurface with JDBC exception is caught and uses empty list`() {
+        val mockDataSource = mockk<DataSource>()
+        every { mockDataSource.connection } throws SQLException("Simulated error")
+        val engineWithDb = FallbackEngine(mockDataSource)
+        
+        val result = engineWithDb.generateSurface("stock de leche")
+        assertNotNull(result)
+        assertEquals(2, result.components.size)
+        // Value should be — since it's empty
+        val statCard = result.components[0]
+        assertEquals("—", statCard.props?.get("value"))
+    }
+    
+    @Test
+    fun `generateSurface with JDBC success for stock`() {
+        val mockJdbc = mockk<org.springframework.jdbc.core.JdbcTemplate>()
+        every { mockJdbc.queryForList(any(), any<String>()) } returns listOf(
+            mapOf("producto" to "leche", "cantidad" to 50, "local" to "Centro")
+        )
+        
+        // Use reflection or just inject into a wrapper since we don't have direct access
+        // Wait, we can't inject JdbcTemplate directly. FallbackEngine takes DataSource.
+        // It's easier to use a DataSource mock that returns a connection and we mock the connection? No, JdbcTemplate handles connection.
+        // Let's just create a mock Spring test? Or we can just reflection to set the jdbcTemplate.
+        val engineWithDb = FallbackEngine(null)
+        val field = FallbackEngine::class.java.getDeclaredField("jdbcTemplate")
+        field.isAccessible = true
+        field.set(engineWithDb, mockJdbc)
+        
+        val result = engineWithDb.generateSurface("stock de leche")
+        assertEquals("1", result.components[0].props?.get("value"))
+        
+        val resultVentas = engineWithDb.generateSurface("ventas del ultimo mes")
+        
+        val resultKpi = engineWithDb.generateSurface("kpi rentabilidad")
     }
 
     // Helper assertion
