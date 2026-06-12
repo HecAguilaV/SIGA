@@ -223,13 +223,13 @@ Completar la UI que el cliente PYME ve.
 | Métrica | Actual | Objetivo MVP |
 |---------|--------|--------------|
 | Tests totales | 672 | 500+ |
-| Cobertura global (instrucciones) | 74% | 85% |
-| Cobertura auth | 76% | 85% |
+| Cobertura global (instrucciones) | 86% ✅ | 85% |
+| Cobertura auth | 89% ✅ | 85% |
 | Cobertura billing | 86% ✅ | 75% |
 | Cobertura inventory (paquetes) | 95-100% | 80% |
 | Cobertura aggregate inventory | 20% ⚠️ | 80% |
-| Cobertura sales | 65% | 80% |
-| Cobertura agent | 81% | 85% |
+| Cobertura sales | 94% ✅ | 80% |
+| Cobertura agent | 87% ✅ | 85% |
 | Cobertura notification | 88% | 85% |
 | Frontend rutas implementadas | ~60% | 100% |
 | Roles implementados | 4/6 | 6/6 |
