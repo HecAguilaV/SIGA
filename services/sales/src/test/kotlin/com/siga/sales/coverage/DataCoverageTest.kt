@@ -206,20 +206,158 @@ class DataCoverageTest : DescribeSpec({
 
     describe("Enums Coverage") {
         it("exercises all enum values") {
-            DomainSaleStatus.values().forEach { it.name shouldNotBe null }
-            DomainDocumentType.values().forEach { it.name shouldNotBe null }
-            DomainDocumentStatus.values().forEach { it.name shouldNotBe null }
-            DomainShiftStatus.values().forEach { it.name shouldNotBe null }
-            DomainTransactionStatus.values().forEach { it.name shouldNotBe null }
+            DomainSaleStatus.entries.forEach {
+                it.name shouldNotBe null
+                DomainSaleStatus.valueOf(it.name) shouldBe it
+            }
+            DomainDocumentType.entries.forEach {
+                it.name shouldNotBe null
+                DomainDocumentType.valueOf(it.name) shouldBe it
+            }
+            DomainDocumentStatus.entries.forEach {
+                it.name shouldNotBe null
+                DomainDocumentStatus.valueOf(it.name) shouldBe it
+            }
+            DomainShiftStatus.entries.forEach {
+                it.name shouldNotBe null
+                DomainShiftStatus.valueOf(it.name) shouldBe it
+            }
+            DomainTransactionStatus.entries.forEach {
+                it.name shouldNotBe null
+                DomainTransactionStatus.valueOf(it.name) shouldBe it
+            }
             
-            EntitySaleStatus.values().forEach { it.name shouldNotBe null }
-            EntityDocumentType.values().forEach { it.name shouldNotBe null }
-            EntityDocumentStatus.values().forEach { it.name shouldNotBe null }
-            EntityShiftStatus.values().forEach { it.name shouldNotBe null }
-            EntityTransactionStatus.values().forEach { it.name shouldNotBe null }
+            EntitySaleStatus.entries.forEach {
+                it.name shouldNotBe null
+                EntitySaleStatus.valueOf(it.name) shouldBe it
+            }
+            EntityDocumentType.entries.forEach {
+                it.name shouldNotBe null
+                EntityDocumentType.valueOf(it.name) shouldBe it
+            }
+            EntityDocumentStatus.entries.forEach {
+                it.name shouldNotBe null
+                EntityDocumentStatus.valueOf(it.name) shouldBe it
+            }
+            EntityShiftStatus.entries.forEach {
+                it.name shouldNotBe null
+                EntityShiftStatus.valueOf(it.name) shouldBe it
+            }
+            EntityTransactionStatus.entries.forEach {
+                it.name shouldNotBe null
+                EntityTransactionStatus.valueOf(it.name) shouldBe it
+            }
             
-            SaleEventType.values().forEach { it.name shouldNotBe null }
-            StockEventType.values().forEach { it.name shouldNotBe null }
+            SaleEventType.entries.forEach {
+                it.name shouldNotBe null
+                SaleEventType.valueOf(it.name) shouldBe it
+            }
+            StockEventType.entries.forEach {
+                it.name shouldNotBe null
+                StockEventType.valueOf(it.name) shouldBe it
+            }
+        }
+    }
+
+    describe("Edge Cases and Explicit Getters/Setters") {
+        it("exercises all property accessors and edge cases for all entities") {
+            val id = UUID.randomUUID()
+            val id2 = UUID.randomUUID()
+            val now = Instant.now()
+
+            fun <T : Any> testEntity(entity: T, canHaveNullId: Boolean = true, factory: (UUID?) -> T, idSetter: (T, UUID?) -> Unit) {
+                val e1 = factory(id)
+                val e2 = factory(id)
+                val e3 = factory(id2)
+
+                // Basic equality
+                e1 shouldBe e1
+                e1 shouldBe e2
+                e1 shouldNotBe e3
+                e1.equals(null) shouldBe false
+                e1.equals("not an entity") shouldBe false
+                
+                // HashCode
+                e1.hashCode() shouldBe id.hashCode()
+                
+                if (canHaveNullId) {
+                    val e4 = factory(null)
+                    val e5 = factory(null)
+                    e1 shouldNotBe e4
+                    e4 shouldNotBe e5
+                    e4.hashCode() shouldBe 0
+                }
+                
+                // ToString
+                e1.toString() shouldNotBe null
+                
+                // Property accessors (minimal exercise)
+                idSetter(e1, id)
+            }
+
+            // SaleEntity
+            testEntity(
+                SaleEntity(storeId = id, total = BigDecimal.ZERO),
+                factory = { SaleEntity(id = it, storeId = id, total = BigDecimal.ZERO) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // CashShiftEntity
+            testEntity(
+                CashShiftEntity(storeId = id, userId = id, initialAmount = BigDecimal.ZERO),
+                factory = { CashShiftEntity(id = it, storeId = id, userId = id, initialAmount = BigDecimal.ZERO) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // CustomerEntity
+            testEntity(
+                CustomerEntity(id, "T", "N", "E", "P", "A", now),
+                factory = { CustomerEntity(id = it, taxId = "T", name = "N", email = "E", phone = "P", address = "A", createdAt = now) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // PaymentMethodEntity
+            testEntity(
+                PaymentMethodEntity(id, "N", true),
+                factory = { PaymentMethodEntity(id = it, name = "N", isActive = true) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // PosCartEntity
+            testEntity(
+                PosCartEntity(id, id, id, 1, BigDecimal.TEN, id, id, now),
+                factory = { PosCartEntity(id = it, saleId = id, productId = id, quantity = 1, unitPrice = BigDecimal.TEN, storeId = id, userId = id, createdAt = now) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // PosTransactionEntity
+            testEntity(
+                PosTransactionEntity(id, id, id, id, BigDecimal.TEN, "1234", now, DomainTransactionStatus.COMPLETED),
+                factory = { PosTransactionEntity(id = it, saleId = id, shiftId = id, paymentMethodId = id, amount = BigDecimal.TEN, last4Digits = "1234", createdAt = now, status = DomainTransactionStatus.COMPLETED) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // SaleDocumentEntity
+            testEntity(
+                SaleDocumentEntity(id, id, id, DomainDocumentType.BOLETA, 1, BigDecimal.TEN, BigDecimal.ONE, DomainDocumentStatus.EMITTED, "P", "X", now),
+                factory = { SaleDocumentEntity(id = it, saleId = id, customerId = id, type = DomainDocumentType.BOLETA, folio = 1, totalAmount = BigDecimal.TEN, taxAmount = BigDecimal.ONE, status = DomainDocumentStatus.EMITTED, pdfUrl = "P", xmlUrl = "X", createdAt = now) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // SaleItemEntity
+            testEntity(
+                SaleItemEntity(id, id, id, 1, BigDecimal.ONE, BigDecimal.TEN),
+                factory = { SaleItemEntity(id = it, saleId = id, productId = id, quantity = 1, unitPrice = BigDecimal.ONE, subtotal = BigDecimal.TEN) },
+                idSetter = { e, v -> e.id = v }
+            )
+
+            // ProcessedEvent
+            testEntity(
+                ProcessedEvent(id, "T", now),
+                canHaveNullId = false,
+                factory = { ProcessedEvent(eventId = it ?: UUID.randomUUID(), eventType = "T", processedAt = now) },
+                idSetter = { _, _ -> /* immutable */ }
+            )
         }
     }
 
