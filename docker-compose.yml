@@ -3,13 +3,18 @@ services:
   # ============================================================
   # LAYER 0 — PERSISTENCE
   # PostgreSQL 16 + PGVector extension for AI vector search.
-  # Single instance hosts all service databases (database-per-service
-  # via separate schemas). init-db.sh creates schemas and users on
-  # first run; Flyway owns all DDL from that point forward.
   # ============================================================
   siga-db:
-    image: pgvector/pgvector:pg16              # PostgreSQL 16 with pgvector for AI embeddings
+    image: pgvector/pgvector:pg16
     container_name: siga-postgres
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 256M
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -30,13 +35,19 @@ services:
 
   # ============================================================
   # LAYER 0 — EVENT STREAMING
-  # Apache Kafka in KRaft mode (no Zookeeper). Handles SAGA
-  # choreography events between microservices (e.g. sale → stock
-  # reservation → billing invoice). Single-node for dev/staging.
+  # Apache Kafka in KRaft mode.
   # ============================================================
   siga-kafka:
-    image: confluentinc/cp-kafka:latest        # Confluent Kafka — KRaft mode (no Zookeeper)
+    image: confluentinc/cp-kafka:latest
     container_name: siga-kafka
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
     ports:
       - "${KAFKA_PORT}:9092"
     environment:
@@ -58,27 +69,36 @@ services:
 
   # ============================================================
   # LAYER 0 — CACHE
-  # Redis 7 for declarative caching via Spring Cache abstraction.
-  # Single-node for dev/staging. Cluster mode can be added later
-  # if cache pressure grows beyond single-instance capacity.
+  # Redis 7 for declarative caching.
   # ============================================================
   siga-redis:
     image: redis:7-alpine
     container_name: siga-redis
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '1.0'
+        reservations:
+          memory: 64M
     ports:
-      - "${REDIS_PORT}:6379"
+      - "${REDIS_PORT_FIXED:-6379}:6379"
     networks:
       - siga-net
 
   # ============================================================
   # LAYER 0 — ADMIN UIs
-  # Web-based management panels for Postgres, Redis, and Kafka.
-  # Not required for the application to work — purely for
-  # developer/DBA convenience during development and debugging.
   # ============================================================
   siga-kafka-ui:
-    image: provectuslabs/kafka-ui:latest       # Web UI for Kafka topic inspection and consumer groups
+    image: provectuslabs/kafka-ui:latest
     container_name: siga-kafka-ui
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '1.0'
     ports:
       - "${KAFKA_UI_PORT}:8080"
     environment:
@@ -90,8 +110,14 @@ services:
       - siga-net
 
   pgadmin:
-    image: dpage/pgadmin4                      # Web UI for PostgreSQL administration and query execution
+    image: dpage/pgadmin4
     container_name: siga-pgadmin
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
@@ -99,35 +125,65 @@ services:
       - "5050:80"
     volumes:
       - siga-pgadmin-data:/var/lib/pgadmin
+      - ./scripts/pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./scripts/pgadmin/pgpass:/tmp/pgpass:ro
     depends_on:
       siga-db:
         condition: service_healthy
     networks:
       - siga-net
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: siga-portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - siga-portainer-data:/data
+    ports:
+      - "${PORTAINER_PORT:-9000}:9000"
+    networks:
+      - siga-net
+
   # ============================================================
   # LAYER 1 — SERVICE DISCOVERY & API GATEWAY
-  # Eureka handles service registration; Gateway routes all
-  # external traffic to internal microservices via RewritePath
-  # rules (e.g. /api/auth/* → siga-auth /api/v1/*).
   # ============================================================
   siga-eureka:
-    image: hdaguila/siga-eureka:latest         # Netflix Eureka — service registry and discovery
+    image: hdaguila/siga-eureka:latest
     build:
       context: .
       dockerfile: ./services/registry/Dockerfile
     container_name: siga-eureka
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 256M
     ports:
       - "8761:8761"
     networks:
       - siga-net
 
   siga-gateway:
-    image: hdaguila/siga-gateway:latest        # Spring Cloud Gateway — API routing with RewritePath
+    image: hdaguila/siga-gateway:latest
     build:
       context: .
       dockerfile: ./services/gateway/Dockerfile
     container_name: siga-gateway
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 256M
     ports:
       - "${GATEWAY_PORT}:8080"
     environment:
@@ -138,26 +194,30 @@ services:
       - siga-net
 
   # ============================================================
-  # LAYER 2 — CORE MICROSERVICES (Hexagonal Architecture)
-  # Each service owns its database schema (database-per-service).
-  # All follow Hexagonal Architecture: domain/port → adapter → usecase.
-  # Communication: REST (sync via Gateway) + Kafka (async SAGA).
+  # LAYER 2 — CORE MICROSERVICES
   # ============================================================
 
-  # Auth: Identity, RBAC permissions, JWT, email verification.
-  # Owns: siga_auth database, auth schema.
   siga-auth:
     image: hdaguila/siga-auth:latest
     build:
       context: .
       dockerfile: ./services/auth/Dockerfile
     container_name: siga-auth
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '1.0'
+        reservations:
+          memory: 384M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${AUTH_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${AUTH_DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${AUTH_DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
+      - REDIS_HOST=siga-redis
     depends_on:
       siga-db:
         condition: service_healthy
@@ -166,21 +226,27 @@ services:
     networks:
       - siga-net
 
-  # Inventory: Stock control, SKU generation, reconciliation, transfers.
-  # Owns: siga_inventory database, inventory schema.
-  # Kafka consumer: listens for sale events to reserve stock (SAGA).
   siga-inventory:
     image: hdaguila/siga-inventory:latest
     build:
       context: .
       dockerfile: ./services/inventory/Dockerfile
     container_name: siga-inventory
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '1.0'
+        reservations:
+          memory: 384M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${INVENTORY_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${INVENTORY_DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${INVENTORY_DB_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
+      - REDIS_HOST=siga-redis
     depends_on:
       siga-db:
         condition: service_healthy
@@ -191,21 +257,27 @@ services:
     networks:
       - siga-net
 
-  # Sales: POS, internal invoicing for the SME.
-  # Owns: siga_sales database, sales schema.
-  # Kafka producer: emits sale events for SAGA choreography.
   siga-sales:
     image: hdaguila/siga-sales:latest
     build:
       context: .
       dockerfile: ./services/sales/Dockerfile
     container_name: siga-sales
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '1.0'
+        reservations:
+          memory: 384M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${SALES_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${SALES_DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${SALES_DB_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
+      - REDIS_HOST=siga-redis
     depends_on:
       siga-db:
         condition: service_healthy
@@ -216,21 +288,27 @@ services:
     networks:
       - siga-net
 
-  # Billing: SaaS subscription management and payment processing.
-  # Owns: siga_billing database, billing schema.
-  # Kafka consumer: receives sale events to generate invoices (SAGA step 4).
   siga-billing:
     image: hdaguila/siga-billing:latest
     build:
       context: .
       dockerfile: ./services/billing/Dockerfile
     container_name: siga-billing
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '1.0'
+        reservations:
+          memory: 384M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${BILLING_DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${BILLING_DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${BILLING_DB_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
+      - REDIS_HOST=siga-redis
     depends_on:
       siga-db:
         condition: service_healthy
@@ -241,15 +319,20 @@ services:
     networks:
       - siga-net
 
-  # Notification: Async email delivery via Kafka consumer.
-  # Owns: siga_notification database, notification schema.
-  # Kafka consumer: listens for email events to send verification/reset emails.
   siga-notification:
     image: hdaguila/siga-notification:latest
     build:
       context: .
       dockerfile: ./services/notification/Dockerfile
     container_name: siga-notification
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '1.0'
+        reservations:
+          memory: 384M
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://siga-db:5432/${NOTIFICATION_DB_NAME}
@@ -260,6 +343,7 @@ services:
       - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
       - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
       - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      - REDIS_HOST=siga-redis
     depends_on:
       siga-db:
         condition: service_healthy
@@ -271,16 +355,20 @@ services:
       - siga-net
 
   # ============================================================
-  # LAYER 3 — AI AGENT (Optional — requires Gemini API Key)
-  # A2UI v0.9 agent powered by Gemini. Activated only with
-  # the "agent" profile: docker compose --profile agent up -d
+  # LAYER 3 — AI AGENT
   # ============================================================
   siga-agent:
-    image: hdaguila/siga-agent:latest          # Kotlin agent — A2UI v0.9 + Gemini 3 Flash
+    image: hdaguila/siga-agent:latest
     build:
       context: .
       dockerfile: ./services/agent/Dockerfile
     container_name: siga-agent
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
     profiles:
       - agent
     ports:
@@ -297,33 +385,34 @@ services:
 
   # ============================================================
   # LAYER 4 — OPS & OBSERVABILITY
-  # Developer tools for monitoring the Docker environment.
-  # ContainerFlow: real-time Docker architecture visualizer with
-  # interactive topology graph, container logs, exec terminal,
-  # CPU/RAM metrics, and best-practice recommendations.
-  # Source: https://github.com/RGJorge/ContainerFlow
-  # License: AGPL-3.0
   # ============================================================
   siga-ops:
-    image: ghcr.io/rgjorge/containerflow:latest  # ContainerFlow — Docker architecture visualizer
+    image: ghcr.io/rgjorge/containerflow:latest
     container_name: siga-ops
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
     ports:
       - "${OPS_PORT:-9470}:9470"
     environment:
       - PORT=9470
-      - AUTH_TOKEN=${OPS_AUTH_TOKEN}             # Activa acceso remoto (bind a 0.0.0.0) y pantalla de login
-      - ALLOW_NON_COMPOSE=true                   # Show containers not managed by Compose
+      - AUTH_TOKEN=${OPS_AUTH_TOKEN}
+      - ALLOW_NON_COMPOSE=true
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro  # Read-only access to Docker socket
-      - containerflow-data:/app/data                    # Persist Discord config, thresholds, stats history
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - containerflow-data:/app/data
     networks:
       - siga-net
 
 volumes:
-  siga-db-data:      # Persistent PostgreSQL data (survives container recreation)
-  siga-pgadmin-data: # Persistent pgAdmin configuration and saved connections
-  containerflow-data: # Persistent siga-ops data: Discord config, thresholds, stats history
+  siga-db-data:
+  siga-pgadmin-data:
+  siga-portainer-data:
+  containerflow-data:
 
 networks:
   siga-net:
-    driver: bridge   # Default bridge network — all services communicate by container name
+    driver: bridge

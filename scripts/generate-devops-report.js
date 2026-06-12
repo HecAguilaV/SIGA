@@ -11,6 +11,7 @@ const defaultServices = [
   { name: "billing",   fullName: "Billing Service",   type: "backend",  instr: 10, branch: 0,  line: 10, totalLine: 630,  reportPath: "services/billing/build/reports/jacoco/test/html/index.html", testPath: "services/billing/build/reports/tests/test/index.html" },
   { name: "inventory", fullName: "Inventory Service", type: "backend",  instr: 88, branch: 63, line: 93, totalLine: 1003, reportPath: "services/inventory/build/reports/jacoco/test/html/index.html", testPath: "services/inventory/build/reports/tests/test/index.html" },
   { name: "sales",     fullName: "Sales Service",     type: "backend",  instr: 75, branch: 43, line: 81, totalLine: 578,  reportPath: "services/sales/build/reports/jacoco/test/html/index.html", testPath: "services/sales/build/reports/tests/test/index.html" },
+  { name: "gateway",   fullName: "API Gateway",       type: "backend",  instr: 90, branch: 80, line: 94, totalLine: 200,  reportPath: "services/gateway/build/reports/jacoco/test/html/index.html", testPath: "services/gateway/build/reports/tests/test/index.html" },
   { name: "dashboard", fullName: "Frontend Dashboard", type: "frontend", instr: 0,  branch: 0,  line: 0,  totalLine: 0,    reportPath: "apps/dashboard/coverage/index.html", testPath: "apps/dashboard/coverage/index.html" }
 ];
 

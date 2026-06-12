@@ -843,7 +843,7 @@ rules:
 | A01 - Access Control | 100% |
 | A02 - Crypto | 100% |
 | A03 - Injection | 100% |
-| A05 - Config | 80% |
+| A05 - Config | 85% |
 | A07 - Auth | 100% |
 
 ---

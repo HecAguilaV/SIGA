@@ -901,10 +901,11 @@ describe('LoginForm', () => {
 
 | Servicio | Cobertura mínima |
 |----------|------------------|
-| auth | 90% |
-| inventory | 80% |
-| sales | 80% |
-| billing | 80% |
+| auth | 85% |
+| inventory | 85% |
+| sales | 85% |
+| billing | 85% |
+| agent | 85% |
 | gateway | 70% |
 | webapp | 70% |
 | commercial | 70% |

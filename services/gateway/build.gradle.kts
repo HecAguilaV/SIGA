@@ -59,3 +59,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.jacocoTestReport {
+    reports {
+        csv.required.set(true)
+        xml.required.set(true)
+    }
+}
+
