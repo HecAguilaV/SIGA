@@ -134,6 +134,34 @@ class ChatControllerTest {
             .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
     }
 
+    @Test
+    fun `GET chat stream emits narrative when present`() {
+        val result = webTestClient.get()
+            .uri("/api/agent/chat/stream?message=narrative")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .returnResult()
+
+        val body = String(result.responseBody ?: ByteArray(0))
+        assertTrue(body.contains("\"type\":\"chunk\""))
+        assertTrue(body.contains("This is a test narrative"))
+    }
+
+    @Test
+    fun `GET chat stream error from service emits error event`() {
+        val result = webTestClient.get()
+            .uri("/api/agent/chat/stream?message=error")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .returnResult()
+
+        val body = String(result.responseBody ?: ByteArray(0))
+        assertTrue(body.contains("\"type\":\"error\""))
+        assertTrue(body.contains("Mocked service error"))
+    }
+
     @TestConfiguration
     class MockA2UIServiceConfig {
 
@@ -141,7 +169,23 @@ class ChatControllerTest {
         @Primary
         fun a2uiService(): A2UIService {
             val mock = mockk<A2UIService>()
-            val mockResponse = A2UIEnvelopeResponse(
+            
+            every { mock.generateSurface(match { it.prompt == "error" }) } returns Mono.error(RuntimeException("Mocked service error"))
+            
+            every { mock.generateSurface(match { it.prompt == "narrative" }) } returns Mono.just(
+                A2UIEnvelopeResponse(
+                    surfaceId = "surf-narrative",
+                    surface = SurfaceEnvelope(
+                        type = "createSurface",
+                        surfaceId = "surf-narrative",
+                        components = listOf(A2UIComponent(type = "text", props = mapOf("text" to "Narrative"))),
+                        narrative = "This is a test narrative"
+                    ),
+                    provenance = "gemini"
+                )
+            )
+
+            val defaultResponse = A2UIEnvelopeResponse(
                 surfaceId = "surf-test",
                 surface = SurfaceEnvelope(
                     type = "createSurface",
@@ -153,7 +197,7 @@ class ChatControllerTest {
                 ),
                 provenance = "gemini"
             )
-            every { mock.generateSurface(any()) } returns Mono.just(mockResponse)
+            every { mock.generateSurface(match { it.prompt != "error" && it.prompt != "narrative" }) } returns Mono.just(defaultResponse)
             return mock
         }
     }

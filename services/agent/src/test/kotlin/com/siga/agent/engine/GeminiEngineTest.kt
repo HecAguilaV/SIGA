@@ -1,12 +1,112 @@
 package com.siga.agent.engine
 
+import com.siga.agent.config.GeminiProperties
 import com.siga.agent.model.CreateSurface
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class GeminiEngineTest {
+
+    private val engine = GeminiEngine(GeminiProperties())
+
+    @Test
+    fun `extractTextFromGeminiResponse extracts text correctly`() {
+        val json = """
+        {
+            "candidates": [
+                {
+                    "content": {
+                        "parts": [
+                            {"text": "Hello world"}
+                        ]
+                    }
+                }
+            ]
+        }
+        """.trimIndent()
+        
+        val text = engine.extractTextFromGeminiResponse(json)
+        assertEquals("Hello world", text)
+    }
+    
+    @Test
+    fun `extractTextFromGeminiResponse throws on missing candidates`() {
+        val json = """{"other": "data"}"""
+        val ex = assertThrows<RuntimeException> {
+            engine.extractTextFromGeminiResponse(json)
+        }
+        assertTrue(ex.message!!.contains("Unexpected Gemini response format"))
+    }
+    
+    @Test
+    fun `extractTextFromGeminiResponse throws on empty candidates`() {
+        val json = """{"candidates": []}"""
+        assertThrows<RuntimeException> {
+            engine.extractTextFromGeminiResponse(json)
+        }
+    }
+    
+    @Test
+    fun `extractTextFromGeminiResponse throws on missing content`() {
+        val json = """{"candidates": [{"other": 1}]}"""
+        assertThrows<RuntimeException> {
+            engine.extractTextFromGeminiResponse(json)
+        }
+    }
+    
+    @Test
+    fun `extractTextFromGeminiResponse throws on missing parts`() {
+        val json = """{"candidates": [{"content": {"other": 1}}]}"""
+        assertThrows<RuntimeException> {
+            engine.extractTextFromGeminiResponse(json)
+        }
+    }
+    
+    @Test
+    fun `extractTextFromGeminiResponse throws on empty parts`() {
+        val json = """{"candidates": [{"content": {"parts": []}}]}"""
+        assertThrows<RuntimeException> {
+            engine.extractTextFromGeminiResponse(json)
+        }
+    }
+    
+    @Test
+    fun `buildUserContent builds string without context`() {
+        val content = engine.buildUserContent("hello", null)
+        assertEquals("hello", content)
+        
+        val content2 = engine.buildUserContent("hello", emptyMap())
+        assertEquals("hello", content2)
+    }
+    
+    @Test
+    fun `buildUserContent builds string with context`() {
+        val content = engine.buildUserContent("hello", mapOf("k" to "v"))
+        assertTrue(content.startsWith("hello"))
+        assertTrue(content.contains("Contexto:"))
+        assertTrue(content.contains("\"k\":\"v\""))
+    }
+    
+    @Test
+    fun `buildSystemPrompt returns non empty string`() {
+        val prompt = engine.buildSystemPrompt()
+        assertTrue(prompt.isNotBlank())
+        assertTrue(prompt.contains("siga-agent"))
+    }
+
+    @Test
+    fun `generateSurface throws error when api key is blank`() {
+        val emptyConfigEngine = GeminiEngine(GeminiProperties(apiKey = ""))
+        val result = emptyConfigEngine.generateSurface("test").onErrorResume { e ->
+            reactor.core.publisher.Mono.just(CreateSurface("error", emptyList(), narrative = e.message))
+        }.block()
+        
+        assertNotNull(result)
+        assertEquals("GEMINI_API_KEY is not configured", result?.narrative)
+    }
 
     @Test
     fun `parseResponse returns CreateSurface with components and layout`() {
