@@ -24,6 +24,7 @@
 
 	const allNavItems: NavItem[] = [
 		{ label: 'Inicio', href: '/dashboard', icon: Gauge, roles: ['ADMINISTRATOR', 'OPERATOR', 'CASHIER'] },
+		{ label: 'Análisis', href: '/analytics/predictive', icon: ChartBar, roles: ['ADMINISTRATOR', 'OPERATOR'] },
 		{ label: 'Inventario', href: '/products', icon: Package, roles: ['ADMINISTRATOR', 'OPERATOR'] },
 		{ label: 'Locales', href: '/stores', icon: Storefront, roles: ['ADMINISTRATOR', 'OPERATOR'] },
 		{ label: 'POS', href: '/pos', icon: CreditCard, roles: ['CASHIER'] },
@@ -53,13 +54,13 @@
 
 <aside class="sidebar" class:collapsed>
 	<div class="sidebar-header">
-		<div class="logo-area" class:logo-area-collapsed={collapsed}>
+		<a href="/dashboard" class="logo-area" class:logo-area-collapsed={collapsed} aria-label="Ir al inicio">
 			{#if collapsed}
 				<img src="/S.png" alt="S" class="logo-icon-img" transition:fly={{ x: 8, duration: 150 }} />
 			{:else}
 				<img src="/Logo_SIGA.png" alt="SIGA" class="logo-full-img" transition:fly={{ x: -8, duration: 150 }} />
 			{/if}
-		</div>
+		</a>
 		<button
 			class="collapse-btn"
 			onclick={toggleCollapse}

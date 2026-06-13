@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
-import { MOCK_PRODUCTS, MOCK_STORES } from '$lib/server/mock-data';
 
-export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+export const load: PageServerLoad = async (event) => {
+	const { fetch, url, locals } = event;
 	const user = locals.user;
 
 	let insights: any[] = [];
@@ -12,7 +12,8 @@ export const load: PageServerLoad = async ({ fetch, url, locals }) => {
 	let error = null;
 
 	try {
-		const res = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, '/api/v1/dashboard/insights');
+		// Intentar obtener el dashboard consolidado (si existe)
+		const res = await fetchWithAuth(fetch, event, '/api/v1/dashboard/insights');
 
 		if (res.ok) {
 			const body = await res.json();
@@ -20,23 +21,17 @@ export const load: PageServerLoad = async ({ fetch, url, locals }) => {
 			lowStock = body.lowStock ?? [];
 			anomalies = body.anomalies ?? [];
 			trends = body.trends ?? [];
-		} else if (res.status === 404) {
-			// Endpoint not available — use composition fallback
-			const fallback = await composeFallback(fetch, url);
+		} else {
+			// Si no hay dashboard consolidado, componer desde servicios core
+			const fallback = await composeDashboardFromServices(fetch, event);
 			insights = fallback.insights;
 			lowStock = fallback.lowStock;
 			anomalies = fallback.anomalies;
-			trends = fallback.trends ?? [];
-		} else {
-			error = 'Servicio no disponible';
+			trends = fallback.trends;
 		}
-	} catch {
-		// Fallback to mock data
-		const fallback = mockDashboardFallback();
-		insights = fallback.insights;
-		lowStock = fallback.lowStock;
-		anomalies = fallback.anomalies;
-		trends = fallback.trends ?? [];
+	} catch (e) {
+		console.error('[Dashboard Load] Error fetching real data:', e);
+		error = 'Error al cargar datos del servidor';
 	}
 
 	return {
@@ -50,75 +45,53 @@ export const load: PageServerLoad = async ({ fetch, url, locals }) => {
 	};
 };
 
-function generateMockTrends() {
-	const data = [];
-	const now = Date.now();
-	for (let i = 6; i >= 0; i--) {
-		const d = new Date(now - i * 24 * 60 * 60 * 1000);
-		data.push({
-			date: d.toISOString().split('T')[0],
-			value: Math.floor(Math.random() * 1000) + 500
-		});
-	}
-	return data;
-}
-
-async function composeFallback(fetch: typeof globalThis.fetch, url: URL) {
+/**
+ * Compone la vista del dashboard llamando a múltiples microservicios.
+ */
+async function composeDashboardFromServices(fetch: typeof globalThis.fetch, event: any) {
 	let productCount = 0;
 	let storeCount = 0;
+	let lowStockItems: any[] = [];
 
+	// 1. Obtener conteo de productos y stock bajo desde Inventory
 	try {
-		const prodRes = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, '/api/inventory/products?size=1');
-		if (prodRes.ok) {
-			const body = await prodRes.json();
-			productCount = body.total ?? 0;
+		const stockRes = await fetchWithAuth(fetch, event, '/api/inventory/stock/consolidated?size=100');
+		if (stockRes.ok) {
+			const body = await stockRes.json();
+			const products = body.content || [];
+			productCount = body.totalElements || products.length;
+			lowStockItems = products
+				.filter((p: any) => p.totalStock < (p.minStock || 10))
+				.map((p: any) => ({
+					id: p.productId,
+					name: p.productName,
+					sku: p.sku,
+					stock: p.totalStock,
+					stockMin: p.minStock || 10
+				}));
 		}
-	} catch { /* ignore */ }
+	} catch (e) { console.error('Error fetching inventory stats:', e); }
 
+	// 2. Obtener conteo de locales
 	try {
-		const storeRes = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, '/api/stores?size=1');
+		const storeRes = await fetchWithAuth(fetch, event, '/api/inventory/stores');
 		if (storeRes.ok) {
-			const body = await storeRes.json();
-			storeCount = body.total ?? 0;
+			const stores = await storeRes.json();
+			storeCount = stores.length || 0;
 		}
-	} catch { /* ignore */ }
+	} catch (e) { console.error('Error fetching store stats:', e); }
+
+	// 3. Obtener anomalías desde el Agente (si aplica) o Sales
+	const anomalies: any[] = [];
 
 	return {
 		insights: [
 			{ id: '1', title: 'Total Productos', value: productCount, icon: 'package', variant: 'primary' },
-			{ id: '2', title: 'Total Locales', value: storeCount, icon: 'storefront', variant: 'info' }
+			{ id: '2', title: 'Total Locales', value: storeCount, icon: 'storefront', variant: 'info' },
+			{ id: '3', title: 'Stock Bajo', value: lowStockItems.length, icon: 'warning', variant: 'danger' }
 		],
-		lowStock: [],
-		anomalies: [],
+		lowStock: lowStockItems.slice(0, 5),
+		anomalies,
 		trends: []
-	};
-}
-
-function mockDashboardFallback() {
-	const lowStockItems = MOCK_PRODUCTS
-		.filter((p) => p.stock < p.stockMin)
-		.map((p) => ({
-			id: p.id,
-			name: p.name,
-			sku: p.sku,
-			stock: p.stock,
-			stockMin: p.stockMin
-		}));
-
-	const inventoryValue = MOCK_PRODUCTS.reduce((s, p) => s + p.price * p.stock, 0);
-
-	return {
-		insights: [
-			{ id: '1', title: 'Total Productos', value: MOCK_PRODUCTS.length, trend: 'stable', trendValue: 0, icon: 'package', variant: 'primary' as const },
-			{ id: '2', title: 'Total Locales', value: MOCK_STORES.length, trend: 'stable', trendValue: 0, icon: 'storefront', variant: 'info' as const },
-			{ id: '3', title: 'Stock Bajo', value: lowStockItems.length, trend: 'down', trendValue: lowStockItems.length, icon: 'warning', variant: 'danger' as const },
-			{ id: '4', title: 'Valor Inventario', value: `$${inventoryValue.toLocaleString('es-AR')}`, trend: 'up', trendValue: 5, icon: 'coin', variant: 'success' as const }
-		],
-		lowStock: lowStockItems,
-		anomalies: [
-			{ id: 'a1', type: 'stock', message: 'Ajuste de stock sin justificación en Producto #3', severity: 'high' as const, timestamp: new Date().toISOString() },
-			{ id: 'a2', type: 'price', message: 'Cambio de precio fuera de horario laboral en 2 productos', severity: 'medium' as const, timestamp: new Date().toISOString() }
-		],
-		trends: generateMockTrends()
 	};
 }

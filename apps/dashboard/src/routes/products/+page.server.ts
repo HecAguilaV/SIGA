@@ -1,11 +1,12 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
-import { MOCK_PRODUCTS, paginateMock, searchMock } from '$lib/server/mock-data';
 import type { ProductListItem } from '$lib/types/inventory';
 
-export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+export const load: PageServerLoad = async (event) => {
+	const { fetch, url, locals } = event;
 	const user = locals.user;
+	
 	if (!user || !['ADMINISTRATOR', 'OPERATOR'].includes(user.rol ?? '')) {
 		error(403, 'No tienes permisos para acceder a productos');
 	}
@@ -14,53 +15,49 @@ export const load: PageServerLoad = async ({ fetch, url, locals }) => {
 	const search = url.searchParams.get('search') ?? '';
 	const pageSize = 20;
 
+	// Sincronizar parámetros con el backend Kotlin (Spring usa 0-based page)
+	const queryParams = new URLSearchParams({
+		page: (page - 1).toString(),
+		size: pageSize.toString(),
+		query: search
+	});
+
 	try {
-		const res = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, `/api/inventory/products?page=${page}&size=${pageSize}&search=${encodeURIComponent(search)}`);
+		const res = await fetchWithAuth(fetch, event, `/api/inventory/products?${queryParams.toString()}`);
 
 		if (!res.ok) {
-			if (res.status === 403) error(403, 'Sin permisos');
-			if (res.status === 500) error(503, 'Servicio no disponible');
-			error(res.status, res.statusText);
+			console.error(`[Inventory API] Status ${res.status}: ${res.statusText}`);
+			error(res.status === 403 ? 403 : 503, 'Servicio de inventario no disponible');
 		}
 
 		const body = await res.json();
+		
+		// Adaptar respuesta de Spring (Page)
+		const products = body.content || body.items || [];
+		const total = body.totalElements || body.total || 0;
+
 		return {
-			products: body.items.map(mapToProductListItem),
-			total: body.total,
-			page: body.page,
+			products: products.map(mapToProductListItem),
+			total,
+			page,
 			search
 		};
-	} catch {
-		// Fallback a mock data
-		const filtered = searchMock(MOCK_PRODUCTS, search, ['name', 'sku', 'categoryName']);
-		const paged = paginateMock(filtered, page, pageSize);
-		return {
-			products: paged.items.map((p) => ({
-				id: p.id,
-				name: p.name,
-				sku: p.sku,
-				categoryName: p.categoryName,
-				price: p.price,
-				stock: p.stock,
-				stockMin: p.stockMin,
-				trend: (p.stock < p.stockMin ? 'down' : 'stable') as 'up' | 'down' | 'stable'
-			})),
-			total: paged.total,
-			page: paged.page,
-			search
-		};
+	} catch (err) {
+		if (err instanceof Response || (err as any).status) throw err;
+		console.error('[Inventory Load] Unexpected error:', err);
+		error(503, 'Error al conectar con el servidor de inventario');
 	}
 };
 
 function mapToProductListItem(p: any): ProductListItem {
 	return {
-		id: p.id,
-		name: p.name,
+		id: p.id || p.productId,
+		name: p.name || p.productName,
 		sku: p.sku,
-		categoryName: p.categoryName,
-		price: p.price,
-		stock: p.stock,
-		stockMin: p.stockMin,
-		trend: p.trend ?? 'stable'
+		categoryName: p.categoryName || 'General',
+		price: p.price || 0,
+		stock: p.stock ?? p.totalStock ?? 0,
+		stockMin: p.stockMin ?? p.minStock ?? 10,
+		trend: p.trend ?? ( (p.stock < p.stockMin) ? 'down' : 'stable')
 	};
 }
