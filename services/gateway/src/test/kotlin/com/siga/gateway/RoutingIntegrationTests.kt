@@ -98,6 +98,25 @@ class RoutingIntegrationTests {
     }
 
     @Test
+    fun `should route and rewrite chat to siga-agent`() {
+        stubFor(
+            get(urlEqualTo("/api/agent/chat/message"))
+                .willReturn(
+                    aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"reply\": \"hello\"}")
+                )
+        )
+
+        webTestClient.get()
+            .uri("/api/chat/message")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.reply").isEqualTo("hello")
+    }
+
+    @Test
     fun `should route and rewrite for siga-auth`() {
         stubFor(
             post(urlEqualTo("/api/v1/auth/login"))
