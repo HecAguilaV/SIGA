@@ -22,21 +22,28 @@ function parseJacocoXml(serviceName) {
     if (!fs.existsSync(xmlPath)) return null;
     const content = fs.readFileSync(xmlPath, 'utf8');
     
+    // JaCoCo XML tiene contadores anidados (por clase/método) y luego los totales
+    // del reporte al final del archivo. Buscamos el ÚLTIMO match de cada tipo,
+    // que corresponde al total global del reporte.
     const getPct = (type) => {
-      const match = content.match(new RegExp(`<counter type="${type}" missed="(\\d+)" covered="(\\d+)"/>`));
-      if (match) {
-        const missed = parseInt(match[1], 10);
-        const covered = parseInt(match[2], 10);
+      const allMatches = Array.from(content.matchAll(new RegExp(`<counter type="${type}" missed="(\\d+)" covered="(\\d+)"/>`, 'g')));
+      if (allMatches.length > 0) {
+        const last = allMatches[allMatches.length - 1];
+        const missed = parseInt(last[1], 10);
+        const covered = parseInt(last[2], 10);
         const total = missed + covered;
-        return total > 0 ? Math.round((covered / total) * 100) : 0;
+        // Si no hay elementos que cubrir (0/0), es 100% — no es un error
+        return total > 0 ? Math.round((covered / total) * 100) : 100;
       }
-      return null;
+      // Si el tipo no aparece (ej: BRANCH en código sin condicionales), asumimos 100%
+      return 100;
     };
 
     const getLines = () => {
-      const match = content.match(new RegExp(`<counter type="LINE" missed="(\\d+)" covered="(\\d+)"/>`));
-      if (match) {
-        return parseInt(match[1], 10) + parseInt(match[2], 10);
+      const allMatches = Array.from(content.matchAll(/<counter type="LINE" missed="(\d+)" covered="(\d+)"/g));
+      if (allMatches.length > 0) {
+        const last = allMatches[allMatches.length - 1];
+        return parseInt(last[1], 10) + parseInt(last[2], 10);
       }
       return 0;
     };
