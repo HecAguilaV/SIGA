@@ -5,9 +5,9 @@ spring:
   application:
     name: siga-agent
   datasource:
-    url: jdbc:postgresql://localhost:5432/siga_agent
-    username: agent_user
-    password: agent_pass
+    url: ${AGENT_DB_URL:-jdbc:postgresql://localhost:5432/siga_agent}
+    username: ${AGENT_DB_USER:-agent_user}
+    password: ${AGENT_DB_PASSWORD}
     hikari:
       initialization-fail-timeout: -1
 

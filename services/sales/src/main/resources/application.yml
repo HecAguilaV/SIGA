@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST:-localhost}:5432/${SALES_DB_NAME:-siga_db}
     username: ${SALES_DB_USER:-admin}
-    password: ${SALES_DB_PASSWORD:-password123}
+    password: ${SALES_DB_PASSWORD}
   flyway:
     enabled: true
     locations: classpath:db/migration

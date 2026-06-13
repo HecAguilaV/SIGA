@@ -14,7 +14,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://siga-db:5432/siga_billing}
     username: ${SPRING_DATASOURCE_USERNAME:billing_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:billing_pass_2026}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
