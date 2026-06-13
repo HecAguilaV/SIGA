@@ -199,16 +199,46 @@
 
 		<div class="widget-messages" bind:this={chatWidgetEl}>
 			{#if chat.messages.length === 0}
-				<div class="empty-state">
-					<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-					</svg>
-					<p class="empty-title">Asistente {mode === 'analyst' ? 'Analista' : 'Operador'}</p>
-					<p class="empty-desc">
-						{mode === 'analyst'
-							? 'Consulta datos del negocio: stock, ventas, tendencias.'
-							: 'Ejecuta acciones: ajustar stock, crear productos, etc.'}
+				<div class="welcome-screen" in:fade={{ duration: 300 }}>
+					<div class="welcome-header">
+						<div class="welcome-avatar">
+							<img src="/S.png" alt="SIGA AI" />
+						</div>
+						<div class="welcome-badge">SIGA Assistant v3.1</div>
+					</div>
+					<h2 class="welcome-title">Hola, soy tu copiloto SIGA</h2>
+					<p class="welcome-desc">
+						Estoy aquí para ayudarte a gestionar tu negocio con inteligencia. {mode === 'analyst' 
+							? 'Puedo analizar tus ventas, stock y detectar anomalías en tiempo real.' 
+							: 'Puedo ejecutar acciones directas sobre el inventario y coordinar tareas.'}
 					</p>
+					
+					<div class="suggested-actions">
+						<p class="section-label">Consultas sugeridas</p>
+						<div class="action-grid">
+							{#if mode === 'analyst'}
+								<button class="action-chip" onclick={() => handleSend('¿Cómo van las ventas hoy?')}>
+									<span class="chip-icon">📈</span> ¿Ventas de hoy?
+								</button>
+								<button class="action-chip" onclick={() => handleSend('¿Qué productos tienen stock crítico?')}>
+									<span class="chip-icon">⚠️</span> Stock crítico
+								</button>
+								<button class="action-chip" onclick={() => handleSend('Analiza las mermas del mes')}>
+									<span class="chip-icon">📊</span> Análisis de mermas
+								</button>
+							{:else}
+								<button class="action-chip" onclick={() => handleSend('Ajustar stock de un producto')}>
+									<span class="chip-icon">📦</span> Ajustar stock
+								</button>
+								<button class="action-chip" onclick={() => handleSend('Crear un nuevo pedido de reposición')}>
+									<span class="chip-icon">📝</span> Reponer stock
+								</button>
+								<button class="action-chip" onclick={() => handleSend('Generar reporte de cierre de caja')}>
+									<span class="chip-icon">💰</span> Cierre de caja
+								</button>
+							{/if}
+						</div>
+					</div>
 				</div>
 			{:else}
 				{#each chat.messages.filter(m => !m.metadata?.hidden) as msg (msg.id)}
@@ -370,31 +400,113 @@
 	.widget-messages {
 		flex: 1;
 		overflow-y: auto;
-		padding: var(--spacing-sm) 0;
+		padding: 0;
+		background: linear-gradient(to bottom, var(--color-bg), var(--color-bg-alt));
 	}
 
-	.empty-state {
+	.welcome-screen {
 		display: flex;
 		flex-direction: column;
+		padding: var(--spacing-xl);
+		height: 100%;
+		gap: var(--spacing-lg);
+	}
+
+	.welcome-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: var(--spacing-md);
+	}
+
+	.welcome-avatar {
+		width: 48px;
+		height: 48px;
+		background: var(--color-primary-light);
+		border-radius: var(--radius-xl);
+		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: var(--spacing-xl);
-		text-align: center;
-		gap: var(--spacing-sm);
-		height: 100%;
+		box-shadow: var(--shadow-glow);
 	}
 
-	.empty-title {
-		font-size: var(--font-size-base);
-		font-weight: var(--font-weight-semibold);
+	.welcome-avatar img {
+		width: 28px;
+		height: 28px;
+		object-fit: contain;
+	}
+
+	.welcome-badge {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: bold;
+		background: var(--color-accent-light);
+		color: var(--color-primary-dark);
+		padding: 4px 10px;
+		border-radius: var(--radius-full);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.welcome-title {
+		font-size: var(--font-size-xl);
+		font-weight: 800;
 		color: var(--color-text);
+		line-height: 1.2;
+		letter-spacing: -0.01em;
 	}
 
-	.empty-desc {
+	.welcome-desc {
 		font-size: var(--font-size-sm);
+		color: var(--color-text-secondary);
+		line-height: 1.6;
+	}
+
+	.suggested-actions {
+		margin-top: auto;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+		padding-bottom: var(--spacing-md);
+	}
+
+	.section-label {
+		font-size: 10px;
+		font-weight: 700;
 		color: var(--color-text-muted);
-		line-height: 1.5;
-		max-width: 260px;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+
+	.action-grid {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-xs);
+	}
+
+	.action-chip {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		padding: 10px 14px;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		font-size: var(--font-size-sm);
+		color: var(--color-text);
+		cursor: pointer;
+		transition: all var(--transition-fast);
+		text-align: left;
+	}
+
+	.action-chip:hover {
+		border-color: var(--color-accent);
+		background: var(--color-accent-light);
+		transform: translateX(4px);
+	}
+
+	.chip-icon {
+		font-size: 1.1rem;
 	}
 
 	.tool-indicators {
