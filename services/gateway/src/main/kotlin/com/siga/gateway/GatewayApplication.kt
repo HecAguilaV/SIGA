@@ -15,8 +15,10 @@ class GatewayApplication {
     fun customRouteLocator(builder: RouteLocatorBuilder): RouteLocator {
         return builder.routes()
             .route("siga-agent") { r ->
-                r.path("/api/agent/**")
-                    .filters { f -> f.rewritePath("/api/agent/(?<segment>.*)", "/api/agent/\${segment}") }
+                r.path("/api/agent/**", "/api/chat/**")
+                    .filters { f ->
+                        f.rewritePath("/api/chat/(?<segment>.*)", "/api/agent/chat/\${segment}")
+                    }
                     .uri("lb://siga-agent")
             }
             .route("siga-auth") { r ->

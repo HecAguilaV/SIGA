@@ -21,48 +21,6 @@ spring:
         locator:
           enabled: false
           lower-case-service-id: true
-      routes:
-        # Auth Routes
-        - id: siga-auth
-          uri: lb://siga-auth
-          predicates:
-            - Path=/api/auth/**
-          filters:
-            - RewritePath=/api/auth/(?<segment>.*), /api/v1/auth/$\{segment}
-
-        # Inventory Routes
-        - id: siga-inventory
-          uri: lb://siga-inventory
-          predicates:
-            - Path=/api/products/**, /api/stores/**, /api/inventory/**
-          filters:
-            - RewritePath=/api/(?<service>products|stores|inventory)/(?<segment>.*), /api/v1/$\{service}/$\{segment}
-
-        # Sales Routes
-        - id: siga-sales
-          uri: lb://siga-sales
-          predicates:
-            - Path=/api/sales/**, /api/cash-shifts/**
-          filters:
-            - RewritePath=/api/(?<segment>.*), /api/v1/$\{segment}
-
-        # Billing / Commercial Routes
-        - id: siga-billing
-          uri: lb://siga-billing
-          predicates:
-            - Path=/api/billing/**, /api/comercial/**
-          filters:
-            - RewritePath=/api/billing/(?<segment>.*), /api/v1/billing/$\{segment}
-            - RewritePath=/api/comercial/(?<segment>.*), /api/v1/billing/$\{segment}
-
-        # AI Agent Routes (no /v1/ prefix needed)
-        - id: siga-agent
-          uri: lb://siga-agent
-          predicates:
-            - Path=/api/agent/**, /api/chat/**
-          filters:
-            - RewritePath=/api/chat/(?<segment>.*), /api/agent/chat/$\{segment}
-
 eureka:
   instance:
     hostname: siga-gateway
