@@ -133,6 +133,30 @@ SIGA no es solo código; es una plataforma diseñada para ser legalmente inexpug
 - **SDD (Spec-Driven Development)**: Cada cambio técnico nace de una especificación, asegurando que la seguridad y la privacidad sean requisitos funcionales, no añadidos posteriores.
 - **Bilingüismo Técnico**: Documentación y contratos de API en espejo (ES/EN) para asegurar transparencia y escalabilidad.
 
+## Gestión de Secretos
+
+A partir de junio 2026, todas las contraseñas de bases de datos y secretos deben definirse **exclusivamente vía variables de entorno** (o GitHub Secrets en CI). No hay valores hardcodeados ni defaults en `application.yml`.
+
+Para desarrollo local, creá un archivo `.env` en la raíz del proyecto:
+
+```bash
+# PostgreSQL
+POSTGRES_PASSWORD=tu_password_segura
+
+# Servicios
+AUTH_DB_PASSWORD=tu_password_segura
+INVENTORY_DB_PASSWORD=tu_password_segura
+SALES_DB_PASSWORD=tu_password_segura
+BILLING_DB_PASSWORD=tu_password_segura
+NOTIFICATION_DB_PASSWORD=tu_password_segura
+AGENT_DB_PASSWORD=tu_password_segura
+
+# JWT
+JWT_SECRET=clave_secreta_para_firmar_tokens
+```
+
+Ver `.env.example` para la lista completa de variables requeridas.
+
 ## Roadmap
 
 Ver [ROADMAP.md](ROADMAP.md) para el plan de desarrollo completo (pasado, presente y futuro).

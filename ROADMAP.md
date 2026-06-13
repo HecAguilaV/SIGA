@@ -51,8 +51,11 @@
 | **May 2026** | **Este roadmap** creado como guía única de desarrollo | ✅ |
 | **Jun 2026** | **Tests masivos**: 672 tests pasando en todos los servicios | ✅ |
 | **Jun 2026** | **Notification microservice**: email async vía Kafka (SMTP + plantillas) | ✅ |
-| **Jun 2026** | **JaCoCo real**: 74% instrucciones (antes 46.5% stale hardcodeado) | ✅ |
+| **Jun 2026** | **JaCoCo real**: 86% instrucciones (antes 46.5% stale hardcodeado) | ✅ |
 | **Jun 2026** | **Test fixes**: Sales (133), Billing (33), Agent (64), Inventory (237) | ✅ |
+| **Jun 2026** | **Gateway routing tests**: ruteo unificado (DSL Java), cobertura 94%, tests WireMock | ✅ |
+| **Jun 2026** | **Dashboard de cobertura**: lee datos vivos de JaCoCo XMLs, sin fallbacks | ✅ |
+| **Jun 2026** | **Secrets cleanup**: passwords hardcodeados → variables de entorno + GitHub Secrets | ✅ |
 
 ### 🟠 HOY — Estado Actual (Junio 2026)
 
@@ -62,8 +65,8 @@ Frontend:   ✅ SvelteKit 5 (apps/dashboard/) · BFF nativo · A2UI v0.9
 Auth:       ✅ JWT · BCrypt · dual login (Customer/User) · tenant-scoped CRUD · 189 tests
 Billing:    ✅ Planes · Suscripciones · Pagos (SOLO SaaS de SIGA) · 217 tests · 86% cobertura
 Inventory:  ✅ Stock consolidado · Auto-SKU · Búsqueda · Transferencias · 237 tests
-Sales:      ✅ POS backend · SAGA con Inventory · SaleInvoice event · 134 tests · 65% cobertura
-Agent:      ✅ Gemini 2.5 Flash · A2UI v0.9 · pgvector · 64 tests · 81% cobertura
+Sales:      ✅ POS backend · SAGA con Inventory · SaleInvoice event · 134 tests · 94% cobertura
+Agent:      ✅ Gemini 2.5 Flash · A2UI v0.9 · pgvector · 64 tests · 87% cobertura
 Notification: ✅ Email async vía Kafka · SMTP con reintentos · plantillas · 15 tests · 88% cobertura
 Roles:      ⚠️ Solo ADMINISTRATOR, OPERATOR, CASHIER, EMPLOYEE — falta GODADMIN y SUPER_ADMIN
 Dashboard:  ⚠️ Falta /(platform)/ para admin de SIGA
@@ -230,7 +233,7 @@ Completar la UI que el cliente PYME ve.
 | Cobertura aggregate inventory | 20% ⚠️ | 80% |
 | Cobertura sales | 94% ✅ | 80% |
 | Cobertura agent | 87% ✅ | 85% |
-| Cobertura notification | 88% | 85% |
+| Cobertura notification | 88% ✅ | 85% |
 | Frontend rutas implementadas | ~60% | 100% |
 | Roles implementados | 4/6 | 6/6 |
 | Servicios cloud | 0 | Todos en AWS |
