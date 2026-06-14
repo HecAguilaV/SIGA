@@ -76,9 +76,29 @@
 - **Level 1 (`surface-primary`):** Cards. Shadow: `0 1px 2px rgba(0,0,0,0.3)`.
 - **Level 2 (`surface-elevated`):** Dropdowns. Shadow: `0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px border-subtle`. Backdrop-filter: `blur(12px)`.
 
-## 6. Do's and Don'ts
-- **DO** use absolute black/very dark gray for backgrounds to make colors pop.
+## 6. Evolution: Stitch v2.4 Agentic (June 2026)
+As of June 2026, SIGA adopts the **Stitch** visual language, optimized for AI-assisted interfaces (Agentic UI) and predictive data visualization.
+
+### Stitch Visual Identity
+- **Atmosphere:** "Glassmorphism & High-Tech Teal".
+- **Primary Color:** `#009579` (SIGA Emerald/Teal).
+- **Typography:** `Hanken Grotesk` (Google Fonts).
+- **Key Components:**
+  - **Glass Cards:** Backgrounds with `backdrop-filter: blur(8px)` and semi-transparent borders.
+  - **AI Shimmer:** Subtle gradient animations (`#009579/10`) to indicate AI processing.
+  - **Bento Grids:** Modular layouts for high-density dashboards.
+
+### Dashboard Application
+- **POS:** Simplified interface with real-time SAGA visual feedback (SSE).
+- **Analytics:** Integrated charts with AI-powered narratives.
+
+---
+
+## 7. Do's and Don'ts
+- **DO** use absolute black or very dark gray for backgrounds to let colors pop.
 - **DO** use typography size to establish hierarchy instead of colors.
+- **DO** apply `Hanken Grotesk` for customer-facing interfaces (Dashboard/POS).
 - **DON'T** use borders thicker than `1px`.
-- **DON'T** use border radius larger than `8px` for data elements (keep it sharp).
-- **DON'T** use large colorful banners. Keep color reserved for data, status, and precise accents.
+- **DON'T** use border radii greater than `12px` in the Stitch system.
+- **DON'T** use large colorful banners. Keep accents for data and critical actions.
+
