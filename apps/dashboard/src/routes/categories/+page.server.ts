@@ -3,7 +3,8 @@ import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
 import { MOCK_CATEGORIES, paginateMock, searchMock } from '$lib/server/mock-data';
 
-export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+export const load: PageServerLoad = async (event) => {
+	const { fetch, url, locals } = event;
 	const user = locals.user;
 	if (!user || !['ADMINISTRATOR', 'OPERATOR'].includes(user.rol ?? '')) {
 		error(403, 'No tienes permisos para acceder a categorías');
@@ -14,34 +15,26 @@ export const load: PageServerLoad = async ({ fetch, url, locals }) => {
 	const pageSize = 20;
 
 	try {
-		const res = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, `/api/inventory/categories?page=${page}&size=${pageSize}&search=${encodeURIComponent(search)}`);
+		const res = await fetchWithAuth(fetch, event, `/api/inventory/categories?page=${page - 1}&size=${pageSize}&search=${encodeURIComponent(search)}`);
 
 		if (!res.ok) {
-			if (res.status === 403) error(403, 'Sin permisos');
-			if (res.status === 500) error(503, 'Servicio no disponible');
-			error(res.status, res.statusText);
+			error(res.status, 'Servicio de categorías no disponible');
 		}
 
-		const body = await res.json();
+		const categories = await res.json();
 		return {
-			categories: body.items,
-			total: body.total,
-			page: body.page,
-			search
-		};
-	} catch {
-		const filtered = searchMock(MOCK_CATEGORIES, search, ['name', 'description']);
-		const paged = paginateMock(filtered, page, pageSize);
-		return {
-			categories: paged.items.map((c) => ({
+			categories: categories.map((c: any) => ({
 				id: c.id,
 				name: c.name,
 				productCount: c.productCount || 0,
-				active: c.active
+				active: c.active ?? true
 			})),
-			total: paged.total,
-			page: paged.page,
+			total: categories.length, // Spring list for now, paginate if needed
+			page,
 			search
 		};
+	} catch (err) {
+		console.error('[Categories Load] Error:', err);
+		error(503, 'Error al conectar con el servidor de inventario');
 	}
 };
