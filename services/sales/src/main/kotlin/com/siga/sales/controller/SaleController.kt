@@ -5,6 +5,7 @@ import com.siga.sales.domain.model.Sale
 import com.siga.sales.domain.model.SaleItem
 import com.siga.sales.domain.model.SaleStatus
 import com.siga.sales.domain.port.SaleRepositoryPort
+import com.siga.sales.repository.DailySalesProjection
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
