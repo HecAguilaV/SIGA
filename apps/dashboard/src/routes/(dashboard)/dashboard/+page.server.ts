@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
 
 export const load: PageServerLoad = async (event) => {
-	const { fetch, url, locals } = event;
+	const { fetch, locals } = event;
 	const user = locals.user;
 
 	let insights: any[] = [];
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async (event) => {
 	let error = null;
 
 	try {
-		// Intentar obtener el dashboard consolidado (si existe)
+		// Llamar al endpoint consolidado del BFF en el Gateway
 		const res = await fetchWithAuth(fetch, event, '/api/v1/dashboard/insights');
 
 		if (res.ok) {
@@ -22,15 +22,13 @@ export const load: PageServerLoad = async (event) => {
 			anomalies = body.anomalies ?? [];
 			trends = body.trends ?? [];
 		} else {
-			// Si no hay dashboard consolidado, componer desde servicios core
+			console.warn('[Dashboard Load] BFF endpoint failed, using simplified composition');
 			const fallback = await composeDashboardFromServices(fetch, event);
 			insights = fallback.insights;
 			lowStock = fallback.lowStock;
-			anomalies = fallback.anomalies;
-			trends = fallback.trends;
 		}
 	} catch (e) {
-		console.error('[Dashboard Load] Error fetching real data:', e);
+		console.error('[Dashboard Load] Error:', e);
 		error = 'Error al cargar datos del servidor';
 	}
 

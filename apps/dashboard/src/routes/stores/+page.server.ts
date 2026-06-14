@@ -3,7 +3,8 @@ import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
 import { MOCK_STORES, paginateMock, searchMock } from '$lib/server/mock-data';
 
-export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+export const load: PageServerLoad = async (event) => {
+	const { fetch, url, locals } = event;
 	const user = locals.user;
 	if (!user || !['ADMINISTRATOR', 'OPERATOR'].includes(user.rol ?? '')) {
 		error(403, 'No tienes permisos para acceder a locales');
@@ -14,35 +15,27 @@ export const load: PageServerLoad = async ({ fetch, url, locals }) => {
 	const pageSize = 20;
 
 	try {
-		const res = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, `/api/stores?page=${page}&size=${pageSize}&search=${encodeURIComponent(search)}`);
+		const res = await fetchWithAuth(fetch, event, `/api/inventory/stores?page=${page - 1}&size=${pageSize}&search=${encodeURIComponent(search)}`);
 
 		if (!res.ok) {
-			if (res.status === 403) error(403, 'Sin permisos');
-			if (res.status === 500) error(503, 'Servicio no disponible');
-			error(res.status, res.statusText);
+			error(res.status, 'Servicio de locales no disponible');
 		}
 
-		const body = await res.json();
+		const stores = await res.json();
 		return {
-			stores: body.items,
-			total: body.total,
-			page: body.page,
-			search
-		};
-	} catch {
-		const filtered = searchMock(MOCK_STORES, search, ['name', 'address']);
-		const paged = paginateMock(filtered, page, pageSize);
-		return {
-			stores: paged.items.map((s) => ({
+			stores: stores.map((s: any) => ({
 				id: s.id,
 				name: s.name,
 				address: s.address || '',
 				productCount: s.productCount || 0,
-				active: s.active
+				active: s.active ?? true
 			})),
-			total: paged.total,
-			page: paged.page,
+			total: stores.length,
+			page,
 			search
 		};
+	} catch (err) {
+		console.error('[Stores Load] Error:', err);
+		error(503, 'Error al conectar con el servidor de locales');
 	}
 };
