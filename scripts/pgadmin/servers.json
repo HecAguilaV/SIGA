@@ -1,0 +1,14 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "SIGA Master DB",
+            "Group": "Servers",
+            "Host": "siga-db",
+            "Port": 5432,
+            "MaintenanceDB": "siga_master_db",
+            "Username": "siga_admin",
+            "SSLMode": "prefer",
+            "PassFile": "/tmp/pgpass"
+        }
+    }
+}

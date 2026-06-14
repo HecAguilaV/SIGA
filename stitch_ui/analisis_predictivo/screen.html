@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Análisis Predictivo de Ventas - SIGA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 238, 255, 0.5);
+        }
+        .ai-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(0, 149, 121, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #009579;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c7c5d3",
+                        "on-error-container": "#93000a",
+                        "background": "#fdf7ff",
+                        "on-secondary-fixed-variant": "#004e5f",
+                        "inverse-primary": "#bfc2ff",
+                        "on-background": "#1d1b21",
+                        "secondary-container": "#50d9fe",
+                        "surface-tint": "#F0F9FF",
+                        "on-primary-fixed-variant": "#393e8c",
+                        "on-tertiary-fixed": "#002018",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005140",
+                        "on-primary-fixed": "#070a61",
+                        "tertiary-fixed": "#79f8d5",
+                        "on-surface": "#1d1b21",
+                        "surface-container-highest": "#e6e0e9",
+                        "primary-container": "#070a61",
+                        "primary-fixed": "#e0e0ff",
+                        "success-vibrant": "#10B981",
+                        "secondary-fixed-dim": "#4cd6fb",
+                        "on-secondary": "#ffffff",
+                        "outline": "#777682",
+                        "surface-dim": "#ded8e1",
+                        "surface-variant": "#e6e0e9",
+                        "secondary": "#00677d",
+                        "tertiary": "#000000",
+                        "surface-container-low": "#f8f1fa",
+                        "inverse-surface": "#322f36",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#002018",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#fdf7ff",
+                        "on-primary-container": "#777dcf",
+                        "surface-container-high": "#ece6ef",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#464651",
+                        "primary-fixed-dim": "#bfc2ff",
+                        "surface-container": "#f2ecf5",
+                        "tertiary-fixed-dim": "#5adcb9",
+                        "primary": "#000000",
+                        "on-tertiary-container": "#009579",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#005c70",
+                        "inverse-on-surface": "#f5eff7",
+                        "on-secondary-fixed": "#001f27",
+                        "border-muted": "#D9D9D9",
+                        "secondary-fixed": "#b3ebff",
+                        "surface": "#fdf7ff",
+                        "sidebar-width": "260px"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-collapsed": "80px",
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "row-padding": "16px",
+                        "container-max": "1440px",
+                        "card-padding": "20px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "headline-md-mobile": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background font-body-md text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-40 bg-surface shadow-sm flex justify-between items-center h-16 px-gutter border-b border-outline-variant">
+<div class="flex items-center gap-8">
+<img alt="SIGA Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhMMyDehFF1GidcFlm_MqD13PVJD2LpaD8ZpmvDee9Y511YXYL1k_NspwZcEU3ysh3gF9mUltdnux1ZjSKqlZ9Mf00lEGmj1ozZkRW3uA4Sqmf5a_vdJINKltoFZv2nA2t1C6MUFA8r0_vaa1LPa53m8bv76IUVKn6oYXl4ZNJ1wX3IsRpzwsY-tk89ZFHoCQub6pG7kVJG6o7kmrAFZqW9YJxHKqI2Zyt-CmqeXef4y7k8SUsXufv07rVAkrOIDtoy_0Q88ZFDH7K"/>
+<nav class="hidden md:flex gap-6">
+<a class="font-headline-sm text-headline-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-1 rounded-lg" href="#">Dashboard</a>
+<a class="font-headline-sm text-headline-sm text-on-tertiary-container border-b-2 border-on-tertiary-container px-3 py-1" href="#">Analytics</a>
+<a class="font-headline-sm text-headline-sm text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-1 rounded-lg" href="#">Inventory</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container ml-2">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx8D6E94T4t5Ye2lF-Lw6F7Qpn77uwq4e9lX-UT53vNdR6OH-yJAiGeOYejEvXScIi653rX8tm2j4X5VeN0fCMJHmN_VsJt2Zc_Wqeunqvk-4h60PEED2r9FQyDLqZprXXJVXnPdHxsUVFR1XwaNkdLIp8axzw4hzRcOD5tdfsPXr1A9E9spccY_wJ_1jgtwXdnr9Mp80vhN6irTIsSNmeHnw6eUu4s1Mi5xmJmlvz0hoMmjNNzolpQUWijkUevDT7d_ZvWzngs7lJ"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width z-50 bg-surface-container-lowest border-r border-outline-variant flex flex-col shadow-sm pt-16">
+<div class="p-6 flex flex-col gap-1">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-on-tertiary-container/10 rounded-lg flex items-center justify-center text-on-tertiary-container">
+<img alt="S" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgqmPIXGsiBSrApZZwXxKwKT6KBCx7ELWEYb16yly6jkucaoBQaMhbP44yJZ1wUvtfWknVnO2Y43QEd52uIYMaROxA4fxAhPfD4TFHCtxxPGOeiyMxMXjTLuNvhHwPJyO0Kd30XK0K67sI_RPjV6rASewOt9uz2q1e7sTIYjmBV3J1KLjt9PuU-G3R3_hHV9G6L5gRpImlNfAuQL0qGANJSGHEqufd6hRNPUd0yg_s1Nnop7T4saM9yjSDPWCVmn48E35twRYJaI8F"/>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">SIGA Core</h2>
+<p class="text-[10px] text-on-surface-variant opacity-70">v3.1 Predictive Agent</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span>Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="point_of_sale">point_of_sale</span>
+<span>POS</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+<span>Agents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-on-tertiary-container/5 text-on-tertiary-container border-l-4 border-on-tertiary-container transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span>AI Chat</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-4 flex flex-col gap-2">
+<button class="w-full py-3 bg-on-tertiary-container text-on-tertiary rounded-xl font-bold flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                New Task
+            </button>
+<div class="border-t border-outline-variant my-4"></div>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="pl-[260px] pt-16 min-h-screen">
+<div class="p-gutter max-w-container-max mx-auto">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary">Análisis Predictivo de Ventas</h2>
+<p class="text-on-surface-variant font-body-lg">Proyecciones inteligentes y gestión automatizada de suministros impulsada por la inteligencia de SIGA.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface shadow-sm text-on-surface-variant border border-outline-variant hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Próximos 30 días</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-on-tertiary-container text-on-tertiary shadow-lg hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+<span>Recalcular Modelos</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Time Series Chart (Main) -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-card-padding shadow-sm relative overflow-hidden border border-outline-variant/30">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="trending_up">trending_up</span>
+                            Proyección de Demanda vs. Ventas Históricas
+                        </h3>
+<div class="flex items-center gap-4 text-xs font-label-caps">
+<span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-on-tertiary-container"></span> Histórico</span>
+<span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-on-tertiary-container/30"></span> Predictivo</span>
+</div>
+</div>
+<!-- Simplified Visual Graph Placeholder -->
+<div class="h-64 w-full flex items-end gap-2 px-4 relative">
+<div class="absolute inset-0 flex flex-col justify-between opacity-5 pointer-events-none">
+<div class="border-b border-on-surface w-full"></div>
+<div class="border-b border-on-surface w-full"></div>
+<div class="border-b border-on-surface w-full"></div>
+<div class="border-b border-on-surface w-full"></div>
+</div>
+<!-- Generating Bars - Teal/Cyan Palette -->
+<div class="flex-1 bg-on-tertiary-container/20 h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-on-tertiary-container/30 h-[45%] rounded-t-sm"></div>
+<div class="flex-1 bg-on-tertiary-container/25 h-[38%] rounded-t-sm"></div>
+<div class="flex-1 bg-on-tertiary-container/40 h-[55%] rounded-t-sm"></div>
+<div class="flex-1 bg-on-tertiary-container/50 h-[65%] rounded-t-sm"></div>
+<div class="flex-1 bg-on-tertiary-container/60 h-[75%] rounded-t-sm"></div>
+<!-- Transition to Prediction -->
+<div class="flex-1 bg-on-tertiary-container/10 h-[80%] rounded-t-sm border-t-2 border-dashed border-on-tertiary-container"></div>
+<div class="flex-1 bg-on-tertiary-container/10 h-[85%] rounded-t-sm border-t-2 border-dashed border-on-tertiary-container"></div>
+<div class="flex-1 bg-on-tertiary-container/15 h-[90%] rounded-t-sm border-t-2 border-dashed border-on-tertiary-container"></div>
+<div class="flex-1 bg-on-tertiary-container/20 h-[82%] rounded-t-sm border-t-2 border-dashed border-on-tertiary-container"></div>
+<div class="flex-1 bg-on-tertiary-container/25 h-[78%] rounded-t-sm border-t-2 border-dashed border-on-tertiary-container"></div>
+<div class="flex-1 bg-on-tertiary-container/30 h-[95%] rounded-t-sm border-t-2 border-dashed border-on-tertiary-container"></div>
+</div>
+<div class="flex justify-between mt-4 px-4 text-[10px] font-label-caps text-on-surface-variant">
+<span>ENE</span><span>FEB</span><span>MAR</span><span>ABR</span><span>MAY</span><span>JUN</span>
+<span class="text-on-tertiary-container font-bold">HOY</span>
+<span>JUL</span><span>AGO</span><span>SEP</span><span>OCT</span><span>NOV</span><span>DIC</span>
+</div>
+</div>
+<!-- Agent Insights (Side) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<div class="bg-primary-container text-on-primary rounded-xl p-card-padding shadow-md flex-1 relative overflow-hidden">
+<div class="ai-shimmer absolute inset-0 pointer-events-none"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<img alt="SIGA AI" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgqmPIXGsiBSrApZZwXxKwKT6KBCx7ELWEYb16yly6jkucaoBQaMhbP44yJZ1wUvtfWknVnO2Y43QEd52uIYMaROxA4fxAhPfD4TFHCtxxPGOeiyMxMXjTLuNvhHwPJyO0Kd30XK0K67sI_RPjV6rASewOt9uz2q1e7sTIYjmBV3J1KLjt9PuU-G3R3_hHV9G6L5gRpImlNfAuQL0qGANJSGHEqufd6hRNPUd0yg_s1Nnop7T4saM9yjSDPWCVmn48E35twRYJaI8F"/>
+<h3 class="font-headline-sm text-headline-sm">Insights de SIGA</h3>
+</div>
+<div class="space-y-4">
+<div class="bg-white/5 p-3 rounded-lg border border-white/10">
+<p class="text-body-md text-on-primary-container italic font-medium leading-relaxed">
+                                        "He detectado un patrón de demanda atípico en la categoría 'Electrónica'. Se recomienda aumentar el stock en un 15% para el próximo trimestre."
+                                    </p>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-fixed text-sm mt-1" data-icon="bolt">bolt</span>
+<div>
+<p class="text-sm font-bold">Optimización de Pedidos</p>
+<p class="text-xs text-on-primary-container">Consolida envíos de 3 proveedores para ahorrar 12% en logística.</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-fixed text-sm mt-1" data-icon="warning">warning</span>
+<div>
+<p class="text-sm font-bold">Riesgo de Rotura</p>
+<p class="text-xs text-on-primary-container">SKU-9042 tiene un 85% de probabilidad de agotarse en 4 días.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stock Crítico Section -->
+<div class="col-span-12 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col border border-outline-variant/30">
+<div class="p-card-padding flex justify-between items-center border-b border-outline-variant/30">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="inventory" style="font-variation-settings: 'FILL' 1;">inventory</span>
+<h3 class="font-headline-sm text-headline-sm">Stock Crítico &amp; Sugerencias de Reposición</h3>
+</div>
+<button class="text-on-tertiary-container font-bold text-sm hover:underline flex items-center gap-1">
+                            Ver todo el inventario
+                            <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-[11px] font-label-caps text-on-surface-variant uppercase tracking-wider">
+<th class="px-gutter py-4">Producto / SKU</th>
+<th class="px-gutter py-4 text-center">Stock Actual</th>
+<th class="px-gutter py-4 text-center">Tasa de Venta (Sem)</th>
+<th class="px-gutter py-4 text-center">Sugerencia IA</th>
+<th class="px-gutter py-4 text-right">Acción Recomendada</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-gutter py-row-padding">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Product" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcJWDRiqIuInXRgE5gYP_ZON07qO8wz4AtXcbVUDovNY66zieU3bguaVoSk-lEvapnKgSokxzfciJy048h68GJJ_NiP9mfocdjeBpMKFO8WncdhydrkUutBlYkQm6fbczKu8fTV-zRmcyJG-IBflACNFvrV9uPrdPa133ytO-tymOVE5xMFhs1fgeudXR_CXYio2p8Vo5z5moaRlPjN3zJa14q5UEtgXTxJAqZq_FZycrRVN9UhgzPFtonwd5Y_1obqGMDspuWSttQ"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Nexus Keyboard MK-2</p>
+<p class="text-xs text-on-surface-variant">ID: NX-889021</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-row-padding text-center">
+<span class="px-3 py-1 rounded-full bg-error-container text-on-error-container text-xs font-bold">12 u.</span>
+</td>
+<td class="px-gutter py-row-padding text-center text-on-surface-variant">
+                                        45 u. <span class="text-on-tertiary-container text-[10px] font-bold">↑ 8%</span>
+</td>
+<td class="px-gutter py-row-padding text-center">
+<span class="text-on-tertiary-container font-bold">+150 u.</span>
+</td>
+<td class="px-gutter py-row-padding text-right">
+<button class="px-4 py-2 bg-on-tertiary-container text-on-tertiary rounded-lg text-xs font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm">
+                                            Auto-Reponer
+                                        </button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-gutter py-row-padding">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Product" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2oV71rC8ucLx2GcPNKG7NwwPEKxkrjscNfpQ6JKmYJ3qwPAbvMBj79E0NS9BtyE7uHmMZTlSJSHYq9Bgir7WSTZFiryV0uD0Dgldkxr2iySgHaM2xfWmwBrIv7irOOJzJlj6evWFZQT9fK6jGvahLGegiZ0LIZTlW7RFEdPNWA6jez5LNpK7jqlHkYVaM-p-L6G6WCJLwZa1K7MbTdhwZr3j4QZXR7o78UOz9AsbBFMBgJs0auOASpU_L_jMApc7KA_aINoEEuMhA"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Studio Wireless X-5</p>
+<p class="text-xs text-on-surface-variant">ID: NX-772102</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-row-padding text-center">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-xs font-bold">5 u.</span>
+</td>
+<td class="px-gutter py-row-padding text-center text-on-surface-variant">
+                                        12 u. <span class="text-on-error-container text-[10px] font-bold">↓ 3%</span>
+</td>
+<td class="px-gutter py-row-padding text-center">
+<span class="text-on-tertiary-container font-bold">+40 u.</span>
+</td>
+<td class="px-gutter py-row-padding text-right">
+<button class="px-4 py-2 bg-on-tertiary-container text-on-tertiary rounded-lg text-xs font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm">
+                                            Auto-Reponer
+                                        </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Secondary Analysis Cards -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-on-surface-variant text-xs font-label-caps mb-1">Confianza del Modelo</p>
+<h4 class="text-headline-sm font-headline-sm font-bold">98.4%</h4>
+</div>
+<div class="w-10 h-10 bg-on-tertiary-container/10 text-on-tertiary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+<div class="bg-on-tertiary-container h-full" style="width: 98.4%"></div>
+</div>
+<p class="text-[10px] mt-2 text-on-surface-variant italic">Basado en datos de SIGA de los últimos 24 meses.</p>
+</div>
+<div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border-l-4 border-on-tertiary-container border border-outline-variant/30">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-on-surface-variant text-xs font-label-caps mb-1">Impacto Financiero</p>
+<h4 class="text-headline-sm font-headline-sm font-bold text-on-tertiary-container">+$12,450</h4>
+</div>
+<div class="w-10 h-10 bg-on-tertiary-container/10 text-on-tertiary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+</div>
+<p class="text-body-md text-on-surface-variant">Ahorro proyectado por optimización de inventario este mes.</p>
+</div>
+<div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-on-surface-variant text-xs font-label-caps mb-1">Alertas IA activas</p>
+<h4 class="text-headline-sm font-headline-sm font-bold text-on-error-container">03</h4>
+</div>
+<div class="w-10 h-10 bg-error-container/20 text-error rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notification_important">notification_important</span>
+</div>
+</div>
+<div class="flex gap-2">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="w-2 h-2 rounded-full bg-error opacity-50"></span>
+<span class="w-2 h-2 rounded-full bg-error opacity-20"></span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Contextual) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-on-tertiary-container text-on-tertiary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<img alt="S" class="w-7 h-7" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgqmPIXGsiBSrApZZwXxKwKT6KBCx7ELWEYb16yly6jkucaoBQaMhbP44yJZ1wUvtfWknVnO2Y43QEd52uIYMaROxA4fxAhPfD4TFHCtxxPGOeiyMxMXjTLuNvhHwPJyO0Kd30XK0K67sI_RPjV6rASewOt9uz2q1e7sTIYjmBV3J1KLjt9PuU-G3R3_hHV9G6L5gRpImlNfAuQL0qGANJSGHEqufd6hRNPUd0yg_s1Nnop7T4saM9yjSDPWCVmn48E35twRYJaI8F"/>
+<span class="absolute right-16 bg-primary-container text-on-primary px-3 py-1 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Hablar con SIGA AI
+        </span>
+</button>
+<script>
+        // Micro-interactions for table rows
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.classList.add('shadow-md');
+            });
+            row.addEventListener('mouseleave', () => {
+                row.classList.remove('shadow-md');
+            });
+        });
+
+        // Simple animation for the "AI Insight" shimmer
+        const insightCard = document.querySelector('.ai-shimmer');
+        if (insightCard) {
+            setInterval(() => {
+                insightCard.style.opacity = (Math.random() * 0.15 + 0.05).toString();
+            }, 3000);
+        }
+    </script>
+</body></html>
