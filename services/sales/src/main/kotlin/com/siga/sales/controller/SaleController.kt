@@ -54,6 +54,11 @@ class SaleController(
         }
     }
 
+    @GetMapping("/summary/daily")
+    fun getDailySalesSummary(): ResponseEntity<List<DailySalesProjection>> {
+        return ResponseEntity.ok(saleRepositoryPort.aggregateSalesByDay())
+    }
+
     @PostMapping
     fun createSale(@RequestBody request: CreateSaleRequest): ResponseEntity<Sale> {
         val savedSale = createSaleUseCase.createSale(request.sale, request.items)
