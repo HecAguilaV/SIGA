@@ -1,0 +1,44 @@
+/* Stitch Predictive Analytics Design Tokens */
+.predictive-scope {
+    --st-primary: #000000;
+    --st-on-primary: #ffffff;
+    --st-primary-container: #070a61;
+    --st-on-primary-container: #777dcf;
+    --st-secondary: #00677d;
+    --st-tertiary-container: #009579;
+    --st-on-tertiary-container: #009579;
+    --st-background: #fdf7ff;
+    --st-surface: #fdf7ff;
+    --st-surface-container: #f2ecf5;
+    --st-outline-variant: #c7c5d3;
+    --st-error: #ba1a1a;
+    --st-error-container: #ffdad6;
+    
+    font-family: 'Hanken Grotesk', sans-serif;
+}
+
+.predictive-scope .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(229, 238, 255, 0.5);
+}
+
+.predictive-scope .ai-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(0, 149, 121, 0.1), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.predictive-scope .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.predictive-scope .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--st-on-tertiary-container);
+    border-radius: 10px;
+}

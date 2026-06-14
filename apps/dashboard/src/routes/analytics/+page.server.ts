@@ -27,65 +27,42 @@ interface AnalyticsData {
 	summary: string;
 }
 
-export const load: PageServerLoad = async ({ fetch, url, locals }) => {
+export const load: PageServerLoad = async (event) => {
+	const { fetch, locals } = event;
 	const user = locals.user;
-	let analyticsData: AnalyticsData;
+	
+	let analytics: AnalyticsData = {
+		trends: [],
+		insights: [],
+		anomalies: [],
+		summary: 'No se encontraron datos de análisis.'
+	};
 	let error: string | null = null;
 
 	try {
-		const res = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, '/api/v1/dashboard/insights?deep=true');
+		const res = await fetchWithAuth(fetch, event, '/api/v1/dashboard/insights?deep=true');
 
 		if (res.ok) {
 			const body = await res.json();
-			analyticsData = {
+			analytics = {
 				trends: body.trends ?? [],
 				insights: body.insights ?? [],
 				anomalies: body.anomalies ?? [],
 				summary: body.summary ?? ''
 			};
 		} else {
-			// Gateway returned error — use fallback
-			analyticsData = getMockAnalyticsFallback();
-			error = 'Servicio de análisis no disponible — mostrando datos de demostración';
+			console.warn('[Analytics Load] BFF returned error status:', res.status);
+			error = 'No se pudo conectar con el motor de análisis';
 		}
-	} catch {
-		// Network error — fallback to mock data
-		analyticsData = getMockAnalyticsFallback();
-		error = 'Servicio de análisis no disponible — mostrando datos de demostración';
+	} catch (e) {
+		console.error('[Analytics Load] Exception:', e);
+		error = 'Error de red con el servicio de análisis';
 	}
 
 	return {
 		user,
-		analytics: analyticsData,
+		analytics,
 		error,
 		timestamp: Date.now()
 	};
 };
-
-function getMockAnalyticsFallback(): AnalyticsData {
-	const trends: TrendPoint[] = [];
-	const now = Date.now();
-
-	for (let i = 6; i >= 0; i--) {
-		const d = new Date(now - i * 24 * 60 * 60 * 1000);
-		trends.push({
-			date: d.toISOString().split('T')[0],
-			value: Math.floor(Math.random() * 1000) + 500
-		});
-	}
-
-	return {
-		trends,
-		insights: [
-			{
-				id: 'fallback-1',
-				title: 'Análisis no disponible',
-				description: 'Los datos analíticos no están disponibles en este momento',
-				type: 'info',
-				context: 'Usando datos de demostración'
-			}
-		],
-		anomalies: [],
-		summary: 'Mostrando datos de demostración — el servicio de análisis no está disponible'
-	};
-}

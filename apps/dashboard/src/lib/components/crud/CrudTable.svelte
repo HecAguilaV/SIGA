@@ -170,9 +170,10 @@
 <style>
 	.crud-table-wrapper {
 		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-border-light);
+		border-radius: var(--radius-xl);
 		overflow: hidden;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 	}
 
 	.crud-table {
@@ -182,14 +183,14 @@
 
 	.table-th {
 		text-align: left;
-		padding: 12px 16px;
-		font-size: var(--font-size-xs);
-		font-weight: var(--font-weight-semibold);
+		padding: 16px 24px;
+		font-size: 10px;
+		font-weight: 900;
 		color: var(--color-text-muted);
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		background: var(--color-bg-alt);
-		border-bottom: 1px solid var(--color-border);
+		letter-spacing: 0.1em;
+		background: #f8fafc; /* bg-slate-50 */
+		border-bottom: 1px solid var(--color-border-light);
 		white-space: nowrap;
 	}
 
@@ -209,31 +210,27 @@
 	}
 
 	.table-th-actions {
-		width: 80px;
+		width: 100px;
 		text-align: right;
 	}
 
 	.table-row {
 		transition: background var(--transition-fast);
+		border-bottom: 1px solid #f1f5f9; /* slate-100 */
+	}
+
+	.table-row:last-child {
+		border-bottom: none;
 	}
 
 	.table-row:hover {
-		background: var(--color-surface-hover);
-	}
-
-	.table-row.even {
-		background: var(--color-bg-alt);
-	}
-
-	.table-row.even:hover {
-		background: var(--color-surface-hover);
+		background: #f8fafc; /* bg-slate-50 */
 	}
 
 	.table-td {
-		padding: 12px 16px;
+		padding: 16px 24px;
 		font-size: var(--font-size-sm);
 		color: var(--color-text);
-		border-bottom: 1px solid var(--color-border-light);
 		vertical-align: middle;
 	}
 
@@ -245,31 +242,33 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-		gap: 4px;
+		gap: 8px;
 	}
 
 	.action-btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border: none;
-		background: transparent;
-		color: var(--color-text-muted);
-		border-radius: var(--radius-sm);
+		width: 36px;
+		height: 36px;
+		border: 1px solid var(--color-border-light);
+		background: var(--color-surface);
+		color: var(--color-text-secondary);
+		border-radius: var(--radius-md);
 		cursor: pointer;
 		transition: all var(--transition-fast);
 	}
 
 	.action-btn:hover {
-		background: var(--color-bg-alt);
-		color: var(--color-text);
+		background: #f1f5f9; /* slate-100 */
+		color: var(--color-primary);
+		border-color: var(--color-primary-light);
 	}
 
 	.action-danger:hover {
-		background: var(--color-error-bg);
-		color: var(--color-error);
+		background: #fef2f2; /* red-50 */
+		color: #dc2626; /* red-600 */
+		border-color: #fee2e2;
 	}
 
 	.empty-state {

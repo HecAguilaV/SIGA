@@ -1,31 +1,34 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
-import { MOCK_USERS } from '$lib/server/mock-data';
 
-export const load: PageServerLoad = async ({ params, fetch, url, locals }) => {
+export const load: PageServerLoad = async (event) => {
+	const { params, fetch, locals } = event;
 	const user = locals.user;
+	
 	if (!user || user.rol !== 'ADMINISTRATOR') {
 		error(403, 'No tienes permisos');
 	}
 
 	try {
-		const res = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, `/api/auth/users/${params.id}`);
+		const res = await fetchWithAuth(fetch, event, `/api/v1/auth/users/${params.id}`);
 		if (!res.ok) {
 			if (res.status === 404) error(404, 'Usuario no encontrado');
-			error(res.status, res.statusText);
+			error(res.status, 'Error al obtener usuario');
 		}
 		return { usr: await res.json() };
-	} catch {
-		const usr = MOCK_USERS.find((u) => u.id === params.id);
-		if (!usr) error(404, 'Usuario no encontrado');
-		return { usr };
+	} catch (err) {
+		console.error('[User Detail Load] Error:', err);
+		if ((err as any).status) throw err;
+		error(503, 'Error de conexión con el servicio de autenticación');
 	}
 };
 
 export const actions: Actions = {
-	default: async ({ params, request, fetch, url, locals }) => {
+	default: async (event) => {
+		const { params, request, fetch, locals } = event;
 		const user = locals.user;
+		
 		if (!user || user.rol !== 'ADMINISTRATOR') {
 			return fail(403, { error: 'Sin permisos' });
 		}
@@ -34,14 +37,18 @@ export const actions: Actions = {
 		const data = Object.fromEntries(formData);
 
 		try {
-			const res = await fetchWithAuth(fetch, { request: {} as Request, cookies: {} as any, url }, `/api/auth/users/${params.id}`, {
+			const res = await fetchWithAuth(fetch, event, `/api/v1/auth/users/${params.id}`, {
 				method: 'PUT',
 				body: JSON.stringify(data)
 			});
-			if (!res.ok) return fail(res.status, { error: 'Error al actualizar' });
-			redirect(303, '/users');
-		} catch {
-			redirect(303, '/users');
+			if (!res.ok) {
+				const body = await res.json();
+				return fail(res.status, { error: body.message || 'Error al actualizar' });
+			}
+			throw redirect(303, '/users');
+		} catch (err) {
+			if (err instanceof Response || (err as any).status === 303) throw err;
+			return fail(500, { error: 'Error de red al actualizar' });
 		}
 	}
 };
