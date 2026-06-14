@@ -1,0 +1,51 @@
+/* POS Isolated Stitch Design Tokens */
+:root {
+    --pos-primary: #00f5d4;
+    --pos-primary-dark: #00b49d;
+    --pos-bg: #0a0e14;
+    --pos-surface: #121820;
+    --pos-surface-light: #1a222c;
+    --pos-text: #e2e8f0;
+    --pos-text-muted: #94a3b8;
+    --pos-accent: #7b2cbf;
+    --pos-glass: rgba(18, 24, 32, 0.7);
+    --pos-glass-border: rgba(255, 255, 255, 0.1);
+}
+
+.pos-scope {
+    font-family: 'Hanken Grotesk', sans-serif;
+    color: var(--pos-text);
+    background-color: var(--pos-bg);
+}
+
+.pos-scope .product-card {
+    background: var(--pos-glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--pos-glass-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pos-scope .product-card:hover {
+    border-color: var(--pos-primary);
+    box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
+    transform: translateY(-4px);
+}
+
+.pos-scope .scan-animation {
+    width: 100%;
+    height: 2px;
+    background: var(--pos-primary);
+    box-shadow: 0 0 15px var(--pos-primary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: scan 2s linear infinite;
+    z-index: 10;
+}
+
+@keyframes scan {
+    0% { top: 0; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
