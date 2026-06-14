@@ -65,9 +65,29 @@
 - **Nivel 1 (`surface-primary`):** Tarjetas. Sombra: `0 1px 2px rgba(0,0,0,0.3)`.
 - **Nivel 2 (`surface-elevated`):** Dropdowns. Sombra: `0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px border-subtle`. Backdrop-filter: `blur(12px)`.
 
-## 6. Qué hacer y Qué no hacer
+## 6. Evolución: Stitch v2.4 Agentic (Junio 2026)
+A partir de Junio 2026, SIGA adopta el lenguaje visual **Stitch**, optimizado para interfaces asistidas por IA (Agentic UI) y visualización de datos predictivos.
+
+### Identidad Visual Stitch
+- **Atmósfera:** "Glassmorphism & High-Tech Teal".
+- **Color Primario:** `#009579` (Emerald/Teal SIGA).
+- **Tipografía:** `Hanken Grotesk` (Google Fonts).
+- **Componentes Clave:**
+  - **Glass Cards:** Fondos con `backdrop-filter: blur(8px)` y bordes semi-transparentes.
+  - **AI Shimmer:** Animaciones de gradiente sutiles (`#009579/10`) para indicar procesamiento de IA.
+  - **Bento Grids:** Layouts modulares para dashboards de alta densidad.
+
+### Aplicación en Dashboard
+- **POS:** Interfaz simplificada con feedback visual de SAGA (SSE).
+- **Analytics:** Gráficos integrados con narrativas de IA.
+
+---
+
+## 7. Qué hacer y Qué no hacer
 - **HACER** usar negro absoluto o gris muy oscuro para los fondos para que los colores resalten.
 - **HACER** usar el tamaño de tipografía para establecer jerarquía en lugar de colores.
+- **HACER** aplicar `Hanken Grotesk` para interfaces orientadas al cliente (Dashboard/POS).
 - **NO** usar bordes de más de `1px`.
-- **NO** usar radios de borde superiores a `8px` para elementos de datos (mantenerlo nítido).
-- **NO** usar banners coloridos grandes. Mantener el color reservado para datos, estados y acentos precisos.
+- **NO** usar radios de borde superiores a `12px` en el sistema Stitch.
+- **NO** usar banners coloridos grandes. Mantener los acentos para datos y acciones críticas.
+ntener el color reservado para datos, estados y acentos precisos.

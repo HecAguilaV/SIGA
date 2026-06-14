@@ -62,10 +62,19 @@
 
 | # | Tarea | Prioridad | Métrica |
 |---|-------|-----------|---------|
-| 1 | ✅ **Cobertura billing → 86%** | ✅ Hecho | 98% ctrl / 100% domain / 94% entity |
-| 2 | ✅ **Cobertura sales → 94%** | ✅ Hecho | 100% ctrl / 100% usecase / 86% entity |
-| 3 | ✅ **Cobertura auth → 89%** | ✅ Hecho | 89% ctrl / 85% usecase / 87% entity |
+| 1 | ✅ **POS UI + SAGA Feedback** | ✅ Hecho | Real-time SSE feedback |
+| 2 | ✅ **Predictive Analytics UI** | ✅ Hecho | Agent-powered insights |
+| 3 | ✅ **Dashboard Sync Backend** | ✅ Hecho | Zero hardcoded data |
 | 4 | Tests gateway + registry (hoy 0%) | 🔥 Alta | 0% |
+| 5 | GitHub Actions CI | 🔥 Alta | 📋 |
+| 6 | ConsolidatedStockCacheTest (Docker) | ⚡ Media | ⚠️ Skipea |
+| 7 | GODADMIN + SUPER_ADMIN (roles) | 🧱 Base | 4/6 |
+| 8 | coverage.html → datos reales de JaCoCo | 🧱 Base | 📋 |
+
+---
+
+> 🎯 **Global: 86%** (antes 85%). Siguiente: agent.engine o gateway.
+ts gateway + registry (hoy 0%) | 🔥 Alta | 0% |
 | 5 | GitHub Actions CI | 🔥 Alta | 📋 |
 | 6 | ✅ **Subir agent.engine y agent.config** | ✅ Hecho | 87% agent total |
 | 7 | ConsolidatedStockCacheTest (Docker) | ⚡ Media | ⚠️ Skipea |

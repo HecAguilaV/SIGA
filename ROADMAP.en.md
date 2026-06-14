@@ -56,6 +56,8 @@
 | **Jun 2026** | **Gateway routing tests**: unified DSL routing, 94% coverage, WireMock tests | ✅ |
 | **Jun 2026** | **Coverage dashboard**: live reads from JaCoCo XMLs, no stale fallbacks | ✅ |
 | **Jun 2026** | **Secrets cleanup**: hardcoded passwords → environment variables + GitHub Secrets | ✅ |
+| **Jun 2026** | **POS UI + SAGA Feedback**: real interface with real-time SSE feedback | ✅ |
+| **Jun 2026** | **Predictive Analytics UI**: dashboard with AI narratives (A2UI v0.9) | ✅ |
 
 ### 🟠 HOY — Estado Actual (June 2026)
 
@@ -69,8 +71,8 @@ Sales:      ✅ POS backend · SAGA con Inventory · SaleInvoice event · 134 te
 Agent:      ✅ Gemini 2.5 Flash · A2UI v0.9 · pgvector · 64 tests · 87% coverage
 Notification: ✅ Async email via Kafka · SMTP with retries · templates · 15 tests · 88% coverage
 Roles:      ⚠️ Solo ADMINISTRATOR, OPERATOR, CASHIER, EMPLOYEE — falta GODADMIN y SUPER_ADMIN
-Dashboard:  ⚠️ Falta /(platform)/ para admin de SIGA
-POS UI:     ❌ No existe como interfaz de usuario
+Dashboard:  ✅ Connected CRUDs · Predictive UI · SAGA feedback · /(platform)/ pending
+POS UI:     ✅ Stitch Interface · SAGA SSE Integration · Shift Management
 Docs:       ✅ ROADMAP · ARCHITECTURE_STATE · LEARNING · README
 ```
 
