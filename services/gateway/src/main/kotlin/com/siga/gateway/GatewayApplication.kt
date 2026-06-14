@@ -44,6 +44,10 @@ class GatewayApplication {
                     }
                     .uri("lb://siga-billing")
             }
+            .route("dashboard-bff") { r ->
+                r.path("/api/v1/dashboard/**")
+                    .uri("forward:/")
+            }
             .build()
     }
 }

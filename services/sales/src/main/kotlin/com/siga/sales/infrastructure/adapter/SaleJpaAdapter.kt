@@ -46,4 +46,8 @@ class SaleJpaAdapter(
     override fun findByStatus(status: SaleStatus): List<Sale> {
         return saleRepository.findByStatus(status).map { saleMapper.toDomain(it) }
     }
+
+    override fun aggregateSalesByDay(): List<com.siga.sales.repository.DailySalesProjection> {
+        return saleRepository.aggregateSalesByDay()
+    }
 }
