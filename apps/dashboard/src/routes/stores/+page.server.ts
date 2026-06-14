@@ -1,11 +1,11 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
-import { MOCK_STORES, paginateMock, searchMock } from '$lib/server/mock-data';
 
 export const load: PageServerLoad = async (event) => {
 	const { fetch, url, locals } = event;
 	const user = locals.user;
+	
 	if (!user || !['ADMINISTRATOR', 'OPERATOR'].includes(user.rol ?? '')) {
 		error(403, 'No tienes permisos para acceder a locales');
 	}
@@ -15,13 +15,22 @@ export const load: PageServerLoad = async (event) => {
 	const pageSize = 20;
 
 	try {
-		const res = await fetchWithAuth(fetch, event, `/api/inventory/stores?page=${page - 1}&size=${pageSize}&search=${encodeURIComponent(search)}`);
+		const res = await fetchWithAuth(fetch, event, `/api/inventory/stores?page=${page - 1}&size=${pageSize}`);
 
 		if (!res.ok) {
 			error(res.status, 'Servicio de locales no disponible');
 		}
 
-		const stores = await res.json();
+		let stores = await res.json();
+
+		if (search) {
+			const query = search.toLowerCase();
+			stores = stores.filter((s: any) => 
+				s.name?.toLowerCase().includes(query) || 
+				s.address?.toLowerCase().includes(query)
+			);
+		}
+
 		return {
 			stores: stores.map((s: any) => ({
 				id: s.id,
@@ -36,6 +45,7 @@ export const load: PageServerLoad = async (event) => {
 		};
 	} catch (err) {
 		console.error('[Stores Load] Error:', err);
+		if ((err as any).status) throw err;
 		error(503, 'Error al conectar con el servidor de locales');
 	}
 };

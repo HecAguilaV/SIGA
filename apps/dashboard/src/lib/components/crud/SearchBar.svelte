@@ -83,17 +83,18 @@
 		display: flex;
 		align-items: center;
 		gap: var(--spacing-sm);
-		padding: 8px 14px;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-md);
-		transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-		max-width: 400px;
+		padding: 10px 16px;
+		background: #f8fafc; /* bg-slate-50 */
+		border: 1px solid #e2e8f0; /* slate-200 */
+		border-radius: var(--radius-xl);
+		transition: all var(--transition-fast);
+		max-width: 440px;
 	}
 
 	.search-bar:focus-within {
-		border-color: var(--color-accent);
-		box-shadow: 0 0 0 3px var(--color-accent-light);
+		background: var(--color-surface);
+		border-color: #009579; /* st-tertiary-container */
+		box-shadow: 0 4px 12px rgba(0, 149, 121, 0.08);
 	}
 
 	.search-icon {
