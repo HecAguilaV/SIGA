@@ -18,7 +18,7 @@
 	class="bento-grid {className}" 
 	style="--grid-cols: {cols}; --grid-gap: var(--spacing-{gap});"
 >
-	{@render children()}
+	{@render children?.()}
 </div>
 
 <style>

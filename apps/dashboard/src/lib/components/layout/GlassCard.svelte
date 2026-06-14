@@ -22,7 +22,7 @@
 	class="glass-card-item {variant} {className}"
 	style="grid-column: {gridSpan}; padding: {padding === 'none' ? '0' : `var(--spacing-${padding})`};"
 >
-	{@render children()}
+	{@render children?.()}
 </div>
 
 <style>
