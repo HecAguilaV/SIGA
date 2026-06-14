@@ -18,8 +18,9 @@
 	import Money from 'phosphor-svelte/lib/Money';
 	import Receipt from 'phosphor-svelte/lib/Receipt';
 
-	import { deserialize } from '$app/forms';
+	import { deserialize, applyAction } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import Modal from '@siga/ui-kit/Modal.svelte';
 	import './pos.css';
 
 	let { data }: { data: any } = $props();
@@ -29,9 +30,15 @@
 	let selectedCategory = $state('Todos');
 	let cart = $state<any[]>([]);
 	let isProcessing = $state(false);
+	let isOpeningShift = $state(false);
 	let paymentMethod = $state<'CASH' | 'DEBIT' | 'CREDIT'>('CASH');
+	
+	// Shift State
+	let showShiftModal = $derived(!data.activeShift);
+	let initialBalance = $state(0);
 
-	const categories = ['Todos', 'Electrónica', 'Hogar', 'Ferretería'];
+	// Derived Categories from real data
+	const categories = $derived(['Todos', ...new Set(data.products.map((p: any) => p.category || 'General'))]);
 
 	// Filtered products
 	const filteredProducts = $derived(
@@ -49,7 +56,27 @@
 	const total = $derived(subtotal + tax);
 
 	// Actions
+	async function handleOpenShift() {
+		isOpeningShift = true;
+		const formData = new FormData();
+		formData.append('initialBalance', initialBalance.toString());
+
+		const response = await fetch('?/openShift', {
+			method: 'POST',
+			body: formData
+		});
+
+		const result = deserialize(await response.text());
+		if (result.type === 'success') {
+			await invalidateAll();
+		} else {
+			alert('Error al abrir caja: ' + (result as any).data?.message);
+		}
+		isOpeningShift = false;
+	}
+
 	function addToCart(product: any) {
+		if (!data.activeShift) return;
 		const existing = cart.find(item => item.id === product.id);
 		if (existing) {
 			existing.quantity += 1;
@@ -70,9 +97,9 @@
 	}
 
 	async function handleCheckout() {
-		if (cart.length === 0) return;
+		if (cart.length === 0 || !data.activeShift) return;
 		isProcessing = true;
-
+		
 		const formData = new FormData();
 		formData.append('cart', JSON.stringify(cart));
 		formData.append('paymentMethod', paymentMethod);
@@ -86,7 +113,6 @@
 			const result = deserialize(await response.text());
 
 			if (result.type === 'success') {
-				// Wait for animation
 				setTimeout(() => {
 					alert('¡Venta realizada con éxito!');
 					cart = [];
@@ -102,8 +128,7 @@
 			alert('Error de red al procesar la venta');
 		}
 	}
-	</script>
-
+</script>
 
 <svelte:head>
 	<title>SIGA — Terminal de Ventas (POS)</title>
@@ -112,7 +137,43 @@
 	<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 </svelte:head>
 
-<div class="pos-container pos-scope" in:fade={{ duration: 400 }}>
+<!-- Shift Modal (Apertura de Caja) -->
+{#if showShiftModal}
+	<div class="modal-overlay" transition:fade>
+		<div class="shift-modal pos-scope" in:scale>
+			<div class="modal-header">
+				<Bank size={32} weight="duotone" class="text-primary" />
+				<h2>Apertura de Caja</h2>
+				<p>Es necesario iniciar un turno para comenzar a vender.</p>
+			</div>
+			
+			<div class="modal-body">
+				<div class="input-group">
+					<label for="balance">Saldo Inicial (Efectivo)</label>
+					<input 
+						type="number" 
+						id="balance" 
+						bind:value={initialBalance} 
+						placeholder="0"
+					/>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<Button 
+					variant="primary" 
+					style="width: 100%; height: 50px;"
+					disabled={isOpeningShift}
+					onclick={handleOpenShift}
+				>
+					{isOpeningShift ? 'Abriendo...' : 'Abrir Turno de Venta'}
+				</Button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<div class="pos-container pos-scope" class:blurred={showShiftModal} in:fade={{ duration: 400 }}>
 	{#if isProcessing}
 		<div class="scan-animation"></div>
 	{/if}
