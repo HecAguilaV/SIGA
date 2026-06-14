@@ -1,11 +1,11 @@
 <script lang="ts">
-	import './pos.css';
+	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import Card from '@siga/ui-kit/Card.svelte';
 	import Badge from '@siga/ui-kit/Badge.svelte';
 	import Button from '@siga/ui-kit/Button.svelte';
-	import Input from '@siga/ui-kit/Input.svelte';
+	import Spinner from '@siga/ui-kit/Spinner.svelte';
 	
 	// Phosphor icons
 	import MagnifyingGlass from 'phosphor-svelte/lib/MagnifyingGlass';
@@ -32,10 +32,40 @@
 	let isProcessing = $state(false);
 	let isOpeningShift = $state(false);
 	let paymentMethod = $state<'CASH' | 'DEBIT' | 'CREDIT'>('CASH');
+	let sagaStatus = $state<{status: string, message: string} | null>(null);
 	
 	// Shift State
 	let showShiftModal = $derived(!data.activeShift);
 	let initialBalance = $state(0);
+
+	// SSE Connection
+	let eventSource: EventSource | null = null;
+
+	onMount(() => {
+		// Conectar a SSE para recibir notificaciones de la SAGA de ventas
+		eventSource = new EventSource('/api/sales/events');
+		
+		eventSource.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+			if (data.type === 'SALE_SAGA_COMPLETED') {
+				sagaStatus = { status: 'success', message: 'Venta procesada y facturada.' };
+				setTimeout(() => {
+					sagaStatus = null;
+					cart = [];
+					isProcessing = false;
+					invalidateAll();
+				}, 3000);
+			} else if (data.type === 'SALE_SAGA_FAILED') {
+				sagaStatus = { status: 'error', message: data.message || 'Error en la SAGA' };
+				setTimeout(() => sagaStatus = null, 4000);
+				isProcessing = false;
+			}
+		};
+	});
+
+	onDestroy(() => {
+		eventSource?.close();
+	});
 
 	// Derived Categories from real data
 	const categories = $derived(['Todos', ...new Set(data.products.map((p: any) => p.category || 'General'))]);
@@ -99,6 +129,7 @@
 	async function handleCheckout() {
 		if (cart.length === 0 || !data.activeShift) return;
 		isProcessing = true;
+		sagaStatus = { status: 'processing', message: 'Iniciando SAGA de venta...' };
 		
 		const formData = new FormData();
 		formData.append('cart', JSON.stringify(cart));
@@ -112,20 +143,16 @@
 
 			const result = deserialize(await response.text());
 
-			if (result.type === 'success') {
-				setTimeout(() => {
-					alert('¡Venta realizada con éxito!');
-					cart = [];
-					isProcessing = false;
-					invalidateAll();
-				}, 2000);
-			} else {
+			if (result.type !== 'success') {
 				isProcessing = false;
-				alert('Error: ' + (result as any).data?.message || 'Error desconocido');
+				sagaStatus = { status: 'error', message: (result as any).data?.message || 'Error en checkout' };
+				setTimeout(() => sagaStatus = null, 4000);
 			}
+			// Si es success, esperamos el evento vía SSE
 		} catch (e) {
 			isProcessing = false;
-			alert('Error de red al procesar la venta');
+			sagaStatus = { status: 'error', message: 'Error de red' };
+			setTimeout(() => sagaStatus = null, 4000);
 		}
 	}
 </script>
@@ -174,9 +201,22 @@
 {/if}
 
 <div class="pos-container pos-scope" class:blurred={showShiftModal} in:fade={{ duration: 400 }}>
-	{#if isProcessing}
-		<div class="scan-animation"></div>
+	{#if sagaStatus}
+		<div class="saga-overlay" transition:fade>
+			<div class="saga-status-card" class:success={sagaStatus.status === 'success'} class:error={sagaStatus.status === 'error'}>
+				{#if sagaStatus.status === 'processing'}
+					<div class="scan-animation"></div>
+					<Spinner size="lg" />
+				{:else if sagaStatus.status === 'success'}
+					<Receipt size={48} weight="duotone" />
+				{:else}
+					<Trash size={48} weight="duotone" />
+				{/if}
+				<h3>{sagaStatus.message}</h3>
+			</div>
+		</div>
 	{/if}
+
 	<!-- Main POS Area -->
 	<main class="pos-main">
 		<header class="pos-header">
@@ -656,8 +696,36 @@
 		color: var(--color-primary-dark);
 	}
 
+	.saga-overlay {
+		position: absolute;
+		inset: 0;
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(10, 14, 20, 0.6);
+		backdrop-filter: blur(8px);
+	}
+
+	.saga-status-card {
+		background: var(--pos-surface);
+		border: 1px solid var(--pos-glass-border);
+		padding: 40px;
+		border-radius: 24px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 20px;
+		min-width: 300px;
+		text-align: center;
+		box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+	}
+
+	.saga-status-card.success { border-color: var(--pos-primary); color: var(--pos-primary); }
+	.saga-status-card.error { border-color: var(--color-error); color: var(--color-error); }
+
 	@media (max-width: 1024px) {
 		.pos-container { grid-template-columns: 1fr; }
-		.pos-cart { display: none; } /* On mobile/tablet we'd use a floating FAB for cart */
+		.pos-cart { display: none; }
 	}
 </style>
