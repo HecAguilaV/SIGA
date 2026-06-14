@@ -2,8 +2,8 @@
    SIGA Design System — Design Tokens & Theme Variables
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Hanken Grotesk + Inter (sans) + JetBrains Mono (mono) ── */
-@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* ── Hanken Grotesk + JetBrains Mono ── */
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ── Reset ── */
 *,
@@ -38,8 +38,7 @@ svg {
 
 input,
 button,
-textarea,
-select {
+textarea, select {
 	font: inherit;
 }
 
@@ -52,209 +51,180 @@ a {
 	text-decoration: none;
 }
 
-ul,
-ol {
+ul, ol {
 	list-style: none;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6, p {
 	overflow-wrap: break-word;
 	text-wrap: pretty;
-}
-
-p {
-	overflow-wrap: break-word;
-	text-wrap: pretty;
-}
-
-/* ── Skip-to-content (a11y) ── */
-.skip-to-content {
-	position: absolute;
-	top: -40px;
-	left: 0;
-	z-index: 9999;
-	padding: 8px 16px;
-	background: var(--color-accent);
-	color: #fff;
-	font-weight: 600;
-	transition: top 0.2s;
-}
-
-.skip-to-content:focus {
-	top: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LIGHT THEME — :root (default)
+   M3 DESIGN TOKENS — LIGHT THEME
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-	/* ── Primary (Teal Profundo de Marca) ── */
-	--color-primary: #03045e;
-	--color-primary-hover: #0084d8;
-	--color-primary-light: #e0f2fe;
-	--color-primary-dark: #023e8a;
+	/* ── Brand Colors (M3 Palette) ── */
+	--color-primary: #000000;
+	--color-on-primary: #ffffff;
+	--color-primary-container: #070a61;
+	--color-on-primary-container: #777dcf;
+	
+	--color-secondary: #00677d;
+	--color-on-secondary: #ffffff;
+	--color-secondary-container: #50d9fe;
+	--color-on-secondary-container: #005c70;
 
-	/* ── Accent (Cian Vibrante de Acción y AI) ── */
-	--color-accent: #80ffdb;
-	--color-accent-hover: #56e39f;
-	--color-accent-light: #effffb;
-	--color-accent-dark: #00f5d4;
+	--color-tertiary: #000000;
+	--color-on-tertiary: #ffffff;
+	--color-tertiary-container: #002018;
+	--color-on-tertiary-container: #009579;
+
+	--color-error: #ba1a1a;
+	--color-on-error: #ffffff;
+	--color-error-container: #ffdad6;
+	--color-on-error-container: #93000a;
+
+	--color-background: #fdf7ff;
+	--color-on-background: #1d1b21;
+
+	--color-surface: #fdf7ff;
+	--color-on-surface: #1d1b21;
+	--color-surface-variant: #e6e0e9;
+	--color-on-surface-variant: #464651;
+	--color-outline: #777682;
+	--color-outline-variant: #c7c5d3;
+
+	--color-surface-container-lowest: #ffffff;
+	--color-surface-container-low: #f8f1fa;
+	--color-surface-container: #f2ecf5;
+	--color-surface-container-high: #ece6ef;
+	--color-surface-container-highest: #e6e0e9;
+
+	/* ── Semantic Extras ── */
+	--color-success: #10B981;
+	--color-warning: #f97316;
 
 	/* ── Layout ── */
-	--w-sidebar-width: 240px;
-	--w-sidebar-collapsed-width: 64px;
+	--w-sidebar-width: 260px;
+	--w-sidebar-collapsed-width: 80px;
 
-	/* ── Surface & Background ── */
-	--color-bg: #fdf7ff;
-	--color-bg-alt: #f3ecf7;
-	--color-surface: #ffffff;
-	--color-surface-hover: #faf5ff;
-	--color-surface-glass: rgba(255, 255, 255, 0.7);
-	--color-surface-glass-border: rgba(255, 255, 255, 0.5);
+	/* ── Typography (M3) ── */
+	--font-sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono', monospace;
+	
+	--font-size-display-lg: 40px;
+	--font-size-headline-md: 24px;
+	--font-size-headline-sm: 20px;
+	--font-size-body-lg: 16px;
+	--font-size-body-md: 14px;
+	--font-size-label-caps: 12px;
 
-	/* ── Text ── */
-	--color-text: #0f172a;
-	--color-text-secondary: #3b3c5e;
-	--color-text-muted: #7d7e9e;
-	--color-text-inverse: #ffffff;
-
-	/* ── Semantic ── */
-	--color-success: #00f5d4;
-	--color-success-bg: #e0fbf6;
-	--color-success-text: #0077b6;
-	--color-error: #ef4444;
-	--color-error-bg: #fef2f2;
-	--color-error-text: #b91c1c;
-	--color-warning: #f97316;
-	--color-warning-bg: #fff7ed;
-	--color-warning-text: #c2410c;
-	--color-info: #0084d8;
-	--color-info-bg: #e0f2fe;
-	--color-info-text: #023e8a;
-
-	/* ── Border ── */
-	--color-border: #e2e8f0;
-	--color-border-light: #f1f5f9;
-	--color-border-focus: var(--color-primary);
-
-	/* ── Glassmorphism ── */
-	--glass-bg: rgba(255, 255, 255, 0.4);
-	--glass-blur: 12px;
-	--glass-border: 1px solid rgba(255, 255, 255, 0.4);
-	--glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.04);
-
-	/* ── Typography ── */
-	--font-sans: 'Hanken Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-	--font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-	--font-size-xs: 0.75rem;
-	--font-size-sm: 0.875rem;
-	--font-size-base: 1rem;
-	--font-size-lg: 1.125rem;
-	--font-size-xl: 1.25rem;
-	--font-size-2xl: 1.5rem;
-	--font-size-3xl: 1.875rem;
-
-	/* ── Font weights ── */
 	--font-weight-normal: 400;
 	--font-weight-medium: 500;
 	--font-weight-semibold: 600;
 	--font-weight-bold: 700;
 
 	/* ── Spacing ── */
-	--spacing-xs: 0.25rem;
-	--spacing-sm: 0.5rem;
-	--spacing-md: 1rem;
-	--spacing-lg: 1.5rem;
-	--spacing-xl: 2rem;
-	--spacing-2xl: 3rem;
+	--spacing-base: 8px;
+	--spacing-gutter: 24px;
+	--spacing-card-padding: 20px;
+	--spacing-row-padding: 16px;
 
 	/* ── Radii ── */
-	--radius-sm: 4px;
-	--radius-md: 8px;
-	--radius-lg: 8px;
-	--radius-xl: 12px;
+	--radius-sm: 0.25rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.75rem;
+	--radius-xl: 1rem;
 	--radius-full: 9999px;
 
 	/* ── Shadows ── */
-	--shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-	--shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
-	--shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.05), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
-	--shadow-glow: 0 0 20px rgba(128, 255, 219, 0.35);
+	--shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
 
 	/* ── Transitions ── */
 	--transition-fast: 150ms ease;
 	--transition-base: 250ms ease;
-	--transition-slow: 400ms ease;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DARK THEME — [data-theme="dark"]
+   M3 DESIGN TOKENS — DARK THEME (Optimized for SIGA)
    ═══════════════════════════════════════════════════════════════════════════ */
 [data-theme='dark'] {
-	/* ── Primary (Azul Vibrante Optimizado) ── */
-	--color-primary: #3b82f6;
-	--color-primary-hover: #60a5fa;
-	--color-primary-light: #1e3a8a;
-	--color-primary-dark: #172554;
-
-	/* ── Accent (Cian de Marca SIGA) ── */
-	--color-accent: #00f5d4;
-	--color-accent-hover: #80ffdb;
-	--color-accent-light: #064e3b;
-	--color-accent-dark: #009579;
-
-	/* ── Background & Surfaces (Premium Deep Slate) ── */
-	--color-bg: #020617;
-	--color-bg-alt: #0f172a;
-	--color-surface: #1e293b;
-	--color-surface-hover: #334155;
-	--color-surface-glass: rgba(15, 23, 42, 0.9);
-	--color-surface-glass-border: rgba(255, 255, 255, 0.12);
-
-	/* ── Text (High Contrast & Balanced) ── */
-	--color-text: #f8fafc;
-	--color-text-secondary: #cbd5e1;
-	--color-text-muted: #94a3b8;
-	--color-text-inverse: #020617;
-
-	/* ── Semantic ── */
-	--color-success-bg: #064e3b;
-	--color-success-text: #4ade80;
-	--color-error-bg: #450a0a;
-	--color-error-text: #fca5a5;
-	--color-warning-bg: #431407;
-	--color-warning-text: #fdba74;
-	--color-info-bg: #172554;
-	--color-info-text: #93c5fd;
-
-	/* ── Border (Sharp & Subtler) ── */
-	--color-border: #334155;
-	--color-border-light: rgba(255, 255, 255, 0.05);
-
-	/* ── Glassmorphism (Balanced Depth) ── */
-	--glass-bg: rgba(15, 23, 42, 0.7);
-	--glass-border: 1px solid rgba(255, 255, 255, 0.1);
-	--glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-
-	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-	--shadow-md: 0 10px 20px rgba(0, 0, 0, 0.5);
-	--shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.7);
-	--shadow-glow: 0 0 20px rgba(0, 245, 212, 0.08);
+	--color-background: #1d1b21;
+	--color-on-background: #e6e0e9;
+	--color-surface: #1d1b21;
+	--color-on-surface: #e6e0e9;
+	--color-surface-container: #322f36;
+	--color-surface-container-highest: #49454f;
+	
+	--color-primary: #bfc2ff;
+	--color-on-primary: #070a61;
+	--color-secondary: #4cd6fb;
+	--color-on-secondary: #003642;
+	--color-tertiary: #5adcb9;
+	--color-on-tertiary: #00382d;
+	
+	--color-outline: #938f99;
+	--color-outline-variant: #49454f;
 }
 
-/* ── Base body styles ── */
+/* ── Base Styles ── */
 body {
 	font-family: var(--font-sans);
-	font-size: var(--font-size-base);
-	color: var(--color-text);
-	background-color: var(--color-bg);
+	font-size: var(--font-size-body-md);
+	color: var(--color-on-surface);
+	background-color: var(--color-background);
 	transition: background-color var(--transition-base), color var(--transition-base);
 }
+
+/* ── Glassmorphism Utility ── */
+.glass-card {
+	background: rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(8px);
+	border: 1px solid rgba(229, 238, 255, 0.5);
+}
+
+[data-theme='dark'] .glass-card {
+	background: rgba(29, 27, 33, 0.6);
+	backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ── AI Shimmer Utility ── */
+.ai-shimmer {
+	background: linear-gradient(90deg, transparent, rgba(0, 149, 121, 0.1), transparent);
+	background-size: 200% 100%;
+	animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+	0% { background-position: -200% 0; }
+	100% { background-position: 200% 0; }
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+	width: 4px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--color-surface-container);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--color-on-tertiary-container);
+	border-radius: var(--radius-full);
+}
+
+/* ── Typography Utilities ── */
+.text-display-lg { font-size: var(--font-size-display-lg); font-weight: var(--font-weight-bold); line-height: 48px; letter-spacing: -0.02em; }
+.text-headline-md { font-size: var(--font-size-headline-md); font-weight: var(--font-weight-semibold); line-height: 32px; letter-spacing: -0.01em; }
+.text-headline-sm { font-size: var(--font-size-headline-sm); font-weight: var(--font-weight-semibold); line-height: 28px; }
+.text-body-lg { font-size: var(--font-size-body-lg); font-weight: var(--font-weight-normal); line-height: 24px; }
+.text-body-md { font-size: var(--font-size-body-md); font-weight: var(--font-weight-normal); line-height: 20px; }
+.text-label-caps { font-size: var(--font-size-label-caps); font-weight: var(--font-weight-medium); line-height: 16px; letter-spacing: 0.05em; text-transform: uppercase; font-family: var(--font-mono); }
 
 code,
 pre,
