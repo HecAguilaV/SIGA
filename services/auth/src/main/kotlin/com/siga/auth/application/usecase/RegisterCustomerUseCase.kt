@@ -30,11 +30,10 @@ class RegisterCustomerUseCase(
     private val emailMode: String = "async"
 ) {
 
-    fun register(email: String, rawPassword: String, name: String, companyName: String): Customer {
+    fun register(email: String, rawPassword: String, name: String?, companyName: String?): Customer {
         require(email.isNotBlank()) { "Email must not be blank" }
         require(rawPassword.isNotBlank()) { "Password must not be blank" }
-        require(name.isNotBlank()) { "Name must not be blank" }
-        require(companyName.isNotBlank()) { "Company name must not be blank" }
+        val resolvedName = if (name.isNullOrBlank()) email.substringBefore("@") else name
 
         if (customerRepositoryPort.existsByEmail(email)) {
             throw IllegalArgumentException("Email already exists: $email")
@@ -48,7 +47,7 @@ class RegisterCustomerUseCase(
             id = null,
             email = email,
             passwordHash = encodedPassword,
-            name = name,
+            name = resolvedName,
             companyName = companyName,
             isActive = false,
             emailVerified = false,
@@ -63,12 +62,12 @@ class RegisterCustomerUseCase(
                 EmailEvent(
                     email = email,
                     type = "WELCOME",
-                    name = name,
+                    name = resolvedName,
                     token = verificationToken
                 )
             )
         } else {
-            emailSenderPort.sendVerificationEmail(email, verificationToken, name)
+            emailSenderPort.sendVerificationEmail(email, verificationToken, resolvedName)
         }
 
         return saved

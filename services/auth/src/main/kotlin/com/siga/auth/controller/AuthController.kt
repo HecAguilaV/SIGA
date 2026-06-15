@@ -112,12 +112,16 @@ class AuthController(
 
 /**
  * Request DTO for customer registration.
+ *
+ * `name` and `companyName` are optional (nullable with null defaults).
+ * When `name` is null or blank, the use case falls back to the email prefix.
+ * When `companyName` is null, it is skipped (stays null in the domain model).
  */
 data class RegisterRequest(
     val email: String,
     val password: String,
-    val name: String,
-    val companyName: String
+    val name: String? = null,
+    val companyName: String? = null
 )
 
 /**
