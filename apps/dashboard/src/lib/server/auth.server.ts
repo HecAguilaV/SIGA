@@ -124,6 +124,7 @@ export function buildUserSession(payload: Record<string, unknown>): UserSession 
 		name: (payload.name as string) || (payload.preferred_username as string) || '',
 		principalType: (payload.principalType as UserSession['principalType']) || 'user',
 		rol: payload.rol as string | undefined,
+		permissions: payload.permissions as string[] | undefined,
 		tenantId: payload.tenantId as string | undefined,
 		avatar: payload.avatar as string | undefined
 	};
