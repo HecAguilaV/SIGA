@@ -2,16 +2,10 @@ import { redirect, error } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit';
 import { decodeJwtPayload, buildUserSession, clearSessionCookies } from '$lib/server/auth.server';
 import { attemptRefresh } from '$lib/server/gateway';
+import { PERMISSION_GUARDS, hasPermission } from '$lib/auth/permissions';
 
 // Rutas públicas que no requieren autenticación
 const PUBLIC_ROUTES = ['/login', '/logout', '/chat-handler/stream', '/_app'];
-
-// Route-level role guards (check before layout load functions)
-const ROLE_GUARDS: Record<string, string[]> = {
-	'/users': ['ADMINISTRATOR'],
-	'/analytics': ['ADMINISTRATOR', 'OPERATOR'],
-	'/pos': ['CASHIER']
-};
 
 // Umbral para refresh anticipado: 5 minutos antes de expiración
 const REFRESH_THRESHOLD_SEC = 5 * 60;
@@ -94,11 +88,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// ── 5. Setear event.locals.user ──
 	event.locals.user = buildUserSession(payload);
 
-	// ── 6. Role-based route guards ──
-	const userRole = event.locals.user?.rol ?? '';
-	for (const [prefix, allowedRoles] of Object.entries(ROLE_GUARDS)) {
+	// ── 6. Permission-based route guards ──
+	const userPermissions = event.locals.user?.permissions;
+	for (const [prefix, requiredPermission] of Object.entries(PERMISSION_GUARDS)) {
 		if (pathname === prefix || pathname.startsWith(prefix + '/')) {
-			if (!allowedRoles.includes(userRole)) {
+			if (!hasPermission(userPermissions, requiredPermission)) {
 				error(403, 'No tienes permisos para acceder a esta sección');
 			}
 			break;

@@ -18,6 +18,7 @@ export interface UserSession {
 	name: string;
 	principalType: PrincipalType;
 	rol?: string;
+	permissions?: string[];
 	tenantId?: string;
 	avatar?: string;
 }

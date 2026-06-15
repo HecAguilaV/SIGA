@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { user } from '$lib/stores/auth.svelte';
+	import { user, userPermissions } from '$lib/stores/auth.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
+	import { hasPermission } from '$lib/auth/permissions';
 	import { fly } from 'svelte/transition';
 
 	// Phosphor icons
@@ -19,27 +20,26 @@
 		label: string;
 		href: string;
 		icon: any;
-		roles: string[];
+		permission?: string;
 	}
 
 	const allNavItems: NavItem[] = [
-		{ label: 'Inicio', href: '/dashboard', icon: Gauge, roles: ['ADMINISTRATOR', 'OPERATOR', 'CASHIER'] },
-		{ label: 'Análisis', href: '/analytics/predictive', icon: ChartBar, roles: ['ADMINISTRATOR', 'OPERATOR'] },
-		{ label: 'Inventario', href: '/products', icon: Package, roles: ['ADMINISTRATOR', 'OPERATOR'] },
-		{ label: 'Locales', href: '/stores', icon: Storefront, roles: ['ADMINISTRATOR', 'OPERATOR'] },
-		{ label: 'POS', href: '/pos', icon: CreditCard, roles: ['CASHIER'] },
-		{ label: 'Reportes', href: '/analytics', icon: ChartBar, roles: ['ADMINISTRATOR', 'OPERATOR'] },
-		{ label: 'Configuración', href: '/users', icon: Gear, roles: ['ADMINISTRATOR'] }
+		{ label: 'Inicio', href: '/dashboard', icon: Gauge },
+		{ label: 'Análisis', href: '/analytics/predictive', icon: ChartBar, permission: 'analytics:view' },
+		{ label: 'Inventario', href: '/products', icon: Package, permission: 'inventory:view' },
+		{ label: 'Locales', href: '/stores', icon: Storefront, permission: 'inventory:view' },
+		{ label: 'POS', href: '/pos', icon: CreditCard, permission: 'pos:view' },
+		{ label: 'Reportes', href: '/analytics', icon: ChartBar, permission: 'analytics:view' },
+		{ label: 'Configuración', href: '/users', icon: Gear, permission: 'admin:view' }
 	];
 
 	let collapsed = $state(false);
 
 	const currentPath = $derived($page.url.pathname);
-	const currentUser = $derived($user);
-	const userRole = $derived(currentUser?.rol ?? '');
+	const currentUserPermissions = $derived($userPermissions);
 
 	const visibleItems = $derived(
-		allNavItems.filter((item) => item.roles.length === 0 || item.roles.includes(userRole))
+		allNavItems.filter((item) => !item.permission || hasPermission(currentUserPermissions, item.permission))
 	);
 
 	function isActive(href: string): boolean {

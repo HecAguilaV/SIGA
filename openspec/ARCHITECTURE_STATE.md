@@ -61,17 +61,16 @@ Se aplica el principio de **Database per Service**. Cada microservicio es dueño
 
 ## 6. Roles y Modelo de Jerarquía
 
-### Estado Actual
-```kotlin
-enum class UserRole {
-    ADMINISTRATOR,  // ← comodín total
-    OPERATOR,       // ← empleado con permisos base
-    CASHIER,        // ← cajero (solo POS)
-    EMPLOYEE        // ← empleado general
-}
-```
+### Estado Actual: Permisos Granulares (PBAC)
+SIGA ha migrado de un control de acceso basado en roles estáticos (RBAC) a un modelo de **Permisos Granulares (Permission-Based Access Control - PBAC)** en el Dashboard.
 
-### Modelo Deseado (Pendiente de Implementar)
+- **Identidad**: Los usuarios mantienen un `rol` para fines descriptivos y de auditoría, pero la autorización se valida contra una lista de `permissions` enviada en el JWT.
+- **Enforcement**:
+    - **Servidor**: `hooks.server.ts` protege las rutas mediante el mapa `PERMISSION_GUARDS`.
+    - **Interfaz**: `Sidebar.svelte` y los stores reactivos (`auth.svelte.ts`) filtran módulos y acciones dinámicamente.
+- **Permisos Implementados**: `INVENTORY_READ`, `INVENTORY_WRITE`, `INVENTORY_DELETE`, `KIOSK_ADMIN`, `REPORTS_VIEW`, `SALES_CREATE`, `SALES_READ`, `*` (acceso total para Customers).
+
+### Modelo de Jerarquía (Lógica de Negocio)
 ```
 Godadmin (dueño de SIGA)
 ├── Control total de la plataforma
@@ -81,18 +80,13 @@ Godadmin (dueño de SIGA)
 └── Acceso a /(platform)/ en dashboard
 
 Super-admin (dueño de empresa PYME)
-├── Control total de su empresa
-├── Crea hasta 1 admin adicional
+├── Control total de su empresa (Permiso '*')
+├── Crea usuarios con permisos específicos
 ├── Ve KPIs de su negocio
 └── Nadie puede quitarle privilegios
 
-Admin (empleado con permisos)
-├── Permisos default de su rol
-├── Puede tener overrides del Super-admin
-└── NO puede quitarle privilegios al Super-admin
-
-Cajero / Operador / Repartidor
-└── Permisos default de su rol
+Admin / Cajero / Operador / Empleado
+└── Permisos asignados granularmente por el Super-admin
 ```
 
 ## 7. Calidad y Cobertura de Tests
