@@ -150,21 +150,53 @@ class RegisterCustomerUseCaseTest {
     }
 
     @Test
-    fun `register throws exception for blank name`() {
-        val exception = assertThrows<IllegalArgumentException> {
-            syncUseCase.register("test@test.com", "Pass123!", "", "Test Corp")
+    fun `register uses email prefix as name when name is null`() {
+        val email = "juan_${UUID.randomUUID()}@example.com"
+        val prefix = email.substringBefore("@")
+
+        `when`(customerRepositoryPort.existsByEmail(email)).thenReturn(false)
+        `when`(customerRepositoryPort.save(anyObject())).thenAnswer { invocation ->
+            invocation.getArgument<Customer>(0).copy(id = 1)
         }
-        assertEquals("Name must not be blank", exception.message)
-        verify(customerRepositoryPort, never()).save(anyObject())
+
+        val result = syncUseCase.register(email, "SecurePass123!", null, null)
+
+        assertEquals(prefix, result.name)
+        assertNull(result.companyName)
+        assertFalse(result.isActive)
+        verify(customerRepositoryPort, times(1)).save(anyObject())
     }
 
     @Test
-    fun `register throws exception for blank company name`() {
-        val exception = assertThrows<IllegalArgumentException> {
-            syncUseCase.register("test@test.com", "Pass123!", "Test", "")
+    fun `register passes name and companyName through when provided`() {
+        val email = "full_${UUID.randomUUID()}@test.com"
+
+        `when`(customerRepositoryPort.existsByEmail(email)).thenReturn(false)
+        `when`(customerRepositoryPort.save(anyObject())).thenAnswer { invocation ->
+            invocation.getArgument<Customer>(0).copy(id = 1)
         }
-        assertEquals("Company name must not be blank", exception.message)
-        verify(customerRepositoryPort, never()).save(anyObject())
+
+        val result = syncUseCase.register(email, "Pass123!", "María García", "Mi Empresa SRL")
+
+        assertEquals("María García", result.name)
+        assertEquals("Mi Empresa SRL", result.companyName)
+        verify(customerRepositoryPort, times(1)).save(anyObject())
+    }
+
+    @Test
+    fun `register uses email prefix when name is blank`() {
+        val email = "blank_name_${UUID.randomUUID()}@test.com"
+        val prefix = email.substringBefore("@")
+
+        `when`(customerRepositoryPort.existsByEmail(email)).thenReturn(false)
+        `when`(customerRepositoryPort.save(anyObject())).thenAnswer { invocation ->
+            invocation.getArgument<Customer>(0).copy(id = 1)
+        }
+
+        val result = syncUseCase.register(email, "Pass123!", "", "Some Corp")
+
+        assertEquals(prefix, result.name)
+        verify(customerRepositoryPort, times(1)).save(anyObject())
     }
 
     @Test

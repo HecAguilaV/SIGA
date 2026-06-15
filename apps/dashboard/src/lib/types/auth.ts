@@ -28,6 +28,18 @@ export interface RefreshResponse {
 	refreshToken: string;
 }
 
+export interface RegisterRequest {
+	email: string;
+	password: string;
+	name?: string;
+	companyName?: string;
+}
+
+export interface OnboardingData {
+	name: string;
+	companyName?: string;
+}
+
 export interface ApiError {
 	status: number;
 	message: string;

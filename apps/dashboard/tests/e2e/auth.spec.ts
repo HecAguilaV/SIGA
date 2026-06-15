@@ -103,4 +103,39 @@ test.describe('Auth Flow (E2E)', () => {
 		await page.waitForURL(/\/login/);
 		await expect(page.getByRole('button', { name: /iniciar sesión/i })).toBeVisible();
 	});
+
+	test('register page shows registration form with all fields', async ({ page }) => {
+		await page.goto('/register');
+
+		// Should show the registration form
+		await expect(page.locator('h1')).toContainText('Crear cuenta');
+		await expect(page.getByLabel('Correo electrónico')).toBeVisible();
+		await expect(page.getByLabel('Contraseña')).toBeVisible();
+		await expect(page.getByLabel(/nombre/i)).toBeVisible();
+		await expect(page.getByLabel(/empresa/i)).toBeVisible();
+		await expect(page.getByRole('button', { name: /crear cuenta/i })).toBeVisible();
+	});
+
+	test('register page has link to login for existing users', async ({ page }) => {
+		await page.goto('/register');
+
+		// Should have a link to the login page
+		const loginLink = page.getByRole('link', { name: /iniciar sesión/i });
+		await expect(loginLink).toBeVisible();
+		await expect(loginLink).toHaveAttribute('href', '/login');
+	});
+
+	test('onboarding page redirects to login when not authenticated', async ({ page }) => {
+		await page.goto('/onboarding');
+		await page.waitForURL(/\/login/);
+		expect(page.url()).toContain('/login');
+	});
+
+	test('login page shows link to register', async ({ page }) => {
+		await page.goto('/login');
+
+		const registerLink = page.getByRole('link', { name: /crear cuenta/i });
+		await expect(registerLink).toBeVisible();
+		await expect(registerLink).toHaveAttribute('href', '/register');
+	});
 });

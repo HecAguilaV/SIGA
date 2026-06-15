@@ -150,6 +150,61 @@ class AuthRegistrationIntegrationTest @Autowired constructor(
     }
 
     @Test
+    fun `minimal registration with only email and password returns 201`() {
+        val email = "minimal_${UUID.randomUUID()}@test.com"
+        val requestBody = """
+            {
+                "email": "$email",
+                "password": "SecurePass123!"
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+        )
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.status").value("pending"))
+
+        // Verify customer was created with email prefix as name
+        val customer = customerRepositoryPort.findByEmail(email)
+        assertNotNull(customer)
+        assertEquals(email.substringBefore("@"), customer!!.name)
+        assertNull(customer.companyName)
+        assertFalse(customer.isActive)
+        assertFalse(customer.emailVerified)
+        assertNotNull(customer.verificationToken)
+    }
+
+    @Test
+    fun `full registration with name and companyName still works`() {
+        val email = "full_integration_${UUID.randomUUID()}@test.com"
+        val requestBody = """
+            {
+                "email": "$email",
+                "password": "SecurePass123!",
+                "name": "María García",
+                "companyName": "Mi Empresa SRL"
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+        )
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.status").value("pending"))
+
+        // Verify customer was created with provided name and companyName
+        val customer = customerRepositoryPort.findByEmail(email)
+        assertNotNull(customer)
+        assertEquals("María García", customer!!.name)
+        assertEquals("Mi Empresa SRL", customer.companyName)
+    }
+
+    @Test
     fun `existing customer endpoints remain accessible`() {
         // Verify that CustomerController at /api/v1/auth/customers still works
         mockMvc.perform(get("/api/v1/auth/customers"))

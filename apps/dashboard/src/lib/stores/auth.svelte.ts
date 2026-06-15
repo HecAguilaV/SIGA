@@ -33,6 +33,19 @@ export const userPrincipalType = derived(user, ($user) => $user?.principalType ?
 export const userPermissions = derived(user, ($user) => $user?.permissions ?? []);
 
 /**
+ * needsOnboarding — Detecta si el usuario tiene un nombre placeholder
+ * (derivado del email) y necesita completar su perfil en la página de onboarding.
+ * 
+ * Un nombre es placeholder cuando coincide con el prefijo del email
+ * (ej: email "juan@example.com" → name "juan").
+ */
+export const needsOnboarding = derived(user, ($user) => {
+	if (!$user?.email || !$user?.name) return false;
+	const emailPrefix = $user.email.split('@')[0];
+	return $user.name === emailPrefix;
+});
+
+/**
  * Helper para verificar permisos de forma reactiva en componentes.
  * Uso: const canEdit = canAccess('inventory:edit'); if ($canEdit) { ... }
  */

@@ -11,6 +11,11 @@ import org.springframework.stereotype.Service
 /**
  * Email sender adapter that sends verification emails via JavaMailSender.
  * If SMTP is not configured, falls back to logging the email content.
+ *
+ * The `name` parameter may be an email prefix (e.g., "juan") when the user
+ * registered without providing a name. In that case, `buildEmailBody`
+ * sanitizes it: if the name looks like a full email (contains "@"),
+ * the domain part is stripped. If the name is blank, "there" is used.
  */
 @Service
 class EmailSenderService : EmailSenderPort {
@@ -22,7 +27,8 @@ class EmailSenderService : EmailSenderPort {
 
     override fun sendVerificationEmail(email: String, token: String, name: String) {
         val verificationLink = "/api/v1/auth/verify?token=$token"
-        val body = buildEmailBody(name, verificationLink)
+        val greetingName = sanitizeGreetingName(name)
+        val body = buildEmailBody(greetingName, verificationLink)
 
         if (mailSender == null) {
             log.info("[EMAIL] Verification for $email: token=$token, link=$verificationLink")
@@ -42,6 +48,18 @@ class EmailSenderService : EmailSenderPort {
             log.warn("Failed to send email to $email: ${e.message}")
             log.warn("[EMAIL] Body:\n$body")
         }
+    }
+
+    /**
+     * Sanitizes the greeting name for the email body.
+     * - If blank or only whitespace → "there"
+     * - If it contains "@" → extracts the part before "@" (email prefix)
+     * - Otherwise → returns the name as-is
+     */
+    internal fun sanitizeGreetingName(name: String): String {
+        if (name.isBlank()) return "there"
+        val atIndex = name.indexOf('@')
+        return if (atIndex > 0) name.substring(0, atIndex) else name
     }
 
     private fun buildEmailBody(name: String, verificationLink: String): String {

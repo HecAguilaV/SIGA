@@ -1,9 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LoginResponse, UserSession } from '$lib/types/auth';
+import type { LoginResponse, UserSession, RegisterRequest, OnboardingData } from '$lib/types/auth';
 import { env } from '$env/dynamic/private';
 
 const GATEWAY_BASE = env.GATEWAY_BASE_URL || 'http://localhost:8080';
+const AUTH_BASE = `${GATEWAY_BASE}/api/v1/auth`;
 
 /**
  * login — Autentica al usuario vía gateway (login dual: Customer primero, luego User).
@@ -54,6 +55,70 @@ export async function logout(
 		}
 	} catch {
 		// Silently ignore logout errors — session will be cleared client-side
+	}
+}
+
+/**
+ * register — Registra un nuevo customer (email+password, con name/companyName opcional).
+ * Llama a POST /api/v1/auth/register.
+ */
+export async function register(
+	fetchFn: typeof globalThis.fetch,
+	data: RegisterRequest
+): Promise<{ data?: { status: string }; error?: string }> {
+	try {
+		const body: Record<string, string> = { email: data.email, password: data.password };
+		if (data.name) body.name = data.name;
+		if (data.companyName) body.companyName = data.companyName;
+
+		const res = await fetchFn(`${AUTH_BASE}/register`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body)
+		});
+
+		if (res.status === 201) {
+			const data = await res.json();
+			return { data };
+		}
+
+		const err = await res.json().catch(() => ({}));
+		return { error: err.error || 'Error al registrar. Intente nuevamente.' };
+	} catch {
+		return { error: 'Error de conexión. Verifique su conexión a internet.' };
+	}
+}
+
+/**
+ * updateCustomer — Actualiza los datos de perfil de un customer (name, companyName).
+ * Llama a PUT /api/v1/auth/customers/{id}.
+ * Requiere token de autenticación.
+ */
+export async function updateCustomer(
+	fetchFn: typeof globalThis.fetch,
+	customerId: string | number,
+	data: OnboardingData,
+	token: string
+): Promise<{ success?: boolean; error?: string }> {
+	try {
+		const body: Record<string, string> = { name: data.name };
+		if (data.companyName) body.companyName = data.companyName;
+
+		const res = await fetchFn(`${AUTH_BASE}/customers/${customerId}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			body: JSON.stringify(body)
+		});
+
+		if (res.ok) return { success: true };
+
+		const err = await res.json().catch(() => ({}));
+		return { error: err.error || 'Error al actualizar perfil.' };
+	} catch {
+		return { error: 'Error de conexión. Verifique su conexión a internet.' };
 	}
 }
 

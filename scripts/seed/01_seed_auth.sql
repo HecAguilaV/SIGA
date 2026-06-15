@@ -96,7 +96,47 @@ SELECT '7b20777b-032c-54cc-8eac-cd2fef89a4a4', id FROM auth.permissions
 WHERE code IN ('INVENTORY_READ', 'INVENTORY_WRITE', 'STOCK_ADJUST')
 ON CONFLICT DO NOTHING;
 
+-- =============================================================================
+-- SIMPLIFIED SIGNUP: SIGA admin user (platform-level, no customer_id)
+-- Password: admin1234 (demo-only)
+-- =============================================================================
+INSERT INTO auth.users (id, email, password_hash, first_name, last_name, role, customer_id, is_active)
+VALUES (
+    'a0000000-0000-4000-8000-000000000001',
+    'admin@siga.cl',
+    '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
+    'Admin', 'SIGA',
+    'OWNER', NULL, true
+) ON CONFLICT (email) DO NOTHING;
+
+-- =============================================================================
+-- SIMPLIFIED SIGNUP: Test Customer (pre-verified, for testing)
+-- Password: test1234 (demo-only)
+-- =============================================================================
+INSERT INTO auth.customers (email, password_hash, name, last_name, company_name, is_active, is_on_trial, role, email_verified)
+VALUES (
+    'test@siga.cl',
+    '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
+    'Test PYME', NULL, NULL,
+    true, false, 'customer', true
+) ON CONFLICT (email) DO NOTHING;
+
+-- =============================================================================
+-- SIMPLIFIED SIGNUP: Test User employee (assigned to test Customer)
+-- Password: test1234 (demo-only)
+-- =============================================================================
+INSERT INTO auth.users (id, email, password_hash, first_name, last_name, role, customer_id, is_active)
+VALUES (
+    'a0000000-0000-4000-8000-000000000002',
+    'empleado@siga.cl',
+    '$2a$10$DEMO_HASH_PLACEHOLDER_DO_NOT_USE_IN_PROD',
+    'Empleado', 'Test',
+    'EMPLOYEE', (SELECT id FROM auth.customers WHERE email = 'test@siga.cl'), true
+) ON CONFLICT (email) DO NOTHING;
+
+-- =============================================================================
 -- Asignación users → tiendas (UUIDs de inventory.stores)
+-- =============================================================================
 INSERT INTO auth.user_stores (user_id, store_id) VALUES
     ('8ea0cd5a-6fe6-5b2d-9004-75eb961f0fcd', 'aa10275e-7d0c-5afc-be0f-b3c51fab8b4a'), -- Kiosko Norte
     ('8ea0cd5a-6fe6-5b2d-9004-75eb961f0fcd', '6d590a38-13f5-599e-a053-6c23fba3adba'), -- Kiosko Sur
@@ -105,5 +145,7 @@ INSERT INTO auth.user_stores (user_id, store_id) VALUES
     ('9dba16c4-98b0-5726-bc8c-f0ccc0b33166', 'aa10275e-7d0c-5afc-be0f-b3c51fab8b4a'), -- Kiosko Norte
     ('9dba16c4-98b0-5726-bc8c-f0ccc0b33166', '6d590a38-13f5-599e-a053-6c23fba3adba'), -- Kiosko Sur
     ('9dba16c4-98b0-5726-bc8c-f0ccc0b33166', 'ddb8ae2e-1186-5ce3-a5b1-e95fc68d4c48'), -- Casino Colegio
-    ('7b20777b-032c-54cc-8eac-cd2fef89a4a4', '467d011b-6349-5cbd-a839-12dc679eaabb')  -- Bodega Central
+    ('7b20777b-032c-54cc-8eac-cd2fef89a4a4', '467d011b-6349-5cbd-a839-12dc679eaabb'),  -- Bodega Central
+    -- Test employee assigned to Kiosko Norte
+    ('a0000000-0000-4000-8000-000000000002', 'aa10275e-7d0c-5afc-be0f-b3c51fab8b4a')  -- Kiosko Norte
 ON CONFLICT DO NOTHING;
