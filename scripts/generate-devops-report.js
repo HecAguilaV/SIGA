@@ -239,7 +239,9 @@ function main() {
     let html = fs.readFileSync(coverageHtmlPath, 'utf8');
 
     // Regex para encontrar el script de inyección
+    // nosemgrep: js-hardcoded-secret
     const startTag = '<!-- === DEVOPS DATA START === -->';
+    // nosemgrep: js-hardcoded-secret
     const endTag = '<!-- === DEVOPS DATA END === -->';
     
     const startIdx = html.indexOf(startTag);
