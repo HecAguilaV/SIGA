@@ -3,13 +3,14 @@ package com.siga.sales.client
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import com.siga.sales.KafkaTestContainer
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import java.util.*
@@ -18,7 +19,7 @@ import java.util.*
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = ["eureka.client.enabled=false"]
 )
-@EmbeddedKafka(partitions = 1)
+@ContextConfiguration(initializers = [KafkaTestContainer.Initializer::class])
 @ActiveProfiles("test")
 class InventoryClientIntegrationTest : DescribeSpec() {
 
