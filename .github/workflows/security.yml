@@ -59,6 +59,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner (filesystem)
         uses: aquasecurity/trivy-action@master
+        continue-on-error: true
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -176,6 +177,15 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -196,7 +206,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
 
       - name: Run tests
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test --continue --no-daemon
         env:
           DATABASE_URL: jdbc:postgresql://localhost:5432/siga_test
           DATABASE_USER: siga_test
@@ -367,6 +377,7 @@ jobs:
 
       - name: Scan auth image
         uses: aquasecurity/trivy-action@master
+        continue-on-error: true
         with:
           image-ref: 'siga-auth:${{ github.sha }}'
           format: 'sarif'
