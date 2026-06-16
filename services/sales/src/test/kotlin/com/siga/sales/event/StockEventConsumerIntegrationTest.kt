@@ -17,16 +17,14 @@ import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
-/**
- * Integration test for [StockEventConsumer] with a real Kafka broker via Testcontainers.
- *
- * Verifies the full SAGA step 3 roundtrip:
- * 1. A PENDING sale is persisted in H2
- * 2. A StockEvent is published to the real Kafka topic
- * 3. StockEventConsumer receives it via @KafkaListener
- * 4. The sale status is updated to COMPLETED/CANCELLED
- */
-class StockEventConsumerIntegrationTest : BaseSalesIntegrationTest() {
+@SpringBootTest
+@ContextConfiguration(initializers = [KafkaTestContainer.Initializer::class])
+@ActiveProfiles("test")
+class StockEventConsumerIntegrationTest : DescribeSpec() {
+
+    init {
+        extension(SpringExtension())
+    }
 
     @Autowired
     private lateinit var saleRepositoryPort: SaleRepositoryPort
