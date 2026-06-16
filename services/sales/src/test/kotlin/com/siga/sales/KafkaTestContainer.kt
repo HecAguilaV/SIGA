@@ -13,13 +13,16 @@ import org.testcontainers.utility.DockerImageName
  */
 object KafkaTestContainer {
     val container: KafkaContainer by lazy {
-        KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.3"))
+        KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"))
+            .withReuse(true)
             .also { it.start() }
     }
 
     /**
      * Initializer to be used with @ContextConfiguration(initializers = [KafkaTestContainer.Initializer::class])
      * Works for both JUnit 5 and Kotest.
+     * Note: We still use Initializer instead of @ServiceConnection because @ServiceConnection
+     * works best with @TestConfiguration beans, but for global Singletons, this pattern is more reliable.
      */
     class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(context: ConfigurableApplicationContext) {

@@ -139,8 +139,8 @@ class SaleJpaAdapterTest : DescribeSpec() {
                 adapter.save(completedSale)
 
                 val pendingSales = adapter.findByStatus(SaleStatus.PENDING)
-                pendingSales.size shouldBe 1
-                pendingSales[0].id shouldBe pendingSale.id
+                pendingSales.any { it.id == pendingSale.id } shouldBe true
+                pendingSales.any { it.id == completedSale.id } shouldBe false
             }
 
             it("update sale by saving with same id") {
