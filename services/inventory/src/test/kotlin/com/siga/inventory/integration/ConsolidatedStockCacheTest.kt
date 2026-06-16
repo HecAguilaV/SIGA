@@ -74,6 +74,7 @@ class ConsolidatedStockCacheTest : com.siga.inventory.BaseIntegrationTest() {
     @BeforeEach
     fun clearCache() {
         cacheManager.getCache("consolidatedStock")?.clear()
+        Thread.sleep(100)
         Mockito.clearInvocations(stockPort, productPort)
     }
 
@@ -87,6 +88,8 @@ class ConsolidatedStockCacheTest : com.siga.inventory.BaseIntegrationTest() {
 
         // First call — cache MISS
         useCase.execute(storeId = storeId, page = 0, size = 50)
+
+        Thread.sleep(100)
 
         // Second call — cache HIT (within 60s TTL)
         useCase.execute(storeId = storeId, page = 0, size = 50)
