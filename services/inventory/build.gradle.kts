@@ -71,6 +71,7 @@ dependencies {
 
     // Testcontainers
     testImplementation("org.testcontainers:postgresql:1.20.4")
+    testImplementation("org.testcontainers:redis:1.20.4")
     testImplementation("org.testcontainers:testcontainers:1.20.4")
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     
