@@ -37,7 +37,7 @@ class ConsolidatedStockUseCase(
      * @return [ConsolidatedStockResponse] with aggregated products.
      */
     @Cacheable(cacheNames = ["consolidatedStock"], key = "(#storeId?.toString() ?: 'all') + ':' + #page + ':' + #size")
-    fun execute(storeId: UUID?, page: Int, size: Int): ConsolidatedStockResponse {
+    open fun execute(storeId: UUID?, page: Int, size: Int): ConsolidatedStockResponse {
         val allStock = if (storeId != null) {
             stockPort.findAll().filter { it.storeId == storeId }
         } else {
