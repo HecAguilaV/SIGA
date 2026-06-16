@@ -49,7 +49,7 @@
 | **May 2026** | **SAGA con Kafka**: Venta → Stock (coreografía) + BillingInvoiceConsumer | ✅ |
 | **May 2026** | **Consolidación**: single frontend, billing solo SaaS, directorios legacy eliminados | ✅ |
 | **May 2026** | **Este roadmap** creado como guía única de desarrollo | ✅ |
-| **Jun 2026** | **Massive test fix**: 672 tests passing across all services | ✅ |
+| **Jun 2026** | **Massive test fix**: 914 tests passing across all services (after stabilization cycle) | ✅ |
 | **Jun 2026** | **Notification microservice**: async email via Kafka (SMTP + templates) | ✅ |
 | **Jun 2026** | **Real JaCoCo**: 86% instructions (was 46.5% stale/hardcoded) | ✅ |
 | **Jun 2026** | **Test fixes**: Sales (133), Billing (33), Agent (64), Inventory (237) | ✅ |
@@ -62,7 +62,7 @@
 ### 🟠 HOY — Estado Actual (June 2026)
 
 ```
-Backend:    ✅ Hexagonal completo · 672 tests · Kafka SAGA · API Gateway
+Backend:    ✅ Hexagonal completo · 914 tests · Kafka SAGA · API Gateway
 Frontend:   ✅ SvelteKit 5 (apps/dashboard/) · BFF nativo · A2UI v0.9
 Auth:       ✅ JWT · BCrypt · dual login (Customer/User) · tenant-scoped CRUD · 189 tests
 Billing:    ✅ Planes · Suscripciones · Pagos (SOLO SaaS de SIGA) · 217 tests · 86% coverage
@@ -227,7 +227,7 @@ Completar la UI que el cliente PYME ve.
 
 | Métrica | Actual | Objetivo MVP |
 |---------|--------|--------------|
-| Tests totales | 672 | 500+ |
+| Tests totales | 914 | 500+ |
 | Cobertura global (instrucciones) | 86% ✅ | 85% |
 | Cobertura auth | 89% ✅ | 85% |
 | Cobertura billing | 86% ✅ | 75% |
