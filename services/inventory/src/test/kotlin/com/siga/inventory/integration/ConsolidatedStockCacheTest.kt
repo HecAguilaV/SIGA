@@ -8,6 +8,7 @@ import com.siga.inventory.domain.port.StockRepositoryPort
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.mockito.kotlin.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,7 +26,6 @@ import java.util.*
  * 1. Initial call populates the cache (hits ports).
  * 2. Subsequent identical calls return from cache (skips ports).
  * 3. Different parameters (storeId, pagination) use different cache keys (hits ports).
- * 4. Cache TTL is respected (not tested here as TTL is 60s).
  */
 @SpringBootTest
 @ActiveProfiles("test")
@@ -74,6 +74,7 @@ class ConsolidatedStockCacheTest : com.siga.inventory.BaseIntegrationTest() {
     @BeforeEach
     fun clearCache() {
         cacheManager.getCache("consolidatedStock")?.clear()
+        Mockito.clearInvocations(stockPort, productPort)
     }
 
     // ── Cache Hit ────────────────────────────────────────────────
@@ -129,21 +130,22 @@ class ConsolidatedStockCacheTest : com.siga.inventory.BaseIntegrationTest() {
         verify(stockPort, times(2)).findAll()
     }
 
-    // ── TTL Verification ─────────────────────────────────────────
+    // ── Repeated Hits ────────────────────────────────────────────
 
     @Test
-    @DisplayName("cache repeated hits within TTL window: Redis returns cached data without calling ports")
-    fun `given cached data when called multiple times within TTL then returns from cache on at least one call`() {
+    @DisplayName("cache repeated hits: multiple identical calls reuse cached data")
+    fun `given cached data when called multiple times then reuses cache`() {
         whenever(stockPort.findAll()).thenReturn(sampleStocks)
         whenever(productPort.findById(productId)).thenReturn(sampleProduct)
 
-        // Triple call — the first always misses, at least one of the others should hit the cache
-        useCase.execute(storeId = storeId, page = 0, size = 50)
-        useCase.execute(storeId = storeId, page = 0, size = 50)
-        useCase.execute(storeId = storeId, page = 0, size = 50)
+        // Five identical calls — only the first should miss
+        repeat(5) {
+            useCase.execute(storeId = storeId, page = 0, size = 50)
+        }
 
-        // Cache should have returned data for at least one of the repeated calls
-        // (findAll() < 3 means at least one cache hit)
+        // With working cache, ports are called once (first call only).
+        // Allow up to 2 in case of Redis serialization race on first PUT.
         verify(stockPort, atMost(2)).findAll()
     }
 }
+
