@@ -6,7 +6,7 @@ Este servicio gestiona la identidad, seguridad y control de acceso centralizado 
 
 ## Stack Tecnológico
 - **Lenguaje**: Kotlin
-- **Framework**: Spring Boot 4.0.6
+- **Framework**: Spring Boot 3.4.3
 - **Seguridad**: Spring Security + JWT
 - **BD**: PostgreSQL (Esquema: `auth`)
 

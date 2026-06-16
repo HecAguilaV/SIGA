@@ -1,14 +1,20 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
-    id("io.spring.dependency-management") version "1.1.7"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    id("io.spring.dependency-management")
     `java-library`
 }
 
 group = "com.siga"
 version = "1.0-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
 
 repositories {
     mavenCentral()
@@ -16,7 +22,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.6")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.3")
     }
 }
 

@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
-    kotlin("plugin.jpa") version "2.2.0"
-    id("org.springframework.boot") version "4.0.6"
-    id("io.spring.dependency-management") version "1.1.7"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
     id("jacoco")
 }
 
@@ -21,10 +21,11 @@ repositories {
     mavenCentral()
 }
 
-extra["springCloudVersion"] = "2025.1.0"
+extra["springCloudVersion"] = "2024.0.0"
 
 dependencyManagement {
     imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.3")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
     }
 }
@@ -57,12 +58,12 @@ dependencies {
     // PostgreSQL (version managed by Spring Boot BOM)
     implementation("org.postgresql:postgresql")
 
-    // Flyway for database migrations (SB 4.x: use starter for auto-config + postgresql module)
-    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    // Flyway for database migrations (direct core dependency + postgresql module)
+    implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
 
     // Swagger / OpenAPI
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")

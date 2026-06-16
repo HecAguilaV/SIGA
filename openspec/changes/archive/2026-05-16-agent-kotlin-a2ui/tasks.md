@@ -38,7 +38,7 @@ Chain strategy: size-exception
 
 ## Phase 2: Backend Foundation
 
-- [x] **T-AGENT-07**: Create `services/agent/build.gradle.kts` — Spring Boot 4.0.6, WebFlux, Eureka client, A2UI SDK, PostgreSQL JDBC, JUnit 5 + MockK. AC: `./gradlew :services:agent:build` compiles. Dep: none.
+- [x] **T-AGENT-07**: Create `services/agent/build.gradle.kts` — Spring Boot 3.4.3, WebFlux, Eureka client, A2UI SDK, PostgreSQL JDBC, JUnit 5 + MockK. AC: `./gradlew :services:agent:build` compiles. Dep: none.
 - [x] **T-AGENT-08**: Create `services/agent/src/main/resources/application.yml` (port 8000, Eureka `siga-agent`, Gemini props) + `config/AgentConfig.kt` (properties class, `@Configuration` beans for RestClient, ObjectMapper). AC: service starts on 8000, registers in Eureka. Dep: T-07.
 - [x] **T-AGENT-09**: Create `SigaAgentApplication.kt` in `com.siga.agent` — `@SpringBootApplication` + `@EnableDiscoveryClient`. AC: `GET /health` not found (T-11 adds it), but app boots without error. Dep: T-07, T-08.
 

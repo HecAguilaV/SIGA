@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
-    kotlin("plugin.jpa") version "2.2.0"
-    id("org.springframework.boot") version "3.4.0"
-    id("io.spring.dependency-management") version "1.1.7"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
     id("jacoco")
 }
 
@@ -22,9 +22,12 @@ repositories {
     mavenCentral()
 }
 
+extra["springCloudVersion"] = "2024.0.0"
+
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.0")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.3")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
     }
 }
 

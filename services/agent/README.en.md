@@ -6,7 +6,7 @@ Artificial Intelligence service for contextual assistance and data analysis, wit
 
 ## Tech Stack
 - **Language**: Kotlin 2.2.0
-- **Framework**: Spring Boot 4.0.6 (WebFlux)
+- **Framework**: Spring Boot 3.4.3 (WebFlux)
 - **LLM**: Google Gemini API (GenAI SDK)
 - **Service Discovery**: Eureka Client
 - **Build Tool**: Gradle

@@ -7,7 +7,7 @@ Implements SAGA step 4: when a sale is completed in `siga-sales`, it automatical
 
 ## Tech Stack
 - **Language**: Kotlin 2.2.0
-- **Framework**: Spring Boot 4.0.6
+- **Framework**: Spring Boot 3.4.3
 - **DB**: PostgreSQL (Schema: `billing`)
 - **Messaging**: Apache Kafka (SAGA Choreography)
 - **Migrations**: Flyway
@@ -47,7 +47,7 @@ Implements SAGA step 4: when a sale is completed in `siga-sales`, it automatical
 | `V2__billing_add_customers.sql` | `customer` table |
 | `V3__billing_add_sale_invoices.sql` | `sale_invoices` table with FK to `sales.sales` |
 
-> **Note**: Spring Boot 4.0.6 requires `spring-boot-starter-flyway` + `flyway-database-postgresql`.
+> **Note**: Spring Boot 3.4.3 requires `spring-boot-starter-flyway` + `flyway-database-postgresql`.
 > Migrations use schema prefix (`billing.`) so tables are created with the correct service owner.
 
 ## APIs & Contracts

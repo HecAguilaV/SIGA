@@ -6,7 +6,7 @@ Orquestador de ventas, transacciones de punto de venta (POS) y documentos tribut
 
 ## Stack Tecnológico
 - **Lenguaje**: Kotlin 2.2.0
-- **Framework**: Spring Boot 4.0.6
+- **Framework**: Spring Boot 3.4.3
 - **Mensajería**: Apache Kafka (SAGA Coreografía)
 - **BD**: PostgreSQL (Esquema: `sales`)
 - **Service Discovery**: Eureka Client

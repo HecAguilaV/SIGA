@@ -15,7 +15,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer
  * Kafka configuration for the Billing service.
  *
  * Manually configures the consumer factory and listener container
- * factory since Spring Boot 4.x no longer includes Kafka
+ * factory since Spring Boot 3.4.x no longer includes Kafka
  * auto-configuration in [spring-boot-autoconfigure].
  *
  * Billing only consumes events (from Sales); it does not produce any.
