@@ -6,7 +6,7 @@ Gestión centralizada de stock, productos y movimientos de almacén (Kardex).
 
 ## Stack Tecnológico
 - **Lenguaje**: Kotlin
-- **Framework**: Spring Boot 3.4.3
+- **Framework**: Spring Boot 4.0.6
 - **Mensajería**: Apache Kafka (SAGA Coreografía)
 - **BD**: PostgreSQL (Esquema: `inventory`)
 

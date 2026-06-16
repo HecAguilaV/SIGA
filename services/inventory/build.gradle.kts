@@ -22,11 +22,11 @@ repositories {
     mavenCentral()
 }
 
-extra["springCloudVersion"] = "2024.0.0"
+extra["springCloudVersion"] = "2025.1.0"
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.3")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.6")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
     }
 }

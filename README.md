@@ -27,7 +27,7 @@ Se ha establecido un estándar de Espejo Semántico para garantizar que la docum
 
 SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumplimiento legal:
 
-- **Backend**: Kotlin + Spring Boot 3.4.3. Implementación estricta de Arquitectura Hexagonal (Gold Standard) y Disciplina TDD.
+- **Backend**: Kotlin + Spring Boot 4.0.6. Implementación estricta de Arquitectura Hexagonal (Gold Standard) y Disciplina TDD.
 - **Mensajería**: Apache Kafka (SAGA Coreografía) para transacciones distribuidas entre microservicios.
 - **IA**: Kotlin + Spring Boot + Google Gemini SDK (A2UI v0.9 Protocol + 3-Tier Fallback).
 - **Frontend**: SvelteKit 5 (`apps/dashboard`) — ÚNICA app frontend activa. Funciona como BFF nativo con server-side data composition.

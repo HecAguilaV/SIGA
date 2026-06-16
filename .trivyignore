@@ -1,0 +1,9 @@
+# Ignore node_modules and build directories to focus on source and declared dependencies
+**/node_modules/**
+**/build/**
+**/.gradle/**
+**/target/**
+**/dist/**
+**/coverage/**
+**/playwright-report/**
+**/test-results/**
