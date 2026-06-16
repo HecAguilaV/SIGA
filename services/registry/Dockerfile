@@ -26,4 +26,7 @@ COPY --from=build /app/app.jar app.jar
 EXPOSE 8761
 ENV JAVA_OPTS="-Xmx256m -Xms128m"
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
