@@ -1,5 +1,6 @@
 package com.siga.inventory.entity
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
@@ -33,6 +34,7 @@ class Product(
     var unitPrice: BigDecimal,
 
     @Column(name = "is_active", nullable = false)
+    @field:JsonProperty("isActive")
     var isActive: Boolean = true,
 
     @Column(name = "commercial_user_id")
