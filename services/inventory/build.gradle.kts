@@ -69,9 +69,8 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
 
-    // Testcontainers
+    // Testcontainers (PostgreSQL only — Redis uses localhost:6379 via RedisTestContainer)
     testImplementation("org.testcontainers:postgresql:1.20.4")
-    testImplementation("org.testcontainers:redis:1.20.4")
     testImplementation("org.testcontainers:testcontainers:1.20.4")
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     
