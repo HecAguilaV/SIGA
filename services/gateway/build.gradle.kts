@@ -30,7 +30,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation("org.springframework.cloud:spring-cloud-starter-gateway")
+    implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     
     // Swagger / OpenAPI (WebFlux variant para Gateway reactivo)
