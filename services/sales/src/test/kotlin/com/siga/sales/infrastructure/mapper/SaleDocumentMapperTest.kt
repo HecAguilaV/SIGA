@@ -4,6 +4,8 @@ import com.siga.sales.domain.model.DocumentStatus
 import com.siga.sales.domain.model.DocumentType
 import com.siga.sales.domain.model.SaleDocument
 import com.siga.sales.entity.SaleDocumentEntity
+import com.siga.sales.entity.DocumentType as EntityDocumentType
+import com.siga.sales.entity.DocumentStatus as EntityDocumentStatus
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -27,11 +29,11 @@ class SaleDocumentMapperTest : DescribeSpec({
                 id = UUID.randomUUID(),
                 saleId = UUID.randomUUID(),
                 customerId = UUID.randomUUID(),
-                type = DocumentType.FACTURA,
+                type = EntityDocumentType.FACTURA,
                 folio = 12345L,
                 totalAmount = BigDecimal("150000.00"),
                 taxAmount = BigDecimal("28500.00"),
-                status = DocumentStatus.EMITTED,
+                status = EntityDocumentStatus.EMITTED,
                 pdfUrl = "https://docs.siga.cl/12345.pdf",
                 xmlUrl = "https://docs.siga.cl/12345.xml",
                 createdAt = now
@@ -55,7 +57,7 @@ class SaleDocumentMapperTest : DescribeSpec({
         it("generates random UUID when entity id is null") {
             val entity = SaleDocumentEntity(
                 saleId = UUID.randomUUID(),
-                type = DocumentType.BOLETA,
+                type = EntityDocumentType.BOLETA,
                 folio = 1L,
                 totalAmount = BigDecimal("10000.00"),
                 taxAmount = BigDecimal("1900.00")
@@ -70,7 +72,7 @@ class SaleDocumentMapperTest : DescribeSpec({
         it("maps nullable fields as null") {
             val entity = SaleDocumentEntity(
                 saleId = UUID.randomUUID(),
-                type = DocumentType.BOLETA,
+                type = EntityDocumentType.BOLETA,
                 folio = 1L,
                 totalAmount = BigDecimal("10000.00"),
                 taxAmount = BigDecimal("1900.00")
@@ -106,11 +108,11 @@ class SaleDocumentMapperTest : DescribeSpec({
             entity.id shouldBe domain.id
             entity.saleId shouldBe domain.saleId
             entity.customerId shouldBe domain.customerId
-            entity.type shouldBe DocumentType.FACTURA
+            entity.type shouldBe EntityDocumentType.FACTURA
             entity.folio shouldBe 999L
             entity.totalAmount shouldBe BigDecimal("200000.00")
             entity.taxAmount shouldBe BigDecimal("38000.00")
-            entity.status shouldBe DocumentStatus.ANNULLED
+            entity.status shouldBe EntityDocumentStatus.ANNULLED
             entity.pdfUrl shouldBe "https://docs.siga.cl/999.pdf"
             entity.xmlUrl shouldBe "https://docs.siga.cl/999.xml"
         }

@@ -1,5 +1,6 @@
 package com.siga.sales.event
 
+import com.siga.sales.BaseSalesIntegrationTest
 import com.siga.sales.KafkaTestContainer
 import com.siga.sales.domain.model.Sale
 import com.siga.sales.domain.model.SaleStatus

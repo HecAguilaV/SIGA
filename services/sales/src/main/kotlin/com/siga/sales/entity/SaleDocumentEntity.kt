@@ -1,7 +1,5 @@
 package com.siga.sales.entity
 
-import com.siga.sales.domain.model.DocumentStatus
-import com.siga.sales.domain.model.DocumentType
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.Instant
