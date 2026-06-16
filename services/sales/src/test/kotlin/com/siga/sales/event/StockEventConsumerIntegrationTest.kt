@@ -25,10 +25,7 @@ import java.util.UUID
  * 3. StockEventConsumer receives it via @KafkaListener
  * 4. The sale status is updated to COMPLETED/CANCELLED
  */
-@SpringBootTest
-@ContextConfiguration(initializers = [KafkaTestContainer.Initializer::class])
-@ActiveProfiles("test")
-class StockEventConsumerIntegrationTest : DescribeSpec() {
+class StockEventConsumerIntegrationTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var saleRepositoryPort: SaleRepositoryPort
@@ -37,8 +34,6 @@ class StockEventConsumerIntegrationTest : DescribeSpec() {
     private lateinit var kafkaTemplate: KafkaTemplate<String, Any>
 
     init {
-        extension(SpringExtension())
-
         describe("StockEventConsumer with Testcontainers Kafka broker") {
 
             it("given_pending_sale_when_stock_reserved_event_on_kafka_then_sale_becomes_completed") {

@@ -1,5 +1,6 @@
 package com.siga.sales.infrastructure.adapter
 
+import com.siga.sales.BaseSalesIntegrationTest
 import com.siga.sales.domain.model.DocumentStatus
 import com.siga.sales.domain.model.DocumentType
 import com.siga.sales.domain.model.SaleDocument

@@ -1,5 +1,6 @@
 package com.siga.sales.infrastructure.adapter
 
+import com.siga.sales.BaseSalesIntegrationTest
 import com.siga.sales.domain.model.Sale
 import com.siga.sales.domain.model.SaleStatus
 import com.siga.sales.event.SaleEventProducer

@@ -19,9 +19,7 @@ import java.util.*
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = ["eureka.client.enabled=false"]
 )
-@ContextConfiguration(initializers = [KafkaTestContainer.Initializer::class])
-@ActiveProfiles("test")
-class InventoryClientIntegrationTest : DescribeSpec() {
+class InventoryClientIntegrationTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var inventoryClient: InventoryClient
@@ -40,8 +38,6 @@ class InventoryClientIntegrationTest : DescribeSpec() {
     }
 
     init {
-        extension(SpringExtension())
-
         describe("InventoryClient Integration with manual WireMock") {
 
             it("should return true when stock is valid (200 OK true)") {
