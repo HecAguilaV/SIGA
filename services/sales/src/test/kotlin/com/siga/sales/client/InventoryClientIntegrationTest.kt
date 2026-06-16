@@ -3,6 +3,7 @@ package com.siga.sales.client
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import com.siga.sales.BaseSalesIntegrationTest
 import com.siga.sales.KafkaTestContainer
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.extensions.spring.SpringExtension

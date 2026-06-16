@@ -159,9 +159,9 @@ class DataCoverageTest : DescribeSpec({
             customer.hashCode() shouldNotBe 0
             customer.equals(customer) shouldBe true
 
-            val doc = SaleDocumentEntity(id, id, id, DomainDocumentType.BOLETA, 1L, BigDecimal.TEN, BigDecimal.ONE, DomainDocumentStatus.EMITTED, "PDF", "XML", now)
+            val doc = SaleDocumentEntity(id, id, id, EntityDocumentType.BOLETA, 1L, BigDecimal.TEN, BigDecimal.ONE, EntityDocumentStatus.EMITTED, "PDF", "XML", now)
             doc.id shouldBe id
-            doc.status shouldBe DomainDocumentStatus.EMITTED
+            doc.status shouldBe EntityDocumentStatus.EMITTED
             doc.toString() shouldNotBe null
             doc.hashCode() shouldNotBe 0
             doc.equals(doc) shouldBe true
@@ -339,8 +339,8 @@ class DataCoverageTest : DescribeSpec({
 
             // SaleDocumentEntity
             testEntity(
-                SaleDocumentEntity(id, id, id, DomainDocumentType.BOLETA, 1, BigDecimal.TEN, BigDecimal.ONE, DomainDocumentStatus.EMITTED, "P", "X", now),
-                factory = { SaleDocumentEntity(id = it, saleId = id, customerId = id, type = DomainDocumentType.BOLETA, folio = 1, totalAmount = BigDecimal.TEN, taxAmount = BigDecimal.ONE, status = DomainDocumentStatus.EMITTED, pdfUrl = "P", xmlUrl = "X", createdAt = now) },
+                SaleDocumentEntity(id, id, id, EntityDocumentType.BOLETA, 1, BigDecimal.TEN, BigDecimal.ONE, EntityDocumentStatus.EMITTED, "P", "X", now),
+                factory = { SaleDocumentEntity(id = it, saleId = id, customerId = id, type = EntityDocumentType.BOLETA, folio = 1, totalAmount = BigDecimal.TEN, taxAmount = BigDecimal.ONE, status = EntityDocumentStatus.EMITTED, pdfUrl = "P", xmlUrl = "X", createdAt = now) },
                 idSetter = { e, v -> e.id = v }
             )
 
