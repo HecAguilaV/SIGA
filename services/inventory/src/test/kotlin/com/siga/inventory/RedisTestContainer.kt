@@ -3,9 +3,8 @@ package com.siga.inventory
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
-import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.RedisContainer
 import org.testcontainers.utility.DockerImageName
-import com.redis.testcontainers.RedisContainer
 
 /**
  * Singleton Redis container shared across the entire test suite.
