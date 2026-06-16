@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
-    id("org.springframework.boot") version "4.0.6"
-    id("io.spring.dependency-management") version "1.1.7"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
     id("jacoco")
 }
 
@@ -20,20 +20,21 @@ repositories {
     mavenCentral()
 }
 
-extra["springCloudVersion"] = "2025.1.0"
+extra["springCloudVersion"] = "2024.0.0"
 
 dependencyManagement {
     imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.4.3")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
     }
 }
 
 dependencies {
-    implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
+    implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     
     // Swagger / OpenAPI (WebFlux variant para Gateway reactivo)
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.3")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.5")
     
     // Health checks
     implementation("org.springframework.boot:spring-boot-starter-actuator")

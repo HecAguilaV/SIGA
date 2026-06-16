@@ -200,7 +200,7 @@ jobs:
         env:
           DATABASE_URL: jdbc:postgresql://localhost:5432/siga_test
           DATABASE_USER: siga_test
-          DATABASE_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          DATABASE_PASSWORD: test_password
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

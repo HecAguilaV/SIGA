@@ -17,7 +17,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer
  * Kafka configuration for the Inventory service.
  *
  * Manually configures the consumer and producer factories, listener container
- * factory, and KafkaTemplate since Spring Boot 4.x no longer includes Kafka
+ * factory, and KafkaTemplate since Spring Boot 3.4.x no longer includes Kafka
  * auto-configuration in [spring-boot-autoconfigure].
  *
  * Uses [@Value] to read properties from `application.yml` / `application-*.yml`.

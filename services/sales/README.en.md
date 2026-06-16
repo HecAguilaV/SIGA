@@ -6,7 +6,7 @@ Sales orchestrator, point-of-sale (POS) transactions, and tax documents.
 
 ## Tech Stack
 - **Language**: Kotlin 2.2.0
-- **Framework**: Spring Boot 4.0.6
+- **Framework**: Spring Boot 3.4.3
 - **Messaging**: Apache Kafka (SAGA Choreography)
 - **DB**: PostgreSQL (Schema: `sales`)
 - **Service Discovery**: Eureka Client
