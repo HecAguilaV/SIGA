@@ -18,10 +18,7 @@ import java.util.UUID
  * Integration test for [SaleItemJpaAdapter].
  * Verifies SaleItem persistence through the hexagonal port with H2.
  */
-@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=localhost:9092"])
-@ActiveProfiles("test")
-@Transactional
-class SaleItemJpaAdapterTest : DescribeSpec() {
+class SaleItemJpaAdapterTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var adapter: SaleItemJpaAdapter
@@ -30,8 +27,6 @@ class SaleItemJpaAdapterTest : DescribeSpec() {
     private lateinit var saleEventProducer: SaleEventProducer
 
     init {
-        extension(SpringExtension())
-
         describe("SaleItemJpaAdapter") {
 
             it("save and find by id") {

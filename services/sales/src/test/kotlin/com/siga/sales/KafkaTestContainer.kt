@@ -13,7 +13,7 @@ import org.testcontainers.utility.DockerImageName
  */
 object KafkaTestContainer {
     val container: KafkaContainer by lazy {
-        KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"))
+        KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.3"))
             .withReuse(true)
             .also { it.start() }
     }

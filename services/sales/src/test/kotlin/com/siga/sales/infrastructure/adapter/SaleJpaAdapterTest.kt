@@ -21,10 +21,7 @@ import java.util.UUID
  * Verifies the persistence contract through the hexagonal port
  * using a real H2 database (no mocking).
  */
-@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=localhost:9092"])
-@ActiveProfiles("test")
-@Transactional
-class SaleJpaAdapterTest : DescribeSpec() {
+class SaleJpaAdapterTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var adapter: SaleJpaAdapter
@@ -33,8 +30,6 @@ class SaleJpaAdapterTest : DescribeSpec() {
     private lateinit var saleEventProducer: SaleEventProducer
 
     init {
-        extension(SpringExtension())
-
         describe("SaleJpaAdapter") {
 
             it("save and find by id") {

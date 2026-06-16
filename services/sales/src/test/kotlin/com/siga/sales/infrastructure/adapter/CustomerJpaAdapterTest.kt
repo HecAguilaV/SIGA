@@ -18,10 +18,7 @@ import java.util.UUID
  * Integration test for [CustomerJpaAdapter].
  * Verifies Customer persistence through the hexagonal port with H2.
  */
-@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=localhost:9092"])
-@ActiveProfiles("test")
-@Transactional
-class CustomerJpaAdapterTest : DescribeSpec() {
+class CustomerJpaAdapterTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var adapter: CustomerJpaAdapter
@@ -30,8 +27,6 @@ class CustomerJpaAdapterTest : DescribeSpec() {
     private lateinit var saleEventProducer: SaleEventProducer
 
     init {
-        extension(SpringExtension())
-
         describe("CustomerJpaAdapter") {
 
             it("save and find by id") {

@@ -21,10 +21,7 @@ import java.util.UUID
  * Integration test for [SaleDocumentJpaAdapter].
  * Verifies SaleDocument persistence through the hexagonal port with H2.
  */
-@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=localhost:9092"])
-@ActiveProfiles("test")
-@Transactional
-class SaleDocumentJpaAdapterTest : DescribeSpec() {
+class SaleDocumentJpaAdapterTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var adapter: SaleDocumentJpaAdapter
@@ -33,8 +30,6 @@ class SaleDocumentJpaAdapterTest : DescribeSpec() {
     private lateinit var saleEventProducer: SaleEventProducer
 
     init {
-        extension(SpringExtension())
-
         describe("SaleDocumentJpaAdapter") {
 
             it("save and find by id") {

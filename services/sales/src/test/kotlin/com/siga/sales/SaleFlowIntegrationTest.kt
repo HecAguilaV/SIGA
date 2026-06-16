@@ -31,9 +31,7 @@ import java.util.UUID
  * Tests the complete stack: Controller → Use Case → Adapters → H2
  * via MockMvc. Kafka is mocked to avoid dependency on a real broker.
  */
-@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=localhost:9092"])
-@ActiveProfiles("test")
-class SaleFlowIntegrationTest : DescribeSpec() {
+class SaleFlowIntegrationTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
@@ -47,8 +45,6 @@ class SaleFlowIntegrationTest : DescribeSpec() {
     private lateinit var mockMvc: MockMvc
 
     init {
-        extension(SpringExtension())
-
         beforeTest {
             mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
         }
