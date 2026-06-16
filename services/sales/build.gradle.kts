@@ -83,6 +83,7 @@ dependencies {
     testImplementation("org.testcontainers:kafka:1.20.4")
     testImplementation("org.testcontainers:testcontainers:1.20.4")
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
     
     testRuntimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

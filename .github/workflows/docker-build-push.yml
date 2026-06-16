@@ -32,6 +32,10 @@ jobs:
             context: .
             dockerfile: ./services/sales/Dockerfile
             image: hdaguila/siga-sales
+          - service: notification
+            context: .
+            dockerfile: ./services/notification/Dockerfile
+            image: hdaguila/siga-notification
           - service: registry
             context: .
             dockerfile: ./services/registry/Dockerfile
