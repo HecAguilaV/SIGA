@@ -17,10 +17,7 @@ import java.util.UUID
  * Integration test for [PaymentMethodJpaAdapter].
  * Verifies PaymentMethod persistence through the hexagonal port with H2.
  */
-@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=localhost:9092"])
-@ActiveProfiles("test")
-@Transactional
-class PaymentMethodJpaAdapterTest : DescribeSpec() {
+class PaymentMethodJpaAdapterTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var adapter: PaymentMethodJpaAdapter
@@ -29,8 +26,6 @@ class PaymentMethodJpaAdapterTest : DescribeSpec() {
     private lateinit var saleEventProducer: SaleEventProducer
 
     init {
-        extension(SpringExtension())
-
         describe("PaymentMethodJpaAdapter") {
 
             it("save and find by id") {

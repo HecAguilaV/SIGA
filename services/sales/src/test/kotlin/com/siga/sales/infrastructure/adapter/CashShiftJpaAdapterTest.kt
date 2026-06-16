@@ -20,10 +20,7 @@ import java.util.UUID
  * Integration test for [CashShiftJpaAdapter].
  * Verifies CashShift persistence through the hexagonal port with H2.
  */
-@SpringBootTest(properties = ["spring.kafka.bootstrap-servers=localhost:9092"])
-@ActiveProfiles("test")
-@Transactional
-class CashShiftJpaAdapterTest : DescribeSpec() {
+class CashShiftJpaAdapterTest : BaseSalesIntegrationTest() {
 
     @Autowired
     private lateinit var adapter: CashShiftJpaAdapter
@@ -32,8 +29,6 @@ class CashShiftJpaAdapterTest : DescribeSpec() {
     private lateinit var saleEventProducer: SaleEventProducer
 
     init {
-        extension(SpringExtension())
-
         describe("CashShiftJpaAdapter") {
 
             it("save and find by id") {
