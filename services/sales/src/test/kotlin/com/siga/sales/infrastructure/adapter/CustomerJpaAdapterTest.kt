@@ -1,5 +1,6 @@
 package com.siga.sales.infrastructure.adapter
 
+import com.siga.sales.BaseSalesIntegrationTest
 import com.siga.sales.domain.model.Customer
 import com.siga.sales.event.SaleEventProducer
 import io.kotest.core.spec.style.DescribeSpec
