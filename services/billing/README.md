@@ -7,7 +7,7 @@ Implementa el paso 4 del flujo SAGA: al completarse una venta en `siga-sales`, g
 
 ## Stack Tecnológico
 - **Lenguaje**: Kotlin 2.2.0
-- **Framework**: Spring Boot 3.4.3
+- **Framework**: Spring Boot 4.0.6
 - **BD**: PostgreSQL (Esquema: `billing`)
 - **Mensajería**: Apache Kafka (SAGA Coreografía)
 - **Migraciones**: Flyway
@@ -47,7 +47,7 @@ Implementa el paso 4 del flujo SAGA: al completarse una venta en `siga-sales`, g
 | `V2__billing_add_customers.sql` | Tabla `customer` |
 | `V3__billing_add_sale_invoices.sql` | Tabla `sale_invoices` con FK a `sales.sales` |
 
-> **Nota**: Spring Boot 3.4.3 requiere `spring-boot-starter-flyway` + `flyway-database-postgresql`.
+> **Nota**: Spring Boot 4.0.6 requiere `spring-boot-starter-flyway` + `flyway-database-postgresql`.
 > Las migraciones usan schema prefix (`billing.`) para que las tablas se creen con el owner correcto del servicio.
 
 ## APIs & Contratos

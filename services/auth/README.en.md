@@ -6,7 +6,7 @@ This service manages identity, security, and centralized access control for the 
 
 ## Tech Stack
 - **Language**: Kotlin
-- **Framework**: Spring Boot 3.4.3
+- **Framework**: Spring Boot 4.0.6
 - **Security**: Spring Security + JWT
 - **DB**: PostgreSQL (Schema: `auth`)
 

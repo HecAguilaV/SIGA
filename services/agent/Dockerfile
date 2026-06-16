@@ -4,6 +4,8 @@ WORKDIR /app
 
 # 1. Copiar Gradle Wrapper y archivos de configuración básicos
 COPY gradlew .
+COPY build.gradle.kts .
+COPY gradle.properties .
 COPY gradle gradle
 
 # 2. Generar un settings.gradle.kts temporal para construir solo este módulo
