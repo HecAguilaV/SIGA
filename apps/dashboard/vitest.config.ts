@@ -8,7 +8,8 @@ export default defineConfig({
 		conditions: ['browser'],
 		alias: {
 			'@siga/ui-kit': path.resolve(__dirname, '../../packages/ui-kit'),
-			'@siga/shared': path.resolve(__dirname, '../../packages/shared')
+			'@siga/shared': path.resolve(__dirname, '../../packages/shared'),
+			'pretty-format': path.resolve(__dirname, 'node_modules/pretty-format')
 		}
 	},
 	test: {
@@ -16,6 +17,11 @@ export default defineConfig({
 		globals: true,
 		include: ['tests/**/*.test.ts', 'src/**/*.test.ts'],
 		setupFiles: ['./tests/setup.ts'],
+		server: {
+			deps: {
+				inline: [/pretty-format/]
+			}
+		},
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html', 'lcov', 'json-summary'],
