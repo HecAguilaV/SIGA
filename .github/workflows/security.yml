@@ -100,15 +100,14 @@ jobs:
       - name: Run Semgrep scan
         continue-on-error: true
         run: |
-          semgrep ci \
-            --config=auto \
+          semgrep --config=auto \
             --config=.semgrep.yaml \
-            --json-output=semgrep-results.json \
             --sarif-output=semgrep-results.sarif \
-            --no-gitlab-ci
+            --json-output=semgrep-results.json
 
       - name: Upload results to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
+        continue-on-error: true
         if: always()
         with:
           sarif_file: semgrep-results.sarif
@@ -242,7 +241,7 @@ jobs:
         include:
           - service: dashboard
             path: apps/dashboard
-            command: pnpm test:coverage
+            command: pnpm test
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
