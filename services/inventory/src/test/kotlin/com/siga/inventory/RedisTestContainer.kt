@@ -3,30 +3,23 @@ package com.siga.inventory
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
-import org.testcontainers.containers.RedisContainer
-import org.testcontainers.utility.DockerImageName
 
 /**
- * Singleton Redis container shared across the entire test suite.
- * Using the Singleton Container pattern with lazy initialization ensures
- * we only start one instance and only if needed.
+ * Singleton Redis connection config shared across the entire test suite.
+ *
+ * Uses Redis on localhost:6379 — provided by:
+ * - Local dev: `siga-redis` Docker container (always running)
+ * - CI: Redis service in GitHub Actions
+ *
+ * This avoids coupling to Testcontainers' docker-java compatibility issues
+ * while keeping the Initializer pattern for clean Spring context configuration.
  */
 object RedisTestContainer {
-    val container: RedisContainer by lazy {
-        RedisContainer(DockerImageName.parse("redis:7-alpine"))
-            .withExposedPorts(6379)
-            .also { it.start() }
-    }
-
-    /**
-     * Initializer to be used with @ContextConfiguration(initializers = [RedisTestContainer.Initializer::class])
-     * Works for both JUnit 5 and Kotest.
-     */
     class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(context: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                "spring.data.redis.host=${container.host}",
-                "spring.data.redis.port=${container.firstMappedPort}"
+                "spring.data.redis.host=localhost",
+                "spring.data.redis.port=6379"
             ).applyTo(context.environment)
         }
     }
