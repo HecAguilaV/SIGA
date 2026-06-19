@@ -1,0 +1,51 @@
+# =============================================================================
+# CONFIGMAP - registry-config
+# Servicio: Registry Service (Eureka Service Discovery)
+# =============================================================================
+# Propósito: Proveer configuración al servidor de descubrimiento Eureka.
+# Todos los microservicios se registran aquí al iniciar y envían heartbeats.
+# El API Gateway consulta este registro para enrutar peticiones.
+#
+# Decisión: Usamos Eureka por ser el discovery nativo de Spring Cloud.
+# Alternativa evaluada: Kubernetes Services (DNS) - Eureka aporta:
+#   - Health checks a nivel de aplicación (no solo de pod)
+#   - Metadatos de instancia (versión, zona, etc.)
+#   - Desregistro graceful cuando la app se apaga correctamente
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-config
+  namespace: siga
+  labels:
+    app: siga-registry
+    project: siga
+data:
+  SPRING_PROFILES_ACTIVE: "eks"
+  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
+
+  # ---------------------------------------------------------------------------
+  # Configuración de Eureka Server
+  # ---------------------------------------------------------------------------
+  # No se registra a sí mismo (es el servidor, no un cliente)
+  EUREKA_CLIENT_REGISTER-WITH-EUREKA: "false"
+  # No busca otros servidores (modo standalone)
+  EUREKA_CLIENT_FETCH-REGISTRY: "false"
+  # Puerto del dashboard de Eureka
+  SERVER_PORT: "8761"
+
+  # ---------------------------------------------------------------------------
+  # Tiempos de heartbeat y eviction
+  # ---------------------------------------------------------------------------
+  # Intervalo de limpieza de instancias caídas (en ms)
+  EUREKA_SERVER_EVICTION-INTERVAL-TIMER-IN-MS: "5000"
+  # Tiempo sin heartbeat antes de dar de baja (en ms)
+  EUREKA_INSTANCE_LEASE-EXPIRATION-DURATION-IN-SECONDS: "30"
+  # Frecuencia de heartbeat (en s) - lo define cada cliente
+  EUREKA_INSTANCE_LEASE-RENEWAL-INTERVAL-IN-SECONDS: "10"
+
+  # ---------------------------------------------------------------------------
+  # URLs de servicios vecinos
+  # Nota: El registry normalmente solo se comunica con los clientes Eureka.
+  # ---------------------------------------------------------------------------
+  AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"

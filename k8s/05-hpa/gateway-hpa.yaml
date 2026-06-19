@@ -1,0 +1,49 @@
+# =============================================================================
+# HPA - gateway-hpa
+# Servicio: API Gateway
+# =============================================================================
+# Propósito: Escalado automático del API Gateway basado en métricas de
+# CPU y memoria. El gateway es el punto de entrada, necesita escalar
+# rápidamente ante picos de tráfico.
+#
+# Decisión: Usamos autoscaling/v2 (estable desde K8s 1.23+).
+# Métricas:
+#   - CPU: target 70% - El gateway enruta peticiones, es CPU-bound
+#   - Memory: target 80% - Deja margen para evitar OOM
+#
+# Límites:
+#   Min: 1 réplica (costo mínimo en horas bajas)
+#   Max: 5 réplicas (límite superior para evitar saturar conexiones
+#        a servicios downstream)
+#
+# Nota: El HPA requiere que el Metrics Server esté instalado en el cluster.
+# En EKS, esto se habilita con: https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
+# =============================================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: siga-gateway-hpa
+  namespace: siga
+  labels:
+    app: siga-gateway
+    project: siga
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: siga-gateway
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

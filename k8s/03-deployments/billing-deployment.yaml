@@ -1,0 +1,101 @@
+# =============================================================================
+# DEPLOYMENT - siga-billing
+# Servicio: Billing Service (Facturación y Pagos)
+# =============================================================================
+# Propósito: Procesa pagos, genera facturas, maneja reembolsos,
+# integración con pasarelas de pago externas y reportes financieros.
+#
+# Replicas: 2 - El procesamiento de pagos no debe interrumpirse.
+#
+# Recursos:
+#   Request: 256Mi/250m
+#   Limit:   512Mi/500m
+#   Justificación: Puede necesitar más memoria al generar PDFs de facturas.
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-billing
+  namespace: siga
+  labels:
+    app: siga-billing
+    project: siga
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: siga-billing
+  template:
+    metadata:
+      labels:
+        app: siga-billing
+        project: siga
+        tier: backend
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - siga-billing
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: billing
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-billing:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8084
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: billing-config
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+                  optional: false
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: billing-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0

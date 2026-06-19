@@ -1,0 +1,88 @@
+# =============================================================================
+# DEPLOYMENT - siga-registry
+# Servicio: Registry Service (Eureka Service Discovery)
+# =============================================================================
+# Propósito: Servidor Eureka para descubrimiento de servicios.
+# Todos los microservicios Spring Cloud se registran aquí al iniciar.
+# El API Gateway consulta el registry para enrutar peticiones a
+# instancias saludables.
+#
+# Replicas: 1 - Eureka en modo standalone. El heartbeat de Eureka
+# funciona con peer-awareness (múltiples réplicas) pero para este
+# proyecto una réplica es suficiente. Si el pod cae, los servicios
+# siguen funcionando con la última información de registro en caché.
+#
+# Decisión técnica: Eureka usa el modelo de "último registro conocido".
+# Si el servidor cae, los clientes siguen funcionando con el caché local
+# hasta que el servidor vuelva. No hay pérdida de servicio ni datos.
+#
+# Puerto: 8761 (puerto estándar de Eureka)
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-registry
+  namespace: siga
+  labels:
+    app: siga-registry
+    project: siga
+    tier: infrastructure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: siga-registry
+  template:
+    metadata:
+      labels:
+        app: siga-registry
+        project: siga
+        tier: infrastructure
+    spec:
+      containers:
+        - name: registry
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-registry:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8761
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8761
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: registry-config
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: registry-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0

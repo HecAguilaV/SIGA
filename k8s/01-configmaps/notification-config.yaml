@@ -1,0 +1,54 @@
+# =============================================================================
+# CONFIGMAP - notification-config
+# Servicio: Notification Service (Notificaciones)
+# =============================================================================
+# Propósito: Proveer configuración al servicio de notificaciones.
+# Envía notificaciones por email, SMS y push. Consume eventos de Kafka.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notification-config
+  namespace: siga
+  labels:
+    app: siga-notification
+    project: siga
+data:
+  SPRING_PROFILES_ACTIVE: "eks"
+  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
+
+  # ---------------------------------------------------------------------------
+  # Base de datos PostgreSQL (RDS)
+  # ---------------------------------------------------------------------------
+  DB_HOST: "siga-notification.cluster-xxxxxxxxxxxx.us-east-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "siga_notification"
+  DB_SCHEMA: "notification"
+  DB_SSL_MODE: "require"
+
+  # ---------------------------------------------------------------------------
+  # Kafka - broker de mensajería para eventos asíncronos
+  # Por ahora corre en docker-compose. En producción usar MSK o Confluent Cloud.
+  # Documentación: La URL del broker debe configurarse según el proveedor.
+  # ---------------------------------------------------------------------------
+  # Spring Cloud Stream binder para Kafka
+  SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "siga-kafka.siga.svc.cluster.local:9092"
+  # Grupo de consumo por defecto
+  SPRING_CLOUD_STREAM_KAFKA_BINDER_DEFAULT_CONSUMER_GROUP: "siga-notification-group"
+  # Tópicos de los que consume el servicio de notificaciones
+  KAFKA_TOPIC_ORDER_CREATED: "siga.order.created"
+  KAFKA_TOPIC_PAYMENT_CONFIRMED: "siga.payment.confirmed"
+  KAFKA_TOPIC_INVENTORY_LOW: "siga.inventory.low"
+
+  # ---------------------------------------------------------------------------
+  # Configuración de email (SMTP)
+  # ---------------------------------------------------------------------------
+  SMTP_HOST: "email-smtp.us-east-1.amazonaws.com"
+  SMTP_PORT: "587"
+  SMTP_FROM: "notificaciones@siga.com"
+
+  # ---------------------------------------------------------------------------
+  # URLs de servicios vecinos
+  # ---------------------------------------------------------------------------
+  AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
+  REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"

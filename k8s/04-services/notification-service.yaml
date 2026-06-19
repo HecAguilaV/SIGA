@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: siga-notification
+  namespace: siga
+  labels:
+    app: siga-notification
+    project: siga
+    tier: backend
+spec:
+  selector:
+    app: siga-notification
+  ports:
+    - protocol: TCP
+      port: 8085
+      targetPort: 8085
+      name: http
+  type: ClusterIP

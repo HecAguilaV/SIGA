@@ -1,0 +1,106 @@
+# =============================================================================
+# DEPLOYMENT - siga-sales
+# Servicio: Sales Service (Gestión de Ventas)
+# =============================================================================
+# Propósito: Maneja órdenes de compra, carritos de compra, historial
+# de transacciones y procesos de checkout.
+#
+# Replicas: 2 - El checkout es crítico, necesita disponibilidad continua.
+#
+# Recursos:
+#   Request: 256Mi/250m
+#   Limit:   512Mi/500m
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-sales
+  namespace: siga
+  labels:
+    app: siga-sales
+    project: siga
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: siga-sales
+  template:
+    metadata:
+      labels:
+        app: siga-sales
+        project: siga
+        tier: backend
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - siga-sales
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: sales
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-sales:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: sales-config
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+                  optional: false
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: JWT_SECRET
+                  optional: false
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: sales-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0

@@ -1,0 +1,102 @@
+# =============================================================================
+# STATEFULSET: Apache Kafka (KRaft mode)
+# SECCIÓN: Kafka StatefulSet con almacenamiento persistente
+# =============================================================================
+# Rationale / Decisión: Kafka en KRaft mode (sin ZooKeeper, KIP-853).
+# Single broker para laboratorio con $50 de presupuesto.
+# StatefulSet porque Kafka necesita identidad de red estable para que los
+# productores/consumidores mantengan conexiones confiables.
+#
+# Purpose / Propósito: Message broker para transacciones distribuidas
+# (SAGA Coreografía) entre microservicios SIGA.
+#
+# Budget / Presupuesto: Estado dentro del cluster EKS = sin costo adicional.
+# Solo consume recursos de los nodos existentes (~256MB RAM, 0.5 CPU).
+# En producción usar MSK (AWS) o 3+ brokers con replicación.
+# =============================================================================
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: siga-kafka
+  namespace: siga
+  labels:
+    app: siga-kafka
+    component: messaging
+    project: siga
+spec:
+  serviceName: siga-kafka
+  replicas: 1
+  # Decisión: 1 réplica para laboratorio. En producción 3+ para HA.
+  selector:
+    matchLabels:
+      app: siga-kafka
+  template:
+    metadata:
+      labels:
+        app: siga-kafka
+        component: messaging
+    spec:
+      containers:
+        - name: kafka
+          image: confluentinc/cp-kafka:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9092
+              name: external
+              protocol: TCP
+            - containerPort: 29092
+              name: internal
+              protocol: TCP
+            - containerPort: 29093
+              name: controller
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: siga-kafka-config
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          # Health checks
+          # Readiness: Kafka debe estar listo para aceptar tráfico
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - "kafka-broker-api-versions --bootstrap-server localhost:9092 > /dev/null 2>&1"
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+          # Liveness: Kafka debe estar vivo
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - "kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /var/lib/kafka/data
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+  # VolumeClaimTemplate: Persistent storage for Kafka data
+  # Decisión: gp3 (SSD) porque Kafka es intensivo en I/O.
+  # 10GB es suficiente para laboratorio con pocos eventos.
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: gp3

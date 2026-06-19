@@ -1,0 +1,115 @@
+# =============================================================================
+# INGRESS - siga-alb-ingress
+# Servicio: AWS ALB Ingress Controller
+# =============================================================================
+# Propósito: Exponer los servicios de SIGA al exterior a través de un
+# Application Load Balancer (ALB) de AWS. El ALB enruta tráfico HTTP/HTTPS
+# a los servicios internos basado en las rutas definidas.
+#
+# Decisión: Usamos ALB Ingress Controller en lugar de NGINX Ingress porque:
+#   1. Integración nativa con AWS WAF para seguridad
+#   2. Certificados SSL/TLS con AWS Certificate Manager (ACM)
+#   3. Target groups automáticos para cada ruta
+#   4. Health checks administrados por AWS
+#   5. Escalado automático del ALB (manejado por AWS)
+#
+# Rutas:
+#   /api/** → gateway (8080) - Todas las peticiones a la API
+#   / → dashboard (3000) - Frontend SvelteKit
+#   /eureka/** → registry (8761) - Dashboard de Eureka (solo debugging)
+#
+# Anotaciones:
+#   - scheme: internet-facing (accesible desde internet)
+#   - target-type: ip (usa IPs de los pods directamente, no NodePort)
+#   - group.name: siga (agrupa múltiples Ingress resources)
+#
+# Requisitos previos:
+#   1. AWS Load Balancer Controller instalado en el cluster EKS
+#      https://kubernetes-sigs.github.io/aws-load-balancer-controller/
+#   2. Subnets públicas con tag: kubernetes.io/role/elb = 1
+#   3. IAM OIDC provider configurado para el cluster
+# =============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: siga-alb-ingress
+  namespace: siga
+  labels:
+    app: siga-ingress
+    project: siga
+  annotations:
+    # Tipo de Ingress Controller: ALB de AWS
+    kubernetes.io/ingress.class: alb
+    # Esquema del ALB: internet-facing (accesible públicamente)
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    # Tipo de target: ip (los pods se registran directamente como targets)
+    # Alternativa: instance (usa NodePort). Usamos 'ip' para evitar
+    # el hop extra y preservar la IP real del cliente.
+    alb.ingress.kubernetes.io/target-type: ip
+    # Health check del ALB contra el gateway (punto de entrada)
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+    alb.ingress.kubernetes.io/healthcheck-port: "8080"
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "3"
+    # Puertos en los que escucha el ALB
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    # Para HTTPS: '[{"HTTPS": 443}, {"HTTP": 80}]'
+    # certificate-arn: arn:aws:acm:us-east-1:XXXXXXXXXXXX:certificate/xxxx-xxxx
+    # alb.ingress.kubernetes.io/certificate-arn: <ACM_CERT_ARN>
+    # Grupo de Ingress: permite múltiples Ingress resources en un solo ALB
+    alb.ingress.kubernetes.io/group.name: siga
+    # Tiempo de idle timeout de la conexión (en segundos)
+    alb.ingress.kubernetes.io/idle-timeout: "60"
+    # Atributos adicionales del target group
+    alb.ingress.kubernetes.io/target-group-attributes: |
+      stickiness.enabled=false
+      deregistration_delay.timeout_seconds=30
+spec:
+  rules:
+    # -----------------------------------------------------------------------
+    # Ruta /api/** → Gateway Service (Spring Cloud Gateway)
+    # Todas las peticiones a la API REST pasan por el gateway.
+    # El gateway enruta a los microservicios internos según el path.
+    # -----------------------------------------------------------------------
+    - host: siga.internal
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: siga-gateway
+                port:
+                  number: 8080
+    # -----------------------------------------------------------------------
+    # Ruta / → Dashboard (Frontend SvelteKit)
+    # El frontend maneja las rutas de la SPA (SvelteKit con SSR).
+    # -----------------------------------------------------------------------
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: siga-dashboard
+                port:
+                  number: 3000
+    # -----------------------------------------------------------------------
+    # Ruta /eureka → Registry (Eureka Dashboard)
+    # Acceso al dashboard de Eureka para debugging y monitoreo.
+    # En producción, esta ruta puede restringirse por IP.
+    # -----------------------------------------------------------------------
+          - path: /eureka
+            pathType: Prefix
+            backend:
+              service:
+                name: siga-registry
+                port:
+                  number: 8761
+  # ---------------------------------------------------------------------------
+  # Reglas por defecto (opcional): respuesta 404 para rutas no definidas
+  # ---------------------------------------------------------------------------
+  defaultBackend:
+    service:
+      name: siga-dashboard
+      port:
+        number: 3000

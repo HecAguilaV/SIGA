@@ -1,0 +1,111 @@
+# =============================================================================
+# DEPLOYMENT - siga-auth
+# Servicio: Auth Service (Autenticación y Autorización)
+# =============================================================================
+# Propósito: Maneja registro de usuarios, login, emisión/validación de
+# tokens JWT, refresh tokens y RBAC (Role-Based Access Control).
+#
+# Replicas: 2 - Servicio crítico, toda petición pasa por auth.
+#   Alta disponibilidad necesaria para no bloquear el sistema completo.
+#
+# Recursos:
+#   Request: 256Mi/250m - Baseline para operación normal
+#   Limit:   512Mi/500m - Pico con muchas validaciones concurrentes
+#   Justificación: Auth hace hashing bcrypt (cost 10+), que es CPU intensivo.
+#     Por eso el request de CPU es relativamente alto.
+#
+# Health: Spring Boot Actuator en /actuator/health
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-auth
+  namespace: siga
+  labels:
+    app: siga-auth
+    project: siga
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: siga-auth
+  template:
+    metadata:
+      labels:
+        app: siga-auth
+        project: siga
+        tier: backend
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - siga-auth
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: auth
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-auth:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: auth-config
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+                  optional: false
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: JWT_SECRET
+                  optional: false
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: auth-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
