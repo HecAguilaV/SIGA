@@ -1,0 +1,27 @@
+# =============================================================================
+# CONFIGMAP: Grafana Datasource (Prometheus)
+# SECCIÓN: Configuración automática de datasource Prometheus en Grafana
+# =============================================================================
+# Rationale / Decisión: Grafana se configura automáticamente al arrancar
+# para que apunte al Service de Prometheus dentro del cluster.
+# Sin esta config, habría que agregar la datasource manualmente.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: siga
+  labels:
+    app: grafana
+    component: monitoring
+    project: siga
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.siga.svc.cluster.local:9090
+        isDefault: true
+        editable: false

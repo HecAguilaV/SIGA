@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: siga-sales
+  namespace: siga
+  labels:
+    app: siga-sales
+    project: siga
+    tier: backend
+spec:
+  selector:
+    app: siga-sales
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+      name: http
+  type: ClusterIP

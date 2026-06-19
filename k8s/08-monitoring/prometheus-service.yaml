@@ -1,0 +1,25 @@
+# =============================================================================
+# SERVICE: Prometheus
+# SECCIÓN: Exposición de Prometheus para Grafana y acceso directo
+# =============================================================================
+# Rationale / Decisión: ClusterIP porque Grafana está en el mismo cluster.
+# Para acceso externo usar port-forward o NodePort durante la demo.
+# =============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: siga
+  labels:
+    app: prometheus
+    component: monitoring
+    project: siga
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+  type: ClusterIP

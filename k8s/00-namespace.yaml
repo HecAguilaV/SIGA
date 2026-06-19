@@ -1,0 +1,24 @@
+# =============================================================================
+# NAMESPACE - SIGA (Sistema Inteligente de Gestión de Activos)
+# =============================================================================
+# Propósito: Aislar todos los recursos del proyecto SIGA en su propio
+# namespace de Kubernetes. Esto permite:
+#   - Políticas de red específicas por namespace
+#   - Cuotas de recursos (ResourceQuota) independientes
+#   - Límites de recursos por namespace (LimitRange)
+#   - Separación lógica de otros proyectos en el cluster
+#
+# Decisión: Se usa un namespace dedicado 'siga' en lugar de desplegar
+# en 'default' para evitar conflictos con otros proyectos y permitir
+# políticas RBAC granulares.
+# =============================================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: siga
+  labels:
+    project: siga
+    environment: production
+    managed-by: kubectl
+  annotations:
+    description: "Namespace principal del sistema SIGA - Sistema Inteligente de Gestión de Activos"

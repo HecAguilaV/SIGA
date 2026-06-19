@@ -1,0 +1,44 @@
+# =============================================================================
+# CONFIGMAP - dashboard-config
+# Servicio: Dashboard (Frontend SvelteKit)
+# =============================================================================
+# Propósito: Proveer configuración al frontend SvelteKit con adapter-node.
+# El dashboard se renderiza en servidor (SSR) y se comunica con el backend
+# a través del API Gateway.
+#
+# Decisión: Las variables PUBLIC_* son accesibles desde el cliente (browser).
+# El frontend necesita saber la URL del gateway para hacer peticiones API.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashboard-config
+  namespace: siga
+  labels:
+    app: siga-dashboard
+    project: siga
+data:
+  # ---------------------------------------------------------------------------
+  # Variables de entorno de Node.js
+  # ---------------------------------------------------------------------------
+  # Puerto en el que escucha el servidor Node (adapter-node)
+  PORT: "3000"
+  # Host al que se bindea el servidor
+  HOST: "0.0.0.0"
+  # Entorno de ejecución
+  NODE_ENV: "production"
+  # Origen permitido para CORS (URL del ALB)
+  ORIGIN: "https://siga.internal"
+
+  # ---------------------------------------------------------------------------
+  # Variables públicas (accesibles desde el navegador via $env/dynamic/public)
+  # PUBLIC_* son reemplazadas en build-time o runtime según configuración
+  # ---------------------------------------------------------------------------
+  # URL del API Gateway - punto de entrada para todas las APIs
+  PUBLIC_GATEWAY_URL: "https://siga.internal/api"
+  # URL base de la API
+  PUBLIC_API_URL: "https://siga.internal/api/v1"
+  # Nombre de la aplicación (se muestra en el título del dashboard)
+  PUBLIC_APP_NAME: "SIGA"
+  # Versión de la aplicación
+  PUBLIC_APP_VERSION: "1.0.0"

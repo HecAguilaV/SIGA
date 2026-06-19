@@ -1,0 +1,43 @@
+# =============================================================================
+# CONFIGMAP - sales-config
+# Servicio: Sales Service (Gestión de Ventas)
+# =============================================================================
+# Propósito: Proveer configuración al servicio de ventas.
+# Maneja órdenes de compra, carritos, historial de transacciones.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sales-config
+  namespace: siga
+  labels:
+    app: siga-sales
+    project: siga
+data:
+  SPRING_PROFILES_ACTIVE: "eks"
+  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
+
+  # ---------------------------------------------------------------------------
+  # Base de datos PostgreSQL (RDS)
+  # ---------------------------------------------------------------------------
+  DB_HOST: "siga-sales.cluster-xxxxxxxxxxxx.us-east-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "siga_sales"
+  DB_SCHEMA: "sales"
+  DB_SSL_MODE: "require"
+
+  # ---------------------------------------------------------------------------
+  # Redis (ElastiCache) para caché de sesiones de carrito
+  # ---------------------------------------------------------------------------
+  REDIS_HOST: "siga-cache.xxxxxxxxxx.ng.0001.use1.cache.amazonaws.com"
+  REDIS_PORT: "6379"
+  REDIS_SSL: "true"
+
+  # ---------------------------------------------------------------------------
+  # URLs de servicios vecinos
+  # ---------------------------------------------------------------------------
+  AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
+  INVENTORY_SERVICE_URL: "http://siga-inventory.siga.svc.cluster.local:8082"
+  BILLING_SERVICE_URL: "http://siga-billing.siga.svc.cluster.local:8084"
+  NOTIFICATION_SERVICE_URL: "http://siga-notification.siga.svc.cluster.local:8085"
+  REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"

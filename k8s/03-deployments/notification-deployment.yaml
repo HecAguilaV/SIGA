@@ -1,0 +1,109 @@
+# =============================================================================
+# DEPLOYMENT - siga-notification
+# Servicio: Notification Service (Notificaciones)
+# =============================================================================
+# Propósito: Envía notificaciones por email, SMS y push notifications.
+# Consume eventos de Kafka (orden creada, pago confirmado, stock bajo)
+# y los transforma en notificaciones a los usuarios.
+#
+# Replicas: 2 - Las notificaciones son asíncronas pero no deben perderse.
+#   Kafka consumer groups permiten que múltiples instancias consuman
+#   particiones en paralelo.
+#
+# Recursos:
+#   Request: 256Mi/250m
+#   Limit:   512Mi/500m
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-notification
+  namespace: siga
+  labels:
+    app: siga-notification
+    project: siga
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: siga-notification
+  template:
+    metadata:
+      labels:
+        app: siga-notification
+        project: siga
+        tier: backend
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - siga-notification
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: notification
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-notification:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8085
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: notification-config
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+                  optional: false
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: SMTP_PASSWORD
+                  optional: false
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: notification-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0

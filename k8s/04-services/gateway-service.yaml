@@ -1,0 +1,29 @@
+# =============================================================================
+# SERVICE - siga-gateway
+# Servicio: API Gateway (Spring Cloud Gateway)
+# =============================================================================
+# Propósito: Exponer el API Gateway dentro del cluster como ClusterIP.
+# El ALB Ingress apunta a este service para enrutar tráfico externo.
+#
+# Tipo: ClusterIP (no expuesto directamente al exterior)
+# Puerto: 8080 (mapea al containerPort del deployment)
+# TargetPort: 8080 (el puerto donde escucha Spring Cloud Gateway)
+# =============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: siga-gateway
+  namespace: siga
+  labels:
+    app: siga-gateway
+    project: siga
+    tier: gateway
+spec:
+  selector:
+    app: siga-gateway
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      name: http
+  type: ClusterIP

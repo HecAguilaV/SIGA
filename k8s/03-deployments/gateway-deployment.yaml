@@ -1,0 +1,155 @@
+# =============================================================================
+# DEPLOYMENT - siga-gateway
+# Servicio: API Gateway (Spring Cloud Gateway)
+# =============================================================================
+# Propósito: Punto de entrada único para todas las peticiones al backend.
+# Enruta tráfico a los microservicios basado en paths (/api/auth/**,
+# /api/inventory/**, etc.). También maneja rate limiting, CORS y
+# validación de tokens JWT a nivel de gateway.
+#
+# Decisión: Spring Cloud Gateway en lugar de Kong/NGINX porque:
+#   - Integración nativa con el ecosistema Spring (Eureka, Config)
+#   - Route definition programática con Java DSL
+#   - Filtros reactivos (WebFlux) para alta concurrencia
+#
+# Replicas: 2 - Mínimo para alta disponibilidad. Con HPA escala hasta 5.
+#
+# Recursos:
+#   Request: 256Mi RAM / 250m CPU - Baseline para carga normal
+#   Limit:   512Mi RAM / 500m CPU - Pico máximo permitido
+#   Justificación: El gateway es reactivo (WebFlux), usa menos memoria
+#   que un servlet tradicional pero necesita CPU para enrutamiento.
+#
+# Health:
+#   - Readiness: /actuator/health (Spring Boot Actuator)
+#   - Liveness:  /actuator/health
+#   - Diferenciación: Ambos usan el mismo endpoint porque Actuator
+#     ya distingue entre ready/alive internamente.
+#
+# Alta disponibilidad:
+#   - 2 réplicas distribuidas con podAntiAffinity suave
+#   - Evita que dos réplicas estén en el mismo nodo
+#   - HPA para escalado automático (CPU 70%, Memory 80%)
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-gateway
+  namespace: siga
+  labels:
+    app: siga-gateway
+    project: siga
+    tier: gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: siga-gateway
+  template:
+    metadata:
+      labels:
+        app: siga-gateway
+        project: siga
+        tier: gateway
+    spec:
+      # -----------------------------------------------------------------------
+      # Anti-affinity suave: prefiere distribuir pods en distintos nodos
+      # -----------------------------------------------------------------------
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - siga-gateway
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: gateway
+          # Imagen desde Amazon ECR. Reemplazar ${} con valores reales.
+          # Formato: <account>.dkr.ecr.<region>.amazonaws.com/<repo>:<tag>
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-gateway:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: http
+          # -------------------------------------------------------------------
+          # Recursos: solicitud y límite
+          # -------------------------------------------------------------------
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          # -------------------------------------------------------------------
+          # Readiness Probe: el pod solo recibe tráfico cuando está listo
+          # -------------------------------------------------------------------
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # -------------------------------------------------------------------
+          # Liveness Probe: reinicia el pod si está colgado
+          # -------------------------------------------------------------------
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # -------------------------------------------------------------------
+          # Variables de entorno
+          # -------------------------------------------------------------------
+          envFrom:
+            # ConfigMap con variables no sensibles
+            - configMapRef:
+                name: gateway-config
+          env:
+            # Secrets - se inyectan desde AWS Secrets Manager en producción
+            # o desde el secret db-secret en desarrollo local
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+                  optional: false
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: JWT_SECRET
+                  optional: false
+          # -------------------------------------------------------------------
+          # Volúmenes montados
+          # -------------------------------------------------------------------
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      # -----------------------------------------------------------------------
+      # Volúmenes
+      # -----------------------------------------------------------------------
+      volumes:
+        - name: config-volume
+          configMap:
+            name: gateway-config
+      # -----------------------------------------------------------------------
+      # Estrategia de actualización: RollingUpdate con max surge
+      # -----------------------------------------------------------------------
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0

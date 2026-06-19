@@ -1,0 +1,53 @@
+# =============================================================================
+# CONFIGMAP - gateway-config
+# Servicio: API Gateway (Spring Cloud Gateway)
+# =============================================================================
+# Propósito: Proveer configuración de entorno al API Gateway.
+# El Gateway es el punto de entrada único a todos los microservicios.
+# Enruta peticiones según el path a cada servicio interno.
+#
+# Decisión: Usamos ConfigMap para configuración no sensible.
+# Los secrets (DB_PASSWORD, JWT_SECRET) van en AWS Secrets Manager.
+# -----------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  namespace: siga
+  labels:
+    app: siga-gateway
+    project: siga
+data:
+  # Perfil activo de Spring - apunta al archivo de configuración externo
+  SPRING_PROFILES_ACTIVE: "eks"
+  # Ubicación del archivo de configuración montado como volumen
+  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
+
+  # ---------------------------------------------------------------------------
+  # URLs de servicios vecinos - usan DNS interno de Kubernetes
+  # Formato: http://<service>.<namespace>.svc.cluster.local:<port>
+  # Esto permite comunicación intra-cluster sin pasar por el ALB
+  # ---------------------------------------------------------------------------
+
+  # Servicio de autenticación - valida tokens JWT
+  AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
+  # Servicio de inventario - consulta disponibilidad de activos
+  INVENTORY_SERVICE_URL: "http://siga-inventory.siga.svc.cluster.local:8082"
+  # Servicio de ventas - registro de transacciones
+  SALES_SERVICE_URL: "http://siga-sales.siga.svc.cluster.local:8083"
+  # Servicio de facturación
+  BILLING_SERVICE_URL: "http://siga-billing.siga.svc.cluster.local:8084"
+  # Servicio de notificaciones
+  NOTIFICATION_SERVICE_URL: "http://siga-notification.siga.svc.cluster.local:8085"
+  # Servicio de agente IA
+  AGENT_SERVICE_URL: "http://siga-agent.siga.svc.cluster.local:8086"
+  # Registry (Eureka) - descubrimiento de servicios
+  REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
+
+  # ---------------------------------------------------------------------------
+  # Configuración del Gateway - timeouts y reintentos
+  # ---------------------------------------------------------------------------
+  # Timeout global para peticiones entrantes (en milisegundos)
+  SPRING_CLOUD_GATEWAY_GLOBAL-FILTERS_REQUEST-RATE-LIMITER_ENABLED: "true"
+  # Tamaño del buffer de peticiones (en KB)
+  SPRING_CODEC_MAX-IN-MEMORY-SIZE: "2MB"

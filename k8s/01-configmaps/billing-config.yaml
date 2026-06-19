@@ -1,0 +1,45 @@
+# =============================================================================
+# CONFIGMAP - billing-config
+# Servicio: Billing Service (Facturación y Pagos)
+# =============================================================================
+# Propósito: Proveer configuración al servicio de facturación.
+# Procesa pagos, genera facturas, maneja reembolsos y reportes financieros.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: billing-config
+  namespace: siga
+  labels:
+    app: siga-billing
+    project: siga
+data:
+  SPRING_PROFILES_ACTIVE: "eks"
+  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
+
+  # ---------------------------------------------------------------------------
+  # Base de datos PostgreSQL (RDS)
+  # ---------------------------------------------------------------------------
+  DB_HOST: "siga-billing.cluster-xxxxxxxxxxxx.us-east-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "siga_billing"
+  DB_SCHEMA: "billing"
+  DB_SSL_MODE: "require"
+
+  # ---------------------------------------------------------------------------
+  # URLs de servicios vecinos
+  # ---------------------------------------------------------------------------
+  AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
+  SALES_SERVICE_URL: "http://siga-sales.siga.svc.cluster.local:8083"
+  NOTIFICATION_SERVICE_URL: "http://siga-notification.siga.svc.cluster.local:8085"
+  REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
+
+  # ---------------------------------------------------------------------------
+  # Configuración específica de facturación
+  # ---------------------------------------------------------------------------
+  # Impuesto por defecto (IVA) en porcentaje
+  BILLING_DEFAULT_TAX_RATE: "21.0"
+  # Moneda por defecto (ISO 4217)
+  BILLING_DEFAULT_CURRENCY: "ARS"
+  # Formato de factura
+  BILLING_INVOICE_FORMAT: "PDF"

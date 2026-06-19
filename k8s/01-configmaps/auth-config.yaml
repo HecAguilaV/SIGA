@@ -1,0 +1,56 @@
+# =============================================================================
+# CONFIGMAP - auth-config
+# Servicio: Auth Service (Autenticación y Autorización)
+# =============================================================================
+# Propósito: Proveer configuración de entorno al servicio de autenticación.
+# Este servicio maneja registro, login, validación de tokens JWT y RBAC.
+#
+# Decisión: Separamos config de secrets. Los valores sensibles (JWT_SECRET,
+# DB_PASSWORD) se inyectan desde AWS Secrets Manager vía CSI driver.
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: siga
+  labels:
+    app: siga-auth
+    project: siga
+data:
+  # Perfil activo de Spring - configuración específica para EKS
+  SPRING_PROFILES_ACTIVE: "eks"
+  # Ubicación del archivo application.yaml montado como ConfigMap o volumen
+  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
+
+  # ---------------------------------------------------------------------------
+  # Configuración de base de datos PostgreSQL
+  # Host apunta al RDS externo (no corre dentro del cluster)
+  # ---------------------------------------------------------------------------
+  DB_HOST: "siga-auth.cluster-xxxxxxxxxxxx.us-east-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "siga_auth"
+  DB_SCHEMA: "auth"
+  # SSL requerido para conexión a RDS
+  DB_SSL_MODE: "require"
+
+  # ---------------------------------------------------------------------------
+  # Configuración JWT
+  # ---------------------------------------------------------------------------
+  JWT_ISSUER: "siga-auth"
+  JWT_AUDIENCE: "siga-gateway"
+  # Duración del token de acceso (en minutos)
+  JWT_ACCESS_EXPIRATION: "15"
+  # Duración del refresh token (en días)
+  JWT_REFRESH_EXPIRATION: "7"
+
+  # ---------------------------------------------------------------------------
+  # Conexión a Redis (ElastiCache) para sesiones y rate limiting
+  # ---------------------------------------------------------------------------
+  REDIS_HOST: "siga-cache.xxxxxxxxxx.ng.0001.use1.cache.amazonaws.com"
+  REDIS_PORT: "6379"
+  REDIS_SSL: "true"
+
+  # ---------------------------------------------------------------------------
+  # URLs de servicios vecinos
+  # ---------------------------------------------------------------------------
+  REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"

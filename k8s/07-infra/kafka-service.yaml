@@ -1,0 +1,36 @@
+# =============================================================================
+# SERVICE: Apache Kafka
+# SECCIÓN: Service para acceso interno al broker Kafka
+# =============================================================================
+# Rationale / Decisión: ClusterIP porque Kafka solo necesita ser accesible
+# desde los microservicios dentro del cluster EKS.
+#
+# Purpose / Propósito: Exponer Kafka en puerto 9092 para los microservicios
+# que usan SAGA (sales, inventory, billing, notification, etc.)
+# =============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: siga-kafka
+  namespace: siga
+  labels:
+    app: siga-kafka
+    component: messaging
+    project: siga
+spec:
+  selector:
+    app: siga-kafka
+  ports:
+    - name: external
+      protocol: TCP
+      port: 9092
+      targetPort: 9092
+    - name: internal
+      protocol: TCP
+      port: 29092
+      targetPort: 29092
+    - name: controller
+      protocol: TCP
+      port: 29093
+      targetPort: 29093
+  type: ClusterIP

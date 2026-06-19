@@ -1,0 +1,95 @@
+# =============================================================================
+# DEPLOYMENT - siga-agent
+# Servicio: Agent Service (Agente IA)
+# =============================================================================
+# Propósito: Agente de inteligencia artificial que procesa consultas en
+# lenguaje natural, recomienda activos basado en el perfil del usuario,
+# y responde preguntas sobre el sistema.
+#
+# Replicas: 1 - El agente mantiene estado en memoria (caché de
+# conversaciones, embeddings). Escalar a más réplicas requiere:
+#   - Redis Session Store para compartir estado entre instancias
+#   - Estrategia de stickiness (session affinity)
+# Por ahora, 1 réplica es suficiente para el alcance actual.
+#
+# Recursos:
+#   Request: 512Mi/500m - El modelo de IA consume más recursos
+#   Limit:   1Gi/1000m - Pico durante inferencia
+#   Justificación: La inferencia de modelos de lenguaje requiere
+#   significativamente más memoria y CPU que un microservicio típico.
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-agent
+  namespace: siga
+  labels:
+    app: siga-agent
+    project: siga
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: siga-agent
+  template:
+    metadata:
+      labels:
+        app: siga-agent
+        project: siga
+        tier: backend
+    spec:
+      containers:
+        - name: agent
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-agent:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8086
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8086
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8086
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: agent-config
+          env:
+            - name: AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: AI_API_KEY
+                  optional: false
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: agent-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0

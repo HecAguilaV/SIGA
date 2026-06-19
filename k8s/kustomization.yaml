@@ -1,0 +1,134 @@
+# =============================================================================
+# KUSTOMIZATION - SIGA Kubernetes Deployment
+# =============================================================================
+# Propósito: Archivo central de Kustomize que declara todos los recursos
+# de Kubernetes para el proyecto SIGA. Kustomize permite:
+#   - Gestión declarativa de la configuración
+#   - Composición de recursos sin templates
+#   - Soporte nativo en kubectl (apply -k)
+#
+# Uso:
+#   kubectl apply -k k8s/
+#
+# Orden de recursos:
+#   1. Namespace (debe crearse primero)
+#   2. ConfigMaps (configuración no sensible)
+#   3. Secrets (solo placeholder - los reales van en AWS SM)
+#   4. Deployments (definición de pods)
+#   5. Services (exposición interna)
+#   6. HPAs (escalado automático)
+#   7. Ingress (exposición externa vía ALB)
+#
+# Evaluación DevOps:
+#   - IE1 (Configuración): Archivos organizados por tipo
+#   - IE2 (Alta Disponibilidad): 2+ réplicas, anti-affinity, HPA
+#   - IE3 (Métricas/Monitoreo): Health checks, HPA con métricas
+#   - IE4 (CI/CD): Compatible con ArgoCD/GitOps
+#   - IE5 (Secrets): Placeholder + documentación de AWS SM
+# =============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# ---------------------------------------------------------------------------
+# Metadatos del proyecto
+# ---------------------------------------------------------------------------
+metadata:
+  name: siga
+  labels:
+    project: siga
+    environment: production
+
+# ---------------------------------------------------------------------------
+# Namespace por defecto para todos los recursos
+# Esto evita tener que especificar --namespace en cada apply
+# ---------------------------------------------------------------------------
+namespace: siga
+
+# ---------------------------------------------------------------------------
+# Recursos - ordenados por dependencia
+# ---------------------------------------------------------------------------
+resources:
+  # 1. Namespace (debe ser el primero)
+  - 00-namespace.yaml
+
+  # 2. ConfigMaps (configuración de entorno para cada servicio)
+  - 01-configmaps/gateway-config.yaml
+  - 01-configmaps/auth-config.yaml
+  - 01-configmaps/inventory-config.yaml
+  - 01-configmaps/sales-config.yaml
+  - 01-configmaps/billing-config.yaml
+  - 01-configmaps/notification-config.yaml
+  - 01-configmaps/agent-config.yaml
+  - 01-configmaps/registry-config.yaml
+  - 01-configmaps/dashboard-config.yaml
+
+  # 3. Secrets (placeholder - los reales se inyectan desde AWS Secrets Manager)
+  - 02-secrets/db-secret.yaml
+
+  # 4. Deployments (definición de pods con health checks y recursos)
+  - 03-deployments/gateway-deployment.yaml
+  - 03-deployments/auth-deployment.yaml
+  - 03-deployments/inventory-deployment.yaml
+  - 03-deployments/sales-deployment.yaml
+  - 03-deployments/billing-deployment.yaml
+  - 03-deployments/notification-deployment.yaml
+  - 03-deployments/agent-deployment.yaml
+  - 03-deployments/registry-deployment.yaml
+  - 03-deployments/dashboard-deployment.yaml
+
+  # 5. Services (exposición interna de cada servicio)
+  - 04-services/gateway-service.yaml
+  - 04-services/auth-service.yaml
+  - 04-services/inventory-service.yaml
+  - 04-services/sales-service.yaml
+  - 04-services/billing-service.yaml
+  - 04-services/notification-service.yaml
+  - 04-services/agent-service.yaml
+  - 04-services/registry-service.yaml
+  - 04-services/dashboard-service.yaml
+
+  # 6. Horizontal Pod Autoscalers (escalado automático)
+  - 05-hpa/gateway-hpa.yaml
+  - 05-hpa/auth-hpa.yaml
+  - 05-hpa/inventory-hpa.yaml
+  - 05-hpa/sales-hpa.yaml
+  - 05-hpa/billing-hpa.yaml
+  - 05-hpa/notification-hpa.yaml
+  - 05-hpa/dashboard-hpa.yaml
+
+  # 7. Infrastructure: Kafka (StatefulSet para mensajería SAGA)
+  - 07-infra/kafka-config.yaml
+  - 07-infra/kafka-service.yaml
+  - 07-infra/kafka-statefulset.yaml
+
+  # 8. Monitoring: Prometheus + Grafana (IE3 Métricas y Monitoreo)
+  - 08-monitoring/prometheus-rbac.yaml
+  - 08-monitoring/prometheus-config.yaml
+  - 08-monitoring/prometheus-deployment.yaml
+  - 08-monitoring/prometheus-service.yaml
+  - 08-monitoring/grafana-datasource.yaml
+  - 08-monitoring/grafana-deployment.yaml
+  - 08-monitoring/grafana-service.yaml
+
+  # 9. Ingress (ALB para exposición externa)
+  - 06-ingress/alb-ingress.yaml
+
+# ---------------------------------------------------------------------------
+# ConfigMapGenerator (opcional - para gestión de configs vía Kustomize)
+# Por ahora usamos archivos estáticos. Si se necesita generar configs
+# desde archivos de propiedades, descomentar:
+# ---------------------------------------------------------------------------
+# configMapGenerator:
+#   - name: gateway-config
+#     files:
+#       - application.properties=config/gateway/application.properties
+#   - name: auth-config
+#     files:
+#       - application.properties=config/auth/application.properties
+
+# ---------------------------------------------------------------------------
+# Anotaciones comunes para todos los recursos (opcional)
+# ---------------------------------------------------------------------------
+# commonAnnotations:
+#   managed-by: "kustomize"
+#   environment: "production"

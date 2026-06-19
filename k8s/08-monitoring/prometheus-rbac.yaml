@@ -1,0 +1,63 @@
+# =============================================================================
+# PROMETHEUS RBAC - Service Account + ClusterRole
+# SECCIÓN: Permisos para que Prometheus descubra pods y servicios
+# =============================================================================
+# Rationale / Decisión: Prometheus necesita permisos para listar pods,
+# services, endpoints (Kubernetes SD) y leer métricas de los nodes.
+# Sin estos permisos, solo puede recolectar sus propias métricas.
+#
+# Purpose / Propósito: Autenticación y autorización para Prometheus
+# dentro del cluster EKS.
+# =============================================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: siga
+  labels:
+    app: prometheus
+    component: monitoring
+    project: siga
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    component: monitoring
+    project: siga
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/proxy
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs:
+      - /metrics
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    component: monitoring
+    project: siga
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: siga

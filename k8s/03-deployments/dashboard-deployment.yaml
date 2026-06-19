@@ -1,0 +1,113 @@
+# =============================================================================
+# DEPLOYMENT - siga-dashboard
+# Servicio: Dashboard (Frontend SvelteKit con adapter-node)
+# =============================================================================
+# Propósito: Frontend SvelteKit con server-side rendering (SSR).
+# Sirve la interfaz web del sistema SIGA. Usa adapter-node para
+# correr como servidor Node.js independiente.
+#
+# Replicas: 2 - El frontend debe estar siempre disponible.
+#   Múltiples réplicas permiten tolerancia a fallos y rolling updates
+#   sin downtime para los usuarios.
+#
+# Recursos:
+#   Request: 128Mi/100m - SvelteKit es liviano en SSR
+#   Limit:   256Mi/250m   - Suficiente para picos de tráfico
+#   Justificación: SvelteKit compila a JS optimizado. El server
+#   Node.js maneja SSR + API routes, consume menos que un backend Spring.
+#
+# Health:
+#   Readiness/Liveness: GET /health
+#   El Dockerfile de SvelteKit expone un endpoint /health que responde
+#   200 cuando el servidor está listo para recibir peticiones.
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-dashboard
+  namespace: siga
+  labels:
+    app: siga-dashboard
+    project: siga
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: siga-dashboard
+  template:
+    metadata:
+      labels:
+        app: siga-dashboard
+        project: siga
+        tier: frontend
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - siga-dashboard
+                topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: dashboard
+          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-dashboard:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: dashboard-config
+          env:
+            # Variables de entorno para Node.js/SvelteKit
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: ORIGIN
+              value: "https://siga.internal"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: dashboard-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
