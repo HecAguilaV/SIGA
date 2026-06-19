@@ -34,6 +34,9 @@ SIGA utiliza tecnologías de vanguardia para asegurar el rendimiento y el cumpli
 - **Persistencia**: PostgreSQL con aislamiento de esquemas y UUID v4 como estándar único de identidad y seudonimización.
 - **Seguridad**: JWT (Stateless) y cumplimiento riguroso con la Ley Chilena 21.719.
 - **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — visualizador de arquitectura Docker en tiempo real con notificaciones vía Discord (alertas de estado, umbrales de CPU/RAM, errores de acciones).
+- **Infraestructura**: AWS EKS (Kubernetes) con Terraform como IaC (Infraestructura como Código).
+- **Container Registry**: Amazon ECR (Elastic Container Registry) — migrado desde Docker Hub para integración nativa con EKS.
+- **CI/CD**: GitHub Actions con build multi-servicio y deploy automático a EKS.
 
 ---
 
@@ -53,6 +56,74 @@ bash scripts/start-staggered.sh
 **Estado de Servicios**: Una vez arriba, la API Gateway orquestará las peticiones hacia los microservicios de Auth, Billing e Inventory bajo el estándar UUID.
 
 **Panel de Operaciones**: ContainerFlow queda disponible en `http://localhost:9470` — permite visualizar la topología de contenedores, revisar métricas CPU/RAM, consultar logs, ejecutar comandos (`docker exec`) directamente desde el navegador, y recibir alertas por Discord cuando un contenedor se cae, reinicia, o supera umbrales de recursos.
+
+---
+
+## Despliegue en AWS EKS
+
+SIGA está desplegado en **Amazon EKS** (Elastic Kubernetes Service) con la siguiente infraestructura gestionada via Terraform:
+
+| Componente | Tecnología | Propósito |
+|------------|-----------|-----------|
+| **Cluster** | EKS (Kubernetes 1.30) | Orquestación de contenedores |
+| **Nodos** | 2 × t3.medium (auto-escalable 1-4) | Cómputo para los microservicios |
+| **Base de Datos** | RDS PostgreSQL 16 (db.t3.small) | Persistencia de datos (multi-esquema) |
+| **Cache** | ElastiCache Redis 7 (cache.t3.micro) | Caché de stock consolidado y sesiones |
+| **Load Balancer** | ALB (Application Load Balancer) | Distribución de tráfico HTTP/HTTPS |
+| **Registry** | ECR (9 repositorios) | Imágenes Docker de cada servicio |
+| **Red** | VPC con 2 AZs, subnets públicas/privadas | Aislamiento de capas por seguridad |
+
+### Terraform (Infraestructura como Código)
+
+```bash
+# 1. Inicializar Terraform
+cd terraform/
+terraform init
+
+# 2. Revisar el plan
+terraform plan -out=plan.tfplan
+
+# 3. Aplicar (crea VPC, EKS, RDS, Redis, ALB, ECR)
+terraform apply plan.tfplan
+
+# 4. Configurar kubectl
+aws eks update-kubeconfig --region us-east-1 --name siga-production-cluster
+```
+
+*📸 Screenshot: `terraform apply` completado — para tu informe DevOps.*
+
+### Kubernetes
+
+Los manifests están en `k8s/` organizados por categoría:
+
+```bash
+# Desplegar todo
+kubectl apply -k k8s/
+
+# Verificar
+kubectl get pods -n siga -o wide
+kubectl get svc -n siga
+kubectl get hpa -n siga
+```
+
+### CI/CD Pipeline
+
+El pipeline de GitHub Actions (`.github/workflows/docker-build-push.yml`):
+
+1. **Build**: Construye imágenes para cada microservicio + frontend
+2. **Push**: Publica en Amazon ECR (no Docker Hub)
+3. **Deploy**: Aplica manifests y forza rolling update en EKS
+
+*📸 Screenshot: GitHub Actions con build exitoso — para tu informe DevOps.*
+
+### Frontend en producción
+
+El frontend SvelteKit (`apps/dashboard/`) se despliega como contenedor Node.js con `adapter-node`. Su Dockerfile multi-etapa está en `apps/dashboard/Dockerfile`.
+
+Para construir localmente:
+```bash
+docker build -t siga-dashboard -f apps/dashboard/Dockerfile .
+```
 
 ---
 
@@ -136,6 +207,9 @@ SIGA no es solo código; es una plataforma diseñada para ser legalmente inexpug
 ## Gestión de Secretos
 
 A partir de junio 2026, todas las contraseñas de bases de datos y secretos deben definirse **exclusivamente vía variables de entorno** (o GitHub Secrets en CI). No hay valores hardcodeados ni defaults en `application.yml`.
+
+**En EKS (producción):** Los secrets se inyectan via AWS Secrets Manager + CSI Driver, o mediante `kubectl create secret` con valores desde GitHub Secrets.
+**En desarrollo local:** Usar archivo `.env` en la raíz del proyecto.
 
 Para desarrollo local, creá un archivo `.env` en la raíz del proyecto:
 

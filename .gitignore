@@ -52,3 +52,12 @@ CREDENTIALS.md
 # Tools & SDD
 .tools/
 .atl/
+
+# Build artifacts & reports
+/coverage.*
+
+# Personal notes
+CHULETA*
+NOTAS*
+TEMP*
+prueba*

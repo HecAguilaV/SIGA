@@ -34,6 +34,9 @@ SIGA utilizes cutting-edge technologies to ensure performance and legal complian
 - **Persistence**: PostgreSQL with schema isolation and UUID v4 as the unique standard for identity and pseudonymization.
 - **Security**: JWT (Stateless) and rigorous compliance with Chilean Law 21.719.
 - **Ops**: [ContainerFlow](https://github.com/RGJorge/ContainerFlow) — real-time Docker architecture visualizer with interactive topology, metrics, logs, best-practice recommendations, and Discord notifications (state changes, CPU/RAM alerts, action errors).
+- **Infrastructure**: AWS EKS (Kubernetes) with Terraform as IaC (Infrastructure as Code).
+- **Container Registry**: Amazon ECR (Elastic Container Registry) — migrated from Docker Hub for native EKS integration.
+- **CI/CD**: GitHub Actions with multi-service builds and automatic deploy to EKS.
 
 ---
 
@@ -53,6 +56,68 @@ bash scripts/start-staggered.sh
 **Service Status**: Once up, the API Gateway will orchestrate requests to the Auth, Billing, and Inventory microservices under the UUID standard.
 
 **Ops Panel**: ContainerFlow is available at `http://localhost:9470` — visualize container topology, check CPU/RAM metrics, browse logs, execute commands (`docker exec`) directly from the browser, and receive Discord alerts when a container crashes, restarts, or exceeds resource thresholds.
+
+---
+
+## AWS EKS Deployment
+
+SIGA is deployed on **Amazon EKS** (Elastic Kubernetes Service) with infrastructure managed via Terraform:
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Cluster** | EKS (Kubernetes 1.30) | Container orchestration |
+| **Nodes** | 2 × t3.medium (auto-scalable 1-4) | Compute for microservices |
+| **Database** | RDS PostgreSQL 16 (db.t3.small) | Data persistence (multi-schema) |
+| **Cache** | ElastiCache Redis 7 (cache.t3.micro) | Consolidated stock cache & sessions |
+| **Load Balancer** | ALB (Application Load Balancer) | HTTP/HTTPS traffic distribution |
+| **Registry** | ECR (9 repositories) | Docker images per service |
+| **Network** | VPC with 2 AZs, public/private subnets | Layer isolation for security |
+
+### Terraform (Infrastructure as Code)
+
+```bash
+# 1. Initialize
+cd terraform/
+terraform init
+
+# 2. Review plan
+terraform plan -out=plan.tfplan
+
+# 3. Apply (creates VPC, EKS, RDS, Redis, ALB, ECR)
+terraform apply plan.tfplan
+
+# 4. Configure kubectl
+aws eks update-kubeconfig --region us-east-1 --name siga-production-cluster
+```
+
+### Kubernetes
+
+Manifests are in `k8s/` organized by category:
+
+```bash
+# Deploy everything
+kubectl apply -k k8s/
+
+# Verify
+kubectl get pods -n siga -o wide
+kubectl get svc -n siga
+kubectl get hpa -n siga
+```
+
+### CI/CD Pipeline
+
+GitHub Actions workflow (`.github/workflows/docker-build-push.yml`):
+1. **Build**: Builds images for each microservice + frontend
+2. **Push**: Publishes to Amazon ECR
+3. **Deploy**: Applies manifests and forces rolling update in EKS
+
+### Frontend in Production
+
+The SvelteKit dashboard (`apps/dashboard/`) runs as a Node.js container with `adapter-node`. Multi-stage Dockerfile at `apps/dashboard/Dockerfile`.
+
+```bash
+docker build -t siga-dashboard -f apps/dashboard/Dockerfile .
+```
 
 ---
 
