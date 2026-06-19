@@ -10,7 +10,7 @@
 |---------|-------|--------|
 | Tests totales | **672** | 500+ ✅ |
 | Cobertura global | **86%** | 85% ✅ |
-| Servicios cloud | 0 | AWS 🔮 |
+| Servicios cloud | **9 servicios en EKS** | AWS EKS ✅ |
 
 ---
 
@@ -66,21 +66,14 @@
 | 2 | ✅ **Predictive Analytics UI** | ✅ Hecho | Agent-powered insights |
 | 3 | ✅ **Dashboard Sync Backend** | ✅ Hecho | Zero hardcoded data |
 | 4 | Tests gateway + registry (hoy 0%) | 🔥 Alta | 0% |
-| 5 | GitHub Actions CI | 🔥 Alta | 📋 |
-| 6 | ConsolidatedStockCacheTest (Docker) | ⚡ Media | ⚠️ Skipea |
-| 7 | GODADMIN + SUPER_ADMIN (roles) | 🧱 Base | 4/6 |
-| 8 | coverage.html → datos reales de JaCoCo | 🧱 Base | 📋 |
+| 5 | ✅ **GitHub Actions CI (ECR + EKS)** | ✅ Hecho | Deploy automático |
+| 6 | ✅ **Terraform IaC** | ✅ Hecho | VPC, EKS, RDS, Redis, ALB, ECR |
+| 7 | ✅ **K8s manifests** | ✅ Hecho | 9 servicios, HPA, ALB Ingress |
+| 8 | ✅ **Dashboard Dockerfile** | ✅ Hecho | SvelteKit adapter-node |
+| 9 | ConsolidatedStockCacheTest (Docker) | ⚡ Media | ⚠️ Skipea |
+| 10 | GODADMIN + SUPER_ADMIN (roles) | 🧱 Base | 4/6 |
+| 11 | coverage.html → datos reales de JaCoCo | 🧱 Base | 📋 |
 
 ---
 
-> 🎯 **Global: 86%** (antes 85%). Siguiente: agent.engine o gateway.
-ts gateway + registry (hoy 0%) | 🔥 Alta | 0% |
-| 5 | GitHub Actions CI | 🔥 Alta | 📋 |
-| 6 | ✅ **Subir agent.engine y agent.config** | ✅ Hecho | 87% agent total |
-| 7 | ConsolidatedStockCacheTest (Docker) | ⚡ Media | ⚠️ Skipea |
-| 8 | GODADMIN + SUPER_ADMIN (roles) | 🧱 Base | 4/6 |
-| 9 | coverage.html → datos reales de JaCoCo | 🧱 Base | 📋 |
-
----
-
-> 🎯 **Global: 86%** (antes 85%). Siguiente: agent.engine o gateway.
+> 🎯 **Global: 86%** (antes 85%). Siguiente: agendar presentación EFT Fullstack (sábado 20) + DevOps (martes 22).
