@@ -41,7 +41,7 @@ metadata:
     project: siga
     tier: gateway
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:

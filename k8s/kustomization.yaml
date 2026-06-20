@@ -62,8 +62,13 @@ resources:
   - 01-configmaps/registry-config.yaml
   - 01-configmaps/dashboard-config.yaml
 
-  # 3. Secrets (placeholder - los reales se inyectan desde AWS Secrets Manager)
-  - 02-secrets/db-secret.yaml
+  # 3. Secrets — NO se incluyen en kustomization para evitar que
+  #    `kubectl apply -k` sobreescriba los secrets creados manualmente.
+  #    El archivo 02-secrets/db-secret.yaml es solo documentación.
+  #    Crear el secret manualmente:
+  #    kubectl create secret generic db-secret --namespace=siga \
+  #      --from-literal=DB_PASSWORD='...' --from-literal=JWT_SECRET='...'
+  # - 02-secrets/db-secret.yaml  # COMMENTED OUT — see note above
 
   # 4. Deployments (definición de pods con health checks y recursos)
   - 03-deployments/gateway-deployment.yaml
