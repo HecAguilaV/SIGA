@@ -49,7 +49,7 @@ spec:
           image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/agent:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8086
+            - containerPort: 8000
               protocol: TCP
               name: http
           resources:
@@ -62,7 +62,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: 8086
+              port: 8000
             initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 5
@@ -70,7 +70,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: 8086
+              port: 8000
             initialDelaySeconds: 40
             periodSeconds: 15
             timeoutSeconds: 5
