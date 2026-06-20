@@ -3,11 +3,8 @@
 
 	let isOpen = $state(false);
 
-	let notifications = $state([
-		{ id: 1, message: 'Alerta de Stock Crítico: Aceite de Girasol bajo el mínimo', time: 'Hace 5m', read: false },
-		{ id: 2, message: 'Ingreso de mercadería: +50 Harina de Trigo', time: 'Hace 1h', read: true },
-		{ id: 3, message: 'Ajuste de inventario realizado por Operador Juan', time: 'Hace 3h', read: true }
-	]);
+	type Notification = { id: number; message: string; time: string; read: boolean };
+	let notifications = $state<Notification[]>([]);
 
 	const unreadCount = $derived(notifications.filter(n => !n.read).length);
 
