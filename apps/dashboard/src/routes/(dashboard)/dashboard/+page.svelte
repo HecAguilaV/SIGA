@@ -17,6 +17,11 @@
 	import Gear from 'phosphor-svelte/lib/Gear';
 	import ArrowRight from 'phosphor-svelte/lib/ArrowRight';
 	import Sparkle from 'phosphor-svelte/lib/Sparkle';
+	import Warning from 'phosphor-svelte/lib/Warning';
+	import CurrencyDollar from 'phosphor-svelte/lib/CurrencyDollar';
+	import ChartLineUp from 'phosphor-svelte/lib/ChartLineUp';
+	import TrendUp from 'phosphor-svelte/lib/TrendUp';
+	import TrendDown from 'phosphor-svelte/lib/TrendDown';
 
 	let { data }: { data: any } = $props();
 
@@ -172,11 +177,28 @@
 							<div class="kpi-card">
 								<div class="kpi-header-stats">
 									<span class="kpi-icon">
-										{insight.variant === 'primary' ? '📊' : insight.variant === 'info' ? '🏪' : insight.variant === 'danger' ? '⚠️' : insight.variant === 'success' ? '💰' : '📈'}
+										{#if insight.variant === 'primary'}
+											<ChartBar size={28} weight="duotone" aria-hidden="true" />
+										{:else if insight.variant === 'info'}
+											<Storefront size={28} weight="duotone" aria-hidden="true" />
+										{:else if insight.variant === 'danger'}
+											<Warning size={28} weight="duotone" aria-hidden="true" />
+										{:else if insight.variant === 'success'}
+											<CurrencyDollar size={28} weight="duotone" aria-hidden="true" />
+										{:else}
+											<ChartLineUp size={28} weight="duotone" aria-hidden="true" />
+										{/if}
 									</span>
 									{#if insight.trend}
 										<Badge variant={insight.trend === 'up' ? 'success' : insight.trend === 'down' ? 'danger' : 'info'}>
-											{insight.trend === 'up' ? '↑' : insight.trend === 'down' ? '↓' : '→'} {insight.trendValue ?? ''}%
+											{#if insight.trend === 'up'}
+												<TrendUp size={14} weight="bold" aria-hidden="true" />
+											{:else if insight.trend === 'down'}
+												<TrendDown size={14} weight="bold" aria-hidden="true" />
+											{:else}
+												<ArrowRight size={14} weight="bold" aria-hidden="true" />
+											{/if}
+											{insight.trendValue ?? ''}%
 										</Badge>
 									{/if}
 								</div>

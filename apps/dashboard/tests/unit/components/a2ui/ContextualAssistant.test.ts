@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import ContextualAssistant from '../../../../src/lib/components/a2ui/ContextualAssistant.svelte';
 
 // Mock de $app/stores
@@ -99,5 +99,41 @@ describe('ContextualAssistant', () => {
 
 		const badge = container.querySelector('.status-badge');
 		expect(badge).toBeTruthy();
+	});
+
+	it('renders Phosphor SVGs inside analyst suggestion chips when open', async () => {
+		const { container } = render(ContextualAssistant, {
+			props: { mode: 'analyst', currentRoute: '/analytics' }
+		});
+
+		const fab = container.querySelector('.assistant-fab') as HTMLButtonElement;
+		expect(fab).toBeTruthy();
+		await fireEvent.click(fab);
+
+		// Widget must open before chips render
+		await waitFor(() => {
+			expect(container.querySelector('.chat-widget')).toBeTruthy();
+		});
+
+		// Analyst mode renders 3 suggestion chips (📈 ⚠️ 📊 → Phosphor SVGs)
+		const chipSvgs = container.querySelectorAll('.chip-icon svg');
+		expect(chipSvgs.length).toBe(3);
+	});
+
+	it('renders Phosphor SVGs inside operator suggestion chips when open', async () => {
+		const { container } = render(ContextualAssistant, {
+			props: { mode: 'operator', currentRoute: '/' }
+		});
+
+		const fab = container.querySelector('.assistant-fab') as HTMLButtonElement;
+		await fireEvent.click(fab);
+
+		await waitFor(() => {
+			expect(container.querySelector('.chat-widget')).toBeTruthy();
+		});
+
+		// Operator mode renders 3 suggestion chips (📦 📝 💰 → Phosphor SVGs)
+		const chipSvgs = container.querySelectorAll('.chip-icon svg');
+		expect(chipSvgs.length).toBe(3);
 	});
 });

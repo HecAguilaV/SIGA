@@ -12,6 +12,8 @@
 
 	import { a2ui } from '$lib/stores/a2ui.svelte';
 	import { chat } from '$lib/stores/chat.svelte';
+	import CaretLeft from 'phosphor-svelte/lib/CaretLeft';
+	import Sparkle from 'phosphor-svelte/lib/Sparkle';
 
 	let {
 		currentRoute = '/'
@@ -45,9 +47,9 @@
 >
 	<span class="a2ui-toggle-icon">
 		{#if a2ui.isAgentive}
-			←
+			<CaretLeft size={16} weight="bold" aria-hidden="true" />
 		{:else}
-			✨
+			<Sparkle size={16} weight="bold" aria-hidden="true" />
 		{/if}
 	</span>
 	<span class="a2ui-toggle-text">

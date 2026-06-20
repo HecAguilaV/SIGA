@@ -1,5 +1,9 @@
 <script lang="ts">
 	import Badge from '@siga/ui-kit/Badge.svelte';
+	import TrendUp from 'phosphor-svelte/lib/TrendUp';
+	import Warning from 'phosphor-svelte/lib/Warning';
+	import WarningCircle from 'phosphor-svelte/lib/WarningCircle';
+	import Info from 'phosphor-svelte/lib/Info';
 
 	interface Insight {
 		id: string;
@@ -42,7 +46,16 @@
 				<div class="insight-item">
 					<div class="insight-header">
 						<Badge variant={badgeVariant(insight.type)}>
-							{insight.type === 'positive' ? '↑' : insight.type === 'warning' ? '⚠' : insight.type === 'danger' ? '🔴' : 'ℹ'} {insight.title}
+							{#if insight.type === 'positive'}
+								<TrendUp size={14} weight="bold" aria-label="positive insight" />
+							{:else if insight.type === 'warning'}
+								<Warning size={14} weight="bold" aria-label="warning insight" />
+							{:else if insight.type === 'danger'}
+								<WarningCircle size={16} weight="bold" aria-label="danger insight" />
+							{:else}
+								<Info size={14} weight="bold" aria-label="info insight" />
+							{/if}
+							{insight.title}
 						</Badge>
 					</div>
 					<p class="insight-description">{insight.description}</p>

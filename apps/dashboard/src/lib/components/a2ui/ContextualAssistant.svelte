@@ -18,6 +18,12 @@
 	import ToolIndicator from './ToolIndicator.svelte';
 	import { chat } from '$lib/stores/chat.svelte';
 	import { a2ui } from '$lib/stores/a2ui.svelte';
+	import ChartLineUp from 'phosphor-svelte/lib/ChartLineUp';
+	import Warning from 'phosphor-svelte/lib/Warning';
+	import ChartBar from 'phosphor-svelte/lib/ChartBar';
+	import Package from 'phosphor-svelte/lib/Package';
+	import NotePencil from 'phosphor-svelte/lib/NotePencil';
+	import CurrencyDollar from 'phosphor-svelte/lib/CurrencyDollar';
 
 	interface ToolCallDisplay {
 		name: string;
@@ -216,27 +222,27 @@
 					<div class="suggested-actions">
 						<p class="section-label">Consultas sugeridas</p>
 						<div class="action-grid">
-							{#if mode === 'analyst'}
-								<button class="action-chip" onclick={() => handleSend('¿Cómo van las ventas hoy?')}>
-									<span class="chip-icon">📈</span> ¿Ventas de hoy?
-								</button>
-								<button class="action-chip" onclick={() => handleSend('¿Qué productos tienen stock crítico?')}>
-									<span class="chip-icon">⚠️</span> Stock crítico
-								</button>
-								<button class="action-chip" onclick={() => handleSend('Analiza las mermas del mes')}>
-									<span class="chip-icon">📊</span> Análisis de mermas
-								</button>
-							{:else}
-								<button class="action-chip" onclick={() => handleSend('Ajustar stock de un producto')}>
-									<span class="chip-icon">📦</span> Ajustar stock
-								</button>
-								<button class="action-chip" onclick={() => handleSend('Crear un nuevo pedido de reposición')}>
-									<span class="chip-icon">📝</span> Reponer stock
-								</button>
-								<button class="action-chip" onclick={() => handleSend('Generar reporte de cierre de caja')}>
-									<span class="chip-icon">💰</span> Cierre de caja
-								</button>
-							{/if}
+						{#if mode === 'analyst'}
+							<button class="action-chip" onclick={() => handleSend('¿Cómo van las ventas hoy?')}>
+								<span class="chip-icon"><ChartLineUp size={14} weight="bold" aria-hidden="true" /></span> ¿Ventas de hoy?
+							</button>
+							<button class="action-chip" onclick={() => handleSend('¿Qué productos tienen stock crítico?')}>
+								<span class="chip-icon"><Warning size={14} weight="bold" aria-hidden="true" /></span> Stock crítico
+							</button>
+							<button class="action-chip" onclick={() => handleSend('Analiza las mermas del mes')}>
+								<span class="chip-icon"><ChartBar size={14} weight="bold" aria-hidden="true" /></span> Análisis de mermas
+							</button>
+						{:else}
+							<button class="action-chip" onclick={() => handleSend('Ajustar stock de un producto')}>
+								<span class="chip-icon"><Package size={14} weight="bold" aria-hidden="true" /></span> Ajustar stock
+							</button>
+							<button class="action-chip" onclick={() => handleSend('Crear un nuevo pedido de reposición')}>
+								<span class="chip-icon"><NotePencil size={14} weight="bold" aria-hidden="true" /></span> Reponer stock
+							</button>
+							<button class="action-chip" onclick={() => handleSend('Generar reporte de cierre de caja')}>
+								<span class="chip-icon"><CurrencyDollar size={14} weight="bold" aria-hidden="true" /></span> Cierre de caja
+							</button>
+						{/if}
 						</div>
 					</div>
 				</div>

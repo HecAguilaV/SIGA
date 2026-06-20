@@ -40,4 +40,21 @@ describe('AnomalyList', () => {
 		render(AnomalyList, { props: { anomalies: mockAnomalies, title: 'Alertas' } });
 		expect(screen.getByText('Alertas')).toBeInTheDocument();
 	});
+
+	it('renders a Phosphor SVG inside each anomaly-severity host', () => {
+		const { container } = render(AnomalyList, { props: { anomalies: mockAnomalies } });
+		// mockAnomalies covers both ternary branches: high (red) and medium (yellow)
+		const severitySvgs = container.querySelectorAll('.anomaly-severity svg');
+		expect(severitySvgs.length).toBe(mockAnomalies.length);
+	});
+
+	it('keeps severity aria-label and marks the Phosphor SVG decorative', () => {
+		const { container } = render(AnomalyList, { props: { anomalies: mockAnomalies } });
+		const hosts = container.querySelectorAll('.anomaly-severity');
+		expect(hosts[0]?.getAttribute('aria-label')).toBe('Severidad: high');
+		expect(hosts[1]?.getAttribute('aria-label')).toBe('Severidad: medium');
+		// Host label is the accessible name; the icon itself must be hidden from AT
+		expect(hosts[0]?.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+		expect(hosts[1]?.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+	});
 });

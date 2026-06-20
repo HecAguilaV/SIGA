@@ -52,4 +52,21 @@ describe('InsightPanel', () => {
 		render(InsightPanel, { props: { insights: mockInsights, title: 'Hallazgos Analíticos' } });
 		expect(screen.getByText('Hallazgos Analíticos')).toBeInTheDocument();
 	});
+
+	it('renders a Phosphor SVG with aria-label for each insight type', () => {
+		// Cover all four ternary branches: positive, warning, danger, info
+		const fourTypeInsights = [
+			{ id: 'p', title: 'Pico', description: 'desc', type: 'positive' as const, context: 'ctx' },
+			{ id: 'w', title: 'Bajo', description: 'desc', type: 'warning' as const, context: 'ctx' },
+			{ id: 'd', title: 'Cae', description: 'desc', type: 'danger' as const, context: 'ctx' },
+			{ id: 'i', title: 'Info', description: 'desc', type: 'info' as const, context: 'ctx' }
+		];
+		const { container } = render(InsightPanel, { props: { insights: fourTypeInsights } });
+		const svgs = container.querySelectorAll('.insight-header svg');
+		expect(svgs.length).toBe(4);
+		expect(container.querySelector('.insight-header svg[aria-label="positive insight"]')).toBeTruthy();
+		expect(container.querySelector('.insight-header svg[aria-label="warning insight"]')).toBeTruthy();
+		expect(container.querySelector('.insight-header svg[aria-label="danger insight"]')).toBeTruthy();
+		expect(container.querySelector('.insight-header svg[aria-label="info insight"]')).toBeTruthy();
+	});
 });

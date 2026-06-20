@@ -92,6 +92,14 @@ describe('A2UIRenderer', () => {
 		expect(screen.getByText('No hay contenido disponible')).toBeInTheDocument();
 	});
 
+	it('renders a Phosphor SVG inside the empty-state icon', () => {
+		const { container } = render(A2UIRenderer, { tree: null });
+		const svg = container.querySelector('.a2ui-empty-icon svg');
+		expect(svg).not.toBeNull();
+		// Prove a real icon rendered, not an empty <svg> shell (Phosphor uses <path>)
+		expect(svg?.querySelectorAll('path').length).toBeGreaterThan(0);
+	});
+
 	it('shows fallback for unknown component type', () => {
 		const tree: A2UINode = {
 			type: 'unknown-component-type',

@@ -41,7 +41,7 @@
 	<section class="hero-section">
 		<div class="hero-content">
 			<div class="hero-badge">
-				<span class="badge-sparkle">✨</span>
+				<span class="badge-sparkle"><Sparkle size={14} weight="fill" /></span>
 				<span>Nueva versión SIGA Pro activa</span>
 			</div>
 			<h1 class="hero-title">
@@ -83,7 +83,9 @@
 		<div class="features-grid">
 			<!-- Feature 1 -->
 			<div class="feature-card">
-				<div class="feature-icon">📦</div>
+				<div class="feature-icon">
+					<Package size={28} weight="duotone" style="color: var(--color-primary);" />
+				</div>
 				<h3 class="feature-name">Stock Consolidado</h3>
 				<p class="feature-desc">
 					Monitorea el inventario de todas tus bodegas y puntos de venta en tiempo real. Conciliación automática y alertas inteligentes de stock bajo.
@@ -91,7 +93,9 @@
 			</div>
 			<!-- Feature 2 -->
 			<div class="feature-card">
-				<div class="feature-icon">🏪</div>
+				<div class="feature-icon">
+					<Storefront size={28} weight="duotone" style="color: var(--color-primary);" />
+				</div>
 				<h3 class="feature-name">POS Integrado</h3>
 				<p class="feature-desc">
 					Venta rápida al cliente final con sincronización y descuento inmediato de stock. Métodos de pago flexibles y comprobantes internos.
@@ -99,7 +103,9 @@
 			</div>
 			<!-- Feature 3 -->
 			<div class="feature-card">
-				<div class="feature-icon">🛡️</div>
+				<div class="feature-icon">
+					<ShieldCheck size={28} weight="duotone" style="color: var(--color-primary);" />
+				</div>
 				<h3 class="feature-name">Cumplimiento Legal</h3>
 				<p class="feature-desc">
 					Diseño de privacidad nativo (Art. 14 quáter). Seudonimización obligatoria mediante UUID v4 para proteger los datos financieros y comerciales.
@@ -202,7 +208,7 @@
 					Desarrollado por <strong>Héctor Aguila</strong> <span class="sep">/</span> SIGA &copy; 2026
 				</div>
 				<div class="signature-quote">
-					&gt; Un Soñador con Poca RAM 👨🏻‍💻
+					&gt; Un Soñador con Poca RAM <Laptop size={14} style="display: inline-block; vertical-align: middle; margin-left: 4px;" />
 				</div>
 			</div>
 		</div>

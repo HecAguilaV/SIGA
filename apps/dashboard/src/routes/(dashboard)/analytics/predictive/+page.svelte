@@ -9,6 +9,7 @@
 	// Icons
 	import Sparkle from 'phosphor-svelte/lib/Sparkle';
 	import TrendUp from 'phosphor-svelte/lib/TrendUp';
+	import TrendDown from 'phosphor-svelte/lib/TrendDown';
 	import Inventory from 'phosphor-svelte/lib/Package';
 	import Lightning from 'phosphor-svelte/lib/Lightning';
 	import Warning from 'phosphor-svelte/lib/Warning';
@@ -185,7 +186,7 @@
 									<span class="px-3 py-1 rounded-full bg-[#ffdad6] text-[#93000a] text-xs font-bold">{item.current} u.</span>
 								</td>
 								<td class="px-6 py-4 text-center text-slate-500 font-medium">
-									{item.rate} u. <span class="text-[#009579] text-[10px] font-bold">{item.trend > 0 ? '↑' : '↓'} {Math.abs(item.trend)}%</span>
+									{item.rate} u. <span class="text-[#009579] text-[10px] font-bold">{#if item.trend > 0}<TrendUp size={12} weight="bold" aria-hidden="true" />{:else}<TrendDown size={12} weight="bold" aria-hidden="true" />{/if} {Math.abs(item.trend)}%</span>
 								</td>
 								<td class="px-6 py-4 text-center">
 									<span class="text-[#009579] font-bold">+{item.suggestion} u.</span>

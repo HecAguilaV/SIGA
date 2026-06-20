@@ -16,6 +16,7 @@
 	import { getComponent } from './catalog';
 	import type { A2UINode } from '$lib/types/a2ui';
 	import type { A2UIComponent } from '$lib/types/a2ui';
+	import Clipboard from 'phosphor-svelte/lib/Clipboard';
 
 	let {
 		surfaceId = '',
@@ -64,7 +65,7 @@
 	{#if !hasContent()}
 		<!-- Empty state -->
 		<div class="a2ui-empty" role="status">
-			<div class="a2ui-empty-icon">📋</div>
+			<div class="a2ui-empty-icon"><Clipboard size={40} weight="regular" aria-hidden="true" /></div>
 			<p class="a2ui-empty-text">No hay contenido disponible</p>
 			<p class="a2ui-empty-hint">Activa el modo agéntico para comenzar</p>
 		</div>
