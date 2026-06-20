@@ -22,7 +22,7 @@ metadata:
     project: siga
     tier: backend
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
