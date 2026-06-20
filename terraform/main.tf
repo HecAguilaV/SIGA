@@ -423,117 +423,21 @@ resource "aws_ecr_lifecycle_policy" "main" {
 # =============================================================================
 
 # ---------------------------------------------------------------------------
-# Resource / Recurso: EKS Cluster IAM Role
-# Purpose / Propósito: Allows EKS service to manage resources in your account
-# (ENIs, load balancers, etc.).
+# Data Source: Pre-existing EKS Cluster Role
+# Propósito: Usar el role EKS ya creado en el lab AWS Academy.
+# El lab voclabs NO permite crear IAM roles, pero proporciona roles
+# pre-creados con las políticas necesarias.
 # ---------------------------------------------------------------------------
-resource "aws_iam_role" "eks_cluster" {
-  name = "${local.name_prefix}-eks-cluster-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "eks.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-
-  tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-eks-cluster-role"
-  })
+data "aws_iam_role" "eks_cluster" {
+  name = "c216598a5470737l15597720t1w162272-LabEksClusterRole-NBoIv2QY1tAR"
 }
 
 # ---------------------------------------------------------------------------
-# Recurso: Policy Attachment para EKS Cluster
-# Propósito: Adjuntar la política AmazonEKSClusterPolicy que permite
-# al cluster gestionar ENIs, SGs y otros recursos de red.
+# Data Source: Pre-existing EKS Worker Node Role
+# Propósito: Usar el role para nodos EKS ya creado en el lab.
 # ---------------------------------------------------------------------------
-resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.eks_cluster.name
-}
-
-# ---------------------------------------------------------------------------
-# Recurso: IAM Role para EKS Worker Nodes
-# Propósito: Permite a los nodos EC2 registrarse en el cluster, usar
-# la CNI de VPC, y hacer pull de imágenes de ECR.
-# ---------------------------------------------------------------------------
-resource "aws_iam_role" "eks_nodes" {
-  name = "${local.name_prefix}-eks-nodes-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-
-  tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-eks-nodes-role"
-  })
-}
-
-# ---------------------------------------------------------------------------
-# Recurso: Policy Attachment - AmazonEKSWorkerNodePolicy
-# Propósito: Permite al nodo registrarse y comunicarse con el cluster.
-# ---------------------------------------------------------------------------
-resource "aws_iam_role_policy_attachment" "eks_nodes_worker" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.eks_nodes.name
-}
-
-# ---------------------------------------------------------------------------
-# Recurso: Policy Attachment - AmazonEKS_CNI_Policy
-# Propósito: Permite al nodo gestionar ENIs para la VPC CNI de Kubernetes
-# (asignar IPs privadas a los pods).
-# ---------------------------------------------------------------------------
-resource "aws_iam_role_policy_attachment" "eks_nodes_cni" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.eks_nodes.name
-}
-
-# ---------------------------------------------------------------------------
-# Recurso: Policy Attachment - AmazonEC2ContainerRegistryReadOnly
-# Propósito: Permite a los nodos hacer pull de imágenes desde ECR.
-# Necesario para que Kubernetes pueda descargar las imágenes de los pods.
-# ---------------------------------------------------------------------------
-resource "aws_iam_role_policy_attachment" "eks_nodes_ecr" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks_nodes.name
-}
-
-# ---------------------------------------------------------------------------
-# Recurso: OIDC Provider para EKS
-# Propósito: Permite que Kubernetes service accounts asuman roles de IAM
-# (IRSA - IAM Roles for Service Accounts).
-# Decisión: Necesario para que los pods accedan a servicios AWS (RDS, S3, etc.)
-# usando IAM roles en lugar de credenciales estáticas.
-#
-# Referencia: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
-# ---------------------------------------------------------------------------
-data "tls_certificate" "eks" {
-  url = aws_eks_cluster.main.identity[0].oidc[0].issuer
-}
-
-resource "aws_iam_openid_connect_provider" "eks" {
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
-  url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
-
-  tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-eks-oidc"
-  })
+data "aws_iam_role" "eks_nodes" {
+  name = "c216598a5470737l15597720t1w162272997-LabEksNodeRole-3MmTW6plRcJ4"
 }
 
 
@@ -652,7 +556,7 @@ resource "aws_security_group_rule" "eks_nodes_egress" {
 # ---------------------------------------------------------------------------
 resource "aws_eks_cluster" "main" {
   name     = "${local.name_prefix}-cluster"
-  role_arn = aws_iam_role.eks_cluster.arn
+  role_arn = data.aws_iam_role.eks_cluster.arn
   version  = var.eks_cluster_version
 
   vpc_config {
@@ -670,10 +574,7 @@ resource "aws_eks_cluster" "main" {
   # Decisión: Logging habilitado para métricas y auditoría (IE3).
   enabled_cluster_log_types = ["api", "audit", "authenticator"]
 
-  # Dependencia: El role debe tener las policies adjuntas antes de crear el cluster
-  depends_on = [
-    aws_iam_role_policy_attachment.eks_cluster_policy,
-  ]
+  # Nota: El role ya existe en el lab con las políticas necesarias pre-adjuntadas.
 
   tags = merge(local.common_tags, {
     Name = "siga-cluster"
@@ -696,7 +597,7 @@ resource "aws_eks_cluster" "main" {
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "${local.name_prefix}-node-group"
-  node_role_arn   = aws_iam_role.eks_nodes.arn
+  node_role_arn   = data.aws_iam_role.eks_nodes.arn
   subnet_ids      = aws_subnet.private[*].id
   # Decisión: Nodos en subnets privadas por seguridad.
 
@@ -734,17 +635,29 @@ resource "aws_eks_node_group" "main" {
     Name = "${local.name_prefix}-node-group"
   })
 
-  # Dependencias explícitas
-  depends_on = [
-    aws_iam_role_policy_attachment.eks_nodes_worker,
-    aws_iam_role_policy_attachment.eks_nodes_cni,
-    aws_iam_role_policy_attachment.eks_nodes_ecr,
-  ]
+  # Nota: El role de nodos ya existe con las políticas necesarias pre-adjuntadas.
 }
 
 
 # =============================================================================
-# SECTION G: RDS POSTGRESQL
+# SECTION G: OIDC PROVIDER (SKIPPED - LAB RESTRICTION)
+# SECCIÓN G: OIDC PROVIDER (SALTEO - RESTRICCIÓN DEL LAB)
+# =============================================================================
+# Rationale / Decisión: OIDC provider allows Kubernetes service accounts
+# to assume IAM roles (IRSA) so pods can access AWS services (RDS, ECR, S3)
+# without static credentials.
+#
+# Budget / Presupuesto: FREE / GRATIS.
+# =============================================================================
+
+# Nota: OIDC Provider no se puede crear en AWS Academy Learner Lab
+# (iam:CreateOpenIDConnectProvider denegado). Para IRSA en producción,
+# se necesitaría crear fuera de terraform o usar un account con permisos.
+# En el lab, las credenciales se pasan como secrets de K8s.
+
+
+# =============================================================================
+# SECTION H: RDS POSTGRESQL
 # SECCIÓN G: RDS POSTGRESQL
 # =============================================================================
 # Rationale / Decisión: AWS-managed PostgreSQL 16 database.
@@ -834,7 +747,7 @@ resource "aws_db_instance" "main" {
 
   # Motor y versión
   engine               = "postgres"
-  engine_version       = "16.3"
+  engine_version       = "16.14"
   # Decisión: PostgreSQL 16 — versión estable reciente con mejoras de
   # rendimiento y seguridad.
 
