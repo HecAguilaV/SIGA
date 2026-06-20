@@ -2,11 +2,12 @@
 # SERVICE - siga-gateway
 # Servicio: API Gateway (Spring Cloud Gateway)
 # =============================================================================
-# Propósito: Exponer el API Gateway dentro del cluster como ClusterIP.
-# El ALB Ingress apunta a este service para enrutar tráfico externo.
+# Propósito: Exponer el API Gateway al exterior vía Classic Load Balancer (ELB).
+# Un service type: LoadBalancer crea automáticamente un ELB en AWS sin
+# necesidad del AWS Load Balancer Controller add-on ni OIDC provider.
 #
-# Tipo: ClusterIP (no expuesto directamente al exterior)
-# Puerto: 8080 (mapea al containerPort del deployment)
+# Tipo: LoadBalancer (Classic ELB — sin dependencias adicionales)
+# Puerto: 80 (ELB) -> 8080 (containerPort del gateway)
 # TargetPort: 8080 (el puerto donde escucha Spring Cloud Gateway)
 # =============================================================================
 apiVersion: v1
@@ -18,12 +19,16 @@ metadata:
     app: siga-gateway
     project: siga
     tier: gateway
+  annotations:
+    # Classic ELB — el controlador nativo de EKS lo gestiona sin add-ons
+    service.beta.kubernetes.io/aws-load-balancer-type: "clb"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "false"
 spec:
   selector:
     app: siga-gateway
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
       name: http
-  type: ClusterIP
+  type: LoadBalancer

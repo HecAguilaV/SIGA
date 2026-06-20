@@ -7,12 +7,15 @@ metadata:
     app: siga-dashboard
     project: siga
     tier: frontend
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "clb"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "false"
 spec:
   selector:
     app: siga-dashboard
   ports:
     - protocol: TCP
-      port: 3000
+      port: 80
       targetPort: 3000
       name: http
-  type: ClusterIP
+  type: LoadBalancer
