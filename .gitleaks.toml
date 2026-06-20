@@ -231,3 +231,9 @@
       "(?i).*Test.*\\.kt",
       "(?i).*Tests\\.kt",
     ]
+# Seed data scripts con hashes BCrypt (no son secrets reales)
+[[rules]]
+  id = "seed-data-bcrypt"
+  description = "BCrypt hashes in seed SQL files"
+  regex = '''\$2[aby]?\$[0-9]{2}\$[./A-Za-z0-9]{53}'''
+  path = '''.*seed.*\.sql'''
