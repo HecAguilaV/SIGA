@@ -254,6 +254,49 @@ Ver `.env.example` para la lista completa de variables requeridas.
 
 Ver [ROADMAP.md](ROADMAP.md) para el plan de desarrollo completo (pasado, presente y futuro).
 
+## Metodología de Desarrollo
+
+SIGA fue desarrollado bajo un **ecosistema agéntico** donde la Inteligencia Artificial actúa como orquestador y ejecutor bajo la dirección supervisada del desarrollador (HiTL — Human-in-the-Loop).
+
+### Monorepo vs Multi-Repositorio
+
+**Decisión:** Monorepo.
+
+| Aspecto | Monorepo | Multi-Repo |
+|:--------|:---------|:------------|
+| **Atomicidad** | Un commit = cambios en todos los MS afectados | Varios commits sincronizados entre repos |
+| **CI/CD** | Un pipeline centralizado para todo el ecosistema | Pipelines independientes por MS |
+| **Visibilidad** | El orquestador IA ve todo el código en contexto único | Contexto fragmentado, cambios atómicos imposibles |
+| **Refactors** | Renombrar interfaces compartidas en un solo commit | Coordinación entre repos con versionado de contratos |
+| **Aislamiento** | Separación lógica por paquetes/módulos | Separación física por repos |
+
+La elección de **Monorepo** responde directamente a la necesidad de mantener visibilidad completa para el asistente de IA (orquestador), permitiendo cambios atómicos y consistentes en todos los microservicios simultáneamente.
+
+### Flujo de Trabajo
+
+1. **SDD (Spec-Driven Development):** Cada cambio comienza con una especificación (`/sdd-new` → propuesta → spec → diseño → tareas → apply → verify → archive). El orquestador (`gentle-orchestrator`) coordina el pipeline y delega fases a sub-agentes especializados.
+2. **Strict TDD:** La infraestructura de testing se detecta y configura automáticamente (`sdd-init`). El modo Strict TDD asegura que los tests precedan a la implementación.
+3. **BDD (Behavior-Driven Development):** Los requisitos se escriben en lenguaje natural Given/When/Then. Las pruebas se implementan con **Kotest BehaviorSpec**, traduciendo directamente el lenguaje de negocio a código ejecutable. No hay brecha entre lo que pide el cliente y lo que prueba el test.
+4. **HiTL (Human-in-the-Loop):** El desarrollador define el rumbo, toma decisiones arquitectónicas y valida cada fase. La IA ejecuta, propone y refina — siempre bajo supervisión humana.
+5. **Test Harnesses (Arneses de Prueba):** Ingeniería de arneses genéricos como `testEntity()` para forzar cobertura exhaustiva de código generado por Kotlin (equals, hashCode, copy, data classes), elevando la cobertura global de 74% a 86% sin ensuciar código de producción.
+
+### Cobertura Actual
+
+| Módulo | Cobertura |
+|:-------|:----------|
+| `siga-auth` | 89% |
+| `siga-sales` | 94% |
+| `siga-billing` | 86% |
+| **Global** | **86%** |
+
+### Stack de Pruebas
+
+- **Framework:** Kotest (BehaviorSpec + DescribeSpec)
+- **Mocking:** MockK (Kotlin-first, soporte nativo para corrutinas y extension functions)
+- **Integración:** Testcontainers (PostgreSQL + Redis reales en tests de integración)
+- **Cobertura:** JaCoCo (mínimo 85%, meta 90%)
+- **Reportes:** HTML en `services/*/build/reports/jacoco/test/html/index.html`
+
 ## Licencia
 
 Este proyecto es propiedad privada de **Héctor Aguila**. Todos los derechos están reservados. El código se proporciona exclusivamente para fines de revisión técnica y cumplimiento de auditoría bajo la Ley 21.719. Consulte el archivo [LICENSE](LICENSE) para más detalles.
