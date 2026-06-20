@@ -147,6 +147,18 @@ h1, h2, h3, h4, h5, h6, p {
 	--transition-fast: 150ms ease;
 	--transition-base: 250ms ease;
 
+	/* ── M3 Fixed Color Tokens (from Stitch design) ── */
+	--color-surface-tint: #F0F9FF;
+	--color-primary-fixed: #e0e0ff;
+	--color-primary-fixed-dim: #bfc2ff;
+	--color-secondary-fixed: #b3ebff;
+	--color-secondary-fixed-dim: #4cd6fb;
+	--color-tertiary-fixed: #79f8d5;
+	--color-tertiary-fixed-dim: #5adcb9;
+	--color-on-tertiary-fixed: #002018;
+	--color-on-primary-fixed: #070a61;
+	--color-on-secondary-fixed: #001f27;
+
 	/* ── Legacy Compatibility Aliases (SIGA brand palette — pre-M3) ── */
 	/* Components use these names; app.css M3 migration left them undefined. */
 	/* Defining them here fixes the entire palette without touching components. */
@@ -190,6 +202,15 @@ h1, h2, h3, h4, h5, h6, p {
 	--color-outline: #938f99;
 	--color-outline-variant: #49454f;
 
+	/* ── M3 Fixed Color Tokens (dark equivalents) ── */
+	--color-surface-tint: #F0F9FF;
+	--color-primary-fixed: #e0e0ff;
+	--color-primary-fixed-dim: #bfc2ff;
+	--color-secondary-fixed: #b3ebff;
+	--color-secondary-fixed-dim: #4cd6fb;
+	--color-tertiary-fixed: #79f8d5;
+	--color-tertiary-fixed-dim: #5adcb9;
+
 	/* ── Legacy Compatibility Aliases (dark theme) ── */
 	--color-bg: #1d1b21;
 	--color-bg-alt: #322f36;
@@ -230,6 +251,18 @@ body {
 	background: rgba(29, 27, 33, 0.6);
 	backdrop-filter: blur(12px);
 	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ── SIGA Gradient Utilities (from Stitch design) ── */
+.text-gradient {
+	background: linear-gradient(135deg, #00677d 0%, #00B4D8 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.bg-gradient-siga {
+	background: linear-gradient(135deg, #00B4D8 0%, #80FFDB 100%);
 }
 
 /* ── AI Shimmer Utility ── */
