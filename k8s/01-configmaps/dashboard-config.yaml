@@ -27,17 +27,18 @@ data:
   HOST: "0.0.0.0"
   # Entorno de ejecución
   NODE_ENV: "production"
-  # Origen permitido para CORS (URL del ALB)
-  ORIGIN: "https://siga.internal"
+  # Origen permitido para CORS (URL del ELB Classic)
+  # Si las URLs del ELB cambian (cluster recreado), actualizar aquí
+  ORIGIN: "http://ac525400245dd4a23afc516bffa803bf-76912376.us-east-1.elb.amazonaws.com"
 
   # ---------------------------------------------------------------------------
   # Variables públicas (accesibles desde el navegador via $env/dynamic/public)
   # PUBLIC_* son reemplazadas en build-time o runtime según configuración
   # ---------------------------------------------------------------------------
   # URL del API Gateway - punto de entrada para todas las APIs
-  PUBLIC_GATEWAY_URL: "https://siga.internal/api"
+  PUBLIC_GATEWAY_URL: "http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com/api"
   # URL base de la API
-  PUBLIC_API_URL: "https://siga.internal/api/v1"
+  PUBLIC_API_URL: "http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com/api/v1"
   # Nombre de la aplicación (se muestra en el título del dashboard)
   PUBLIC_APP_NAME: "SIGA"
   # Versión de la aplicación
