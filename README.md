@@ -66,12 +66,31 @@ SIGA está desplegado en **Amazon EKS** (Elastic Kubernetes Service) con la sigu
 | Componente | Tecnología | Propósito |
 |------------|-----------|-----------|
 | **Cluster** | EKS (Kubernetes 1.30) | Orquestación de contenedores |
-| **Nodos** | 2 × t3.medium (auto-escalable 1-4) | Cómputo para los microservicios |
+| **Nodos** | 3 × t3.medium (auto-escalable 1-4) | Cómputo para los microservicios |
 | **Base de Datos** | RDS PostgreSQL 16 (db.t3.small) | Persistencia de datos (multi-esquema) |
 | **Cache** | ElastiCache Redis 7 (cache.t3.micro) | Caché de stock consolidado y sesiones |
-| **Load Balancer** | ALB (Application Load Balancer) | Distribución de tráfico HTTP/HTTPS |
+| **Load Balancer** | Classic ELB | Distribución de tráfico HTTP |
 | **Registry** | ECR (9 repositorios) | Imágenes Docker de cada servicio |
 | **Red** | VPC con 2 AZs, subnets públicas/privadas | Aislamiento de capas por seguridad |
+
+### URLs de Acceso (Producción)
+
+> **Nota:** Las URLs son dinámicas (AWS Classic ELB). Si el cluster se recrea, las URLs cambian.
+
+| Servicio | URL |
+|:---------|:---|
+| **Dashboard** (Frontend) | [siga-dashboard](http://ac525400245dd4a23afc516bffa803bf-76912376.us-east-1.elb.amazonaws.com) |
+| **Gateway** (API REST) | [siga-gateway](http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com) |
+
+**Endpoints del Gateway:**
+
+| Endpoint | Método | Descripción |
+|:---------|:-------|:------------|
+| `/actuator/health` | GET | Estado del gateway |
+| `/api/auth/**` | * | Servicio de autenticación |
+| `/api/inventory/**` | * | Servicio de inventario |
+| `/api/sales/**` | * | Servicio de ventas |
+| `/api/billing/**` | * | Servicio de facturación |
 
 ### Terraform (Infraestructura como Código)
 
