@@ -100,21 +100,26 @@ echo ""
 # ---------------------------------------------------------------------------
 # Paso 3: Reconectar kubectl al cluster EKS
 # ---------------------------------------------------------------------------
-echo -e "${BLUE}[Paso 3] Reconectando kubectl al cluster EKS...${NC}"
-if ! aws eks describe-cluster --name "$CLUSTER_NAME" --region "$REGION" &>/dev/null; then
-    echo -e "${RED}ERROR: No se puede acceder al cluster '$CLUSTER_NAME'.${NC}"
-    echo "Posibles causas:"
-    echo "  • El cluster fue eliminado (el lab se reinició)"
-    echo "  • Las credenciales no tienen permisos sobre EKS"
-    echo "  • El nombre del cluster cambió"
-    echo ""
-    echo "Clusters disponibles:"
-    aws eks list-clusters --region "$REGION" --output text 2>/dev/null || echo "  (no se pueden listar)"
-    exit 1
+echo -e "${BLUE}[Paso 3] Verificando conexión kubectl al cluster EKS...${NC}"
+if kubectl get nodes &>/dev/null; then
+    echo -e "${GREEN}✅ kubectl ya está conectado al cluster${NC}"
+else
+    echo -e "${YELLOW}⚠️  kubectl no está conectado. Intentando reconectar...${NC}"
+    if aws eks describe-cluster --name "$CLUSTER_NAME" --region "$REGION" &>/dev/null; then
+        aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$REGION" 2>&1
+        echo -e "${GREEN}✅ kubectl reconectado al cluster: $CLUSTER_NAME${NC}"
+    else
+        echo -e "${RED}ERROR: No se puede acceder al cluster '$CLUSTER_NAME'.${NC}"
+        echo "Posibles causas:"
+        echo "  • El cluster fue eliminado (el lab se reinició)"
+        echo "  • Las credenciales no tienen permisos sobre EKS"
+        echo "Si el cluster persiste pero describe-cluster está bloqueado,"
+        echo "el kubeconfig cacheado debería funcionar (kubectl get nodes)."
+        echo "Si no funciona, verificar manualmente:"
+        echo "  kubectl get nodes"
+        exit 1
+    fi
 fi
-
-aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$REGION" 2>&1
-echo -e "${GREEN}✅ kubectl reconectado al cluster: $CLUSTER_NAME${NC}"
 echo ""
 
 # ---------------------------------------------------------------------------
