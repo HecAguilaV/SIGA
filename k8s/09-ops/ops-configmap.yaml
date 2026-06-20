@@ -1,130 +1,100 @@
 apiVersion: v1
 data:
-  index.html: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\"\
-    >\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\
-    <title>God Admin Panel — SIGA Ops</title>\n<style>\n  /* same styles as before\
-    \ */\n  * { margin: 0; padding: 0; box-sizing: border-box; }\n  body {\n    font-family:\
-    \ -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;\n\
-    \    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);\n\
-    \    color: #e0e0e0;\n    min-height: 100vh;\n    padding: 2rem;\n  }\n  h1 {\
-    \ font-size: 2.5rem; margin-bottom: 0.5rem; color: #fff; }\n  h1 span { background:\
-    \ linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color:\
-    \ transparent; }\n  .subtitle { color: #a0a0b0; margin-bottom: 2rem; font-size:\
-    \ 1.1rem; }\n  h2 { color: #b0b0ff; margin: 2rem 0 1rem; font-size: 1.4rem; border-bottom:\
-    \ 1px solid #404060; padding-bottom: 0.5rem; }\n  .grid { display: grid; grid-template-columns:\
-    \ repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }\n  .card {\n    background:\
-    \ rgba(255,255,255,0.06);\n    backdrop-filter: blur(10px);\n    border: 1px solid\
-    \ rgba(255,255,255,0.1);\n    border-radius: 12px;\n    padding: 1.2rem;\n   \
-    \ transition: transform 0.2s, box-shadow 0.2s;\n  }\n  .card:hover { transform:\
-    \ translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }\n  .card h3 { color:\
-    \ #c0c0ff; margin-bottom: 0.5rem; font-size: 1.1rem; }\n  .card p { color: #a0a0b0;\
-    \ font-size: 0.9rem; margin-bottom: 0.8rem; }\n  .card a, .card .url {\n    display:\
-    \ inline-block;\n    background: rgba(102,126,234,0.2);\n    color: #a0c0ff;\n\
-    \    text-decoration: none;\n    padding: 0.4rem 0.8rem;\n    border-radius: 6px;\n\
-    \    font-size: 0.85rem;\n    word-break: break-all;\n    transition: background\
-    \ 0.2s;\n  }\n  .card a:hover { background: rgba(102,126,234,0.4); }\n  .badge\
-    \ { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 6px; font-size:\
-    \ 0.75rem; font-weight: 600; }\n  .badge-green { background: #166534; color: #86efac;\
-    \ }\n  .badge-amber { background: #713f12; color: #fde68a; }\n  .badge-red { background:\
-    \ #7f1d1d; color: #fca5a5; }\n  .code { background: rgba(0,0,0,0.3); padding:\
-    \ 0.3rem 0.6rem; border-radius: 4px; font-family: monospace; font-size: 0.8rem;\
-    \ color: #a0c0ff; }\n  .footer { margin-top: 3rem; text-align: center; color:\
-    \ #606080; font-size: 0.85rem; }\n  table { width: 100%; border-collapse: collapse;\
-    \ margin: 1rem 0; }\n  th, td { text-align: left; padding: 0.6rem; border-bottom:\
-    \ 1px solid rgba(255,255,255,0.06); }\n  th { color: #8080a0; font-weight: 500;\
-    \ font-size: 0.85rem; text-transform: uppercase; }\n  td { font-size: 0.9rem;\
-    \ }\n  .navbar { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;\
-    \ }\n  .navbar a { color: #a0c0ff; text-decoration: none; padding: 0.5rem 1rem;\
-    \ border-radius: 8px; background: rgba(255,255,255,0.05); }\n  .navbar a:hover\
-    \ { background: rgba(102,126,234,0.3); }\n</style>\n</head>\n<body>\n<div class=\"\
-    navbar\">\n  <a href=\"/\">\U0001F3E0 Panel</a>\n  <a href=\"https://github.com/HecAguilaV/SIGA\"\
-    \ target=\"_blank\">\U0001F4E6 Repo</a>\n  <a href=\"https://github.com/HecAguilaV/SIGA/actions\"\
-    \ target=\"_blank\">⚡ CI/CD</a>\n</div>\n\n<h1>\U0001F6E1️ <span>God Admin Panel</span></h1>\n\
-    <p class=\"subtitle\">SIGA Operations — monitoreo, APIs y documentación centralizada</p>\n\
-    \n<h2>\U0001F310 Aplicaciones en Vivo</h2>\n<div class=\"grid\">\n  <div class=\"\
-    card\">\n    <h3>\U0001F4CA Dashboard</h3>\n    <p>Frontend SvelteKit — login,\
-    \ stock, POS</p>\n    <a href=\"http://ac525400245dd4a23afc516bffa803bf-76912376.us-east-1.elb.amazonaws.com\"\
-    \ target=\"_blank\">Abrir →</a>\n  </div>\n  <div class=\"card\">\n    <h3>\U0001F517\
-    \ Gateway API</h3>\n    <p>Spring Cloud Gateway — entrada a todos los MS</p>\n\
-    \    <a href=\"http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com\"\
-    \ target=\"_blank\">Health →</a>\n  </div>\n  <div class=\"card\">\n    <h3>\U0001F4C8\
-    \ Grafana</h3>\n    <p>Métricas y dashboards</p>\n    <a href=\"http://a4edd4f0bf1e447759dcd97743ce8aef-2056742646.us-east-1.elb.amazonaws.com\"\
-    \ target=\"_blank\">Abrir →</a>\n  </div>\n  <div class=\"card\">\n    <h3>⏱️\
-    \ Prometheus</h3>\n    <p>Métricas del cluster</p>\n    <a href=\"http://ada60b6c6080d404c98e1814f0780bb5-1865685725.us-east-1.elb.amazonaws.com\"\
-    \ target=\"_blank\">Abrir →</a>\n  </div>\n</div>\n\n<h2>\U0001F4DA Swagger UI\
-    \ — Documentación de APIs</h2>\n<p style=\"margin-bottom:1rem;color:#a0a0b0;\"\
-    >\n  Documentación interactiva de cada microservicio. Proxada desde siga-ops.\n\
-    </p>\n<div class=\"grid\">\n  <div class=\"card\">\n    <h3>\U0001F510 Auth Service</h3>\n\
-    \    <p>Registro, login, JWT, usuarios</p>\n    <a href=\"/auth-swagger/\" target=\"\
-    _blank\">Abrir Swagger →</a>\n  </div>\n  <div class=\"card\">\n    <h3>\U0001F4E6\
-    \ Inventory</h3>\n    <p>Productos, stock, tiendas</p>\n    <a href=\"/inventory-swagger/\"\
-    \ target=\"_blank\">Abrir Swagger →</a>\n  </div>\n  <div class=\"card\">\n  \
-    \  <h3>\U0001F4B0 Sales</h3>\n    <p>POS, ventas, transacciones</p>\n    <a href=\"\
-    /sales-swagger/\" target=\"_blank\">Abrir Swagger →</a>\n  </div>\n  <div class=\"\
-    card\">\n    <h3>\U0001F9FE Billing</h3>\n    <p>Facturación, planes SaaS</p>\n\
-    \    <a href=\"/billing-swagger/\" target=\"_blank\">Abrir Swagger →</a>\n  </div>\n\
-    \  <div class=\"card\">\n    <h3>\U0001F4E7 Notification</h3>\n    <p>Notificaciones\
-    \ y emails</p>\n    <a href=\"/notification-swagger/\" target=\"_blank\">Abrir\
-    \ Swagger →</a>\n  </div>\n</div>\n\n<h2>\U0001F510 Credenciales</h2>\n<table>\n\
-    \  <tr><th>Rol</th><th>Email</th><th>Contraseña</th></tr>\n  <tr><td>\U0001F6E1\
-    ️ God Admin</td><td>godadmin@siga.cl</td><td><code>KikeThron4466.</code></td></tr>\n\
-    \  <tr><td>\U0001F469‍\U0001F4BC Yasna (Lito)</td><td>yasna@lito.cl</td><td><code>LitoLibreria2026!</code></td></tr>\n\
-    \  <tr><td>\U0001F9D1‍\U0001F4BC Carlos (Cajero)</td><td>cajero1@lito.cl</td><td><code>LitoCajero2026!</code></td></tr>\n\
-    \  <tr><td>\U0001F469‍\U0001F4BC María (Cajera)</td><td>cajero2@lito.cl</td><td><code>LitoCajero2026!</code></td></tr>\n\
-    </table>\n\n<h2>\U0001F9EA Pruebas y Calidad</h2>\n<div class=\"grid\">\n  <div\
-    \ class=\"card\">\n    <h3>✅ Cobertura JaCoCo</h3>\n    <p>86% global (auth 89%,\
-    \ sales 94%, billing 86%)</p>\n    <span>Reportes en <code>services/*/build/reports/jacoco/</code></span>\n\
-    \  </div>\n  <div class=\"card\">\n    <h3>\U0001F512 Security Pipeline</h3>\n\
-    \    <p>Gitleaks + Trivy + Semgrep</p>\n    <a href=\"https://github.com/HecAguilaV/SIGA/actions\"\
-    \ target=\"_blank\">Ver workflows →</a>\n  </div>\n  <div class=\"card\">\n  \
-    \  <h3>\U0001F4CB Informe FullStack</h3>\n    <p>Documentación completa del proyecto</p>\n\
-    \    <a href=\"https://github.com/HecAguilaV/SIGA/blob/main/ACADEMIC/REQUISITOS-MVP/InformeFullStack.md\"\
-    \ target=\"_blank\">Ver informe →</a>\n  </div>\n</div>\n\n<h2>\U0001F4E6 Datos\
-    \ de Lito Librería y Bazar</h2>\n<div class=\"grid\">\n  <div class=\"card\">\n\
-    \    <h3>\U0001F3EA Tienda Centro</h3>\n    <p>Av. Providencia 1234 — 493 unidades\
-    \ en stock</p>\n    <h3>\U0001F3EA Tienda Norte</h3>\n    <p>Av. Independencia\
-    \ 5678 — 249 unidades en stock</p>\n  </div>\n  <div class=\"card\">\n    <h3>\U0001F4CB\
-    \ 20 Productos</h3>\n    <p>6 categorías: Libros, Cuadernos, Escritura, Escolar,\
-    \ Bazar, Oficina</p>\n    <h3>\U0001F465 2 Cajeros</h3>\n    <p>Carlos (Centro)\
-    \ y María (Norte)</p>\n  </div>\n</div>\n\n<div class=\"footer\">\n  SIGA — Sistema\
-    \ Inteligente de Gestión de Activos | DSY1106 FullStack III | Héctor Águila\n\
-    </div>\n</body>\n</html>\n"
-  nginx.conf: "events {}\n\nhttp {\n  include /etc/nginx/mime.types;\n\n  # God Admin\
-    \ Panel\n  server {\n    listen 80;\n    server_name _;\n\n    root /usr/share/nginx/html;\n\
-    \    index index.html;\n\n    # -------------------------------------------------------------------\n\
-    \    # Proxy Auth Swagger\n    # -------------------------------------------------------------------\n\
-    \    location /auth-swagger/ {\n      proxy_pass http://siga-auth.siga.svc.cluster.local:8081/swagger-ui/;\n\
-    \      proxy_set_header Host $host;\n      sub_filter_once off;\n      sub_filter_types\
-    \ text/html text/css application/javascript application/json;\n      sub_filter\
-    \ '/swagger-ui/' '/auth-swagger/';\n      sub_filter '/v3/api-docs' '/auth-api-docs';\n\
-    \    }\n    location /auth-api-docs {\n      proxy_pass http://siga-auth.siga.svc.cluster.local:8081/v3/api-docs;\n\
-    \    }\n\n    # -------------------------------------------------------------------\n\
-    \    # Proxy Inventory Swagger\n    # -------------------------------------------------------------------\n\
-    \    location /inventory-swagger/ {\n      proxy_pass http://siga-inventory.siga.svc.cluster.local:8082/swagger-ui/;\n\
-    \      proxy_set_header Host $host;\n      sub_filter_once off;\n      sub_filter_types\
-    \ text/html text/css application/javascript application/json;\n      sub_filter\
-    \ '/swagger-ui/' '/inventory-swagger/';\n      sub_filter '/v3/api-docs' '/inventory-api-docs';\n\
-    \    }\n    location /inventory-api-docs {\n      proxy_pass http://siga-inventory.siga.svc.cluster.local:8082/v3/api-docs;\n\
-    \    }\n\n    # -------------------------------------------------------------------\n\
-    \    # Proxy Sales Swagger\n    # -------------------------------------------------------------------\n\
-    \    location /sales-swagger/ {\n      proxy_pass http://siga-sales.siga.svc.cluster.local:8083/swagger-ui/;\n\
-    \      proxy_set_header Host $host;\n      sub_filter_once off;\n      sub_filter_types\
-    \ text/html text/css application/javascript application/json;\n      sub_filter\
-    \ '/swagger-ui/' '/sales-swagger/';\n      sub_filter '/v3/api-docs' '/sales-api-docs';\n\
-    \    }\n    location /sales-api-docs {\n      proxy_pass http://siga-sales.siga.svc.cluster.local:8083/v3/api-docs;\n\
-    \    }\n\n    # -------------------------------------------------------------------\n\
-    \    # Proxy Billing Swagger\n    # -------------------------------------------------------------------\n\
-    \    location /billing-swagger/ {\n      proxy_pass http://siga-billing.siga.svc.cluster.local:8084/swagger-ui/;\n\
-    \      proxy_set_header Host $host;\n      sub_filter_once off;\n      sub_filter_types\
-    \ text/html text/css application/javascript application/json;\n      sub_filter\
-    \ '/swagger-ui/' '/billing-swagger/';\n      sub_filter '/v3/api-docs' '/billing-api-docs';\n\
-    \    }\n    location /billing-api-docs {\n      proxy_pass http://siga-billing.siga.svc.cluster.local:8084/v3/api-docs;\n\
-    \    }\n\n    # -------------------------------------------------------------------\n\
-    \    # Proxy Notification Swagger\n    # -------------------------------------------------------------------\n\
+  index.html: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width,\
+    \ initial-scale=1\">\n<title>SIGA Operations — Panel de Administración</title>\n<style>\n  * { margin: 0; padding: 0;\
+    \ box-sizing: border-box; }\n  body {\n    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;\n    background:\
+    \ #0a0a1a;\n    color: #c0c0d0;\n    min-height: 100vh;\n  }\n  .topbar {\n    background: rgba(20,20,50,0.9);\n    border-bottom:\
+    \ 1px solid #2a2a5a;\n    padding: 1rem 2rem;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n\
+    \  }\n  .topbar h1 { font-size: 1.4rem; color: #fff; }\n  .topbar h1 span { color: #667eea; }\n  .topbar .env { font-size:\
+    \ 0.75rem; color: #505070; }\n  .nav {\n    background: rgba(15,15,35,0.8);\n    border-bottom: 1px solid #1a1a3a;\n \
+    \   padding: 0.5rem 2rem;\n    display: flex;\n    gap: 1.5rem;\n  }\n  .nav a {\n    color: #8080b0;\n    text-decoration:\
+    \ none;\n    font-size: 0.85rem;\n    padding: 0.3rem 0;\n    border-bottom: 2px solid transparent;\n    transition: all\
+    \ 0.2s;\n  }\n  .nav a:hover { color: #a0c0ff; border-bottom-color: #667eea; }\n  .main { padding: 2rem; max-width: 1400px;\
+    \ margin: 0 auto; }\n  .section-title { font-size: 1.1rem; color: #a0a0d0; margin: 2rem 0 1rem; padding-bottom: 0.5rem;\
+    \ border-bottom: 1px solid #1a1a3a; }\n  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,\
+    \ 1fr)); gap: 1rem; }\n  .card {\n    background: rgba(255,255,255,0.03);\n    border: 1px solid rgba(255,255,255,0.06);\n\
+    \    border-radius: 8px;\n    padding: 1.2rem;\n    transition: background 0.2s, border-color 0.2s;\n  }\n  .card:hover\
+    \ { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.3); }\n  .card h3 { color: #b0b0e0; font-size:\
+    \ 0.9rem; margin-bottom: 0.4rem; }\n  .card p { color: #707090; font-size: 0.8rem; margin-bottom: 0.6rem; }\n  .card a\
+    \ {\n    display: inline-block;\n    background: rgba(102,126,234,0.1);\n    color: #8090c0;\n    text-decoration: none;\n\
+    \    padding: 0.35rem 0.7rem;\n    border-radius: 4px;\n    font-size: 0.8rem;\n    transition: background 0.2s;\n  }\n\
+    \  .card a:hover { background: rgba(102,126,234,0.25); color: #a0b0e0; }\n  .badge { display: inline-block; font-size:\
+    \ 0.7rem; padding: 0.15rem 0.4rem; border-radius: 3px; }\n  .badge-green { background: rgba(74,222,128,0.15); color: #4ade80;\
+    \ }\n  .badge-amber { background: rgba(251,191,36,0.15); color: #fbbf24; }\n  .badge-red { background: rgba(248,113,113,0.15);\
+    \ color: #f87171; }\n  .code { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #6080b0; }\n  .footer\
+    \ { margin-top: 4rem; padding: 1.5rem 2rem; border-top: 1px solid #1a1a3a; text-align: center; color: #404060; font-size:\
+    \ 0.75rem; }\n  .status-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }\n  .status-item {\
+    \ font-size: 0.8rem; color: #8080a0; }\n  .status-ok { color: #4ade80; } .status-warn { color: #fbbf24; } .status-err\
+    \ { color: #f87171; }\n</style>\n</head>\n<body>\n<div class=\"topbar\">\n  <h1>\U0001F6E1️ <span>SIGA</span> Operations</h1>\n\
+    \  <div class=\"env\">Platform v1.0 · us-east-1 · EKS</div>\n</div>\n<div class=\"nav\">\n  <a href=\"http://ac525400245dd4a23afc516bffa803bf-76912376.us-east-1.elb.amazonaws.com\"\
+    \ target=\"_blank\">\U0001F4CA Dashboard</a>\n  <a href=\"http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com/actuator/health\"\
+    \ target=\"_blank\">\U0001F517 Gateway</a>\n  <a href=\"http://a463c8492a4b04739a8d006344354b31-762123166.us-east-1.elb.amazonaws.com/login\"\
+    \ target=\"_blank\">\U0001F4C8 Grafana</a>\n  <a href=\"/auth-swagger/\" target=\"_blank\">\U0001F4DA Swagger Auth</a>\n\
+    \  <a href=\"/inventory-swagger/\" target=\"_blank\">\U0001F4DA Swagger Inventory</a>\n  <a href=\"https://github.com/HecAguilaV/SIGA/actions\"\
+    \ target=\"_blank\">⚡ CI/CD</a>\n  <a href=\"https://github.com/HecAguilaV/SIGA/\" target=\"_blank\">\U0001F4E6 Repo</a>\n\
+    </div>\n<div class=\"main\">\n\n<div class=\"status-row\">\n  <span class=\"status-item\"><span class=\"status-ok\">●</span>\
+    \ 12/12 Pods Running</span>\n  <span class=\"status-item\"><span class=\"status-ok\">●</span> 3 Nodos t3.medium</span>\n\
+    \  <span class=\"status-item\"><span class=\"status-ok\">●</span> 7/7 Eureka UP</span>\n  <span class=\"status-item\"\
+    ><span class=\"status-ok\">●</span> 2 Empresas Activas</span>\n  <span class=\"status-item\"><span class=\"status-ok\"\
+    >●</span> 86% Cobertura Global</span>\n</div>\n\n<div class=\"section-title\">Aplicaciones</div>\n<div class=\"grid\"\
+    >\n  <div class=\"card\">\n    <h3>\U0001F4CA Dashboard SIGA</h3>\n    <p>Frontend SvelteKit. Login, stock consolidado,\
+    \ POS intuitivo.</p>\n    <a href=\"http://ac525400245dd4a23afc516bffa803bf-76912376.us-east-1.elb.amazonaws.com\" target=\"\
+    _blank\">Abrir Dashboard →</a>\n    <span class=\"badge badge-green\">Online</span>\n  </div>\n  <div class=\"card\">\n\
+    \    <h3>\U0001F517 API Gateway</h3>\n    <p>Spring Cloud Gateway. Punto de entrada único a todos los microservicios.</p>\n\
+    \    <a href=\"http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com/actuator/health\" target=\"\
+    _blank\">Ver Health →</a>\n    <span class=\"badge badge-green\">Online</span>\n  </div>\n  <div class=\"card\">\n   \
+    \ <h3>\U0001F4C8 Grafana</h3>\n    <p>Métricas y dashboards de monitoreo del cluster y servicios.</p>\n    <a href=\"\
+    http://a463c8492a4b04739a8d006344354b31-762123166.us-east-1.elb.amazonaws.com/login\" target=\"_blank\">Abrir Grafana\
+    \ →</a>\n    <span class=\"badge badge-green\">Online</span>\n  </div>\n</div>\n\n<div class=\"section-title\">Documentación\
+    \ de APIs</div>\n<div class=\"grid\">\n  <div class=\"card\"><h3>\U0001F510 Auth</h3><p>Registro, login, JWT, usuarios</p><a\
+    \ href=\"/auth-swagger/\" target=\"_blank\">Abrir Swagger →</a></div>\n  <div class=\"card\"><h3>\U0001F4E6 Inventory</h3><p>Productos,\
+    \ stock, tiendas</p><a href=\"/inventory-swagger/\" target=\"_blank\">Abrir Swagger →</a></div>\n  <div class=\"card\"\
+    ><h3>\U0001F4B0 Sales</h3><p>POS, ventas, transacciones</p><a href=\"/sales-swagger/\" target=\"_blank\">Abrir Swagger\
+    \ →</a></div>\n  <div class=\"card\"><h3>\U0001F9FE Billing</h3><p>Facturación, planes SaaS</p><a href=\"/billing-swagger/\"\
+    \ target=\"_blank\">Abrir Swagger →</a></div>\n  <div class=\"card\"><h3>\U0001F4E7 Notification</h3><p>Notificaciones\
+    \ y emails</p><a href=\"/notification-swagger/\" target=\"_blank\">Abrir Swagger →</a></div>\n</div>\n\n<div class=\"\
+    section-title\">Pruebas y Calidad</div>\n<div class=\"grid\">\n  <div class=\"card\">\n    <h3>✅ JaCoCo Coverage</h3>\n\
+    \    <p>Cobertura global: 86% (auth 89%, sales 94%, billing 86%)</p>\n    <span class=\"code\">services/*/build/reports/jacoco/test/html/index.html</span>\n\
+    \  </div>\n  <div class=\"card\">\n    <h3>\U0001F9EA Kotest Tests</h3>\n    <p>Pruebas unitarias con BehaviorSpec + MockK.\
+    \ BDD puro.</p>\n    <span class=\"code\">services/*/build/reports/tests/test/index.html</span>\n  </div>\n  <div class=\"\
+    card\">\n    <h3>\U0001F512 Security Pipeline</h3>\n    <p>Gitleaks + Trivy + Semgrep en GitHub Actions.</p>\n    <a href=\"\
+    https://github.com/HecAguilaV/SIGA/actions\" target=\"_blank\">Ver Workflows →</a>\n  </div>\n  <div class=\"card\">\n\
+    \    <h3>\U0001F4CB Informe FullStack</h3>\n    <p>Documentación completa: arquitectura, MS, seguridad, Kafka vs RabbitMQ.</p>\n\
+    \    <a href=\"https://github.com/HecAguilaV/SIGA/blob/main/ACADEMIC/REQUISITOS-MVP/InformeFullStack.md\" target=\"_blank\"\
+    >Leer Informe →</a>\n  </div>\n</div>\n\n<div class=\"section-title\">Referencia rápida</div>\n<div class=\"grid\">\n\
+    \  <div class=\"card\">\n    <h3>\U0001F4BB kubectl</h3>\n    <p><code>$ kubectl get pods -n siga</code></p>\n    <p><code>$\
+    \ kubectl get nodes</code></p>\n  </div>\n  <div class=\"card\">\n    <h3>\U0001F4E6 Seed Data</h3>\n    <p>Lito Librería\
+    \ y Bazar: 2 tiendas, 20 productos, 742 unidades en stock.</p>\n    <p><code>./scripts/setup-full.sh</code></p>\n  </div>\n\
+    </div>\n\n</div>\n<div class=\"footer\">\n  SIGA — Sistema Inteligente de Gestión de Activos · DSY1106 FullStack III ·\
+    \ Héctor Águila<br>\n  <span style=\"color:#303050;\">Arquitectura Zero-Trust · Ley 21.719 · Privacidad por Diseño</span>\n\
+    </div>\n</body>\n</html>"
+  nginx.conf: "events {}\n\nhttp {\n  include /etc/nginx/mime.types;\n\n  # God Admin Panel\n  server {\n    listen 80;\n\
+    \    server_name _;\n\n    root /usr/share/nginx/html;\n    index index.html;\n\n    # -------------------------------------------------------------------\n\
+    \    # Proxy Auth Swagger\n    # -------------------------------------------------------------------\n    location /auth-swagger/\
+    \ {\n      proxy_pass http://siga-auth.siga.svc.cluster.local:8081/swagger-ui/;\n      proxy_set_header Host $host;\n\
+    \      sub_filter_once off;\n      sub_filter_types text/html text/css application/javascript application/json;\n    \
+    \  sub_filter '/swagger-ui/' '/auth-swagger/';\n      sub_filter '/v3/api-docs' '/auth-api-docs';\n    }\n    location\
+    \ /auth-api-docs {\n      proxy_pass http://siga-auth.siga.svc.cluster.local:8081/v3/api-docs;\n    }\n\n    # -------------------------------------------------------------------\n\
+    \    # Proxy Inventory Swagger\n    # -------------------------------------------------------------------\n    location\
+    \ /inventory-swagger/ {\n      proxy_pass http://siga-inventory.siga.svc.cluster.local:8082/swagger-ui/;\n      proxy_set_header\
+    \ Host $host;\n      sub_filter_once off;\n      sub_filter_types text/html text/css application/javascript application/json;\n\
+    \      sub_filter '/swagger-ui/' '/inventory-swagger/';\n      sub_filter '/v3/api-docs' '/inventory-api-docs';\n    }\n\
+    \    location /inventory-api-docs {\n      proxy_pass http://siga-inventory.siga.svc.cluster.local:8082/v3/api-docs;\n\
+    \    }\n\n    # -------------------------------------------------------------------\n    # Proxy Sales Swagger\n    #\
+    \ -------------------------------------------------------------------\n    location /sales-swagger/ {\n      proxy_pass\
+    \ http://siga-sales.siga.svc.cluster.local:8083/swagger-ui/;\n      proxy_set_header Host $host;\n      sub_filter_once\
+    \ off;\n      sub_filter_types text/html text/css application/javascript application/json;\n      sub_filter '/swagger-ui/'\
+    \ '/sales-swagger/';\n      sub_filter '/v3/api-docs' '/sales-api-docs';\n    }\n    location /sales-api-docs {\n    \
+    \  proxy_pass http://siga-sales.siga.svc.cluster.local:8083/v3/api-docs;\n    }\n\n    # -------------------------------------------------------------------\n\
+    \    # Proxy Billing Swagger\n    # -------------------------------------------------------------------\n    location\
+    \ /billing-swagger/ {\n      proxy_pass http://siga-billing.siga.svc.cluster.local:8084/swagger-ui/;\n      proxy_set_header\
+    \ Host $host;\n      sub_filter_once off;\n      sub_filter_types text/html text/css application/javascript application/json;\n\
+    \      sub_filter '/swagger-ui/' '/billing-swagger/';\n      sub_filter '/v3/api-docs' '/billing-api-docs';\n    }\n \
+    \   location /billing-api-docs {\n      proxy_pass http://siga-billing.siga.svc.cluster.local:8084/v3/api-docs;\n    }\n\
+    \n    # -------------------------------------------------------------------\n    # Proxy Notification Swagger\n    # -------------------------------------------------------------------\n\
     \    location /notification-swagger/ {\n      proxy_pass http://siga-notification.siga.svc.cluster.local:8085/swagger-ui/;\n\
-    \      proxy_set_header Host $host;\n      sub_filter_once off;\n      sub_filter_types\
-    \ text/html text/css application/javascript application/json;\n      sub_filter\
-    \ '/swagger-ui/' '/notification-swagger/';\n      sub_filter '/v3/api-docs' '/notification-api-docs';\n\
+    \      proxy_set_header Host $host;\n      sub_filter_once off;\n      sub_filter_types text/html text/css application/javascript\
+    \ application/json;\n      sub_filter '/swagger-ui/' '/notification-swagger/';\n      sub_filter '/v3/api-docs' '/notification-api-docs';\n\
     \    }\n    location /notification-api-docs {\n      proxy_pass http://siga-notification.siga.svc.cluster.local:8085/v3/api-docs;\n\
     \    }\n  }\n}\n"
 kind: ConfigMap

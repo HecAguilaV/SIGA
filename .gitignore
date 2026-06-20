@@ -68,3 +68,8 @@ CHULETA*
 NOTAS*
 TEMP*
 prueba*
+
+# Archivos que no deben trackearse
+openspec/
+STATUS.md
+docs/godadmin-panel.html
