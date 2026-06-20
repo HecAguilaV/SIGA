@@ -20,18 +20,22 @@ data:
   # Perfil activo de Spring - configuración específica para EKS
   SPRING_PROFILES_ACTIVE: "eks"
   # Ubicación del archivo application.yaml montado como ConfigMap o volumen
-  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
 
   # ---------------------------------------------------------------------------
   # Configuración de base de datos PostgreSQL
   # Host apunta al RDS externo (no corre dentro del cluster)
   # ---------------------------------------------------------------------------
-  DB_HOST: "siga-auth.cluster-xxxxxxxxxxxx.us-east-1.rds.amazonaws.com"
+  DB_HOST: "siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "siga_auth"
   DB_SCHEMA: "auth"
   # SSL requerido para conexión a RDS
   DB_SSL_MODE: "require"
+
+  # ---------------------------------------------------------------------------
+  # Configuración de datasource JDBC
+  # ---------------------------------------------------------------------------
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com:5432/siga_auth?sslmode=require"
 
   # ---------------------------------------------------------------------------
   # Configuración JWT
@@ -44,6 +48,12 @@ data:
   JWT_REFRESH_EXPIRATION: "7"
 
   # ---------------------------------------------------------------------------
+  # Configuración de Kafka - broker de mensajería
+  # ---------------------------------------------------------------------------
+  KAFKA_BOOTSTRAP_SERVERS: "siga-kafka.siga.svc.cluster.local:9092"
+  MANAGEMENT_HEALTH_KAFKA_ENABLED: "false"
+
+  # ---------------------------------------------------------------------------
   # Conexión a Redis (ElastiCache) para sesiones y rate limiting
   # ---------------------------------------------------------------------------
   REDIS_HOST: "siga-cache.xxxxxxxxxx.ng.0001.use1.cache.amazonaws.com"
@@ -53,4 +63,5 @@ data:
   # ---------------------------------------------------------------------------
   # URLs de servicios vecinos
   # ---------------------------------------------------------------------------
+  EUREKA_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
   REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"

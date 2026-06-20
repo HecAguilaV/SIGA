@@ -21,7 +21,7 @@
 # =============================================================================
 
 # ---- Build Stage -----------------------------------------------------------
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -45,12 +45,13 @@ COPY packages/shared/      packages/shared/
 # Capa 3: Configuración raíz necesaria para pnpm (lockfile)
 # ---------------------------------------------------------------------------
 # pnpm usa el lockfile global; sin él, puede resolver mal las versiones.
-COPY pnpm-lock.yaml        ./ 2>/dev/null || true
+# El lockfile está dentro de apps/dashboard/, ya copiado en la Capa 2
 
 # ---------------------------------------------------------------------------
 # Capa 4: Instalación de dependencias (cacheable si no cambia package.json)
 # ---------------------------------------------------------------------------
 WORKDIR /app/apps/dashboard
+ENV CI=true
 RUN pnpm install --frozen-lockfile 2>/dev/null || pnpm install
 
 # ---------------------------------------------------------------------------
@@ -60,7 +61,7 @@ RUN pnpm install --frozen-lockfile 2>/dev/null || pnpm install
 RUN pnpm build
 
 # ---- Runtime Stage ---------------------------------------------------------
-FROM node:20-alpine AS runtime
+FROM node:22-alpine AS runtime
 WORKDIR /app
 
 # ---------------------------------------------------------------------------

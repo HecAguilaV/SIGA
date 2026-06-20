@@ -16,7 +16,6 @@ metadata:
     project: siga
 data:
   SPRING_PROFILES_ACTIVE: "eks"
-  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
 
   # ---------------------------------------------------------------------------
   # URLs de servicios vecinos
@@ -24,6 +23,7 @@ data:
   AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
   INVENTORY_SERVICE_URL: "http://siga-inventory.siga.svc.cluster.local:8082"
   SALES_SERVICE_URL: "http://siga-sales.siga.svc.cluster.local:8083"
+  EUREKA_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
   REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
 
   # ---------------------------------------------------------------------------

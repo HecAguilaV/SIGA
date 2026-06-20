@@ -22,6 +22,11 @@ metadata:
     tier: backend
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: siga-sales
@@ -46,7 +51,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: sales
-          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-sales:latest
+          image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/sales:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8083
@@ -54,22 +59,20 @@ spec:
               name: http
           resources:
             requests:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "250m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1"
           readinessProbe:
-            httpGet:
-              path: /actuator/health
+            tcpSocket:
               port: 8083
             initialDelaySeconds: 15
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /actuator/health
+            tcpSocket:
               port: 8083
             initialDelaySeconds: 30
             periodSeconds: 15
@@ -80,6 +83,12 @@ spec:
                 name: sales-config
           env:
             - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+                  optional: false
+            - name: SALES_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: db-secret
@@ -99,8 +108,3 @@ spec:
         - name: config-volume
           configMap:
             name: sales-config
-      strategy:
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 1
-          maxUnavailable: 0

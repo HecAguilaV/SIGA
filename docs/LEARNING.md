@@ -184,3 +184,40 @@ Sin Kafka, la SAGA no funciona y la demo de transacciones distribuidas falla.
 - [ ] Migrar Terraform state a S3 backend (hoy está en local)
 - [ ] Configurar cert-manager + Let's Encrypt para HTTPS
 - [ ] Agregar dashboard de monitoreo con CloudWatch + Prometheus
+
+---
+
+## 11. Lecciones del Despliegue en EKS
+
+### CI/CD: El diablo está en los detalles
+- **ECR repo names**: El workflow de GitHub Actions usaba `siga-{svc}` pero los repos en ECR se crearon con `siga-production/{svc}`. Una diferencia de naming que rompe todo el pipeline. Lección: **SIEMPRE verificar los nombres exactos de los recursos AWS** antes de armar el CI/CD.
+- **AWS Session Token**: El lab de AWS Academy usa credenciales temporales (`sts:AssumeRole`) que incluyen `AWS_SESSION_TOKEN`. Si no se pasa este token a `configure-aws-credentials`, cualquier comando AWS falla con `AccessDenied`. Lección: **no asumir que solo Access Key + Secret Key son suficientes**.
+- **Gitleaks + docs**: Las credenciales puestas en un archivo de evidencia para la evaluación gatillaron el secret scanning de GitHub. Lección: **siempre verificar el `.gitleaks.toml` cuando se agregan archivos con datos sensibles** (incluso si son placeholder).
+
+### Docker: Node 22 y pnpm
+- El dashboard usaba `node:20-alpine` pero el código usa `node:sqlite` (built-in de Node 22+). Fix: cambiar a `node:22-alpine`.
+- pnpm en Docker sin TTY necesita `CI=true` para no abortar con `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`.
+- El Dockerfile del dashboard intentaba copiar `pnpm-lock.yaml` desde la raíz del monorepo, pero el lockfile está en `apps/dashboard/pnpm-lock.yaml`.
+
+### Kubernetes: YAML es implacable
+- **Strategy al nivel equivocado**: `strategy` debe ir en `spec.strategy`, no en `spec.template.spec.strategy`. Un error de indentación de 8 espacios rompe el deploy.
+- **fsGroup en el lugar incorrecto**: Debe ir en el pod-level `securityContext`, no en el container-level. Kafka no puede escribir datos sin esto.
+- **SPRING_CONFIG_LOCATION**: Todos los ConfigMaps apuntaban a un archivo `application.yaml` que no existía. Los ConfigMaps se montan como archivos individuales (una key = un archivo), no como un YAML completo. Lección: **Spring Boot lee env vars directamente via relaxed binding** — no hace falta montar archivos de configuración.
+- **StorageClass gp3 vs gp2**: El cluster EKS se creó con `gp2` como única storage class. Kafka pedía `gp3` y el PVC quedaba Pending infinito.
+
+### Recursos: 2 t3.medium no alcanzan para 15 pods
+- 2 nodos t3.medium = 4 vCPU, 8 GB RAM.
+- 9 servicios × 250m CPU request × 2 réplicas = 4.5 vCPU → más de lo disponible.
+- Solución temporal: reducir a 1 réplica y bajar requests a 100m-250m.
+- Lección: **planificar capacidad desde el principio**. Para 9 microservicios + Kafka + monitoring, 2 t3.medium quedan justos.
+
+### Spring Boot + Eureka: Orden de arranque
+- El registry (Eureka) debe arrancar primero porque los demás servicios se registran en él.
+- El agent necesitaba `EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` apuntando al service name del registry, no a localhost.
+- Sin la URL correcta, los servicios intentan conectar a `localhost:8761` (que no existe en Kubernetes) y fallan.
+
+### Secrets: Vacíos y silenciosos
+- El `db-secret` se creó con valores vacíos porque el archivo `k8s/02-secrets/` es un placeholder.
+- `JWT_SECRET` vacío → `IllegalArgumentException: JWT_SECRET must not be empty`.
+- `DB_PASSWORD` vacío → auth no puede conectar a RDS.
+- Lección: **verificar que los secrets tengan valores reales antes de desplegar**.

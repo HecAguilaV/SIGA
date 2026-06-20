@@ -23,6 +23,11 @@ metadata:
     tier: backend
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: siga-billing
@@ -47,7 +52,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: billing
-          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-billing:latest
+          image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/billing:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8084
@@ -55,32 +60,38 @@ spec:
               name: http
           resources:
             requests:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "250m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1"
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8084
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 3
+            failureThreshold: 5
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8084
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 15
             timeoutSeconds: 5
-            failureThreshold: 3
+            failureThreshold: 5
           envFrom:
             - configMapRef:
                 name: billing-config
           env:
             - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: db-secret
@@ -94,8 +105,3 @@ spec:
         - name: config-volume
           configMap:
             name: billing-config
-      strategy:
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 1
-          maxUnavailable: 0

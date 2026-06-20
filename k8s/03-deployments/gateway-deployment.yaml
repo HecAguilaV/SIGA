@@ -42,6 +42,11 @@ metadata:
     tier: gateway
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: siga-gateway
@@ -71,7 +76,7 @@ spec:
         - name: gateway
           # Imagen desde Amazon ECR. Reemplazar ${} con valores reales.
           # Formato: <account>.dkr.ecr.<region>.amazonaws.com/<repo>:<tag>
-          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-gateway:latest
+          image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/gateway:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -148,8 +153,3 @@ spec:
       # -----------------------------------------------------------------------
       # Estrategia de actualización: RollingUpdate con max surge
       # -----------------------------------------------------------------------
-      strategy:
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 1
-          maxUnavailable: 0

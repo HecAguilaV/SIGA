@@ -1,0 +1,54 @@
+# =============================================================================
+# .dockerignore — SIGA Monorepo
+# =============================================================================
+# Propósito: Excluir archivos innecesarios del build context de Docker
+# para acelerar los builds. El context es la raíz del monorepo.
+# =============================================================================
+
+# Dependencias (se resuelven dentro del contenedor)
+node_modules/
+.pnpm-store/
+.gradle/
+build/
+target/
+
+# Control de versiones
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+
+# IDE y editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Terraform (infraestructura, no necesario para la app)
+terraform/
+*.tfstate
+*.tfplan
+
+# Documentación y académico
+docs/
+ACADEMIC/
+openspec/
+*.md
+
+# CI/CD
+.github/
+
+# Otros
+.tools/
+.codeviz/
+.atl/
+.kotlin/
+stitch_ui/
+*.log
+.env
+.env.local
