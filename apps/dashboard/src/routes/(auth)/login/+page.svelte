@@ -20,7 +20,7 @@
 	} = $props();
 
 	let email = $state('');
-	let password = $state();
+	let password = $state('');
 
 	// Show success banner if redirected from registration
 	let registered = $derived($page.url.searchParams.get('registered') === 'true');
