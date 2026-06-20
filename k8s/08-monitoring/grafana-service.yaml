@@ -1,17 +1,6 @@
 # =============================================================================
 # SERVICE: Grafana
-# SECCIÓN: Exposición de Grafana para acceso durante la demo
-# =============================================================================
-# Rationale / Decisión: ClusterIP + port-forward para la demo.
-# No se crea un ALB adicional para ahorrar costos ($50 presupuesto).
-#
-# Acceso durante demo:
-#   kubectl port-forward -n siga svc/grafana 3001:3000
-#   → http://localhost:3001 (user: admin, pass: admin)
-#
-# Para exponer via ALB en el futuro:
-#   1. Cambiar service type a LoadBalancer
-#   2. O agregar regla en alb-ingress.yaml con hostname
+# SECCIÓN: Exposición de Grafana vía LoadBalancer para la defensa
 # =============================================================================
 apiVersion: v1
 kind: Service
@@ -22,6 +11,9 @@ metadata:
     app: grafana
     component: monitoring
     project: siga
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "clb"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "false"
 spec:
   selector:
     app: grafana
@@ -30,4 +22,4 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
-  type: ClusterIP
+  type: LoadBalancer

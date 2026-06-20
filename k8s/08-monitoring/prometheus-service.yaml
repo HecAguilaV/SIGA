@@ -1,9 +1,6 @@
 # =============================================================================
 # SERVICE: Prometheus
-# SECCIÓN: Exposición de Prometheus para Grafana y acceso directo
-# =============================================================================
-# Rationale / Decisión: ClusterIP porque Grafana está en el mismo cluster.
-# Para acceso externo usar port-forward o NodePort durante la demo.
+# SECCIÓN: Exposición de Prometheus vía LoadBalancer para métricas
 # =============================================================================
 apiVersion: v1
 kind: Service
@@ -14,6 +11,9 @@ metadata:
     app: prometheus
     component: monitoring
     project: siga
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "clb"
+    service.beta.kubernetes.io/aws-load-balancer-internal: "false"
 spec:
   selector:
     app: prometheus
@@ -22,4 +22,4 @@ spec:
       protocol: TCP
       port: 9090
       targetPort: 9090
-  type: ClusterIP
+  type: LoadBalancer
