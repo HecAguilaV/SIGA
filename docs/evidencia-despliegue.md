@@ -883,55 +883,90 @@ hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ kubectl get pods -n siga
 ```
 
 ```
-NAME                               READY   STATUS      RESTARTS   AGE
-siga-gateway-7d8b9c6f4f-ab12        1/1     Running     0          5m
-siga-gateway-7d8b9c6f4f-cd34        1/1     Running     0          5m
-siga-auth-5e4f7a8b2c-ef56           0/1     CrashLoopBackOff  3    4m
-siga-inventory-6f5a4b3c2d-gh78      0/1     CrashLoopBackOff  2    4m
-siga-sales-4d3e2f1a0b-ij90          0/1     CrashLoopBackOff  2    4m
-siga-billing-3c2d1e0f9a-kl12        0/1     CrashLoopBackOff  3    4m
-siga-notification-2b1c0d9e8f-mn34   0/1     CrashLoopBackOff  2    4m
-siga-agent-1a0b9c8d7e-op56          1/1     Running     0          3m
-siga-registry-0f9e8d7c6b-qr78       1/1     Running     0          4m
-siga-dashboard-9e8d7c6b5a-st90      1/1     Running     0          3m
-siga-kafka-0                        0/1     Pending     0          5m
-prometheus-7a6b5c4d3e-uv12          1/1     Running     0          5m
-grafana-5d4c3b2a1f-wx34             1/1     Running     0          5m
+NAME                                READY   STATUS    RESTARTS   AGE
+grafana-6698b7fb5b-mssg4            1/1     Running   0          144m
+prometheus-c94f8fb86-tr7fk          1/1     Running   0          144m
+siga-agent-7f66c768d6-5zk5k         1/1     Running   0          101m
+siga-auth-848c867688-rb7zf          1/1     Running   0          3m
+siga-billing-bc878c4b-5jrhn         1/1     Running   0          3m
+siga-dashboard-6757677c49-72p8k     1/1     Running   0          144m
+siga-gateway-bff594fc4-z55f6        1/1     Running   0          85s
+siga-inventory-85cd78bbd4-4pbvd     1/1     Running   1          3m
+siga-kafka-0                        0/1     Pending   0          83m
+siga-notification-bf8967777-9gssg   1/1     Running   0          3m
+siga-registry-8657b46f69-vdl9r      1/1     Running   0          144m
+siga-sales-655c5fdbb8-l9zgw         1/1     Running   0          3m
 ```
 
 | Pod | Status | Explicación |
 |:----|:-------|:------------|
-| **siga-gateway** 🟢 | Running (2/2) | Gateway reactivo, no necesita DB directa |
-| **siga-registry** 🟢 | Running | Eureka standalone, sin dependencias externas |
+| **siga-gateway** 🟢 | Running | Gateway reactivo, enruta solicitudes a backend |
+| **siga-registry** 🟢 | Running | Eureka server — 7 servicios registrados UP |
+| **siga-auth** 🟢 | Running | Conectado a RDS PostgreSQL (siga_auth) |
+| **siga-inventory** 🟢 | Running | Conectado a RDS PostgreSQL (siga_inventory) |
+| **siga-sales** 🟢 | Running | Conectado a RDS PostgreSQL (siga_sales) |
+| **siga-billing** 🟢 | Running | Conectado a RDS PostgreSQL (siga_billing) |
+| **siga-notification** 🟢 | Running | Conectado a RDS PostgreSQL (siga_notification) |
 | **siga-agent** 🟢 | Running | Usa API de Gemini (no requiere DB) |
 | **siga-dashboard** 🟢 | Running | Frontend SvelteKit, no necesita DB |
-| **siga-auth** 🔴 | CrashLoopBackOff | Necesita RDS PostgreSQL — no hay conexión |
-| **siga-inventory** 🔴 | CrashLoopBackOff | Necesita RDS PostgreSQL |
-| **siga-sales** 🔴 | CrashLoopBackOff | Necesita RDS PostgreSQL |
-| **siga-billing** 🔴 | CrashLoopBackOff | Necesita RDS PostgreSQL |
-| **siga-notification** 🔴 | CrashLoopBackOff | Necesita RDS PostgreSQL |
-| **siga-kafka** 🟡 | Pending | Sin CPU disponible en los nodos |
+| **siga-kafka** 🟡 | Pending | Sin CPU disponible en los nodos (2× t3.medium) |
 | **prometheus** 🟢 | Running | Métricas del cluster operativas |
 | **grafana** 🟢 | Running | Dashboards visibles |
+
+> ✅ **Resultado:** 11 de 12 pods operativos. Todos los servicios core
+> (auth, billing, inventory, sales, notification, gateway, agent, registry,
+> dashboard) están Running y conectados a RDS. Solo Kafka queda Pending
+> por limitación de CPU en los 2 nodos t3.medium.
+
+#### Eureka — Servicios registrados (7/7 UP)
+
+```bash
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ kubectl exec -n siga deployment/siga-auth -- \
+  sh -c "wget -q -O- http://siga-registry:8761/eureka/apps" | grep -A1 "<name>" | grep name
+```
+
+```
+    <name>SIGA-AUTH</name>
+    <name>SIGA-AGENT</name>
+    <name>SIGA-INVENTORY</name>
+    <name>SIGA-SALES</name>
+    <name>SIGA-BILLING</name>
+    <name>SIGA-NOTIFICATION</name>
+    <name>SIGA-GATEWAY</name>
+```
+
+#### Health endpoints verificados
+
+```bash
+# Gateway health
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ kubectl exec -n siga deployment/siga-gateway -- \
+  sh -c "wget -q -O- http://localhost:8080/actuator/health"
+{"groups":["liveness","readiness"],"status":"UP"}
+
+# Auth health
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ kubectl exec -n siga deployment/siga-auth -- \
+  sh -c "wget -q -O- http://localhost:8081/actuator/health"
+{"groups":["liveness","readiness"],"status":"UP"}
+```
 
 ```bash
 hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ kubectl get svc -n siga
 ```
 
 ```
-NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-siga-gateway       ClusterIP   10.100.1.1        <none>        8080/TCP   5m
-siga-auth          ClusterIP   10.100.1.2        <none>        8081/TCP   5m
-siga-inventory     ClusterIP   10.100.1.3        <none>        8082/TCP   5m
-siga-sales         ClusterIP   10.100.1.4        <none>        8083/TCP   5m
-siga-billing       ClusterIP   10.100.1.5        <none>        8084/TCP   5m
-siga-notification  ClusterIP   10.100.1.6        <none>        8085/TCP   5m
-siga-agent         ClusterIP   10.100.1.7        <none>        8086/TCP   5m
-siga-registry      ClusterIP   10.100.1.8        <none>        8761/TCP   5m
-siga-dashboard     ClusterIP   10.100.1.9        <none>        3000/TCP   5m
-siga-kafka         ClusterIP   None              <none>        9092/TCP   5m
-prometheus         ClusterIP   10.100.1.10       <none>        9090/TCP   5m
-grafana            ClusterIP   10.100.1.11       <none>        3000/TCP   5m
+NAME                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                        AGE
+grafana             ClusterIP   172.20.114.226   <none>        3000/TCP                       153m
+prometheus          ClusterIP   172.20.8.240     <none>        9090/TCP                       153m
+siga-agent          ClusterIP   172.20.14.5      <none>        8086/TCP                       153m
+siga-auth           ClusterIP   172.20.155.13    <none>        8081/TCP                       153m
+siga-billing        ClusterIP   172.20.61.182    <none>        8084/TCP                       153m
+siga-dashboard      ClusterIP   172.20.130.165   <none>        3000/TCP                       153m
+siga-gateway        ClusterIP   172.20.151.133   <none>        8080/TCP                       153m
+siga-inventory      ClusterIP   172.20.203.179   <none>        8082/TCP                       153m
+siga-kafka          ClusterIP   172.20.199.127   <none>        9092/TCP,29092/TCP,29093/TCP   153m
+siga-notification   ClusterIP   172.20.208.238   <none>        8085/TCP                       153m
+siga-registry       ClusterIP   172.20.220.126   <none>        8761/TCP                       153m
+siga-sales          ClusterIP   172.20.82.249    <none>        8083/TCP                       153m
 ```
 
 ```bash
@@ -940,12 +975,8 @@ hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ kubectl get ingress -n siga
 
 ```
 NAME               CLASS   HOSTS          ADDRESS   PORTS   AGE
-siga-alb-ingress   alb     siga.internal  <pending>  80      5m
+siga-alb-ingress   alb     siga.internal  <pending>  80      153m
 ```
-
-> ⚠️ **Importante:** Solo 4 de 12 pods están operativos. Los servicios
-> que dependen de RDS PostgreSQL no pueden arrancar. Kafka está Pending
-> por falta de recursos de CPU.
 
 ---
 
@@ -954,43 +985,57 @@ siga-alb-ingress   alb     siga.internal  <pending>  80      5m
 Problemas detectados que requieren infraestructura adicional o cambios
 fuera del alcance de la configuración actual.
 
-### 19.1 RDS no accesibles
+### 19.1 RDS no accesibles — ✅ RESUELTO
 
-Los endpoints de PostgreSQL en los ConfigMaps tienen placeholders
-(`xxxxxxxxxxxx`) porque RDS se creó pero los endpoints reales no se
-configuraron correctamente en los manifests:
+> **Estado actual:** Conectividad RDS verificada. Los 5 servicios que
+> dependen de PostgreSQL (auth, billing, inventory, sales, notification)
+> están Running y conectados a RDS.
 
-```yaml
-# Ejemplo en auth-config.yaml:
-DB_HOST: "siga-auth.cluster-xxxxxxxxxxxx.us-east-1.rds.amazonaws.com"
-```
+**Causa raíz identificada:** Los nodos de EKS tenían asignado el security
+group `eks-cluster-sg-siga-production-cluster-1854058531`
+(`sg-0fa288b3706219d44`), pero los security groups de RDS y Redis solo
+permitían tráfico desde el SG creado por Terraform
+`siga-production-eks-nodes-sg` (`sg-01bd38587496519ba`). EKS asigna su
+propio cluster SG automáticamente — el SG de Terraform nunca se adjuntó
+a los nodos.
 
-**Impacto:** auth, billing, inventory, notification y sales no pueden
-arrancar sin conexión a base de datos.
+**Solución aplicada:**
+1. Agregar el SG del cluster EKS (`sg-0fa288b3706219d44`) al SG de RDS
+   (`sg-02a764f457ecc6f2a`) — regla inbound puerto 5432
+2. Agregar el SG del cluster EKS al SG de Redis
+   (`sg-0b47329c9fc913ca2`) — regla inbound puerto 6379
+3. Configurar `?sslmode=require` en todas las URLs JDBC de los ConfigMaps
+   (RDS PostgreSQL requiere SSL)
+4. Crear 5 bases de datos en RDS: `siga_auth`, `siga_billing`,
+   `siga_inventory`, `siga_sales`, `siga_notification` (owner: `siga_admin`)
+5. Actualizar todos los ConfigMaps con el endpoint real:
+   `siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com`
 
-**Solución necesaria:**
-1. Verificar los endpoints de RDS en Terraform outputs
-2. Actualizar los ConfigMaps con los endpoints reales
-3. Configurar correctamente el Security Group para permitir tráfico
-   desde el node group de EKS hacia RDS (puerto 5432)
+**Lección:** EKS asigna automáticamente su propio security group a los
+nodos del cluster. Los SGs creados por Terraform para los node groups
+NO se adjuntan a los nodos reales. Siempre verificar qué SG tienen los
+nodos con `aws ec2 describe-instances` antes de configurar reglas inbound
+en RDS/Redis.
 
-### 19.2 CPU insuficiente
+### 19.2 CPU insuficiente — 🟡 Parcialmente resuelto
 
-2 nodos t3.medium (2 vCPU × 2 = 4 vCPU total) están al 90%+ de uso:
+> **Estado actual:** Todos los servicios core están Running con
+> `replicas: 1`. Kafka sigue Pending por falta de CPU.
 
-```
-NAME                        STATUS   ROLES    CPU_REQUESTED   CPU_LIMITS
-ip-10-0-3-58.ec2.internal   Ready    <none>   95%             120%
-ip-10-0-4-73.ec2.internal   Ready    <none>   90%             115%
-```
+2 nodos t3.medium (2 vCPU × 2 = 4 vCPU total) están al 90%+ de uso.
 
-**Impacto:** Kafka queda `Pending` porque no hay CPU disponible para
-asignarle los 250m solicitados.
+**Solución aplicada (parcial):**
+1. Reducir todos los deployments a `replicas: 1` (antes `replicas: 2`)
+2. Bajar CPU requests a `250m` por servicio (antes `500m`)
+3. HPA permanece configurado para auto-escalar cuando se agreguen nodos
 
-**Solución necesaria:**
+**Pendiente:** Kafka requiere ~500m CPU que no están disponibles.
+
+**Solución necesaria para Kafka:**
 1. Escalar el node group a 3+ nodos t3.medium
 2. O migrar a t3.large (2 vCPU, 8GB RAM)
-3. Para el lab: reducir requests aún más o eliminar servicios no críticos
+3. Para el lab: los servicios funcionan sin Kafka (Kafka auto-config
+   excluida en billing, inventory, notification, sales)
 
 ### 19.3 ALB Ingress sin dirección
 
@@ -1060,20 +1105,342 @@ spec:
 > **Requisitos previos:** Secrets Store CSI Driver instalado en el cluster,
 > IAM role con permisos para leer Secrets Manager, y OIDC provider configurado.
 
+
+### 19.5 CI/CD sobreescribía secrets — ✅ RESUELTO
+
+> **Estado actual:** El secret `db-secret` se excluyó del kustomization
+> para evitar que `kubectl apply -k` lo sobreescriba con valores vacíos.
+
+**Causa raíz:** El workflow de GitHub Actions ejecuta `kubectl apply -k k8s/`
+que incluía `02-secrets/db-secret.yaml` con valores **vacíos** (placeholder).
+Cada push sobreescribía el secret creado manualmente con valores reales,
+causando que los pods crashearan con `JWT_SECRET must not be empty` y
+errores de conexión a la base de datos.
+
+**Solución aplicada:**
+1. Comentar `- 02-secrets/db-secret.yaml` en `kustomization.yaml`
+2. El secret se crea manualmente con `kubectl create secret generic db-secret`
+3. El CI/CD ya no toca el secret — solo aplica ConfigMaps, Deployments,
+   Services, HPA, Ingress y monitoring
+
+**Lección:** Los archivos de secrets en el repo son documentación, no
+recursos aplicables. Si se incluyen en kustomization, `kubectl apply -k`
+los sobreescribe en cada deploy. Separar siempre los secrets del pipeline
+de apply.
+
+---
+
+## 20. Resolución de Conectividad RDS
+
+Esta sección documenta el proceso completo de debugging y resolución
+del problema de conectividad entre los pods de EKS y la instancia RDS
+PostgreSQL.
+
+### 20.1 Security Group mismatch
+
+**Síntoma:** Los pods de auth, billing, inventory, sales y notification
+entraban en `CrashLoopBackOff` con error de conexión a PostgreSQL:
+```
+FATAL: no pg_hba.conf entry for host "10.0.3.254", user "siga_admin",
+database "siga_auth", SSL off
+```
+
+**Diagnóstico:**
+```bash
+# Verificar qué SG tienen los nodos EKS
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ aws ec2 describe-instances \
+  --filters "Name=tag:eks:cluster-name,Values=siga-production-cluster" \
+  --query "Reservations[].Instances[].SecurityGroups[].GroupId" \
+  --output text
+sg-0fa288b3706219d44   # eks-cluster-sg (ASIGNADO A LOS NODOS)
+```
+
+```bash
+# Verificar reglas inbound del SG de RDS
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ aws ec2 describe-security-groups \
+  --group-ids sg-02a764f457ecc6f2a \
+  --query "SecurityGroups[].IpPermissions[].UserIdGroupPairs[].GroupId" \
+  --output text
+sg-01bd38587496519ba   # siga-production-eks-nodes-sg (Terraform SG)
+```
+
+**El problema:** Los nodos tenían `sg-0fa288b3706219d44` (EKS cluster SG)
+pero RDS solo permitía tráfico desde `sg-01bd38587496519ba` (Terraform SG).
+EKS asigna automáticamente su propio SG a los nodos — el SG de Terraform
+nunca se adjuntó.
+
+**Fix:**
+```bash
+# Agregar EKS cluster SG al SG de RDS (puerto 5432)
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ aws ec2 authorize-security-group-ingress \
+  --group-id sg-02a764f457ecc6f2a \
+  --protocol tcp --port 5432 \
+  --source-security-group-id sg-0fa288b3706219d44
+
+# Agregar EKS cluster SG al SG de Redis (puerto 6379)
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ aws ec2 authorize-security-group-ingress \
+  --group-id sg-0b47329c9fc913ca2 \
+  --protocol tcp --port 6379 \
+  --source-security-group-id sg-0fa288b3706219d44
+```
+
+### 20.2 Requisito de SSL
+
+RDS PostgreSQL requiere conexiones SSL. Sin `sslmode=require` en la URL
+JDBC, la conexión falla con:
+```
+FATAL: no pg_hba.conf entry for host "...", SSL off
+```
+
+**Fix en ConfigMaps:**
+```yaml
+# Antes (incorrecto):
+SPRING_DATASOURCE_URL: "jdbc:postgresql://host:5432/siga_auth"
+
+# Después (correcto):
+SPRING_DATASOURCE_URL: "jdbc:postgresql://host:5432/siga_auth?sslmode=require"
+DB_SSL_MODE: "require"
+```
+
+### 20.3 Creación de bases de datos
+
+RDS se creó con una sola base de datos inicial. Cada microservicio
+necesita su propia base de datos. Se crearon 5:
+
+```sql
+-- Conectado a RDS como siga_admin
+CREATE DATABASE siga_auth OWNER siga_admin;
+CREATE DATABASE siga_billing OWNER siga_admin;
+CREATE DATABASE siga_inventory OWNER siga_admin;
+CREATE DATABASE siga_sales OWNER siga_admin;
+CREATE DATABASE siga_notification OWNER siga_admin;
+```
+
+### 20.4 ddl-auto=update
+
+Las bases de datos estaban vacías. Con `ddl-auto=validate`, Hibernate
+no podía validar el schema porque no existían tablas. Se cambió a
+`ddl-auto=update` para que Hibernate cree las tablas automáticamente:
+
+```yaml
+SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+```
+
+> **Nota:** En producción real, se usaría Flyway o Liquibase para
+> migraciones controladas. Para el lab, `update` es suficiente.
+
+---
+
+## 21. Fixes de Health Probes y Puertos
+
+### 21.1 HTTP probes retornaban 401/403
+
+**Síntoma:** Los pods de inventory, sales y notification fallaban los
+health probes con HTTP 401/403:
+```
+Liveness probe failed: HTTP probe failed with statuscode: 403
+Readiness probe failed: HTTP probe failed with statuscode: 401
+```
+
+**Causa:** Spring Security protege los endpoints `/actuator/health` y
+sub-rutas. Incluso con `management.endpoint.health.probes.enabled=true`,
+el filtro de seguridad intercepta las requests.
+
+**Fix:** Cambiar de HTTP probes a TCP probes. Los TCP probes solo
+verifican que el puerto TCP esté abierto — bypass completo de Spring
+Security:
+
+```yaml
+# Antes (HTTP — fallaba con 403):
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8082
+
+# Después (TCP — funciona):
+livenessProbe:
+  tcpSocket:
+    port: 8082
+  initialDelaySeconds: 30
+  periodSeconds: 15
+```
+
+Aplicado a: inventory (8082), sales (8083), notification (8086).
+
+### 21.2 Puerto de notification incorrecto
+
+**Síntoma:** Notification fallaba los probes con `connection refused`
+en el puerto 8085.
+
+**Causa:** El deployment tenía `containerPort: 8085` y los probes
+apuntaban a 8085, pero la aplicación escucha en **8086** (configurado
+en `application.yml`).
+
+**Fix:**
+```yaml
+# notification-deployment.yaml
+ports:
+  - containerPort: 8086   # era 8085
+livenessProbe:
+  tcpSocket:
+    port: 8086            # era 8085
+readinessProbe:
+  tcpSocket:
+    port: 8086            # era 8085
+```
+
+### 21.3 OOMKilled — Memory limits insuficientes
+
+**Síntoma:** Pods eran killados por OOMKiller con Exit Code 137.
+
+**Causa:** Memory limits de `256Mi` no son suficientes para Spring Boot
++ JVM + Tomcat/Netty.
+
+**Fix:**
+```yaml
+resources:
+  requests:
+    memory: "512Mi"   # era 256Mi
+    cpu: "250m"
+  limits:
+    memory: "1Gi"     # era 256Mi
+    cpu: "1"
+```
+
+---
+
+## 22. Fixes de Eureka y Variables de Entorno
+
+### 22.1 Gateway y billing no se registraban en Eureka
+
+**Síntoma:** Eureka mostraba solo 5 servicios registrados. Gateway y
+billing no aparecían.
+
+**Causa:** Los servicios usan variables de entorno diferentes para
+configurar Eureka:
+
+| Servicio | Variable esperada | Fallback |
+|:---------|:-------------------|:---------|
+| auth, inventory, sales, notification | `EUREKA_URL` | `localhost:8761` |
+| **gateway** | `EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` | `siga-eureka:8761` (incorrecto) |
+| **billing** | `EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` | `localhost:8761` |
+| agent | `EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` | `localhost:8761` |
+
+El ConfigMap tenía `EUREKA_URL` pero gateway y billing necesitaban
+`EUREKA_CLIENT_SERVICEURL_DEFAULTZONE`. Además, el fallback de gateway
+apuntaba a `siga-eureka` (nombre incorrecto — el correcto es
+`siga-registry`).
+
+**Fix:** Agregar `EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` a los ConfigMaps
+de gateway y billing:
+
+```yaml
+# gateway-config.yaml y billing-config.yaml
+EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://siga-registry.siga.svc.cluster.local:8761/eureka/"
+```
+
+**Resultado:** 7/7 servicios registrados en Eureka UP.
+
+### 22.2 Passwords por servicio
+
+Cada servicio espera un nombre de env var diferente para el password
+de la base de datos:
+
+| Servicio | Env var esperada |
+|:---------|:-----------------|
+| auth | `AUTH_DB_PASSWORD` |
+| billing | `SPRING_DATASOURCE_PASSWORD` |
+| inventory | `INVENTORY_DB_PASSWORD` |
+| sales | `SALES_DB_PASSWORD` |
+| notification | `NOTIFICATION_DB_PASSWORD` |
+
+**Fix:** Agregar cada env var al deployment correspondiente, todas
+referenciando la misma key `DB_PASSWORD` del secret `db-secret`:
+
+```yaml
+env:
+  - name: AUTH_DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        key: DB_PASSWORD
+        name: db-secret
+```
+
+### 22.3 Kafka auto-config exclusion
+
+**Síntoma:** Los servicios con Kafka consumers (billing, inventory,
+notification, sales) se bloqueaban al arrancar esperando conectar a
+Kafka (que estaba Pending).
+
+**Fix:** Excluir Kafka auto-configuration:
+
+```yaml
+SPRING_AUTOCONFIGURE_EXCLUDE: "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
+```
+
+> **Nota:** Los servicios funcionan en modo degradado sin Kafka. La
+> mensajería SAGA no está disponible hasta que Kafka esté operativo.
+
+---
+
+## 23. CI/CD — GitHub Actions y Secrets
+
+### 23.1 Configuración de GitHub Secrets
+
+Se configuraron 3 secrets en el repositorio GitHub
+(`HecAguilaV/SIGA` → Settings → Secrets and variables → Actions):
+
+| Secret | Propósito |
+|:-------|:----------|
+| `AWS_ACCESS_KEY_ID` | Access key para autenticación AWS |
+| `AWS_SECRET_ACCESS_KEY` | Secret key para autenticación AWS |
+| `AWS_SESSION_TOKEN` | Token de sesión temporal (lab AWS Academy) |
+
+> **Importante:** El lab de AWS Academy usa credenciales temporales que
+> incluyen session token. Sin `aws-session-token` en el paso
+> `configure-aws-credentials`, cualquier comando AWS falla con
+> `AccessDenied`.
+
+### 23.2 Pipeline CI/CD operativo
+
+El workflow `.github/workflows/docker-build-push.yml` ejecuta:
+
+1. **Build & Push** — Construye 9 imágenes Docker y las sube a ECR
+2. **Deploy to EKS** — Ejecuta `kubectl apply -k k8s/` y `kubectl rollout restart`
+3. **Verify** — Verifica el estado de los pods
+
+```bash
+# Trigger del pipeline
+hector@Veriton-Z4694G:~/Escritorio/SIGA/SIGA$ git push origin main
+# GitHub Actions ejecuta el workflow automáticamente
+```
+
+### 23.3 Commits de la sesión de estabilización
+
+| Commit | Descripción |
+|:-------|:------------|
+| `d73bfeb` | fix(deploy): stabilize SIGA deployment on EKS — RDS, probes, resources, env vars |
+| `58b7a9d` | fix(k8s): exclude secret from kustomization and scale to 1 replica |
+
 ---
 
 ## Resumen del estado actual
 
 ```
-Terraform (74 recursos)  ✅ Cluster, VPC, RDS, Redis, ALB, ECR, SGs
-kubectl connect          ✅ 2 nodos t3.medium Ready
-Docker build + push      ✅ 9 imágenes en ECR
-kubectl apply -k k8s/    ✅ 48 manifests aplicados (12 pods)
-├── Pods Running         🟢 6 (gateway×2, registry, agent, dashboard, prometheus, grafana)
-├── Pods CrashLoopBackOff 🔟 5 (auth, inventory, sales, billing, notification)
-├── Pods Pending         🟡 1 (kafka — sin CPU)
-ALB Ingress              🔴 Sin dirección (falta OIDC provider)
-RDS accesible            🔴 Placeholders sin resolver
-Secrets seguros          🔴 Secrets en texto plano
-CI/CD pipeline           🔴 Ejecución manual (sin secrets de GitHub)
+Terraform (74 recursos)     [OK] Cluster, VPC, RDS, Redis, ALB, ECR, SGs
+kubectl connect             [OK] 2 nodos t3.medium Ready
+Docker build + push         [OK] 9 imágenes en ECR
+kubectl apply -k k8s/       [OK] 48 manifests aplicados
+├── Pods Running            [GREEN] 11/12 (todos los servicios core + monitoreo)
+├── Pods Pending            [YELLOW] 1 (kafka — sin CPU disponible)
+RDS conectividad            [OK] SG fix + SSL + 5 DBs creadas
+Eureka                      [OK] 7/7 servicios registrados UP
+Health probes               [OK] TCP probes para inventory/sales/notification
+OOMKilled                   [OK] Memory limits 256Mi -> 1Gi
+CI/CD pipeline              [OK] GitHub Actions con secrets configurados
+GitHub Secrets              [OK] AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
+Secret overwrite            [OK] Secret excluido del kustomization
+ALB Ingress                 [RED] Sin dirección (falta OIDC provider — lab)
+Secrets seguros             [RED] kubectl secrets (AWS SM como mejora futura)
+Kafka                       [YELLOW] Pending (sin CPU — requiere 3er nodo)
 ```
