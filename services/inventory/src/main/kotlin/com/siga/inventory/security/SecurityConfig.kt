@@ -22,7 +22,7 @@ class SecurityConfig {
                         "/swagger-ui/**",
                         "/actuator/health"
                     ).permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll() // temporal: JWT en gateway, servicios confían en él
             }
             // En un entorno local/test podemos deshabilitar validación estricta de OAuth para este spec
             // o implementar un custom JWT decoder para tests.

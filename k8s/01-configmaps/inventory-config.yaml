@@ -1,62 +1,29 @@
-# =============================================================================
-# CONFIGMAP - inventory-config
-# Servicio: Inventory Service (Gestión de Inventario)
-# =============================================================================
-# Propósito: Proveer configuración al servicio de inventario.
-# Gestiona el catálogo de activos, stock, categorías y movimientos.
-# =============================================================================
 apiVersion: v1
+data:
+  AUTH_SERVICE_URL: http://siga-auth.siga.svc.cluster.local:8081
+  DB_HOST: siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com
+  DB_NAME: siga_inventory
+  DB_PORT: '5432'
+  DB_SCHEMA: inventory
+  DB_SSL_MODE: require
+  EUREKA_URL: http://siga-registry.siga.svc.cluster.local:8761/eureka
+  INVENTORY_LOW_STOCK_THRESHOLD: '10'
+  INVENTORY_PAGE_SIZE: '20'
+  KAFKA_BOOTSTRAP_SERVERS: siga-kafka.siga.svc.cluster.local:9092
+  MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: 'true'
+  MANAGEMENT_HEALTH_KAFKA_ENABLED: 'false'
+  REDIS_HOST: siga-production-redis.ruovma.0001.use1.cache.amazonaws.com
+  REDIS_PORT: '6379'
+  REDIS_SSL: 'true'
+  REGISTRY_SERVICE_URL: http://siga-registry.siga.svc.cluster.local:8761/eureka
+  SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+  SPRING_DATASOURCE_URL: jdbc:postgresql://siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com:5432/siga_inventory?sslmode=require
+  SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  SPRING_PROFILES_ACTIVE: eks
 kind: ConfigMap
 metadata:
-  name: inventory-config
-  namespace: siga
   labels:
     app: siga-inventory
     project: siga
-data:
-  SPRING_PROFILES_ACTIVE: "eks"
-
-  # ---------------------------------------------------------------------------
-  # Base de datos PostgreSQL (RDS)
-  # ---------------------------------------------------------------------------
-  DB_HOST: "siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com"
-  DB_PORT: "5432"
-  DB_NAME: "siga_inventory"
-  DB_SCHEMA: "inventory"
-  DB_SSL_MODE: "require"
-
-  # ---------------------------------------------------------------------------
-  # Configuración de datasource JDBC
-  # ---------------------------------------------------------------------------
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com:5432/siga_inventory?sslmode=require"
-  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
-
-  # ---------------------------------------------------------------------------
-  # Redis (ElastiCache) para caché de catálogo
-  # ---------------------------------------------------------------------------
-  REDIS_HOST: "siga-cache.xxxxxxxxxx.ng.0001.use1.cache.amazonaws.com"
-  REDIS_PORT: "6379"
-  REDIS_SSL: "true"
-
-  # ---------------------------------------------------------------------------
-  # Configuración de Kafka - broker de mensajería
-  # ---------------------------------------------------------------------------
-  KAFKA_BOOTSTRAP_SERVERS: "siga-kafka.siga.svc.cluster.local:9092"
-  MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
-  MANAGEMENT_HEALTH_KAFKA_ENABLED: "false"
-  SPRING_AUTOCONFIGURE_EXCLUDE: "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
-
-  # ---------------------------------------------------------------------------
-  # URLs de servicios vecinos
-  # ---------------------------------------------------------------------------
-  AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
-  EUREKA_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
-  REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
-
-  # ---------------------------------------------------------------------------
-  # Configuración específica del dominio
-  # ---------------------------------------------------------------------------
-  # Tamaño de página para listados (paginación)
-  INVENTORY_PAGE_SIZE: "20"
-  # Umbral de stock bajo para alertas
-  INVENTORY_LOW_STOCK_THRESHOLD: "10"
+  name: inventory-config
+  namespace: siga
