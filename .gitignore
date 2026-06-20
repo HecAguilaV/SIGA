@@ -73,3 +73,9 @@ prueba*
 openspec/
 STATUS.md
 docs/godadmin-panel.html
+
+# Ops tools and local artifacts
+.codeviz/
+.alt/
+openspec/
+docs/godadmin-panel.html
