@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>God Admin Panel — SIGA Ops</title>
+<style>
+  /* same styles as before */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+  h1 { font-size: 2.5rem; margin-bottom: 0.5rem; color: #fff; }
+  h1 span { background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: #a0a0b0; margin-bottom: 2rem; font-size: 1.1rem; }
+  h2 { color: #b0b0ff; margin: 2rem 0 1rem; font-size: 1.4rem; border-bottom: 1px solid #404060; padding-bottom: 0.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1.2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+  .card h3 { color: #c0c0ff; margin-bottom: 0.5rem; font-size: 1.1rem; }
+  .card p { color: #a0a0b0; font-size: 0.9rem; margin-bottom: 0.8rem; }
+  .card a, .card .url {
+    display: inline-block;
+    background: rgba(102,126,234,0.2);
+    color: #a0c0ff;
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    word-break: break-all;
+    transition: background 0.2s;
+  }
+  .card a:hover { background: rgba(102,126,234,0.4); }
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: #166534; color: #86efac; }
+  .badge-amber { background: #713f12; color: #fde68a; }
+  .badge-red { background: #7f1d1d; color: #fca5a5; }
+  .code { background: rgba(0,0,0,0.3); padding: 0.3rem 0.6rem; border-radius: 4px; font-family: monospace; font-size: 0.8rem; color: #a0c0ff; }
+  .footer { margin-top: 3rem; text-align: center; color: #606080; font-size: 0.85rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  th, td { text-align: left; padding: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  th { color: #8080a0; font-weight: 500; font-size: 0.85rem; text-transform: uppercase; }
+  td { font-size: 0.9rem; }
+  .navbar { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .navbar a { color: #a0c0ff; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255,255,255,0.05); }
+  .navbar a:hover { background: rgba(102,126,234,0.3); }
+</style>
+</head>
+<body>
+<div class="navbar">
+  <a href="/">🏠 Panel</a>
+  <a href="https://github.com/HecAguilaV/SIGA" target="_blank">📦 Repo</a>
+  <a href="https://github.com/HecAguilaV/SIGA/actions" target="_blank">⚡ CI/CD</a>
+</div>
+
+<h1>🛡️ <span>God Admin Panel</span></h1>
+<p class="subtitle">SIGA Operations — monitoreo, APIs y documentación centralizada</p>
+
+<h2>🌐 Aplicaciones en Vivo</h2>
+<div class="grid">
+  <div class="card">
+    <h3>📊 Dashboard</h3>
+    <p>Frontend SvelteKit — login, stock, POS</p>
+    <a href="http://ac525400245dd4a23afc516bffa803bf-76912376.us-east-1.elb.amazonaws.com" target="_blank">Abrir →</a>
+  </div>
+  <div class="card">
+    <h3>🔗 Gateway API</h3>
+    <p>Spring Cloud Gateway — entrada a todos los MS</p>
+    <a href="http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com" target="_blank">Health →</a>
+  </div>
+  <div class="card">
+    <h3>📈 Grafana</h3>
+    <p>Métricas y dashboards</p>
+    <a href="http://a4edd4f0bf1e447759dcd97743ce8aef-2056742646.us-east-1.elb.amazonaws.com" target="_blank">Abrir →</a>
+  </div>
+  <div class="card">
+    <h3>⏱️ Prometheus</h3>
+    <p>Métricas del cluster</p>
+    <a href="http://ada60b6c6080d404c98e1814f0780bb5-1865685725.us-east-1.elb.amazonaws.com" target="_blank">Abrir →</a>
+  </div>
+</div>
+
+<h2>📚 Swagger UI — Documentación de APIs</h2>
+<p style="margin-bottom:1rem;color:#a0a0b0;">
+  Documentación interactiva de cada microservicio. Proxada desde siga-ops.
+</p>
+<div class="grid">
+  <div class="card">
+    <h3>🔐 Auth Service</h3>
+    <p>Registro, login, JWT, usuarios</p>
+    <a href="/auth-swagger/" target="_blank">Abrir Swagger →</a>
+  </div>
+  <div class="card">
+    <h3>📦 Inventory</h3>
+    <p>Productos, stock, tiendas</p>
+    <a href="/inventory-swagger/" target="_blank">Abrir Swagger →</a>
+  </div>
+  <div class="card">
+    <h3>💰 Sales</h3>
+    <p>POS, ventas, transacciones</p>
+    <a href="/sales-swagger/" target="_blank">Abrir Swagger →</a>
+  </div>
+  <div class="card">
+    <h3>🧾 Billing</h3>
+    <p>Facturación, planes SaaS</p>
+    <a href="/billing-swagger/" target="_blank">Abrir Swagger →</a>
+  </div>
+  <div class="card">
+    <h3>📧 Notification</h3>
+    <p>Notificaciones y emails</p>
+    <a href="/notification-swagger/" target="_blank">Abrir Swagger →</a>
+  </div>
+</div>
+
+<h2>🔐 Credenciales</h2>
+<table>
+  <tr><th>Rol</th><th>Email</th><th>Contraseña</th></tr>
+  <tr><td>🛡️ God Admin</td><td>godadmin@siga.cl</td><td><code>KikeThron4466.</code></td></tr>
+  <tr><td>👩‍💼 Yasna (Lito)</td><td>yasna@lito.cl</td><td><code>LitoLibreria2026!</code></td></tr>
+  <tr><td>🧑‍💼 Carlos (Cajero)</td><td>cajero1@lito.cl</td><td><code>LitoCajero2026!</code></td></tr>
+  <tr><td>👩‍💼 María (Cajera)</td><td>cajero2@lito.cl</td><td><code>LitoCajero2026!</code></td></tr>
+</table>
+
+<h2>🧪 Pruebas y Calidad</h2>
+<div class="grid">
+  <div class="card">
+    <h3>✅ Cobertura JaCoCo</h3>
+    <p>86% global (auth 89%, sales 94%, billing 86%)</p>
+    <span>Reportes en <code>services/*/build/reports/jacoco/</code></span>
+  </div>
+  <div class="card">
+    <h3>🔒 Security Pipeline</h3>
+    <p>Gitleaks + Trivy + Semgrep</p>
+    <a href="https://github.com/HecAguilaV/SIGA/actions" target="_blank">Ver workflows →</a>
+  </div>
+  <div class="card">
+    <h3>📋 Informe FullStack</h3>
+    <p>Documentación completa del proyecto</p>
+    <a href="https://github.com/HecAguilaV/SIGA/blob/main/ACADEMIC/REQUISITOS-MVP/InformeFullStack.md" target="_blank">Ver informe →</a>
+  </div>
+</div>
+
+<h2>📦 Datos de Lito Librería y Bazar</h2>
+<div class="grid">
+  <div class="card">
+    <h3>🏪 Tienda Centro</h3>
+    <p>Av. Providencia 1234 — 493 unidades en stock</p>
+    <h3>🏪 Tienda Norte</h3>
+    <p>Av. Independencia 5678 — 249 unidades en stock</p>
+  </div>
+  <div class="card">
+    <h3>📋 20 Productos</h3>
+    <p>6 categorías: Libros, Cuadernos, Escritura, Escolar, Bazar, Oficina</p>
+    <h3>👥 2 Cajeros</h3>
+    <p>Carlos (Centro) y María (Norte)</p>
+  </div>
+</div>
+
+<div class="footer">
+  SIGA — Sistema Inteligente de Gestión de Activos | DSY1106 FullStack III | Héctor Águila
+</div>
+</body>
+</html>
