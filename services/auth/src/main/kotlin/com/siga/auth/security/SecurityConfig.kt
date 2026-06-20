@@ -35,9 +35,6 @@ class SecurityConfig(
                         "/api/v1/auth/verify",
                         "/api/v1/auth/login",
                         "/api/v1/auth/customers/**",
-                        "/v3/api-docs/**",
-                        "/swagger-ui.html",
-                        "/swagger-ui/**",
                         "/actuator/health"
                     ).permitAll()
                     .anyRequest().authenticated()

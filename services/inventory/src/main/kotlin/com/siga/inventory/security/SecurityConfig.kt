@@ -15,14 +15,7 @@ class SecurityConfig {
         http
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
-                auth
-                    .requestMatchers(
-                        "/v3/api-docs/**",
-                        "/swagger-ui.html",
-                        "/swagger-ui/**",
-                        "/actuator/health"
-                    ).permitAll()
-                    .anyRequest().permitAll() // temporal: JWT en gateway, servicios confían en él
+                auth.anyRequest().authenticated()
             }
             // En un entorno local/test podemos deshabilitar validación estricta de OAuth para este spec
             // o implementar un custom JWT decoder para tests.
