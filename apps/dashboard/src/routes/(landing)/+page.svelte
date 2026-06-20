@@ -7,6 +7,10 @@
 	import ArrowRight from 'phosphor-svelte/lib/ArrowRight';
 	import Check from 'phosphor-svelte/lib/Check';
 	import Sparkle from 'phosphor-svelte/lib/Sparkle';
+	import Package from 'phosphor-svelte/lib/Package';
+	import Storefront from 'phosphor-svelte/lib/Storefront';
+	import ShieldCheck from 'phosphor-svelte/lib/ShieldCheck';
+	import Laptop from 'phosphor-svelte/lib/Laptop';
 	import A11yToolbar from '$lib/components/layout/A11yToolbar.svelte';
 </script>
 
