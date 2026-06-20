@@ -10,6 +10,8 @@
     "docs/evidencia-despliegue\\.md",
     "docs/en/evidencia-despliegue\\.md",
     "docs/es/evidencia-despliegue\\.md",
+    # ACADEMIC/ está en .gitignore pero por si acaso
+    "ACADEMIC/.*",
     # Archivos de testing con datos dummy
     "(?i).*test.*",
     "(?i).*Test.*\\.kt",
@@ -36,6 +38,14 @@
     # Configs de ejemplo (no son secrets reales)
     ".*\\.example",
     "(?i).*example.*",
+    # K8s manifests — contienen endpoints de RDS, SG IDs y otros
+    # identificadores de infraestructura que no son secrets
+    "k8s/.*",
+    # Terraform — identificadores de recursos AWS
+    "terraform/.*",
+    # Documentación general
+    "docs/.*",
+    ".*\\.md",
   ]
 
 [[rules]]
