@@ -29,6 +29,11 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: siga-agent
@@ -41,7 +46,7 @@ spec:
     spec:
       containers:
         - name: agent
-          image: ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/siga-agent:latest
+          image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/agent:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8086
@@ -88,8 +93,3 @@ spec:
         - name: config-volume
           configMap:
             name: agent-config
-      strategy:
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 1
-          maxUnavailable: 0

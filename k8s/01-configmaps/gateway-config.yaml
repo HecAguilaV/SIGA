@@ -21,7 +21,6 @@ data:
   # Perfil activo de Spring - apunta al archivo de configuración externo
   SPRING_PROFILES_ACTIVE: "eks"
   # Ubicación del archivo de configuración montado como volumen
-  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
 
   # ---------------------------------------------------------------------------
   # URLs de servicios vecinos - usan DNS interno de Kubernetes
@@ -42,6 +41,8 @@ data:
   # Servicio de agente IA
   AGENT_SERVICE_URL: "http://siga-agent.siga.svc.cluster.local:8086"
   # Registry (Eureka) - descubrimiento de servicios
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://siga-registry.siga.svc.cluster.local:8761/eureka/"
+  EUREKA_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
   REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
 
   # ---------------------------------------------------------------------------

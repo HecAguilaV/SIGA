@@ -36,6 +36,8 @@ spec:
         app: siga-kafka
         component: messaging
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: kafka
           image: confluentinc/cp-kafka:latest
@@ -87,7 +89,6 @@ spec:
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
-            fsGroup: 1000
   # VolumeClaimTemplate: Persistent storage for Kafka data
   # Decisión: gp3 (SSD) porque Kafka es intensivo en I/O.
   # 10GB es suficiente para laboratorio con pocos eventos.
@@ -99,4 +100,4 @@ spec:
         resources:
           requests:
             storage: 10Gi
-        storageClassName: gp3
+        storageClassName: gp2

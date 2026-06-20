@@ -6,6 +6,10 @@
 [allowlist]
   description = "SIGA False Positives"
   paths = [
+    # Documentación de evidencias (credenciales censuradas o de ejemplo)
+    "docs/evidencia-despliegue\\.md",
+    "docs/en/evidencia-despliegue\\.md",
+    "docs/es/evidencia-despliegue\\.md",
     # Archivos de testing con datos dummy
     "(?i).*test.*",
     "(?i).*Test.*\\.kt",

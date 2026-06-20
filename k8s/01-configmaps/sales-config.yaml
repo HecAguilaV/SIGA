@@ -15,16 +15,21 @@ metadata:
     project: siga
 data:
   SPRING_PROFILES_ACTIVE: "eks"
-  SPRING_CONFIG_LOCATION: "file:/etc/config/application.yaml"
 
   # ---------------------------------------------------------------------------
   # Base de datos PostgreSQL (RDS)
   # ---------------------------------------------------------------------------
-  DB_HOST: "siga-sales.cluster-xxxxxxxxxxxx.us-east-1.rds.amazonaws.com"
+  DB_HOST: "siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "siga_sales"
   DB_SCHEMA: "sales"
   DB_SSL_MODE: "require"
+
+  # ---------------------------------------------------------------------------
+  # Configuración de datasource JDBC
+  # ---------------------------------------------------------------------------
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com:5432/siga_sales?sslmode=require"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
 
   # ---------------------------------------------------------------------------
   # Redis (ElastiCache) para caché de sesiones de carrito
@@ -34,10 +39,19 @@ data:
   REDIS_SSL: "true"
 
   # ---------------------------------------------------------------------------
+  # Configuración de Kafka - broker de mensajería
+  # ---------------------------------------------------------------------------
+  KAFKA_BOOTSTRAP_SERVERS: "siga-kafka.siga.svc.cluster.local:9092"
+  MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+  MANAGEMENT_HEALTH_KAFKA_ENABLED: "false"
+  SPRING_AUTOCONFIGURE_EXCLUDE: "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
+
+  # ---------------------------------------------------------------------------
   # URLs de servicios vecinos
   # ---------------------------------------------------------------------------
   AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
   INVENTORY_SERVICE_URL: "http://siga-inventory.siga.svc.cluster.local:8082"
   BILLING_SERVICE_URL: "http://siga-billing.siga.svc.cluster.local:8084"
   NOTIFICATION_SERVICE_URL: "http://siga-notification.siga.svc.cluster.local:8085"
+  EUREKA_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
   REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
