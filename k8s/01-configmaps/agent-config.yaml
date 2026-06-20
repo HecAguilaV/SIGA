@@ -1,48 +1,23 @@
-# =============================================================================
-# CONFIGMAP - agent-config
-# Servicio: Agent Service (Agente IA)
-# =============================================================================
-# Propósito: Proveer configuración al agente de inteligencia artificial.
-# Este servicio procesa lenguaje natural, recomienda activos y
-# asiste a los usuarios del sistema SIGA.
-# =============================================================================
 apiVersion: v1
+data:
+  AI_MODEL_ENDPOINT: http://ollama.siga.svc.cluster.local:11434
+  AI_MODEL_MAX_TOKENS: '1024'
+  AI_MODEL_NAME: llama3
+  AI_MODEL_TEMPERATURE: '0.7'
+  AI_MODEL_TIMEOUT: '30'
+  AUTH_SERVICE_URL: http://siga-auth.siga.svc.cluster.local:8081
+  EUREKA_URL: http://siga-registry.siga.svc.cluster.local:8761/eureka
+  INVENTORY_SERVICE_URL: http://siga-inventory.siga.svc.cluster.local:8082
+  REDIS_HOST: siga-production-redis.ruovma.0001.use1.cache.amazonaws.com
+  REDIS_PORT: '6379'
+  REDIS_SSL: 'true'
+  REGISTRY_SERVICE_URL: http://siga-registry.siga.svc.cluster.local:8761/eureka
+  SALES_SERVICE_URL: http://siga-sales.siga.svc.cluster.local:8083
+  SPRING_PROFILES_ACTIVE: eks
 kind: ConfigMap
 metadata:
-  name: agent-config
-  namespace: siga
   labels:
     app: siga-agent
     project: siga
-data:
-  SPRING_PROFILES_ACTIVE: "eks"
-
-  # ---------------------------------------------------------------------------
-  # URLs de servicios vecinos
-  # ---------------------------------------------------------------------------
-  AUTH_SERVICE_URL: "http://siga-auth.siga.svc.cluster.local:8081"
-  INVENTORY_SERVICE_URL: "http://siga-inventory.siga.svc.cluster.local:8082"
-  SALES_SERVICE_URL: "http://siga-sales.siga.svc.cluster.local:8083"
-  EUREKA_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
-  REGISTRY_SERVICE_URL: "http://siga-registry.siga.svc.cluster.local:8761/eureka"
-
-  # ---------------------------------------------------------------------------
-  # Configuración del modelo de IA
-  # ---------------------------------------------------------------------------
-  # Endpoint del modelo (puede ser un LLM local o externo)
-  AI_MODEL_ENDPOINT: "http://ollama.siga.svc.cluster.local:11434"
-  # Modelo por defecto
-  AI_MODEL_NAME: "llama3"
-  # Temperatura del modelo (0.0 - 1.0)
-  AI_MODEL_TEMPERATURE: "0.7"
-  # Máximo de tokens por respuesta
-  AI_MODEL_MAX_TOKENS: "1024"
-  # Timeout en segundos para llamadas al modelo
-  AI_MODEL_TIMEOUT: "30"
-
-  # ---------------------------------------------------------------------------
-  # Redis (ElastiCache) para caché de conversaciones y embeddings
-  # ---------------------------------------------------------------------------
-  REDIS_HOST: "siga-cache.xxxxxxxxxx.ng.0001.use1.cache.amazonaws.com"
-  REDIS_PORT: "6379"
-  REDIS_SSL: "true"
+  name: agent-config
+  namespace: siga
