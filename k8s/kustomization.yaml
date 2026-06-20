@@ -115,7 +115,12 @@ resources:
   - 08-monitoring/grafana-deployment.yaml
   - 08-monitoring/grafana-service.yaml
 
-  # 9. Ingress (ALB para exposición externa)
+  # 9. Operations: God Admin Panel + Swagger proxy
+  - 09-ops/ops-configmap.yaml
+  - 09-ops/ops-deployment.yaml
+  - 09-ops/ops-service.yaml
+
+  # 10. Ingress (ALB para exposición externa)
   - 06-ingress/alb-ingress.yaml
 
 # ---------------------------------------------------------------------------

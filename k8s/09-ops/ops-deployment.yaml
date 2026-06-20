@@ -1,0 +1,47 @@
+# =============================================================================
+# DEPLOYMENT - siga-ops (God Admin Panel)
+# =============================================================================
+# Propósito: Panel centralizado de operaciones para el God Admin.
+# Sirve el God Admin Panel HTML y proxy inverso a Swagger UIs
+# de todos los microservicios en un solo lugar.
+# =============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siga-ops
+  namespace: siga
+  labels:
+    app: siga-ops
+    project: siga
+    tier: ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: siga-ops
+  template:
+    metadata:
+      labels:
+        app: siga-ops
+        project: siga
+        tier: ops
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: config
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: config
+          configMap:
+            name: siga-ops-config

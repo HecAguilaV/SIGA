@@ -1,4 +1,4 @@
-package com.siga.inventory.security
+package com.siga.billing.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -22,13 +22,8 @@ class SecurityConfig {
                         "/swagger-ui/**",
                         "/actuator/health"
                     ).permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll() // temporal para demo — JWT pendiente
             }
-            // En un entorno local/test podemos deshabilitar validación estricta de OAuth para este spec
-            // o implementar un custom JWT decoder para tests.
-            // Para mantener simple la triangulación de TDD sin levantar keys de Auth:
-            // Descomentar lo siguiente en PROD:
-            // .oauth2ResourceServer { it.jwt() }
         return http.build()
     }
 }
