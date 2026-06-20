@@ -1,4 +1,6 @@
 <script lang="ts">
+	import WarningCircle from 'phosphor-svelte/lib/WarningCircle';
+
 	interface Anomaly {
 		id: string;
 		type: string;
@@ -29,8 +31,12 @@
 		<div class="anomaly-list">
 			{#each anomalies as anomaly (anomaly.id)}
 				<div class="anomaly-item">
-					<span class="anomaly-severity" aria-label={`Severidad: ${anomaly.severity}`}>
-						{anomaly.severity === 'critical' || anomaly.severity === 'high' ? '🔴' : '🟡'}
+					<span
+						class="anomaly-severity"
+						aria-label={`Severidad: ${anomaly.severity}`}
+						style="color: {anomaly.severity === 'critical' || anomaly.severity === 'high' ? 'var(--color-error)' : 'var(--color-warning)'}"
+					>
+						<WarningCircle size={16} weight="bold" aria-hidden="true" />
 					</span>
 					<p class="anomaly-message">{anomaly.message}</p>
 				</div>

@@ -6,6 +6,10 @@
 	import Skeleton from '@siga/ui-kit/Skeleton.svelte';
 	import ChartContainer from '$lib/components/charts/ChartContainer.svelte';
 	import ChartWrapper from '$lib/components/charts/ChartWrapper.svelte';
+	import TrendUp from 'phosphor-svelte/lib/TrendUp';
+	import Warning from 'phosphor-svelte/lib/Warning';
+	import WarningCircle from 'phosphor-svelte/lib/WarningCircle';
+	import Info from 'phosphor-svelte/lib/Info';
 
 	let { data }: { data: PageData } = $props();
 
@@ -143,7 +147,16 @@
 						<div class="insight-item">
 							<div class="insight-header">
 								<Badge variant={insightVariant(insight.type)}>
-									{insight.type === 'positive' ? '↑' : insight.type === 'warning' ? '⚠' : insight.type === 'danger' ? '🔴' : 'ℹ'} {insight.title}
+									{#if insight.type === 'positive'}
+										<TrendUp size={14} weight="bold" aria-label="positive insight" />
+									{:else if insight.type === 'warning'}
+										<Warning size={14} weight="bold" aria-label="warning insight" />
+									{:else if insight.type === 'danger'}
+										<WarningCircle size={16} weight="bold" aria-label="danger insight" />
+									{:else}
+										<Info size={14} weight="bold" aria-label="info insight" />
+									{/if}
+									{insight.title}
 								</Badge>
 							</div>
 							<p class="insight-description">{insight.description}</p>
@@ -167,8 +180,12 @@
 				<div class="anomaly-list">
 					{#each analytics.anomalies as anomaly (anomaly.id)}
 						<div class="anomaly-item">
-							<span class="anomaly-severity">
-								{anomaly.severity === 'critical' || anomaly.severity === 'high' ? '🔴' : '🟡'}
+							<span
+								class="anomaly-severity"
+								aria-label={`Severidad: ${anomaly.severity}`}
+								style="color: {anomaly.severity === 'critical' || anomaly.severity === 'high' ? 'var(--color-error)' : 'var(--color-warning)'}"
+							>
+								<WarningCircle size={16} weight="bold" aria-hidden="true" />
 							</span>
 							<p class="anomaly-message">{anomaly.message}</p>
 						</div>
