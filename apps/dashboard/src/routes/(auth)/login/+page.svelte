@@ -3,7 +3,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
-	import Badge from '$lib/components/ui/Badge.svelte';
+
 
 	type FormData = {
 		error?: string;
@@ -102,7 +102,7 @@
 				<span class="login-footer-separator">·</span>
 				<a href="/reset-password" class="login-footer-link">¿Olvidaste tu contraseña?</a>
 			</div>
-			<Badge variant="info">Demo: demo@siga.cl / demo1234</Badge>
+
 		</div>
 	{/snippet}
 </Card>

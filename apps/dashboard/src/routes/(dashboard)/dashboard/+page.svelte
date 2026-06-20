@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import Card from '@siga/ui-kit/Card.svelte';
 	import Badge from '@siga/ui-kit/Badge.svelte';
-	import QuickNav from '$lib/components/dashboard/QuickNav.svelte';
+
 	import InsightPanel from '$lib/components/dashboard/InsightPanel.svelte';
 	import AnomalyList from '$lib/components/dashboard/AnomalyList.svelte';
 	
@@ -108,7 +108,7 @@
 </svelte:head>
 
 <div class="dashboard-container" in:fade={{ duration: 400 }}>
-	<QuickNav items={modules} />
+
 
 	<header class="hub-header" in:fly={{ y: -20, duration: 600 }}>
 		<div class="header-content">
