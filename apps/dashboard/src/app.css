@@ -146,6 +146,27 @@ h1, h2, h3, h4, h5, h6, p {
 	/* ── Transitions ── */
 	--transition-fast: 150ms ease;
 	--transition-base: 250ms ease;
+
+	/* ── Legacy Compatibility Aliases (SIGA brand palette — pre-M3) ── */
+	/* Components use these names; app.css M3 migration left them undefined. */
+	/* Defining them here fixes the entire palette without touching components. */
+	--color-bg: #fdf7ff;
+	--color-bg-alt: #f1f5f9;
+	--color-text: #0f172a;
+	--color-text-secondary: #3b3c5e;
+	--color-text-muted: #7d7e9e;
+	--color-border: #e2e8f0;
+	--color-border-light: #f1f5f9;
+	--color-accent: #80ffdb;
+	--color-accent-light: #effffb;
+	--color-accent-hover: #00f5d4;
+	--color-primary: #03045e;  /* Deep Teal — overrides M3 #000000 */
+	--color-primary-hover: #0084d8;
+	--color-primary-light: #e0f2fe;
+	--color-primary-dark: #020329;
+	--color-success-text: #0077b6;
+	--color-error-text: #b91c1c;
+	--color-warning-text: #c2410c;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -168,6 +189,25 @@ h1, h2, h3, h4, h5, h6, p {
 	
 	--color-outline: #938f99;
 	--color-outline-variant: #49454f;
+
+	/* ── Legacy Compatibility Aliases (dark theme) ── */
+	--color-bg: #1d1b21;
+	--color-bg-alt: #322f36;
+	--color-text: #e6e0e9;
+	--color-text-secondary: #cbd5e1;
+	--color-text-muted: #94a3b8;
+	--color-border: #49454f;
+	--color-border-light: #322f36;
+	--color-accent: #80ffdb;
+	--color-accent-light: rgba(128, 255, 219, 0.12);
+	--color-accent-hover: #00f5d4;
+	--color-primary: #bfc2ff;  /* M3 dark primary — lighter for dark bg */
+	--color-primary-hover: #d4d6ff;
+	--color-primary-light: #070a61;
+	--color-primary-dark: #000000;
+	--color-success-text: #4ade80;
+	--color-error-text: #fca5a5;
+	--color-warning-text: #fdba74;
 }
 
 /* ── Base Styles ── */

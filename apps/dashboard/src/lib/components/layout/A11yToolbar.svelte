@@ -3,6 +3,7 @@
 	import TextAa from 'phosphor-svelte/lib/TextAa';
 	import LinkSimpleHorizontal from 'phosphor-svelte/lib/LinkSimpleHorizontal';
 	import SunHorizon from 'phosphor-svelte/lib/SunHorizon';
+	import ArrowCounterClockwise from 'phosphor-svelte/lib/ArrowCounterClockwise';
 
 	const STORAGE_KEY = 'siga-a11y-prefs';
 
@@ -47,6 +48,11 @@
 		savePrefs();
 	}
 
+	function resetPrefs() {
+		prefs = { highContrast: false, grayscale: false, largeFont: false, underlineLinks: false };
+		savePrefs();
+	}
+
 	// Apply on mount
 	$effect(() => {
 		applyPrefs();
@@ -81,6 +87,16 @@
 			{/if}
 		</button>
 	{/each}
+	<span class="a11y-separator" aria-hidden="true"></span>
+	<button
+		class="a11y-btn a11y-reset"
+		onclick={resetPrefs}
+		aria-label="Restablecer opciones de accesibilidad"
+		title="Restablecer"
+		type="button"
+	>
+		<ArrowCounterClockwise size={16} weight="regular" />
+	</button>
 </div>
 
 <style>
@@ -114,5 +130,17 @@
 		background: var(--color-accent-light);
 		color: var(--color-accent);
 		border-color: var(--color-accent);
+	}
+
+	.a11y-separator {
+		width: 1px;
+		height: 20px;
+		background: var(--color-border);
+		margin: 0 4px;
+	}
+
+	.a11y-reset:hover {
+		color: var(--color-error);
+		border-color: var(--color-error);
 	}
 </style>
