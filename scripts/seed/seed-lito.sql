@@ -113,3 +113,15 @@ SELECT gen_random_uuid(), p.id, 'b1000000-0001-4000-8000-000000000002',
     3, NOW(), NOW()
 FROM inventory.products p
 WHERE NOT EXISTS (SELECT 1 FROM inventory.stock s WHERE s.product_id = p.id AND s.store_id = 'b1000000-0001-4000-8000-000000000002');
+
+-- =============================================================================
+-- Si los usuarios ya existen, actualizar contraseñas
+-- =============================================================================
+UPDATE auth.customers SET password_hash = '$2b$10$bV5Lbcu2Rx6AwlH6jv5yG.Rbpnc5riqDaxn6fIJE/VhtkODahoPga'
+WHERE email = 'yasna@lito.cl';
+
+UPDATE auth.customers SET password_hash = '$2a$10$mODkEaItfYM9J.dEfNQqOeFdRkQv5VcFtqSUfAF3GJRPZb0tXOga'
+WHERE email = 'godadmin@siga.cl';
+
+UPDATE auth.users SET password_hash = '$2b$10$kZ05/QmRfdqbt/I3sK3FOuDU4lky7/yv2ZRftCJ6HbsZN63RfDTEq'
+WHERE email IN ('cajero1@lito.cl', 'cajero2@lito.cl');
