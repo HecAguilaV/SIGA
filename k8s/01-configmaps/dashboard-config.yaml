@@ -1,5 +1,6 @@
 apiVersion: v1
 data:
+  AGENT_BASE: http://siga-agent.siga.svc.cluster.local:8086
   GATEWAY_BASE_URL: http://siga-gateway.siga.svc.cluster.local:80
   HOST: 0.0.0.0
   NODE_ENV: production
@@ -11,6 +12,7 @@ data:
   PUBLIC_GATEWAY_URL: http://ad5e1571bfc47464e81e515fe1a103a3-46653806.us-east-1.elb.amazonaws.com/api
 kind: ConfigMap
 metadata:
+  AGENT_BASE: http://siga-agent.siga.svc.cluster.local:8086
   labels:
     app: siga-dashboard
     project: siga
