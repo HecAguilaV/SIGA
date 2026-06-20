@@ -1,6 +1,6 @@
 <script lang="ts">
 	type Variant = 'default' | 'glass';
-	type Padding = 'sm' | 'md' | 'lg';
+	type Padding = 'none' | 'sm' | 'md' | 'lg';
 
 	let {
 		variant = 'default',
