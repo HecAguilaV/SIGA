@@ -1,4 +1,4 @@
-package com.siga.inventory.security
+package com.siga.billing.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
