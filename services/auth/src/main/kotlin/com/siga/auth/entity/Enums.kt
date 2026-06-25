@@ -5,6 +5,7 @@ package com.siga.auth.entity
  * Each user has exactly one role that defines their base permissions.
  */
 enum class UserRole {
+    OWNER,
     ADMINISTRATOR,
     OPERATOR,
     CASHIER,

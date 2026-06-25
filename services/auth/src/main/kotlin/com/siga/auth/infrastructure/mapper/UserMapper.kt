@@ -19,6 +19,7 @@ object UserMapper {
             firstName = entity.firstName,
             lastName = entity.lastName,
             role = when (entity.role) {
+                EntityUserRole.OWNER -> DomainUserRole.OWNER
                 EntityUserRole.ADMINISTRATOR -> DomainUserRole.ADMINISTRATOR
                 EntityUserRole.OPERATOR -> DomainUserRole.OPERATOR
                 EntityUserRole.CASHIER -> DomainUserRole.CASHIER
@@ -40,6 +41,7 @@ object UserMapper {
             firstName = domain.firstName,
             lastName = domain.lastName,
             role = when (domain.role) {
+                DomainUserRole.OWNER -> EntityUserRole.OWNER
                 DomainUserRole.ADMINISTRATOR -> EntityUserRole.ADMINISTRATOR
                 DomainUserRole.OPERATOR -> EntityUserRole.OPERATOR
                 DomainUserRole.CASHIER -> EntityUserRole.CASHIER
