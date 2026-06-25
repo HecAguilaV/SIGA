@@ -12,7 +12,7 @@ export const load: PageServerLoad = async (event) => {
 	}
 
 	try {
-		const res = await fetchWithAuth(fetch, event, `/api/v1/auth/users/${params.id}`);
+		const res = await fetchWithAuth(fetch, event, `/api/auth/users/${params.id}`);
 		if (!res.ok) {
 			if (res.status === 404) error(404, 'Usuario no encontrado');
 			error(res.status, 'Error al obtener usuario');
@@ -38,7 +38,7 @@ export const actions: Actions = {
 		const data = Object.fromEntries(formData);
 
 		try {
-			const res = await fetchWithAuth(fetch, event, `/api/v1/auth/users/${params.id}`, {
+			const res = await fetchWithAuth(fetch, event, `/api/auth/users/${params.id}`, {
 				method: 'PUT',
 				body: JSON.stringify(data)
 			});
