@@ -1826,9 +1826,51 @@ LoginUseCase.authenticateUser()
 
 | # | Issue | Criticidad | Estado |
 |---|-------|-----------|--------|
-| 1 | `/users` endpoint mal escrito (`/api/v1/auth/users` en vez de `/api/auth/users`) | 🔶 MEDIA | Pendiente (1 línea) |
-| 2 | No existe endpoint `/api/auth/refresh` | 🟡 BAJA | Pendiente — cookie expira en 15min |
-| 3 | Divergencia `main-local` vs `origin/main` | 🟢 MUY BAJA | Pendiente — no afecta trabajo local |
+| 1 | `/users` endpoint mal escrito (`/api/v1/auth/users` en vez de `/api/auth/users`) | 🔶 MEDIA | ✅ Resuelto |
+| 2 | No existe endpoint `/api/auth/refresh` | 🟡 BAJA | ✅ Resuelto |
+| 3 | Cookie `siga_token` expira en 15min | 🟡 BAJA | ✅ Subido a 24h (refresh automático vía endpoint) |
+| 4 | POS modal sin botón de salida | 🔶 MEDIA | ✅ Agregado "Volver al Inicio" |
+| 5 | Divergencia `main-local` vs `origin/main` | 🟢 MUY BAJA | Pendiente — no afecta trabajo local |
+
+### 15.10 Refresh automático de sesión
+
+**Problema**: El frontend tenía toda la lógica para renovar tokens (`attemptRefresh`, `siga_refresh` cookie con 7 días, refresh anticipado en hooks), pero:
+
+1. El backend nunca implementó `POST /api/v1/auth/refresh`
+2. El login no devolvía `refreshToken`
+3. La cookie `siga_token` expiraba a los 15 minutos (maxAge=900)
+4. Sin refresh ni cookie, el usuario era redirigido a /login cada 15 minutos
+
+**Fix**:
+
+| Archivo | Cambio |
+|---------|--------|
+| `AuthController.kt` | Nuevo endpoint `POST /api/v1/auth/refresh` + `refreshToken` en login response |
+| `SecurityConfig.kt` | `/api/v1/auth/refresh` agregado a `.permitAll()` (público, verifica JWT internamente) |
+| `auth.server.ts` | Cookie `siga_token` maxAge: 900 → 86400 (24h); `siga_refresh` path: `/api/auth/refresh` → `/` |
+| `gateway.ts` | `attemptRefresh` ahora usa los mismos settings de cookie que login (path=/, secure=false, sameSite=lax) |
+
+**Flujo corregido**:
+```
+Login → backend devuelve { token, refreshToken }
+       → frontend setea siga_token (24h) + siga_refresh (7d, path=/)
+       
+hooks.server.ts en cada request:
+  → ¿JWT expira en < 5 min? → attemptRefresh()
+    → POST /api/auth/refresh con { refreshToken: <old-jwt> }
+    → backend verifica old JWT, emite nuevo con 24h desde ahora
+    → frontend actualiza ambas cookies
+
+fetchWithAuth en 401:
+  → attemptRefresh() → si funciona → retry original request
+                   → si falla → redirect a /login
+```
+
+### 15.11 POS Modal Trap
+
+**Problema**: Al ingresar a `/pos` sin un turno de caja activo, el modal de apertura tenía `z-index: 1000` y `position: fixed; inset: 0`, tapando el sidebar y todo contenido. No tenía botón de cancelar — la única acción era "Abrir Turno de Venta". Si el servicio de ventas no respondía, el usuario quedaba atrapado sin poder navegar a otro lado.
+
+**Fix**: Se agregó botón "Volver al Inicio" en el modal que navega a `/dashboard`. Además, el EventSource de SSE se cierra silenciosamente si el endpoint `/api/sales/events` no está disponible (evita warnings de MIME type en consola).
 
 ---
 
