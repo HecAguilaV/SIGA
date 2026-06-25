@@ -22,13 +22,19 @@ import java.util.UUID
 class UserController(
     private val manageUserUseCase: ManageUserUseCase
 ) {
+    companion object {
+        private val ADMIN_ROLES = setOf("OWNER", "ADMINISTRATOR")
+    }
+
     @GetMapping
     fun getAllUsers(): ResponseEntity<List<User>> {
         val customerId = getCustomerIdFromSecurityContext()
         val principalType = getPrincipalTypeFromSecurityContext()
+        val role = getRoleFromSecurityContext()
 
         return when {
-            principalType == "user" -> ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+            principalType == "user" && role !in ADMIN_ROLES -> ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+            principalType == "user" && role in ADMIN_ROLES -> ResponseEntity.ok(manageUserUseCase.findAll())
             customerId != null -> ResponseEntity.ok(manageUserUseCase.findByCustomerId(customerId))
             else -> ResponseEntity.ok(manageUserUseCase.findAll())
         }
@@ -36,11 +42,14 @@ class UserController(
 
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: UUID): ResponseEntity<User> {
+        val customerId = getCustomerIdFromSecurityContext()
         val principalType = getPrincipalTypeFromSecurityContext()
-        if (principalType == "user") return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        val role = getRoleFromSecurityContext()
+
+        if (principalType == "user" && role !in ADMIN_ROLES) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
         val user = manageUserUseCase.findById(id)
-        return if (user != null && isUserAccessible(user)) {
+        return if (user != null && (role in ADMIN_ROLES || isUserAccessible(user))) {
             ResponseEntity.ok(user)
         } else {
             ResponseEntity.notFound().build()
@@ -49,11 +58,14 @@ class UserController(
 
     @GetMapping("/email/{email}")
     fun getUserByEmail(@PathVariable email: String): ResponseEntity<User> {
+        val customerId = getCustomerIdFromSecurityContext()
         val principalType = getPrincipalTypeFromSecurityContext()
-        if (principalType == "user") return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        val role = getRoleFromSecurityContext()
+
+        if (principalType == "user" && role !in ADMIN_ROLES) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
         val user = manageUserUseCase.findByEmail(email)
-        return if (user != null && isUserAccessible(user)) {
+        return if (user != null && (role in ADMIN_ROLES || isUserAccessible(user))) {
             ResponseEntity.ok(user)
         } else {
             ResponseEntity.notFound().build()
@@ -64,10 +76,12 @@ class UserController(
     fun createUser(@RequestBody user: User): ResponseEntity<User> {
         val customerId = getCustomerIdFromSecurityContext()
         val principalType = getPrincipalTypeFromSecurityContext()
+        val role = getRoleFromSecurityContext()
 
-        if (principalType == "user") return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        if (principalType == "user" && role !in ADMIN_ROLES) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
-        // customerId comes from JWT — NEVER from request body (prevents tenant spoofing)
+        // OWNER/ADMIN creating user without tenant: forward as-is
+        // Customer creating user: scope by their tenantId
         val scopedUser = if (customerId != null) user.copy(customerId = customerId) else user
         return ResponseEntity.status(201).body(manageUserUseCase.create(scopedUser))
     }
@@ -76,12 +90,14 @@ class UserController(
     fun updateUser(@PathVariable id: UUID, @RequestBody user: User): ResponseEntity<User> {
         val customerId = getCustomerIdFromSecurityContext()
         val principalType = getPrincipalTypeFromSecurityContext()
+        val role = getRoleFromSecurityContext()
 
-        if (principalType == "user") return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        if (principalType == "user" && role !in ADMIN_ROLES) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
 
-        // Verify the user belongs to the authenticated tenant
+        // Verify the user belongs to the authenticated tenant (ADMIN bypasses this check)
         val existing = manageUserUseCase.findById(id)
-        if (existing == null || (customerId != null && existing.customerId != customerId)) {
+        if (existing == null) return ResponseEntity.notFound().build()
+        if (customerId != null && role !in ADMIN_ROLES && existing.customerId != customerId) {
             return ResponseEntity.notFound().build()
         }
 
@@ -129,6 +145,20 @@ class UserController(
             @Suppress("UNCHECKED_CAST")
             val details = auth.details as Map<String, Any?>
             return details["principalType"] as? String
+        }
+        return null
+    }
+
+    /**
+     * Extracts `rol` from JWT claims stored in SecurityContext authentication details.
+     * Returns null if no JWT claims are present.
+     */
+    private fun getRoleFromSecurityContext(): String? {
+        val auth = SecurityContextHolder.getContext().authentication
+        if (auth is UsernamePasswordAuthenticationToken && auth.details is Map<*, *>) {
+            @Suppress("UNCHECKED_CAST")
+            val details = auth.details as Map<String, Any?>
+            return details["rol"] as? String
         }
         return null
     }
