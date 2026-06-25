@@ -135,13 +135,13 @@ export function setSessionCookies(
 		httpOnly: true,
 		sameSite: 'lax',
 		secure: false, // Forzar false para Tailscale/IP
-		maxAge: 60 * 15 // 15 minutos
+		maxAge: 60 * 60 * 24, // 24 horas (coincide con exp del JWT)
 	});
 
 	cookies.set('siga_refresh', refreshToken, {
-		path: '/api/auth/refresh',
+		path: '/',
 		httpOnly: true,
-		sameSite: 'lax', // Menos estricto para la prueba
+		sameSite: 'lax',
 		secure: false, // Forzar false para Tailscale/IP
 		maxAge: 60 * 60 * 24 * 7 // 7 días
 	});

@@ -115,14 +115,16 @@ export async function attemptRefresh(
 				path: '/',
 				httpOnly: true,
 				sameSite: 'lax',
-				maxAge: data.expiresIn ?? 900
+				secure: false,
+				maxAge: data.expiresIn ?? 86400
 			});
 
 			if (data.refreshToken) {
 				event.cookies.set('siga_refresh', data.refreshToken, {
-					path: '/api/auth/refresh',
+					path: '/',
 					httpOnly: true,
-					sameSite: 'strict',
+					sameSite: 'lax',
+					secure: false,
 					maxAge: 60 * 60 * 24 * 7
 				});
 			}
