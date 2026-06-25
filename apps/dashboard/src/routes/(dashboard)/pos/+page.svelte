@@ -17,9 +17,10 @@
 	import Bank from 'phosphor-svelte/lib/Bank';
 	import Money from 'phosphor-svelte/lib/Money';
 	import Receipt from 'phosphor-svelte/lib/Receipt';
+	import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
 
 	import { deserialize, applyAction } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
+	import { invalidateAll, goto } from '$app/navigation';
 	import Modal from '@siga/ui-kit/Modal.svelte';
 	import './pos.css';
 
@@ -46,20 +47,29 @@
 		eventSource = new EventSource('/api/sales/events');
 		
 		eventSource.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-			if (data.type === 'SALE_SAGA_COMPLETED') {
-				sagaStatus = { status: 'success', message: 'Venta procesada y facturada.' };
-				setTimeout(() => {
-					sagaStatus = null;
-					cart = [];
+			try {
+				const data = JSON.parse(event.data);
+				if (data.type === 'SALE_SAGA_COMPLETED') {
+					sagaStatus = { status: 'success', message: 'Venta procesada y facturada.' };
+					setTimeout(() => {
+						sagaStatus = null;
+						cart = [];
+						isProcessing = false;
+						invalidateAll();
+					}, 3000);
+				} else if (data.type === 'SALE_SAGA_FAILED') {
+					sagaStatus = { status: 'error', message: data.message || 'Error en la SAGA' };
+					setTimeout(() => sagaStatus = null, 4000);
 					isProcessing = false;
-					invalidateAll();
-				}, 3000);
-			} else if (data.type === 'SALE_SAGA_FAILED') {
-				sagaStatus = { status: 'error', message: data.message || 'Error en la SAGA' };
-				setTimeout(() => sagaStatus = null, 4000);
-				isProcessing = false;
+				}
+			} catch {
+				// Ignorar eventos malformados mientras el endpoint SSE no esté implementado
 			}
+		};
+
+		eventSource.onerror = () => {
+			// Cerrar conexión SSE si el endpoint no está disponible (evita reconexión infinita)
+			eventSource?.close();
 		};
 	});
 
@@ -195,6 +205,14 @@
 				>
 					{isOpeningShift ? 'Abriendo...' : 'Abrir Turno de Venta'}
 				</Button>
+				<button 
+					class="modal-back-btn"
+					onclick={() => goto('/dashboard')}
+					type="button"
+				>
+					<ArrowLeft size={16} weight="bold" />
+					Volver al Inicio
+				</button>
 			</div>
 		</div>
 	</div>
@@ -723,6 +741,30 @@
 
 	.saga-status-card.success { border-color: var(--pos-primary); color: var(--pos-primary); }
 	.saga-status-card.error { border-color: var(--color-error); color: var(--color-error); }
+
+	.modal-back-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--spacing-xs);
+		width: 100%;
+		height: 40px;
+		background: transparent;
+		border: 1px solid var(--pos-glass-border);
+		border-radius: 12px;
+		color: var(--pos-text-muted);
+		font-size: 14px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+		margin-top: 8px;
+	}
+
+	.modal-back-btn:hover {
+		background: rgba(255,255,255,0.05);
+		color: var(--pos-text);
+		border-color: rgba(255,255,255,0.2);
+	}
 
 	@media (max-width: 1024px) {
 		.pos-container { grid-template-columns: 1fr; }
