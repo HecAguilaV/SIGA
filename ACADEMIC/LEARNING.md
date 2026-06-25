@@ -1780,19 +1780,55 @@ export function canAccess(rol, permissions, requiredPermission): boolean {
 
 1. **Helpers centralizados > 16 archivos editados individualmente**: En vez de agregar `OWNER` en 16 arrays separados, se crearon constantes `VIEWER_ROLES` y `MANAGER_ROLES` + `canAccessByRole()`. Centralizar permite cambiar la política de acceso en un solo lugar.
 
-2. **canAccess() en hooks/layout > hasPermission(): OWNER debe poder hacer TODO sin depender de JWT permissions**. Mientras el backend no incluya permissions en el JWT, los roles admin bypassan los guards de permisos. Esto es intencional y se puede refinar cuando el JWT incluya permissions.
+2. **canAccess() en hooks/layout > hasPermission()**: Temporalmente los roles ADMIN bypassaban permisos porque el JWT no traía `permissions`. Esto se resolvió en la Parte 15.8 — ahora el JWT SÍ incluye permisos, y `canAccess()` funciona correctamente para TODOS los roles.
 
-3. **Sidebar muestra todos los items para ADMIN_ROLES**: En lugar de ocultar items porque `permissions` es `undefined`, el sidebar muestra todas las opciones para OWNER/ADMINISTRATOR. Los items con `permission` definido solo se ocultan para OPERATOR si no tienen permisos en el JWT (issue conocido).
+3. **Sidebar muestra todos los items para ADMIN_ROLES**: En lugar de ocultar items porque `permissions` era `undefined`, el sidebar muestra todas las opciones para OWNER/ADMINISTRATOR. Con el fix de 15.8, ahora los OPERATOR con permisos también ven los items correctamente.
 
 4. **Feature branch como evidencia, trabajo en main-local**: `feat/frontend-role-guards-fix` quedó en GitHub como snapshot del estado anterior a los frontend fixes. Esto permite revisar el diff completo entre la versión sin OWNER y la versión con OWNER.
 
-### 15.7 Próximos Pasos
+### 15.8 Permissions en JWT — El Fix Definitivo
 
-1. Fix `/api/v1/auth/users` → cambiar a `/api/auth/users` en `users/+page.server.ts`
-2. Añadir `permissions` array al JWT en `JwtService.kt` del auth service
-3. Implementar endpoint `/api/auth/refresh` en auth service
-4. Resolver divergencia entre `main-local` y `origin/main` (merge o rebase)
-5. Investigar UUID mismatch en detail pages
+**Problema**: El JWT generado por `JwtService.generateToken()` solo incluía `sub`, `rol`, `principalType`, `tenantId`. El `LoginUseCase` fetchaba permisos vía `userPermissionRepositoryPort` PERO:
+1. No los pasaba a `generateToken()` → no estaban en el JWT
+2. `AuthController.login()` no los serializaba en la response
+3. Solo fetchaba `user_permissions` (permisos individuales), no `role_permissions` (permisos por rol)
+
+**Consecuencia**: `event.locals.user.permissions` era SIEMPRE `undefined`. El sidebar no mostraba items para OPERATOR. `canAccess()` caía siempre a `hasPermission(undefined, ...)` → `false`. OPERATOR estaba completamente roto.
+
+**Fix completo** (7 archivos, backend Kotlin):
+
+| Archivo | Cambio |
+|---------|--------|
+| `domain/port/RolePermissionRepositoryPort.kt` | **Nuevo** — Puerto hexagonal para role_permissions |
+| `repository/RolePermissionRepository.kt` | **Nuevo** — JPA repo con `findByIdRole(role)` |
+| `infrastructure/mapper/RolePermissionMapper.kt` | **Nuevo** — Entity → Domain mapper |
+| `infrastructure/adapter/RolePermissionJpaAdapter.kt` | **Nuevo** — Adaptador hexagon |
+| `security/JwtService.kt` | `generateToken()` ahora acepta `permissions: List<String>` y los agrega como claim |
+| `application/usecase/LoginUseCase.kt` | Mergea `user_permissions` + `role_permissions` (dedup), los pasa a `generateToken()` |
+| `controller/AuthController.kt` | Incluye `permissions` y `userId` en la response JSON |
+
+**Flujo corregido**:
+```
+LoginUseCase.authenticateUser()
+  → fetch user_permissions (user-specific)
+  → fetch role_permissions (role-based, NUEVO)
+  → merge + distinct()
+  → JwtService.generateToken(permissions)
+  → JWT incluye "permissions": ["inventory:view", ...]
+  → LoginResponse incluye "permissions": [...]
+  → Frontend buildUserSession() lee payload.permissions (ya lo hacía)
+  → canAccess() ahora funciona para TODOS los roles
+```
+
+**Resultado smoke test**: 13/13 rutas ✅ 200
+
+### 15.9 Issues Restantes
+
+| # | Issue | Criticidad | Estado |
+|---|-------|-----------|--------|
+| 1 | `/users` endpoint mal escrito (`/api/v1/auth/users` en vez de `/api/auth/users`) | 🔶 MEDIA | Pendiente (1 línea) |
+| 2 | No existe endpoint `/api/auth/refresh` | 🟡 BAJA | Pendiente — cookie expira en 15min |
+| 3 | Divergencia `main-local` vs `origin/main` | 🟢 MUY BAJA | Pendiente — no afecta trabajo local |
 
 ---
 

@@ -2,6 +2,7 @@ package com.siga.auth.application.usecase
 
 import com.siga.auth.domain.model.User
 import com.siga.auth.domain.port.PermissionRepositoryPort
+import com.siga.auth.domain.port.RolePermissionRepositoryPort
 import com.siga.auth.domain.port.UserPermissionRepositoryPort
 import com.siga.auth.security.JwtService
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -18,7 +19,8 @@ class LoginUseCase(
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService,
     private val userPermissionRepositoryPort: UserPermissionRepositoryPort,
-    private val permissionRepositoryPort: PermissionRepositoryPort
+    private val permissionRepositoryPort: PermissionRepositoryPort,
+    private val rolePermissionRepositoryPort: RolePermissionRepositoryPort
 ) {
 
     fun login(email: String, rawPassword: String): LoginResult {
@@ -47,11 +49,16 @@ class LoginUseCase(
             throw IllegalArgumentException("Invalid credentials")
         }
 
+        val rolePermissions = rolePermissionRepositoryPort
+            .findByRole(customer.role)
+            .mapNotNull { rolePerm -> permissionRepositoryPort.findById(rolePerm.permissionId)?.code }
+
         val token = jwtService.generateToken(
             email = customer.email,
             rol = customer.role,
             tenantId = customer.id,
-            principalType = "customer"
+            principalType = "customer",
+            permissions = rolePermissions
         )
 
         return LoginResult(
@@ -59,7 +66,8 @@ class LoginUseCase(
             email = customer.email,
             tenantId = customer.id,
             role = customer.role,
-            principalType = "customer"
+            principalType = "customer",
+            permissions = rolePermissions
         )
     }
 
@@ -72,16 +80,24 @@ class LoginUseCase(
             throw IllegalArgumentException("Invalid credentials")
         }
 
+        // Merge user-specific permissions + role-based permissions, deduplicated
+        val userPermissions = userPermissionRepositoryPort
+            .findByUserId(user.id!!)
+            .mapNotNull { userPerm -> permissionRepositoryPort.findById(userPerm.permissionId)?.code }
+
+        val rolePermissions = rolePermissionRepositoryPort
+            .findByRole(user.role.name)
+            .mapNotNull { rolePerm -> permissionRepositoryPort.findById(rolePerm.permissionId)?.code }
+
+        val permissions = (userPermissions + rolePermissions).distinct()
+
         val token = jwtService.generateToken(
             email = user.email,
             rol = user.role.name,
             tenantId = null,
-            principalType = "user"
+            principalType = "user",
+            permissions = permissions
         )
-
-        val permissions = userPermissionRepositoryPort
-            .findByUserId(user.id!!)
-            .mapNotNull { userPerm -> permissionRepositoryPort.findById(userPerm.permissionId)?.code }
 
         return LoginResult(
             token = token,
