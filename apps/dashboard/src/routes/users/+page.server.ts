@@ -1,12 +1,13 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
+import { canAccessByRole, MANAGER_ROLES } from '$lib/auth/permissions';
 
 export const load: PageServerLoad = async (event) => {
 	const { fetch, url, locals } = event;
 	const user = locals.user;
 
-	if (!user || user.rol !== 'ADMINISTRATOR') {
+	if (!user || !canAccessByRole(user.rol, MANAGER_ROLES)) {
 		error(403, 'No tienes permisos para acceder a usuarios');
 	}
 

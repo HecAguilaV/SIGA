@@ -1,12 +1,13 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
+import { canAccessByRole, VIEWER_ROLES } from '$lib/auth/permissions';
 
 export const load: PageServerLoad = async (event) => {
 	const { fetch, url, locals } = event;
 	const user = locals.user;
 	
-	if (!user || !['ADMINISTRATOR', 'OPERATOR'].includes(user.rol ?? '')) {
+	if (!user || !canAccessByRole(user.rol, VIEWER_ROLES)) {
 		error(403, 'No tienes permisos para acceder a categorías');
 	}
 

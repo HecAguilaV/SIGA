@@ -1,12 +1,13 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
+import { canAccessByRole, VIEWER_ROLES, MANAGER_ROLES } from '$lib/auth/permissions';
 
 export const load: PageServerLoad = async (event) => {
 	const { params, fetch, locals } = event;
 	const user = locals.user;
 	
-	if (!user || !['ADMINISTRATOR', 'OPERATOR'].includes(user.rol ?? '')) {
+	if (!user || !canAccessByRole(user.rol, VIEWER_ROLES)) {
 		error(403, 'No tienes permisos');
 	}
 
@@ -29,7 +30,7 @@ export const actions: Actions = {
 		const { params, request, fetch, locals } = event;
 		const user = locals.user;
 		
-		if (!user || user.rol !== 'ADMINISTRATOR') {
+		if (!user || !canAccessByRole(user.rol, MANAGER_ROLES)) {
 			return fail(403, { error: 'Solo administradores pueden editar categorías' });
 		}
 
