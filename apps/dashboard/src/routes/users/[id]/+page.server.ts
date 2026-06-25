@@ -1,17 +1,18 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
+import { canAccessByRole, MANAGER_ROLES } from '$lib/auth/permissions';
 
 export const load: PageServerLoad = async (event) => {
 	const { params, fetch, locals } = event;
 	const user = locals.user;
 	
-	if (!user || user.rol !== 'ADMINISTRATOR') {
+	if (!user || !canAccessByRole(user.rol, MANAGER_ROLES)) {
 		error(403, 'No tienes permisos');
 	}
 
 	try {
-		const res = await fetchWithAuth(fetch, event, `/api/v1/auth/users/${params.id}`);
+		const res = await fetchWithAuth(fetch, event, `/api/auth/users/${params.id}`);
 		if (!res.ok) {
 			if (res.status === 404) error(404, 'Usuario no encontrado');
 			error(res.status, 'Error al obtener usuario');
@@ -29,7 +30,7 @@ export const actions: Actions = {
 		const { params, request, fetch, locals } = event;
 		const user = locals.user;
 		
-		if (!user || user.rol !== 'ADMINISTRATOR') {
+		if (!user || !canAccessByRole(user.rol, MANAGER_ROLES)) {
 			return fail(403, { error: 'Sin permisos' });
 		}
 
@@ -37,7 +38,7 @@ export const actions: Actions = {
 		const data = Object.fromEntries(formData);
 
 		try {
-			const res = await fetchWithAuth(fetch, event, `/api/v1/auth/users/${params.id}`, {
+			const res = await fetchWithAuth(fetch, event, `/api/auth/users/${params.id}`, {
 				method: 'PUT',
 				body: JSON.stringify(data)
 			});

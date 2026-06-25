@@ -5,6 +5,7 @@ package com.siga.auth.domain.model
  * Mirrors com.siga.auth.entity.UserRole for hexagonal isolation.
  */
 enum class UserRole {
+    OWNER,
     ADMINISTRATOR,
     OPERATOR,
     CASHIER,

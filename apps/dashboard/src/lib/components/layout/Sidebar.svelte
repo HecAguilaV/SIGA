@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { user, userPermissions } from '$lib/stores/auth.svelte';
 	import { ui } from '$lib/stores/ui.svelte';
-	import { hasPermission } from '$lib/auth/permissions';
+	import { hasPermission, ADMIN_ROLES } from '$lib/auth/permissions';
 	import { fly } from 'svelte/transition';
 
 	// Phosphor icons
@@ -38,8 +38,11 @@
 	const currentPath = $derived($page.url.pathname);
 	const currentUserPermissions = $derived($userPermissions);
 
+	const currentUser = $derived($user);
 	const visibleItems = $derived(
-		allNavItems.filter((item) => !item.permission || hasPermission(currentUserPermissions, item.permission))
+		currentUser?.rol && ADMIN_ROLES.includes(currentUser.rol)
+			? allNavItems
+			: allNavItems.filter((item) => !item.permission || hasPermission(currentUserPermissions, item.permission))
 	);
 
 	function isActive(href: string): boolean {

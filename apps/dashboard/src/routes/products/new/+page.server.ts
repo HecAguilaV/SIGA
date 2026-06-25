@@ -1,11 +1,12 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
+import { canAccessByRole, VIEWER_ROLES } from '$lib/auth/permissions';
 
 export const actions: Actions = {
 	default: async ({ request, fetch, url, locals }) => {
 		const user = locals.user;
-		if (!user || !['ADMINISTRATOR', 'OPERATOR'].includes(user.rol ?? '')) {
+		if (!user || !canAccessByRole(user.rol, VIEWER_ROLES)) {
 			return fail(403, { error: 'Sin permisos' });
 		}
 

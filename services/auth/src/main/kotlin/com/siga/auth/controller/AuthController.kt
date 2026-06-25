@@ -5,9 +5,12 @@ import com.siga.auth.application.usecase.RegisterCustomerUseCase
 import com.siga.auth.application.usecase.ResetPasswordConfirmUseCase
 import com.siga.auth.application.usecase.ResetPasswordRequestUseCase
 import com.siga.auth.application.usecase.VerifyCustomerUseCase
+import com.siga.auth.security.JwtService
+import com.auth0.jwt.exceptions.JWTVerificationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.Instant
 
 /**
  * Controller for authentication flows: registration, email verification, login, and password reset.
@@ -19,7 +22,8 @@ class AuthController(
     private val verifyCustomerUseCase: VerifyCustomerUseCase,
     private val loginUseCase: LoginUseCase,
     private val resetPasswordRequestUseCase: ResetPasswordRequestUseCase,
-    private val resetPasswordConfirmUseCase: ResetPasswordConfirmUseCase
+    private val resetPasswordConfirmUseCase: ResetPasswordConfirmUseCase,
+    private val jwtService: JwtService
 ) {
 
     @PostMapping("/register")
@@ -94,10 +98,13 @@ class AuthController(
             ResponseEntity.ok(
                 mapOf(
                     "token" to result.token,
+                    "refreshToken" to result.token, // mismo JWT como refresh token
                     "email" to result.email,
                     "tenantId" to (result.tenantId ?: "null"),
                     "role" to result.role,
-                    "principalType" to result.principalType
+                    "principalType" to result.principalType,
+                    "permissions" to result.permissions,
+                    "userId" to (result.userId?.toString() ?: "")
                 )
             )
         } catch (e: IllegalStateException) {
@@ -108,7 +115,65 @@ class AuthController(
                 .body(mapOf("error" to "Invalid credentials"))
         }
     }
+
+    /**
+     * POST /api/v1/auth/refresh
+     *
+     * Recibe un JWT válido en el body (refreshToken) y emite uno nuevo
+     * con expiración extendida a 24h desde ahora.
+     */
+    @PostMapping("/refresh")
+    fun refresh(@RequestBody request: RefreshRequest): ResponseEntity<Map<String, Any>> {
+        return try {
+            val oldClaims = jwtService.extractClaims(request.refreshToken)
+            val email = oldClaims["email"] as? String ?: throw IllegalArgumentException("Invalid token")
+            val rol = oldClaims["rol"] as? String ?: ""
+            val tenantId = oldClaims["tenantId"] as? Int
+            val principalType = oldClaims["principalType"] as? String ?: "user"
+
+            @Suppress("UNCHECKED_CAST")
+            val permissions = (oldClaims["permissions"] as? List<String>) ?: emptyList()
+
+            val newToken = jwtService.generateToken(
+                email = email,
+                rol = rol,
+                tenantId = tenantId,
+                principalType = principalType,
+                permissions = permissions
+            )
+
+            ResponseEntity.ok(
+                mapOf(
+                    "accessToken" to newToken,
+                    "refreshToken" to newToken,
+                    "expiresIn" to 86400 // 24h en segundos
+                )
+            )
+        } catch (e: JWTVerificationException) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(mapOf("error" to "Invalid or expired token"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(mapOf("error" to (e.message ?: "Refresh failed")))
+        }
+    }
 }
+
+/**
+ * Request DTO for token refresh.
+ */
+data class RefreshRequest(
+    val refreshToken: String
+)
+
+/**
+ * Response DTO for token refresh.
+ */
+data class RefreshResponse(
+    val accessToken: String,
+    val refreshToken: String,
+    val expiresIn: Long = 86400
+)
 
 /**
  * Request DTO for customer registration.

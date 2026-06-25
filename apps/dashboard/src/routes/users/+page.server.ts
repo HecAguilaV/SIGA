@@ -1,20 +1,21 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
+import { canAccessByRole, MANAGER_ROLES } from '$lib/auth/permissions';
 
 export const load: PageServerLoad = async (event) => {
 	const { fetch, url, locals } = event;
 	const user = locals.user;
 
-	if (!user || user.rol !== 'ADMINISTRATOR') {
+	if (!user || !canAccessByRole(user.rol, MANAGER_ROLES)) {
 		error(403, 'No tienes permisos para acceder a usuarios');
 	}
 
 	const search = url.searchParams.get('search') ?? '';
 
 	try {
-		// El endpoint real en auth service es /api/v1/auth/users
-		const res = await fetchWithAuth(fetch, event, `/api/v1/auth/users`);
+		// Gateway rewrite: /api/auth/users → /api/v1/auth/users
+		const res = await fetchWithAuth(fetch, event, `/api/auth/users`);
 
 		if (!res.ok) {
 			if (res.status === 403) error(403, 'Sin permisos');
