@@ -133,21 +133,6 @@ services:
     networks:
       - siga-net
 
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: siga-portainer
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - siga-portainer-data:/data
-    ports:
-      - "${PORTAINER_PORT:-9000}:9000"
-    networks:
-      - siga-net
-
   # ============================================================
   # LAYER 1 — SERVICE DISCOVERY & API GATEWAY
   # ============================================================
@@ -218,6 +203,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${AUTH_DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - REDIS_HOST=siga-redis
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
       siga-db:
         condition: service_healthy
@@ -247,6 +233,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${INVENTORY_DB_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
       - REDIS_HOST=siga-redis
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
       siga-db:
         condition: service_healthy
@@ -278,6 +265,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${SALES_DB_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
       - REDIS_HOST=siga-redis
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
       siga-db:
         condition: service_healthy
@@ -309,6 +297,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${BILLING_DB_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=siga-kafka:29092
       - REDIS_HOST=siga-redis
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
       siga-db:
         condition: service_healthy
@@ -344,6 +333,7 @@ services:
       - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
       - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
       - REDIS_HOST=siga-redis
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
       siga-db:
         condition: service_healthy
@@ -416,6 +406,7 @@ services:
   # ============================================================
   siga-ops:
     image: ghcr.io/rgjorge/containerflow:latest
+    platform: linux/amd64
     container_name: siga-ops
     restart: unless-stopped
     deploy:
@@ -438,7 +429,6 @@ services:
 volumes:
   siga-db-data:
   siga-pgadmin-data:
-  siga-portainer-data:
   containerflow-data:
 
 networks:
