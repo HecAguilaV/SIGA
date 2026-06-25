@@ -28,7 +28,7 @@ class JwtService(
     private val algorithm: Algorithm by lazy { Algorithm.HMAC256(secret) }
     private val verifier: JWTVerifier by lazy { JWT.require(algorithm).build() }
 
-    fun generateToken(email: String, rol: String, tenantId: Int?, principalType: String): String {
+    fun generateToken(email: String, rol: String, tenantId: Int?, principalType: String, permissions: List<String> = emptyList()): String {
         val builder = JWT.create()
             .withSubject(email)
             .withClaim("rol", rol)
@@ -38,6 +38,10 @@ class JwtService(
 
         if (tenantId != null) {
             builder.withClaim("tenantId", tenantId)
+        }
+
+        if (permissions.isNotEmpty()) {
+            builder.withClaim("permissions", permissions)
         }
 
         return builder.sign(algorithm)
@@ -57,6 +61,11 @@ class JwtService(
         val tenantId = decoded.getClaim("tenantId")
         if (!tenantId.isMissing) {
             claims["tenantId"] = tenantId.asInt()
+        }
+
+        val permissions = decoded.getClaim("permissions")
+        if (!permissions.isMissing) {
+            claims["permissions"] = permissions.asList(String::class.java)
         }
 
         return claims

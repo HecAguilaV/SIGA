@@ -97,7 +97,9 @@ class AuthController(
                     "email" to result.email,
                     "tenantId" to (result.tenantId ?: "null"),
                     "role" to result.role,
-                    "principalType" to result.principalType
+                    "principalType" to result.principalType,
+                    "permissions" to result.permissions,
+                    "userId" to (result.userId?.toString() ?: "")
                 )
             )
         } catch (e: IllegalStateException) {
