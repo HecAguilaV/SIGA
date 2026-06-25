@@ -1,11 +1,12 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fetchWithAuth } from '$lib/server/gateway';
+import { canAccessByRole, MANAGER_ROLES } from '$lib/auth/permissions';
 
 export const actions: Actions = {
 	default: async ({ request, fetch, url, locals }) => {
 		const user = locals.user;
-		if (!user || user.rol !== 'ADMINISTRATOR') {
+		if (!user || !canAccessByRole(user.rol, MANAGER_ROLES)) {
 			return fail(403, { error: 'Solo administradores pueden crear categorías' });
 		}
 

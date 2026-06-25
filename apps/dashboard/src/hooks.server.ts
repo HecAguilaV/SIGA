@@ -2,7 +2,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit';
 import { decodeJwtPayload, buildUserSession, clearSessionCookies } from '$lib/server/auth.server';
 import { attemptRefresh } from '$lib/server/gateway';
-import { PERMISSION_GUARDS, hasPermission } from '$lib/auth/permissions';
+import { PERMISSION_GUARDS, canAccess } from '$lib/auth/permissions';
 
 // Rutas públicas que no requieren autenticación
 const PUBLIC_ROUTES = ['/login', '/logout', '/chat-handler/stream', '/_app'];
@@ -89,10 +89,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.user = buildUserSession(payload);
 
 	// ── 6. Permission-based route guards ──
+	const userRole = event.locals.user?.rol;
 	const userPermissions = event.locals.user?.permissions;
 	for (const [prefix, requiredPermission] of Object.entries(PERMISSION_GUARDS)) {
 		if (pathname === prefix || pathname.startsWith(prefix + '/')) {
-			if (!hasPermission(userPermissions, requiredPermission)) {
+			if (!canAccess(userRole, userPermissions, requiredPermission)) {
 				error(403, 'No tienes permisos para acceder a esta sección');
 			}
 			break;

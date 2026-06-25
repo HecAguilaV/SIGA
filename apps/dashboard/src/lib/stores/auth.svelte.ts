@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import type { UserSession } from '$lib/types/auth';
-import { hasPermission } from '$lib/auth/permissions';
+import { hasPermission, ADMIN_ROLES } from '$lib/auth/permissions';
 
 function createAuthStore() {
 	const { subscribe, set, update } = writable<UserSession | null>(null);
@@ -47,7 +47,11 @@ export const needsOnboarding = derived(user, ($user) => {
 
 /**
  * Helper para verificar permisos de forma reactiva en componentes.
+ * Roles ADMIN (OWNER, ADMINISTRATOR) tienen acceso total sin verificar permisos.
  * Uso: const canEdit = canAccess('inventory:edit'); if ($canEdit) { ... }
  */
-export const canAccess = (requiredPermission: string) => 
-	derived(userPermissions, ($permissions) => hasPermission($permissions, requiredPermission));
+export const canAccess = (requiredPermission: string) =>
+	derived([user, userPermissions], ([$user, $permissions]) => {
+		if ($user?.rol && ADMIN_ROLES.includes($user.rol)) return true;
+		return hasPermission($permissions, requiredPermission);
+	});
