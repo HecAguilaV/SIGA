@@ -1,0 +1,14 @@
+{
+  "name": "siga-dev-bot",
+  "version": "1.0.0",
+  "description": "SIGA Dev Bot — agnostic notification relay (Discord, ideas, alerts)",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch src/index.ts"
+  },
+  "dependencies": {
+    "discord.js": "^14.18.0",
+    "hono": "^4.7.0"
+  }
+}

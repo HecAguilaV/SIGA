@@ -425,10 +425,38 @@ services:
     networks:
       - siga-net
 
+  # ============================================================
+  # LAYER 4 — DEV BOT (Discord → Dashboard notifications)
+  # ============================================================
+  siga-dev-bot:
+    image: hdaguila/siga-dev-bot:latest
+    build:
+      context: ./apps/siga-dev-bot
+      dockerfile: Dockerfile
+    container_name: siga-dev-bot
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+    ports:
+      - "${DEV_BOT_PORT:-9510}:9510"
+    environment:
+      - PORT=9510
+      - DISCORD_TOKEN=${DISCORD_BOT_TOKEN}
+      - DISCORD_CHANNEL_ID=${DISCORD_DEV_CHANNEL}
+      - AUTH_TOKEN=${OPS_AUTH_TOKEN}
+    volumes:
+      - dev-bot-data:/app/data
+    networks:
+      - siga-net
+
 volumes:
   siga-db-data:
   siga-pgadmin-data:
   containerflow-data:
+  dev-bot-data:
 
 networks:
   siga-net:
