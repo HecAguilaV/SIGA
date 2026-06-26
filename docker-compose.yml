@@ -405,8 +405,7 @@ services:
   # LAYER 4 — OPS & OBSERVABILITY
   # ============================================================
   siga-ops:
-    image: ghcr.io/rgjorge/containerflow:latest
-    platform: linux/amd64
+    image: hdaguila/siga-containerflow:latest
     container_name: siga-ops
     restart: unless-stopped
     deploy:
