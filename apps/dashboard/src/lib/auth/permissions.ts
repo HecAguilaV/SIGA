@@ -12,16 +12,33 @@ export const PERMISSION_GUARDS: Record<string, string> = {
 };
 
 /**
- * Roles con acceso total — pueden hacer TODO sin verificación de permisos.
- * Por ahora solo OWNER (dueño de la plataforma / dueño de tenant).
+ * PLATFORM_ADMIN — Platform-level SaaS owner.
+ * Lives in its own table (auth.platform_admins) and uses principalType='platform_admin'.
+ * Has access to platform-wide surfaces (pricing, plans, tests, metrics) but
+ * NOT to tenant-scoped resources like /users (which is tenant-owned).
+ */
+export const PLATFORM_ADMIN_ROLE = 'PLATFORM_ADMIN';
+
+/**
+ * Roles with full tenant-scoped access (admin of their tenant).
+ * These roles can do everything within their own customerId, no per-permission check.
+ * They do NOT have cross-tenant or platform-level access.
  */
 export const ADMIN_ROLES = ['OWNER', 'ADMINISTRATOR'];
 
-/** Roles que pueden VER páginas de lectura (lectura + listado). */
+/** Roles that can VIEW read-only pages (read + listing). */
 export const VIEWER_ROLES = ['OWNER', 'ADMINISTRATOR', 'OPERATOR'];
 
-/** Roles que pueden CREAR/EDITAR/ELIMINAR. */
+/** Roles that can CREATE/EDIT/DELETE within their tenant. */
 export const MANAGER_ROLES = ['OWNER', 'ADMINISTRATOR'];
+
+/**
+ * isPlatformAdmin — Helper for guards: detect platform-level principals.
+ * Use this in +layout.server.ts to gate /platform/* routes.
+ */
+export function isPlatformAdmin(rol: string | undefined, principalType: string | undefined): boolean {
+	return principalType === 'platform_admin' || rol === PLATFORM_ADMIN_ROLE;
+}
 
 /**
  * hasPermission — Verifica si una lista de permisos contiene el permiso requerido.

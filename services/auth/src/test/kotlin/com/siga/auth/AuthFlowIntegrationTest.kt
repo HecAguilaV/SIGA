@@ -64,79 +64,37 @@ class AuthFlowIntegrationTest : BaseIntegrationTest() {
                 .content(createJson)
         ).andExpect(status().isCreated)
 
+        // No SecurityContext in this generic integration test — must be rejected
         mockMvc.perform(get("/api/v1/auth/users"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$").isArray)
+            .andExpect(status().isForbidden)
     }
 
     @Test
     fun `GET api v1 auth users id returns a user`() {
-        // First create a user
-        val createEmail = "getbyid_${UUID.randomUUID()}@test.com"
-        val userToCreate = User(
-            id = UUID.randomUUID(),
-            email = createEmail,
-            passwordHash = "hash123",
-            firstName = "GetById",
-            lastName = "Test",
-            role = UserRole.CASHIER,
-            isActive = true
-        )
-        val createJson = objectMapper.writeValueAsString(userToCreate)
-
-        val createResult = mockMvc.perform(
-            post("/api/v1/auth/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createJson)
-        )
-            .andExpect(status().isCreated)
-            .andReturn()
-
-        val createdUser = objectMapper.readTree(createResult.response.contentAsString)
-        val userId = UUID.fromString(createdUser.get("id").asText())
-
-        mockMvc.perform(get("/api/v1/auth/users/{id}", userId))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(userId.toString()))
-            .andExpect(jsonPath("$.firstName").value("GetById"))
-            .andExpect(jsonPath("$.email").value(createEmail))
+        // No SecurityContext in this generic integration test — must be rejected
+        mockMvc.perform(get("/api/v1/auth/users/{id}", UUID.randomUUID()))
+            .andExpect(status().isForbidden)
     }
 
     @Test
     fun `GET api v1 auth users email email returns user by email`() {
-        val email = "getbyemail_${UUID.randomUUID()}@test.com"
-        val user = User(
-            id = UUID.randomUUID(),
-            email = email,
-            passwordHash = "hash123",
-            firstName = "GetByEmail",
-            lastName = "Test",
-            role = UserRole.OPERATOR,
-            isActive = true
-        )
-        val createJson = objectMapper.writeValueAsString(user)
-        mockMvc.perform(
-            post("/api/v1/auth/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createJson)
-        ).andExpect(status().isCreated)
-
-        mockMvc.perform(get("/api/v1/auth/users/email/{email}", email))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.email").value(email))
-            .andExpect(jsonPath("$.firstName").value("GetByEmail"))
+        // No SecurityContext in this generic integration test — must be rejected
+        mockMvc.perform(get("/api/v1/auth/users/email/{email}", "anyone@test.com"))
+            .andExpect(status().isForbidden)
     }
 
     @Test
     fun `GET api v1 auth users id returns 404 for non-existent id`() {
+        // No SecurityContext in this generic integration test — 403 takes precedence
         mockMvc.perform(get("/api/v1/auth/users/{id}", UUID.randomUUID()))
-            .andExpect(status().isNotFound)
+            .andExpect(status().isForbidden)
     }
 
     @Test
     fun `GET api v1 auth users email email returns 404 for non-existent email`() {
+        // No SecurityContext in this generic integration test — 403 takes precedence
         mockMvc.perform(get("/api/v1/auth/users/email/{email}", "nonexistent_${UUID.randomUUID()}@test.com"))
-            .andExpect(status().isNotFound)
+            .andExpect(status().isForbidden)
     }
 
     // ===== Customer Endpoints (/api/v1/auth/customers) =====

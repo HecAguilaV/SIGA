@@ -3,6 +3,7 @@ package com.siga.auth.application.usecase
 import com.siga.auth.domain.model.Customer
 import com.siga.auth.domain.port.CustomerRepositoryPort
 import com.siga.auth.domain.port.EmailSenderPort
+import com.siga.auth.domain.port.UserRepositoryPort
 import com.siga.auth.event.EmailEventProducer
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -20,6 +21,7 @@ import java.util.*
 class RegisterCustomerUseCaseTest {
 
     private val customerRepositoryPort = mock(CustomerRepositoryPort::class.java)
+    private val userRepositoryPort = mock(UserRepositoryPort::class.java)
     private val emailSenderPort = mock(EmailSenderPort::class.java)
     private val emailEventProducer = mock(EmailEventProducer::class.java)
     private val passwordEncoder = BCryptPasswordEncoder()
@@ -27,6 +29,7 @@ class RegisterCustomerUseCaseTest {
     // Legacy sync mode use case (emailEventProducer=null)
     private val syncUseCase = RegisterCustomerUseCase(
         customerRepositoryPort,
+        userRepositoryPort,
         emailSenderPort,
         passwordEncoder,
         emailEventProducer = null,
@@ -36,6 +39,7 @@ class RegisterCustomerUseCaseTest {
     // Async mode use case
     private val asyncUseCase = RegisterCustomerUseCase(
         customerRepositoryPort,
+        userRepositoryPort,
         emailSenderPort,
         passwordEncoder,
         emailEventProducer = emailEventProducer,

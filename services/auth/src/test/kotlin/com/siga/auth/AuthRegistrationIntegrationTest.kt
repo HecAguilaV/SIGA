@@ -213,11 +213,11 @@ class AuthRegistrationIntegrationTest @Autowired constructor(
     }
 
     @Test
-    fun `existing user endpoints remain accessible`() {
-        // Verify that the original UserController at /api/v1/auth/users still works
+    fun `existing user endpoints require auth`() {
+        // UserController /api/v1/auth/users now requires SecurityContext with tenantId
+        // (multitenancy fix). Without auth → 403.
         mockMvc.perform(get("/api/v1/auth/users"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$").isArray)
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -268,9 +268,11 @@ class AuthRegistrationIntegrationTest @Autowired constructor(
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.token").exists())
             .andExpect(jsonPath("$.email").value(email))
-            .andExpect(jsonPath("$.principalType").value("customer"))
+            // After "Customer IS Owner" consolidation, login resolves via the paired User
+            // with principalType="user" (was "customer" pre-consolidation).
+            .andExpect(jsonPath("$.principalType").value("user"))
             .andExpect(jsonPath("$.tenantId").exists())
-            .andExpect(jsonPath("$.role").value("customer"))
+            .andExpect(jsonPath("$.role").value("OWNER"))
     }
 
     @Test

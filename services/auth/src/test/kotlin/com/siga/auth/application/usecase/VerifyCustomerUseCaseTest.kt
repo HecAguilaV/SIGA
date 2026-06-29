@@ -2,6 +2,7 @@ package com.siga.auth.application.usecase
 
 import com.siga.auth.domain.model.Customer
 import com.siga.auth.domain.port.CustomerRepositoryPort
+import com.siga.auth.domain.port.UserRepositoryPort
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -16,7 +17,8 @@ import java.util.*
 class VerifyCustomerUseCaseTest {
 
     private val customerRepositoryPort = mock(CustomerRepositoryPort::class.java)
-    private val useCase = VerifyCustomerUseCase(customerRepositoryPort)
+    private val userRepositoryPort = mock(UserRepositoryPort::class.java)
+    private val useCase = VerifyCustomerUseCase(customerRepositoryPort, userRepositoryPort)
 
     @Suppress("UNCHECKED_CAST")
     private fun <T> anyObject(): T {

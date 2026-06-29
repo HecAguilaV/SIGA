@@ -6,6 +6,8 @@ import com.siga.auth.domain.model.User
 import com.siga.auth.domain.model.UserPermission
 import com.siga.auth.domain.model.UserRole
 import com.siga.auth.domain.port.PermissionRepositoryPort
+import com.siga.auth.domain.port.PlatformAdminRepositoryPort
+import com.siga.auth.domain.port.RolePermissionRepositoryPort
 import com.siga.auth.domain.port.UserPermissionRepositoryPort
 import com.siga.auth.security.JwtService
 import org.junit.jupiter.api.Assertions.*
@@ -17,23 +19,27 @@ import java.util.*
 
 /**
  * Unit test for [LoginUseCase] with Mockito.
- * Tests dual-principal login: Customer tried first, then User.
+ * Tests login resolution order: platform_admin → user → customer.
  */
 class LoginUseCaseTest {
 
     private val manageCustomerUseCase = mock(ManageCustomerUseCase::class.java)
     private val manageUserUseCase = mock(ManageUserUseCase::class.java)
+    private val platformAdminRepositoryPort = mock(PlatformAdminRepositoryPort::class.java)
     private val passwordEncoder = BCryptPasswordEncoder()
     private val jwtService = mock(JwtService::class.java)
     private val userPermissionRepositoryPort = mock(UserPermissionRepositoryPort::class.java)
     private val permissionRepositoryPort = mock(PermissionRepositoryPort::class.java)
+    private val rolePermissionRepositoryPort = mock(RolePermissionRepositoryPort::class.java)
     private val useCase = LoginUseCase(
         manageCustomerUseCase,
         manageUserUseCase,
+        platformAdminRepositoryPort,
         passwordEncoder,
         jwtService,
         userPermissionRepositoryPort,
-        permissionRepositoryPort
+        permissionRepositoryPort,
+        rolePermissionRepositoryPort
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -58,8 +64,11 @@ class LoginUseCaseTest {
             emailVerified = true
         )
 
+        `when`(platformAdminRepositoryPort.findByEmail(email)).thenReturn(null)
+        `when`(manageUserUseCase.findByEmail(email)).thenReturn(null)
         `when`(manageCustomerUseCase.findByEmail(email)).thenReturn(customer)
-        `when`(jwtService.generateToken(email, "customer", 1, "customer")).thenReturn("mock-jwt-token")
+        `when`(jwtService.generateToken(anyString(), anyString(), any(), anyString(), anyList()))
+            .thenReturn("mock-jwt-token")
 
         val result = useCase.login(email, rawPassword)
 
@@ -69,7 +78,6 @@ class LoginUseCaseTest {
         assertEquals("customer", result.role)
         assertEquals("customer", result.principalType)
         assertNull(result.userId)
-        verify(manageUserUseCase, never()).findByEmail(anyObject())
     }
 
     @Test
@@ -95,9 +103,11 @@ class LoginUseCaseTest {
         val permission1 = Permission(id = permissionId1, code = "SALES_REP", name = "Sales Rep", category = "SALES")
         val permission2 = Permission(id = permissionId2, code = "INVENTORY_VIEW", name = "Inventory View", category = "INVENTORY")
 
+        `when`(platformAdminRepositoryPort.findByEmail(email)).thenReturn(null)
         `when`(manageCustomerUseCase.findByEmail(email)).thenReturn(null)
         `when`(manageUserUseCase.findByEmail(email)).thenReturn(user)
-        `when`(jwtService.generateToken(email, "OPERATOR", null, "user")).thenReturn("mock-user-jwt")
+        `when`(jwtService.generateToken(anyString(), anyString(), any(), anyString(), anyList()))
+            .thenReturn("mock-user-jwt")
         `when`(userPermissionRepositoryPort.findByUserId(userId)).thenReturn(userPermissions)
         `when`(permissionRepositoryPort.findById(permissionId1)).thenReturn(permission1)
         `when`(permissionRepositoryPort.findById(permissionId2)).thenReturn(permission2)
@@ -205,14 +215,16 @@ class LoginUseCaseTest {
             emailVerified = true
         )
 
+        `when`(platformAdminRepositoryPort.findByEmail(email)).thenReturn(null)
+        `when`(manageUserUseCase.findByEmail(email)).thenReturn(null)
         `when`(manageCustomerUseCase.findByEmail(email)).thenReturn(customer)
-        `when`(jwtService.generateToken(email, "customer", 5, "customer")).thenReturn("customer-first-jwt")
+        `when`(jwtService.generateToken(anyString(), anyString(), any(), anyString(), anyList()))
+            .thenReturn("customer-first-jwt")
 
         val result = useCase.login(email, rawPassword)
 
         assertEquals("customer-first-jwt", result.token)
         assertEquals(5, result.tenantId)
         assertEquals("customer", result.principalType)
-        verify(manageUserUseCase, never()).findByEmail(anyObject())
     }
 }

@@ -75,6 +75,43 @@ class UserControllerIntegrationTest @Autowired constructor(
     }
 
     /**
+     * Sets the SecurityContext with an OWNER user principal scoped to a tenant.
+     * Used to verify the multitenancy fix: OWNER of tenant X only sees users of X.
+     */
+    private fun authenticateAsOwnerUser(customerTenantId: Int) {
+        val details = mapOf(
+            "email" to "owner@test.com",
+            "rol" to "OWNER",
+            "principalType" to "user",
+            "tenantId" to customerTenantId
+        )
+        val auth = UsernamePasswordAuthenticationToken(
+            "owner@test.com",
+            null,
+            listOf(SimpleGrantedAuthority("ROLE_OWNER"))
+        ).apply { this.details = details }
+        SecurityContextHolder.getContext().authentication = auth
+    }
+
+    /**
+     * Sets the SecurityContext with a platform_admin principal.
+     * Platform admins are SaaS owners, not tenant users — they get 403 on /users.
+     */
+    private fun authenticateAsPlatformAdmin() {
+        val details = mapOf(
+            "email" to "platformadmin@siga.cl",
+            "rol" to "PLATFORM_ADMIN",
+            "principalType" to "platform_admin"
+        )
+        val auth = UsernamePasswordAuthenticationToken(
+            "platformadmin@siga.cl",
+            null,
+            listOf(SimpleGrantedAuthority("ROLE_PLATFORM_ADMIN"))
+        ).apply { this.details = details }
+        SecurityContextHolder.getContext().authentication = auth
+    }
+
+    /**
      * Creates a User domain object and serializes it to JSON for request body.
      * Uses the auto-configured ObjectMapper (from BaseIntegrationTest) to ensure
      * consistent serialization with the controller's @RequestBody deserialization.
@@ -423,45 +460,10 @@ class UserControllerIntegrationTest @Autowired constructor(
             .andExpect(status().isForbidden)
     }
 
-    // ===== Backward compat (no SecurityContext) =====
+    // ===== No auth: must be 403, never leak across tenants (no backward compat) =====
 
     @Test
-    fun `GET users without auth returns all users in backward compat mode`() {
-        val user = userRepositoryPort.save(
-            User(
-                id = UUID.randomUUID(),
-                email = "noauth_${UUID.randomUUID()}@test.com",
-                passwordHash = passwordEncoder.encode("pass")!!,
-                firstName = "NoAuth",
-                role = UserRole.OPERATOR
-            )
-        )
-
-        // No SecurityContext set — backward compat, no tenant scoping
-        mockMvc.perform(get("/api/v1/auth/users"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$[?(@.email == '${user.email}')]").exists())
-    }
-
-    @Test
-    fun `GET user by id without auth returns user in backward compat mode`() {
-        val user = userRepositoryPort.save(
-            User(
-                id = UUID.randomUUID(),
-                email = "noauth_id_${UUID.randomUUID()}@test.com",
-                passwordHash = passwordEncoder.encode("pass")!!,
-                firstName = "NoAuthID",
-                role = UserRole.OPERATOR
-            )
-        )
-
-        mockMvc.perform(get("/api/v1/auth/users/${user.id}"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.email").value(user.email))
-    }
-
-    @Test
-    fun `GET user by email without auth returns user in backward compat mode`() {
+    fun `GET user by email without auth returns 403`() {
         val email = "noauth_email_${UUID.randomUUID()}@test.com"
         userRepositoryPort.save(
             User(
@@ -474,7 +476,139 @@ class UserControllerIntegrationTest @Autowired constructor(
         )
 
         mockMvc.perform(get("/api/v1/auth/users/email/$email"))
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `GET user by id without auth returns 403`() {
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "noauth_id_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "NoAuthID",
+                role = UserRole.OPERATOR
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users/${user.id}"))
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `GET users without auth returns 403`() {
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "noauth_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "NoAuth",
+                role = UserRole.OPERATOR
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users"))
+            .andExpect(status().isForbidden)
+    }
+
+    // ===== Multitenancy fix: OWNER of tenant only sees users of their tenant =====
+
+    @Test
+    fun `GET users as OWNER user principal returns only same-tenant users (multitenancy)`() {
+        val ownerTenantId = 1234
+        authenticateAsOwnerUser(ownerTenantId)
+
+        val tenantUser = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "owner_tenant_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "SameTenant",
+                role = UserRole.OPERATOR,
+                customerId = ownerTenantId
+            )
+        )
+        userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "other_tenant_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "OtherTenant",
+                role = UserRole.CASHIER,
+                customerId = 9999
+            )
+        )
+
+        mockMvc.perform(get("/api/v1/auth/users"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.email").value(email))
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].email").value(tenantUser.email))
+            .andExpect(jsonPath("$[0].customerId").value(ownerTenantId))
+    }
+
+    @Test
+    fun `GET users as OWNER user principal with no tenantId returns 403`() {
+        val details = mapOf(
+            "email" to "orphan_owner@test.com",
+            "rol" to "OWNER",
+            "principalType" to "user"
+        )
+        val auth = UsernamePasswordAuthenticationToken(
+            "orphan_owner@test.com",
+            null,
+            listOf(SimpleGrantedAuthority("ROLE_OWNER"))
+        ).apply { this.details = details }
+        SecurityContextHolder.getContext().authentication = auth
+
+        mockMvc.perform(get("/api/v1/auth/users"))
+            .andExpect(status().isForbidden)
+    }
+
+    // ===== Platform admin: 403 on /users (they use /api/v1/platform/* instead) =====
+
+    @Test
+    fun `GET users as platform_admin returns 403`() {
+        authenticateAsPlatformAdmin()
+        mockMvc.perform(get("/api/v1/auth/users"))
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `POST users as platform_admin returns 403`() {
+        authenticateAsPlatformAdmin()
+        mockMvc.perform(
+            post("/api/v1/auth/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createUserJson(email = "x@x.com"))
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `PUT users as platform_admin returns 403`() {
+        authenticateAsPlatformAdmin()
+        mockMvc.perform(
+            put("/api/v1/auth/users/${UUID.randomUUID()}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createUserJson(email = "x@x.com"))
+        )
+            .andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `GET user by id as platform_admin returns 403`() {
+        authenticateAsPlatformAdmin()
+        val user = userRepositoryPort.save(
+            User(
+                id = UUID.randomUUID(),
+                email = "pa_lookup_${UUID.randomUUID()}@test.com",
+                passwordHash = passwordEncoder.encode("pass")!!,
+                firstName = "PALookup",
+                role = UserRole.OPERATOR,
+                customerId = 1
+            )
+        )
+        mockMvc.perform(get("/api/v1/auth/users/${user.id}"))
+            .andExpect(status().isForbidden)
     }
 }
