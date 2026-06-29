@@ -16,15 +16,10 @@ export const load: PageServerLoad = async (event) => {
 	const search = url.searchParams.get('search') ?? '';
 	const pageSize = 20;
 
-	// Sincronizar parámetros con el backend Kotlin (Spring usa 0-based page)
-	const queryParams = new URLSearchParams({
-		page: (page - 1).toString(),
-		size: pageSize.toString(),
-		query: search
-	});
-
+	// Nota: El backend getProducts() devuelve todos los productos sin paginación.
+	// El filtrado se hace client-side por ahora.
 	try {
-		const res = await fetchWithAuth(fetch, event, `/api/inventory/products?${queryParams.toString()}`);
+		const res = await fetchWithAuth(fetch, event, '/api/inventory/products?size=100');
 
 		if (!res.ok) {
 			console.error(`[Inventory API] Status ${res.status}: ${res.statusText}`);
@@ -33,12 +28,27 @@ export const load: PageServerLoad = async (event) => {
 
 		const body = await res.json();
 		
-		// Adaptar respuesta de Spring (Page)
-		const products = body.content || body.items || [];
-		const total = body.totalElements || body.total || 0;
+		// Adaptar respuesta: array plano (List<Product>) o Spring Page ({content:[...]})
+		let products = Array.isArray(body) ? body : (body.content || body.items || []);
+
+		// Filtro client-side por búsqueda
+		if (search) {
+			const q = search.toLowerCase();
+			products = products.filter((p: any) =>
+				p.name?.toLowerCase().includes(q) ||
+				p.sku?.toLowerCase().includes(q) ||
+				p.barcode?.toLowerCase().includes(q)
+			);
+		}
+
+		// Paginación client-side
+		const start = (page - 1) * pageSize;
+		const paginated = products.slice(start, start + pageSize);
+
+		const total = products.length;
 
 		return {
-			products: products.map(mapToProductListItem),
+			products: paginated.map(mapToProductListItem),
 			total,
 			page,
 			search
@@ -54,11 +64,11 @@ function mapToProductListItem(p: any): ProductListItem {
 	return {
 		id: p.id || p.productId,
 		name: p.name || p.productName,
-		sku: p.sku,
+		sku: p.sku || '',
 		categoryName: p.categoryName || 'General',
-		price: p.price || 0,
+		price: p.unitPrice ?? p.price ?? 0,
 		stock: p.stock ?? p.totalStock ?? 0,
 		stockMin: p.stockMin ?? p.minStock ?? 10,
-		trend: p.trend ?? ( (p.stock < p.stockMin) ? 'down' : 'stable')
+		trend: p.trend ?? 'stable'
 	};
 }

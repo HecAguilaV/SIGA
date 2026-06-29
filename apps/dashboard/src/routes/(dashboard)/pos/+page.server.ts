@@ -13,7 +13,8 @@ export const load: PageServerLoad = async (event) => {
 		const productsRes = await fetchWithAuth(fetch, event, '/api/inventory/products?size=100');
 		if (productsRes.ok) {
 			const body = await productsRes.json();
-			products = body.content || body.items || [];
+			// Adaptar: array plano o Spring Page
+			products = Array.isArray(body) ? body : (body.content || body.items || []);
 		}
 
 		// 2. Verificar si hay un turno (caja) abierto para el usuario actual

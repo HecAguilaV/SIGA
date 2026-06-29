@@ -4,7 +4,7 @@ import type { LoginResponse, UserSession, RegisterRequest, OnboardingData } from
 import { env } from '$env/dynamic/private';
 
 const GATEWAY_BASE = env.GATEWAY_BASE_URL || 'http://localhost:8080';
-const AUTH_BASE = `${GATEWAY_BASE}/api/v1/auth`;
+const AUTH_BASE = `${GATEWAY_BASE}/api/auth`;
 
 /**
  * login — Autentica al usuario vía gateway (login dual: Customer primero, luego User).

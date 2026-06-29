@@ -1,8 +1,11 @@
 package com.siga.auth.application.usecase
 
 import com.siga.auth.domain.model.Customer
+import com.siga.auth.domain.model.User
+import com.siga.auth.domain.model.UserRole
 import com.siga.auth.domain.port.CustomerRepositoryPort
 import com.siga.auth.domain.port.EmailSenderPort
+import com.siga.auth.domain.port.UserRepositoryPort
 import com.siga.auth.event.EmailEvent
 import com.siga.auth.event.EmailEventProducer
 import org.springframework.beans.factory.annotation.Value
@@ -19,10 +22,16 @@ import java.util.UUID
  * Email sending mode is controlled by the `app.email.mode` feature flag:
  * - `async` (default): publishes a WELCOME EmailEvent to Kafka (Notification service sends it)
  * - `sync`: calls EmailSenderPort directly (legacy behavior, retained for rollback)
+ *
+ * CONSOLIDATION (Customer IS Owner):
+ * Upon registration, a paired User with role OWNER is also created, sharing the same
+ * credentials. This User is the principal used for login and JWT, so the customer can
+ * navigate their tenant with full OWNER permissions immediately after verification.
  */
 @Service
 class RegisterCustomerUseCase(
     private val customerRepositoryPort: CustomerRepositoryPort,
+    private val userRepositoryPort: UserRepositoryPort,
     private val emailSenderPort: EmailSenderPort,
     private val passwordEncoder: PasswordEncoder,
     private val emailEventProducer: EmailEventProducer? = null,
@@ -36,6 +45,9 @@ class RegisterCustomerUseCase(
         val resolvedName = if (name.isNullOrBlank()) email.substringBefore("@") else name
 
         if (customerRepositoryPort.existsByEmail(email)) {
+            throw IllegalArgumentException("Email already exists: $email")
+        }
+        if (userRepositoryPort.existsByEmail(email)) {
             throw IllegalArgumentException("Email already exists: $email")
         }
 
@@ -55,7 +67,23 @@ class RegisterCustomerUseCase(
             verificationTokenExpiresAt = tokenExpiresAt
         )
 
-        val saved = customerRepositoryPort.save(customer)
+        val savedCustomer = customerRepositoryPort.save(customer)
+
+        // CONSOLIDATION: auto-create a paired User with role OWNER.
+        // The User is the principal used for login → all permissions granted by OWNER role apply.
+        // The User stays inactive until email verification (so login is blocked until verified).
+        val (firstName, lastName) = splitName(resolvedName)
+        val ownerUser = User(
+            id = null,
+            email = email,
+            passwordHash = encodedPassword,
+            firstName = firstName,
+            lastName = lastName,
+            role = UserRole.OWNER,
+            customerId = savedCustomer.id,
+            isActive = false
+        )
+        userRepositoryPort.save(ownerUser)
 
         if (emailMode == "async" && emailEventProducer != null) {
             emailEventProducer.publish(
@@ -70,6 +98,11 @@ class RegisterCustomerUseCase(
             emailSenderPort.sendVerificationEmail(email, verificationToken, resolvedName)
         }
 
-        return saved
+        return savedCustomer
+    }
+
+    private fun splitName(fullName: String): Pair<String, String?> {
+        val parts = fullName.trim().split("\\s+".toRegex(), limit = 2)
+        return if (parts.size == 2) parts[0] to parts[1] else parts[0] to null
     }
 }

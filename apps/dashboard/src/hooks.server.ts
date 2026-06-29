@@ -5,7 +5,7 @@ import { attemptRefresh } from '$lib/server/gateway';
 import { PERMISSION_GUARDS, canAccess } from '$lib/auth/permissions';
 
 // Rutas públicas que no requieren autenticación
-const PUBLIC_ROUTES = ['/login', '/logout', '/chat-handler/stream', '/_app'];
+const PUBLIC_ROUTES = ['/login', '/register', '/logout', '/chat-handler/stream', '/_app'];
 
 // Umbral para refresh anticipado: 5 minutos antes de expiración
 const REFRESH_THRESHOLD_SEC = 5 * 60;

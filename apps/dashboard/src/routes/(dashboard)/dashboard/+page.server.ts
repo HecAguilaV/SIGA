@@ -56,7 +56,8 @@ async function composeDashboardFromServices(fetch: typeof globalThis.fetch, even
 		const stockRes = await fetchWithAuth(fetch, event, '/api/inventory/stock/consolidated?size=100');
 		if (stockRes.ok) {
 			const body = await stockRes.json();
-			const products = body.content || [];
+			// Adaptar: array plano, Spring Page ({content:[...]}), o ConsolidatedStockResponse ({products:[...]})
+			const products = Array.isArray(body) ? body : (body.products || body.content || body.items || []);
 			productCount = body.totalElements || products.length;
 			lowStockItems = products
 				.filter((p: any) => p.totalStock < (p.minStock || 10))

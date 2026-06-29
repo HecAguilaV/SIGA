@@ -10,7 +10,12 @@ import org.springframework.stereotype.Service
 
 /**
  * Use case for dual-principal login.
- * Tries Customer first, then User. Returns JWT on success.
+ *
+ * CONSOLIDATION (Customer IS Owner):
+ * After registration, every customer has a paired User with role OWNER. Login resolves
+ * the User first because that's the principal that carries the role-based permissions.
+ * Customer lookup is kept as a fallback for backward compatibility with seed data or
+ * legacy records that exist only in the customers table.
  */
 @Service
 class LoginUseCase(
@@ -24,16 +29,16 @@ class LoginUseCase(
 ) {
 
     fun login(email: String, rawPassword: String): LoginResult {
-        // 1. Try Customer first
-        val customer = manageCustomerUseCase.findByEmail(email)
-        if (customer != null) {
-            return authenticateCustomer(customer, rawPassword)
-        }
-
-        // 2. If not a Customer, try User
+        // 1. Try User first — primary principal after consolidation (Customer IS Owner)
         val user = manageUserUseCase.findByEmail(email)
         if (user != null) {
             return authenticateUser(user, rawPassword)
+        }
+
+        // 2. Fallback: Customer (legacy records or seed-only data)
+        val customer = manageCustomerUseCase.findByEmail(email)
+        if (customer != null) {
+            return authenticateCustomer(customer, rawPassword)
         }
 
         // 3. Neither found
