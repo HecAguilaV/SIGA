@@ -40,7 +40,7 @@ class EmailSenderService : EmailSenderPort {
             val message: MimeMessage = mailSender!!.createMimeMessage()
             val helper = MimeMessageHelper(message, false)
             helper.setTo(email)
-            helper.setSubject("Verify your SIGA account")
+            helper.setSubject("Verifica tu cuenta de SIGA")
             helper.setText(body, false)
             mailSender!!.send(message)
             log.info("Verification email sent to: $email")
@@ -64,18 +64,18 @@ class EmailSenderService : EmailSenderPort {
 
     private fun buildEmailBody(name: String, verificationLink: String): String {
         return """
-            Hello $name,
-            
-            Welcome to SIGA! Please verify your email address by clicking the link below:
-            
+            Hola $name,
+
+            ¡Bienvenido a SIGA! Por favor verifica tu dirección de correo electrónico haciendo clic en el siguiente enlace:
+
             $verificationLink
-            
-            This link will expire in 24 hours.
-            
-            If you did not create an account, please ignore this email.
-            
-            Best regards,
-            SIGA Team
+
+            Este enlace expira en 24 horas.
+
+            Si no creaste una cuenta, puedes ignorar este mensaje.
+
+            Saludos,
+            Equipo SIGA
         """.trimIndent()
     }
 }

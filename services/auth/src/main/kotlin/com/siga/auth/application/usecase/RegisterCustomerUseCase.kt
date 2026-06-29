@@ -8,6 +8,7 @@ import com.siga.auth.domain.port.EmailSenderPort
 import com.siga.auth.domain.port.UserRepositoryPort
 import com.siga.auth.event.EmailEvent
 import com.siga.auth.event.EmailEventProducer
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -38,6 +39,7 @@ class RegisterCustomerUseCase(
     @Value("\${app.email.mode:async}")
     private val emailMode: String = "async"
 ) {
+    private val log = LoggerFactory.getLogger(RegisterCustomerUseCase::class.java)
 
     fun register(email: String, rawPassword: String, name: String?, companyName: String?): Customer {
         require(email.isNotBlank()) { "Email must not be blank" }
@@ -85,6 +87,7 @@ class RegisterCustomerUseCase(
         )
         userRepositoryPort.save(ownerUser)
 
+        log.info("EMAIL_MODE={}, producer={}", emailMode, emailEventProducer)
         if (emailMode == "async" && emailEventProducer != null) {
             emailEventProducer.publish(
                 EmailEvent(

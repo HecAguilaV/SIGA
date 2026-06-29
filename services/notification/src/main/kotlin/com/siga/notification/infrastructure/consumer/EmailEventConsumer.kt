@@ -7,6 +7,7 @@ import com.siga.notification.infrastructure.repository.ProcessedEventRepository
 import com.siga.notification.infrastructure.service.EmailSenderService
 import com.siga.notification.infrastructure.service.TemplateRenderer
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Component
 class EmailEventConsumer(
     private val processedEventRepository: ProcessedEventRepository,
     private val templateRenderer: TemplateRenderer,
-    private val emailSenderService: EmailSenderService
+    private val emailSenderService: EmailSenderService,
+    @Value("\${app.verify-base-url:}")
+    private val verifyBaseUrl: String = ""
 ) {
     private val log = LoggerFactory.getLogger(EmailEventConsumer::class.java)
 
@@ -89,7 +92,7 @@ class EmailEventConsumer(
         val body = templateRenderer.render("welcome.html", event.name, verificationLink)
         emailSenderService.send(
             to = event.email,
-            subject = "Verify your SIGA account",
+            subject = "Verifica tu cuenta de SIGA",
             body = body
         )
     }
@@ -99,17 +102,19 @@ class EmailEventConsumer(
         val body = templateRenderer.render("password-reset.html", event.name, resetLink)
         emailSenderService.send(
             to = event.email,
-            subject = "Reset your SIGA password",
+            subject = "Restablece tu contraseña de SIGA",
             body = body
         )
     }
 
     private fun buildVerificationLink(token: String?): String {
-        return if (token != null) "/api/v1/auth/verify?token=$token" else "/api/v1/auth/login"
+        val base = if (verifyBaseUrl.isNotBlank()) verifyBaseUrl else "/api/v1/auth"
+        return if (token != null) "$base/verify?token=$token" else "$base/login"
     }
 
     private fun buildResetLink(token: String?): String {
-        return if (token != null) "/api/v1/auth/reset-password/confirm?token=$token" else "/api/v1/auth/login"
+        val base = if (verifyBaseUrl.isNotBlank()) verifyBaseUrl else "/api/v1/auth"
+        return if (token != null) "$base/reset-password/confirm?token=$token" else "$base/login"
     }
 
 }

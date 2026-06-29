@@ -24,6 +24,8 @@
 
 	// Show success banner if redirected from registration
 	let registered = $derived($page.url.searchParams.get('registered') === 'true');
+	// Show success banner if redirected from email verification
+	let verified = $derived($page.url.searchParams.get('verified') === 'true');
 </script>
 
 <svelte:head>
@@ -50,6 +52,14 @@
 				<div class="login-success" role="alert">
 					<span class="material-symbols-outlined" style="font-size: 18px;">check_circle</span>
 					Cuenta creada exitosamente. Revisa tu correo para verificar tu dirección de email.
+				</div>
+			{/if}
+
+			<!-- Success banner after email verification -->
+			{#if verified}
+				<div class="login-success" role="alert">
+					<span class="material-symbols-outlined" style="font-size: 18px;">check_circle</span>
+					¡Cuenta verificada exitosamente! Ya puedes iniciar sesión.
 				</div>
 			{/if}
 
