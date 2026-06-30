@@ -1,21 +1,30 @@
 <script lang="ts" generics="T">
+	import { enhance } from '$app/forms';
 	import Button from '@siga/ui-kit/Button.svelte';
 	import Input from '@siga/ui-kit/Input.svelte';
 	import type { FieldDef } from './types';
 
+	/**
+	 * Result returned by a SvelteKit form action. The page passes `data.form`
+	 * to this prop after a failed action (e.g. { error: 'SKU duplicado' }).
+	 * We accept the loose shape here because the component is shared across
+	 * pages with different action result types.
+	 */
+	type CrudFormActionResult = { error?: string; field?: string } | null;
+
 	let {
 		fields = [] as FieldDef<T>[],
-		onSubmit,
 		initialValues = {} as Partial<T>,
 		mode = 'create' as 'create' | 'edit',
 		serverErrors = {} as Record<string, string>,
+		form = null as CrudFormActionResult,
 		children
 	}: {
 		fields: FieldDef<T>[];
-		onSubmit: (data: Record<string, string>) => Promise<void>;
 		initialValues?: Partial<T>;
 		mode?: 'create' | 'edit';
 		serverErrors?: Record<string, string>;
+		form?: CrudFormActionResult;
 		children?: import('svelte').Snippet;
 	} = $props();
 
@@ -76,32 +85,57 @@
 		}
 	}
 
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-		formSubmitted = true;
-		if (!validateAll()) return;
+	// Derive server-side errors from the SvelteKit form action result.
+	// The page sets `form={data.form}` after a failed action submission.
+	const serverFormError = $derived.by(() => {
+		if (!form) return '';
+		return (form as { error?: string }).error || '';
+	});
+	const serverFieldError = $derived.by(() => {
+		if (!form) return { field: '', msg: '' };
+		const f = form as { field?: string; error?: string };
+		return { field: f.field || '', msg: f.error || '' };
+	});
 
-		submitting = true;
-		try {
-			await onSubmit(formData);
-		} catch {
-			// Error handling is done by the parent
-		} finally {
-			submitting = false;
-		}
-	}
-
-	// Merge server errors
+	// Merge client + server errors. Server-side errors are computed via $derived
+	// to avoid the effect-update loop (writing to `errors` from an $effect that
+	// reads `form` triggers Svelte's depth-exceeded guard).
 	const allErrors = $derived.by(() => {
-		const merged = { ...errors };
+		const merged: Record<string, string> = { ...errors };
 		for (const [key, msg] of Object.entries(serverErrors)) {
 			if (msg) merged[key] = msg;
+		}
+		if (serverFormError) merged._form = serverFormError;
+		if (serverFieldError.field && serverFieldError.msg) {
+			merged[serverFieldError.field] = serverFieldError.msg;
 		}
 		return merged;
 	});
 </script>
 
-<form class="crud-form" onsubmit={handleSubmit} novalidate>
+<form
+	method="POST"
+	class="crud-form"
+	novalidate
+	use:enhance={({ cancel, formData: _formData }) => {
+		formSubmitted = true;
+		if (!validateAll()) {
+			cancel();
+			submitting = false;
+			return;
+		}
+		submitting = true;
+		return async ({ update }) => {
+			await update({ reset: false });
+			submitting = false;
+		};
+	}}
+>
+	{#if allErrors._form}
+		<div class="form-banner-error" role="alert">
+			{allErrors._form}
+		</div>
+	{/if}
 	<div class="form-fields">
 		{#each fields as field}
 			<div class="form-field">
@@ -115,6 +149,7 @@
 						</label>
 						<select
 							id="field-{field.key}"
+							name={field.key}
 							class="input-field"
 							class:input-error={!!allErrors[field.key]}
 							value={formData[field.key] || ''}
@@ -141,6 +176,7 @@
 						</label>
 						<textarea
 							id="field-{field.key}"
+							name={field.key}
 							class="input-field textarea-field"
 							class:input-error={!!allErrors[field.key]}
 							value={formData[field.key] || ''}
@@ -156,6 +192,7 @@
 				{:else}
 					<Input
 						type={field.type}
+						name={field.key}
 						label={field.label}
 						placeholder={field.placeholder}
 						value={formData[field.key] || ''}
@@ -183,35 +220,29 @@
 	.crud-form {
 		max-width: 640px;
 	}
-
 	.form-fields {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-md);
 		margin-bottom: var(--spacing-lg);
 	}
-
 	.form-field {
 		width: 100%;
 	}
-
 	.input-group {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-xs);
 	}
-
 	.input-label {
 		font-size: var(--font-size-sm);
 		font-weight: var(--font-weight-medium);
 		color: var(--color-text);
 	}
-
 	.required {
 		color: var(--color-error);
 		margin-left: 2px;
 	}
-
 	.input-field {
 		width: 100%;
 		padding: 10px 14px;
@@ -224,31 +255,34 @@
 		transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 		outline: none;
 	}
-
 	.input-field:focus {
 		border-color: var(--color-accent);
 		box-shadow: 0 0 0 3px var(--color-accent-light);
 	}
-
 	.input-field.input-error {
 		border-color: var(--color-error);
 	}
-
 	.input-field.input-error:focus {
 		box-shadow: 0 0 0 3px var(--color-error-bg);
 	}
-
 	.textarea-field {
 		resize: vertical;
 		min-height: 80px;
 	}
-
 	.field-error {
 		font-size: var(--font-size-sm);
 		color: var(--color-error);
 		margin-top: 2px;
 	}
-
+	.form-banner-error {
+		padding: 12px 16px;
+		margin-bottom: var(--spacing-md);
+		background: var(--color-error-bg, #fee);
+		color: var(--color-error, #c00);
+		border: 1px solid var(--color-error, #c00);
+		border-radius: var(--radius-md);
+		font-size: var(--font-size-sm);
+	}
 	.form-actions {
 		display: flex;
 		justify-content: flex-end;

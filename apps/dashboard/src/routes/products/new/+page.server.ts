@@ -27,10 +27,10 @@ export const actions: Actions = {
 				return fail(res.status, { error: 'Error al crear producto' });
 			}
 
-			redirect(303, '/products');
-		} catch {
-			// Mock success
-			redirect(303, '/products');
+			throw redirect(303, '/products');
+		} catch (err) {
+			if (err instanceof Response || (err as any).status === 303) throw err;
+			return fail(500, { error: 'Error de red al crear producto' });
 		}
 	}
 };

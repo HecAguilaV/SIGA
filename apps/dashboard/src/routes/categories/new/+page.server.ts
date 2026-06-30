@@ -19,9 +19,10 @@ export const actions: Actions = {
 				body: JSON.stringify(data)
 			});
 			if (!res.ok) return fail(res.status, { error: 'Error al crear categoría' });
-			redirect(303, '/categories');
-		} catch {
-			redirect(303, '/categories');
+			throw redirect(303, '/categories');
+		} catch (err) {
+			if (err instanceof Response || (err as any).status === 303) throw err;
+			return fail(500, { error: 'Error de red al crear categoría' });
 		}
 	}
 };

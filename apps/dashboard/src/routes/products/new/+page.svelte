@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import type { PageData, ActionData } from './$types';
 	import CrudForm from '$lib/components/crud/CrudForm.svelte';
 	import type { FieldDef } from '$lib/components/crud/types';
 	import Card from '@siga/ui-kit/Card.svelte';
 	import Button from '@siga/ui-kit/Button.svelte';
 	import ArrowLeft from 'phosphor-svelte/lib/ArrowLeft';
+
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	const productFields: FieldDef<any>[] = [
 		{ key: 'name', label: 'Nombre', type: 'text', required: true },
@@ -14,17 +17,6 @@
 		{ key: 'stock', label: 'Stock', type: 'number', required: true },
 		{ key: 'stockMin', label: 'Stock Mínimo', type: 'number', required: true }
 	];
-
-	async function handleSubmit(formData: Record<string, string>) {
-		const response = await fetch('/products/new', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: new URLSearchParams(formData)
-		});
-		if (response.redirected) {
-			goto(response.url);
-		}
-	}
 </script>
 
 <div class="page-header">
@@ -39,8 +31,8 @@
 	{#snippet children()}
 		<CrudForm
 			fields={productFields}
-			onSubmit={handleSubmit}
 			mode="create"
+			form={form}
 		/>
 	{/snippet}
 </Card>
