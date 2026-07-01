@@ -48,6 +48,7 @@ class Product(
 ) {
     @PrePersist
     fun onPrePersist() {
+        if (id == null) id = UUID.randomUUID()
         val now = Instant.now()
         if (createdAt == null) createdAt = now
         updatedAt = now

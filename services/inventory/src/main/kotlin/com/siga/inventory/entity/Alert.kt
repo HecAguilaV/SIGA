@@ -35,6 +35,11 @@ class Alert(
     @Column(name = "created_at", nullable = false)
     val createdAt: Instant = Instant.now()
 ) {
+    @PrePersist
+    fun onPrePersist() {
+        if (id == null) id = UUID.randomUUID()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Alert) return false

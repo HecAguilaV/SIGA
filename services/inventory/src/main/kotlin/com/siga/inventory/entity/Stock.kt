@@ -34,6 +34,7 @@ class Stock(
     @PrePersist
     @PreUpdate
     fun onUpdate() {
+        if (id == null) id = UUID.randomUUID()
         updatedAt = Instant.now()
     }
 
