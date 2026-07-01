@@ -152,7 +152,7 @@ export function setSessionCookies(
  */
 export function clearSessionCookies(event: RequestEvent): void {
 	event.cookies.delete('siga_token', { path: '/' });
-	event.cookies.delete('siga_refresh', { path: '/api/auth/refresh' });
+	event.cookies.delete('siga_refresh', { path: '/' });
 }
 
 /**

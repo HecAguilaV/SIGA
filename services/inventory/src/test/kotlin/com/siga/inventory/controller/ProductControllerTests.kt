@@ -27,9 +27,9 @@ class ProductControllerTests : DescribeSpec() {
         extension(SpringExtension())
         describe("ProductController Integration") {
 
-            it("given no token when requesting products then should return 403 Forbidden") {
+            it("given no token when requesting products then should return 401 Unauthorized") {
                 mockMvc.perform(get("/api/v1/inventory/products"))
-                    .andExpect(status().isForbidden)
+                    .andExpect(status().isUnauthorized)
             }
 
             it("given mock user when requesting products then should return 200 OK") {

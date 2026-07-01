@@ -56,7 +56,7 @@ class EmailEventConsumerTest {
         consumer.consume(event)
 
         verify(templateRenderer).render("welcome.html", "Test User", "/api/v1/auth/verify?token=verify-token-123")
-        verify(emailSenderService).send("test@example.com", "Verify your SIGA account", "<html>Test</html>")
+        verify(emailSenderService).send("test@example.com", "Verifica tu cuenta de SIGA", "<html>Test</html>")
         verify(processedEventRepository).save(anyObject())
     }
 
@@ -75,7 +75,7 @@ class EmailEventConsumerTest {
         consumer.consume(event)
 
         verify(templateRenderer).render("password-reset.html", "Test User", "/api/v1/auth/reset-password/confirm?token=reset-token-456")
-        verify(emailSenderService).send("test@example.com", "Reset your SIGA password", "<html>Test</html>")
+        verify(emailSenderService).send("test@example.com", "Restablece tu contraseña de SIGA", "<html>Test</html>")
         verify(processedEventRepository).save(anyObject())
     }
 

@@ -41,7 +41,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    
+
+    // JWT
+    implementation("com.auth0:java-jwt:4.4.0")
+
     // Kafka for SAGA
     implementation("org.springframework.kafka:spring-kafka")
     

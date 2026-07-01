@@ -133,7 +133,7 @@ describe('Auth Flow Integration', () => {
 				'siga_refresh',
 				'test-refresh-token',
 				expect.objectContaining({
-					path: '/api/auth/refresh',
+					path: '/',
 					httpOnly: true,
 					secure: false,
 					sameSite: 'lax'
@@ -148,7 +148,7 @@ describe('Auth Flow Integration', () => {
 			clearSessionCookies(event);
 
 			expect(event.cookies.delete).toHaveBeenCalledWith('siga_token', { path: '/' });
-			expect(event.cookies.delete).toHaveBeenCalledWith('siga_refresh', { path: '/api/auth/refresh' });
+			expect(event.cookies.delete).toHaveBeenCalledWith('siga_refresh', { path: '/' });
 		});
 	});
 

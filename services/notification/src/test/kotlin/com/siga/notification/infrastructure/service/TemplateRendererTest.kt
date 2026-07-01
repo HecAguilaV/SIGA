@@ -38,7 +38,7 @@ class TemplateRendererTest {
 
         assertTrue(html.contains("Jane Doe"))
         assertTrue(html.contains("https://example.com/reset?token=xyz"))
-        assertTrue(html.contains("Password Reset"))
+        assertTrue(html.contains("Restablecer contraseña"))
         assertFalse(html.contains("{{name}}"))
         assertFalse(html.contains("{{actionUrl}}"))
     }
