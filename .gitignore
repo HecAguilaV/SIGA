@@ -81,3 +81,6 @@ docs/godadmin-panel.html
 openspec/
 docs/godadmin-panel.html
 ROADMAP.md
+
+# Local state backups (never push these)
+.local-backups/
