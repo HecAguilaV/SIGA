@@ -141,7 +141,7 @@ resource "aws_internet_gateway" "main" {
 # estén asociadas a un NAT Gateway en ejecución.
 # ---------------------------------------------------------------------------
 resource "aws_eip" "nat" {
-  count  = length(var.public_subnet_cidrs)
+  count  = 1  # SIGA-Dev: 1 NAT only (~$32/mes ahorrado). 2 era para HA IE2.
   domain = "vpc"
 
   tags = merge(local.common_tags, {
@@ -158,7 +158,7 @@ resource "aws_eip" "nat" {
 # y aceptar riesgo de disponibilidad, pero IE2 requiere HA.
 # ---------------------------------------------------------------------------
 resource "aws_nat_gateway" "main" {
-  count = length(var.public_subnet_cidrs)
+  count = 1  # SIGA-Dev: 1 NAT only. 2 era para HA IE2.
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
@@ -212,7 +212,7 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.main[count.index].id
+    nat_gateway_id = aws_nat_gateway.main[0].id  # SIGA-Dev: 1 NAT compartido
   }
 
   tags = merge(local.common_tags, {
@@ -274,21 +274,19 @@ resource "aws_security_group_rule" "vpc_endpoints_egress" {
 # las route tables privadas (y públicas por si acaso).
 # Presupuesto: GRATIS.
 # ---------------------------------------------------------------------------
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.main.id
-  service_name = "com.amazonaws.${var.aws_region}.s3"
-
-  # Asociar a route tables públicas y privadas para que todo tráfico a S3
-  # vaya por el endpoint en lugar de internet.
-  route_table_ids = concat(
-    [aws_route_table.public.id],
-    aws_route_table.private[*].id,
-  )
-
-  tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-s3-endpoint"
-  })
-}
+# SIGA-Dev: VPC Endpoints comentados para ahorrar ~$21/mes.
+# Sin endpoints, EKS hace pull de ECR a través de NAT (más lento pero funciona).
+# resource "aws_vpc_endpoint" "s3" {
+#   vpc_id       = aws_vpc.main.id
+#   service_name = "com.amazonaws.${var.aws_region}.s3"
+#   route_table_ids = concat(
+#     [aws_route_table.public.id],
+#     aws_route_table.private[*].id,
+#   )
+#   tags = merge(local.common_tags, {
+#     Name = "${local.name_prefix}-s3-endpoint"
+#   })
+# }
 
 # ---------------------------------------------------------------------------
 # Recurso: VPC Endpoint para ECR API (Interface)
@@ -297,18 +295,17 @@ resource "aws_vpc_endpoint" "s3" {
 # Decisión: Interface endpoint en subnets privadas con Private DNS enabled.
 # Presupuesto: ~$7/mes + $0.01/GB procesado.
 # ---------------------------------------------------------------------------
-resource "aws_vpc_endpoint" "ecr_api" {
-  vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = aws_subnet.private[*].id
-  security_group_ids  = [aws_security_group.vpc_endpoints.id]
-  private_dns_enabled = true
-
-  tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-ecr-api-endpoint"
-  })
-}
+# resource "aws_vpc_endpoint" "ecr_api" {  # SIGA-Dev: deshabilitado, ver arriba
+#   vpc_id              = aws_vpc.main.id
+#   service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
+#   vpc_endpoint_type   = "Interface"
+#   subnet_ids          = aws_subnet.private[*].id
+#   security_group_ids  = [aws_security_group.vpc_endpoints.id]
+#   private_dns_enabled = true
+#   tags = merge(local.common_tags, {
+#     Name = "${local.name_prefix}-ecr-api-endpoint"
+#   })
+# }
 
 # ---------------------------------------------------------------------------
 # Recurso: VPC Endpoint para ECR DKR (Interface)
@@ -318,18 +315,17 @@ resource "aws_vpc_endpoint" "ecr_api" {
 # que docker funcione correctamente en los nodos.
 # Presupuesto: ~$7/mes.
 # ---------------------------------------------------------------------------
-resource "aws_vpc_endpoint" "ecr_dkr" {
-  vpc_id              = aws_vpc.main.id
-  service_name        = "com.amazonaws.${var.aws_region}.ecr.dkr"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = aws_subnet.private[*].id
-  security_group_ids  = [aws_security_group.vpc_endpoints.id]
-  private_dns_enabled = true
-
-  tags = merge(local.common_tags, {
-    Name = "${local.name_prefix}-ecr-dkr-endpoint"
-  })
-}
+# resource "aws_vpc_endpoint" "ecr_dkr" {  # SIGA-Dev: deshabilitado, ver arriba
+#   vpc_id              = aws_vpc.main.id
+#   service_name        = "com.amazonaws.${var.aws_region}.ecr.dkr"
+#   vpc_endpoint_type   = "Interface"
+#   subnet_ids          = aws_subnet.private[*].id
+#   security_group_ids  = [aws_security_group.vpc_endpoints.id]
+#   private_dns_enabled = true
+#   tags = merge(local.common_tags, {
+#     Name = "${local.name_prefix}-ecr-dkr-endpoint"
+#   })
+# }
 
 
 # =============================================================================
@@ -429,7 +425,7 @@ resource "aws_ecr_lifecycle_policy" "main" {
 # pre-creados con las políticas necesarias.
 # ---------------------------------------------------------------------------
 data "aws_iam_role" "eks_cluster" {
-  name = "c216598a5470737l15597720t1w162272-LabEksClusterRole-NBoIv2QY1tAR"
+  name = "c211055a5352321l14845146t1w117494-LabEksClusterRole-h8XUH0pUNH0y"
 }
 
 # ---------------------------------------------------------------------------
@@ -437,7 +433,7 @@ data "aws_iam_role" "eks_cluster" {
 # Propósito: Usar el role para nodos EKS ya creado en el lab.
 # ---------------------------------------------------------------------------
 data "aws_iam_role" "eks_nodes" {
-  name = "c216598a5470737l15597720t1w162272997-LabEksNodeRole-3MmTW6plRcJ4"
+  name = "c211055a5352321l14845146t1w117494389-LabEksNodeRole-eqIkFBONbXUc"
 }
 
 

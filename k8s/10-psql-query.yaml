@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: psql-query
+  namespace: siga
+spec:
+  restartPolicy: Never
+  containers:
+  - name: psql
+    image: postgres:16
+    env:
+    - name: PGPASSWORD
+      value: "HSTMg47CAlkLOfBAwRVO"
+    command: ["psql"]
+    args: ["-h", "siga-production-postgres.crhf8ujgk6yn.us-east-1.rds.amazonaws.com", "-U", "siga_admin", "-d", "sigadb", "-c", "UPDATE auth.users SET password_hash='PLACEHOLDER', is_active=true, role='OWNER', customer_id=10 WHERE email='hdaguila02@gmail.com' RETURNING email,role,is_active;"]

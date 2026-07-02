@@ -61,7 +61,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: dashboard
-          image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/dashboard:latest
+          image: 117494389645.dkr.ecr.us-east-1.amazonaws.com/siga-production/dashboard:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

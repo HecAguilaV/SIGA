@@ -8,7 +8,7 @@ data:
   AUTH_SERVICE_URL: http://siga-auth.siga.svc.cluster.local:8081
   EUREKA_URL: http://siga-registry.siga.svc.cluster.local:8761/eureka
   INVENTORY_SERVICE_URL: http://siga-inventory.siga.svc.cluster.local:8082
-  REDIS_HOST: siga-production-redis.ruovma.0001.use1.cache.amazonaws.com
+  REDIS_HOST: siga-production-redis.nec1lg.0001.use1.cache.amazonaws.com
   REDIS_PORT: '6379'
   REDIS_SSL: 'true'
   REGISTRY_SERVICE_URL: http://siga-registry.siga.svc.cluster.local:8761/eureka

@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
   AUTH_SERVICE_URL: http://siga-auth.siga.svc.cluster.local:8081
-  DB_HOST: siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com
+  DB_HOST: siga-production-postgres.crhf8ujgk6yn.us-east-1.rds.amazonaws.com
   DB_NAME: siga_inventory
   DB_PORT: '5432'
   DB_SCHEMA: inventory
@@ -12,12 +12,12 @@ data:
   KAFKA_BOOTSTRAP_SERVERS: siga-kafka.siga.svc.cluster.local:9092
   MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: 'true'
   MANAGEMENT_HEALTH_KAFKA_ENABLED: 'false'
-  REDIS_HOST: siga-production-redis.ruovma.0001.use1.cache.amazonaws.com
+  REDIS_HOST: siga-production-redis.nec1lg.0001.use1.cache.amazonaws.com
   REDIS_PORT: '6379'
   REDIS_SSL: 'true'
   REGISTRY_SERVICE_URL: http://siga-registry.siga.svc.cluster.local:8761/eureka
   SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
-  SPRING_DATASOURCE_URL: jdbc:postgresql://siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com:5432/siga_inventory?sslmode=require
+  SPRING_DATASOURCE_URL: jdbc:postgresql://siga-production-postgres.crhf8ujgk6yn.us-east-1.rds.amazonaws.com:5432/siga_inventory?sslmode=require
   SPRING_JPA_HIBERNATE_DDL_AUTO: update
   SPRING_PROFILES_ACTIVE: eks
 kind: ConfigMap

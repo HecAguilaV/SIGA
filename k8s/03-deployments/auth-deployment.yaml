@@ -56,7 +56,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: auth
-          image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/auth:latest
+          image: 117494389645.dkr.ecr.us-east-1.amazonaws.com/siga-production/auth:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8081

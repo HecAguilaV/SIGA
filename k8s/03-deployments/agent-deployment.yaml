@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
         - name: agent
-          image: 162272997857.dkr.ecr.us-east-1.amazonaws.com/siga-production/agent:latest
+          image: 117494389645.dkr.ecr.us-east-1.amazonaws.com/siga-production/agent:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

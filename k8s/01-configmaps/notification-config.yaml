@@ -19,7 +19,7 @@ data:
   # ---------------------------------------------------------------------------
   # Base de datos PostgreSQL (RDS)
   # ---------------------------------------------------------------------------
-  DB_HOST: "siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com"
+  DB_HOST: "siga-production-postgres.crhf8ujgk6yn.us-east-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "siga_notification"
   DB_SCHEMA: "notification"
@@ -28,7 +28,7 @@ data:
   # ---------------------------------------------------------------------------
   # Configuración de datasource JDBC
   # ---------------------------------------------------------------------------
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://siga-production-postgres.cm75k1vmfnks.us-east-1.rds.amazonaws.com:5432/siga_notification?sslmode=require"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://siga-production-postgres.crhf8ujgk6yn.us-east-1.rds.amazonaws.com:5432/siga_notification?sslmode=require"
   SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
 
   # ---------------------------------------------------------------------------

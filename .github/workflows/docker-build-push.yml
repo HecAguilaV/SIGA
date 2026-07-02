@@ -102,6 +102,8 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: "main"
 
       # -----------------------------------------------------------------------
       # Paso 2: Configurar Docker Buildx (necesario para multi-plataforma y cache)
